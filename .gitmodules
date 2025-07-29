@@ -1,0 +1,3 @@
+[submodule "dpd-db"]
+	path = dpd-db
+	url = https://github.com/DhammaBytes/dpd-db.git

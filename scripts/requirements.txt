@@ -1,0 +1,10 @@
+# Requirements for PaliPractice scripts
+# Essential dependencies from DPD for database processing
+
+# Core database and data processing
+SQLAlchemy>=2.0.22
+pandas>=2.2.3
+rich>=13.3.1
+
+# For development and testing
+pytest>=7.0.0

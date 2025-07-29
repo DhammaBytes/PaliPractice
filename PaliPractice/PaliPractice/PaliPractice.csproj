@@ -1,0 +1,48 @@
+<Project Sdk="Uno.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net9.0-android;net9.0-ios;net9.0-desktop</TargetFrameworks>
+
+        <OutputType>Exe</OutputType>
+        <UnoSingleProject>true</UnoSingleProject>
+
+        <!-- Display name -->
+        <ApplicationTitle>PaliPractice</ApplicationTitle>
+        <!-- App Identifier -->
+        <ApplicationId>org.dhammanytes.palipractice</ApplicationId>
+        <!-- Versions -->
+        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+        <ApplicationVersion>1</ApplicationVersion>
+        <!-- Package Publisher -->
+        <ApplicationPublisher>O=DhammaBytes</ApplicationPublisher>
+        <!-- Package Description -->
+        <Description>Pali Practice - Learn noun declensions and verb conjugations</Description>
+
+        <!--
+          UnoFeatures let's you quickly add and manage implicit package references based on the features you want to use.
+          https://aka.platform.uno/singleproject-features
+        -->
+        <UnoFeatures>
+            CSharpMarkup;
+            Material;
+            Dsp;
+            Hosting;
+            Toolkit;
+            Logging;
+            Mvvm;
+            Configuration;
+            Localization;
+            Navigation;
+            ThemeService;
+            SkiaRenderer;
+            Storage;
+        </UnoFeatures>
+    </PropertyGroup>
+    <ItemGroup>
+      <PackageReference Include="sqlite-net-pcl" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Data\training.db" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,45 @@
+# JetBrains Rider
+.idea/
+*.sln.iml
+*.DotSettings.user
+_ReSharper*/
+
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+# Build results
+[Bb]in/
+[Oo]bj/
+artifacts/
+*.log
+
+# .NET artifacts
+*.dll
+*.exe
+*.pdb
+*.cache
+*.tmp
+*.tmp_proj
+*.userprefs
+*.suo
+*.user
+*.rsuser
+*.sln.docstates
+
+# Test & coverage results
+TestResult.xml
+[Tt]est[Rr]esult*/
+*.coverage
+*.coveragexml
+BenchmarkDotNet.Artifacts/
+
+# Project-specific artifacts
+scripts/config.ini
+scripts/dpd_operations.log
+PaliPractice/PaliPractice/Data/*.db

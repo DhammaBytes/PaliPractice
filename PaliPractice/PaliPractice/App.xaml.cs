@@ -90,7 +90,8 @@ public partial class App : Application
             new ViewMap(ViewModel: typeof(ShellViewModel)),
             new ViewMap<MainPage, MainViewModel>(),
             new DataViewMap<SecondPage, SecondViewModel, Entity>(),
-            new ViewMap<FlashcardPage, FlashcardViewModel>()
+            new ViewMap<StartPage, StartViewModel>(),
+            new ViewMap<DeclensionPracticePage, DeclensionPracticeViewModel>()
         );
 
         routes.Register(
@@ -99,7 +100,8 @@ public partial class App : Application
                 [
                     new("Main", View: views.FindByViewModel<MainViewModel>()),
                     new("Second", View: views.FindByViewModel<SecondViewModel>()),
-                    new("Flashcards", View: views.FindByViewModel<FlashcardViewModel>(), IsDefault: true),
+                    new("Start", View: views.FindByViewModel<StartViewModel>(), IsDefault: true),
+                    new("DeclensionPractice", View: views.FindByViewModel<DeclensionPracticeViewModel>()),
                 ]
             )
         );

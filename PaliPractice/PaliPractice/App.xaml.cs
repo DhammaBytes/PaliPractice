@@ -1,3 +1,5 @@
+using PaliPractice.Presentation.Behaviors;
+
 namespace PaliPractice;
 
 public partial class App : Application
@@ -71,6 +73,24 @@ public partial class App : Application
                 {
                     // Register database service
                     services.AddSingleton<IDatabaseService, DatabaseService>();
+                    
+                    // Behaviors: transient is fine
+                    services.AddTransient<CardStateBehavior>();
+                    services.AddTransient<NumberSelectionBehavior>();
+                    services.AddTransient<PersonSelectionBehavior>();
+                    services.AddTransient<VoiceSelectionBehavior>();
+                    services.AddTransient<TenseSelectionBehavior>();
+                    services.AddTransient<GenderSelectionBehavior>();
+                    services.AddTransient<CaseSelectionBehavior>();
+                    services.AddTransient<NavigationBehavior>();
+                    
+                    // Word sources
+                    services.AddTransient<NounWordSource>();
+                    services.AddTransient<VerbWordSource>();
+                    
+                    // ViewModels
+                    services.AddTransient<DeclensionPracticeViewModel>();
+                    services.AddTransient<ConjugationPracticeViewModel>();
                 })
                 .UseNavigation(RegisterRoutes)
             );
@@ -88,8 +108,6 @@ public partial class App : Application
     {
         views.Register(
             new ViewMap(ViewModel: typeof(ShellViewModel)),
-            new ViewMap<MainPage, MainViewModel>(),
-            new DataViewMap<SecondPage, SecondViewModel, Entity>(),
             new ViewMap<StartPage, StartViewModel>(),
             new ViewMap<DeclensionPracticePage, DeclensionPracticeViewModel>(),
             new ViewMap<ConjugationPracticePage, ConjugationPracticeViewModel>()
@@ -99,8 +117,6 @@ public partial class App : Application
             new RouteMap("", View: views.FindByViewModel<ShellViewModel>(),
                 Nested:
                 [
-                    new("Main", View: views.FindByViewModel<MainViewModel>()),
-                    new("Second", View: views.FindByViewModel<SecondViewModel>()),
                     new("Start", View: views.FindByViewModel<StartViewModel>(), IsDefault: true),
                     new("DeclensionPractice", View: views.FindByViewModel<DeclensionPracticeViewModel>()),
                     new("ConjugationPractice", View: views.FindByViewModel<ConjugationPracticeViewModel>()),

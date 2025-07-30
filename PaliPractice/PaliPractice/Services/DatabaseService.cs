@@ -1,7 +1,5 @@
 using SQLite;
 using System.Reflection;
-using PaliPractice.Models;
-using System.IO;
 
 namespace PaliPractice.Services;
 

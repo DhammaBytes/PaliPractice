@@ -1,6 +1,4 @@
-using UIKit;
 using Uno.UI.Hosting;
-using PaliPractice;
 
 namespace PaliPractice.iOS;
 

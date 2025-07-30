@@ -1,10 +1,9 @@
-using System.Windows.Input;
-
 namespace PaliPractice.Presentation;
 
-public partial class StartViewModel : ObservableObject
+[Bindable]
+public class StartViewModel : ObservableObject
 {
-    private readonly INavigator _navigator;
+    readonly INavigator _navigator;
 
     public StartViewModel(INavigator navigator)
     {
@@ -19,12 +18,12 @@ public partial class StartViewModel : ObservableObject
     public ICommand GoToDeclensionCommand { get; }
     public ICommand GoToConjugationCommand { get; }
 
-    private async Task GoToDeclension()
+    async Task GoToDeclension()
     {
         await _navigator.NavigateViewModelAsync<DeclensionPracticeViewModel>(this);
     }
 
-    private async Task GoToConjugation()
+    async Task GoToConjugation()
     {
         await _navigator.NavigateViewModelAsync<ConjugationPracticeViewModel>(this);
     }

@@ -26,8 +26,6 @@ public partial class StartViewModel : ObservableObject
 
     private async Task GoToConjugation()
     {
-        // TODO: Implement conjugation practice navigation
-        // For now, this will be implemented later
-        await Task.CompletedTask;
+        await _navigator.NavigateViewModelAsync<ConjugationPracticeViewModel>(this);
     }
 }

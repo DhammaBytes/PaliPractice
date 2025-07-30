@@ -91,7 +91,8 @@ public partial class App : Application
             new ViewMap<MainPage, MainViewModel>(),
             new DataViewMap<SecondPage, SecondViewModel, Entity>(),
             new ViewMap<StartPage, StartViewModel>(),
-            new ViewMap<DeclensionPracticePage, DeclensionPracticeViewModel>()
+            new ViewMap<DeclensionPracticePage, DeclensionPracticeViewModel>(),
+            new ViewMap<ConjugationPracticePage, ConjugationPracticeViewModel>()
         );
 
         routes.Register(
@@ -102,6 +103,7 @@ public partial class App : Application
                     new("Second", View: views.FindByViewModel<SecondViewModel>()),
                     new("Start", View: views.FindByViewModel<StartViewModel>(), IsDefault: true),
                     new("DeclensionPractice", View: views.FindByViewModel<DeclensionPracticeViewModel>()),
+                    new("ConjugationPractice", View: views.FindByViewModel<ConjugationPracticeViewModel>()),
                 ]
             )
         );

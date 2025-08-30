@@ -40,7 +40,7 @@ uv run python db/inflections/generate_inflection_tables.py
 ## Architecture Overview
 
 ### Technology Stack
-- **Framework**: Uno Platform 6.1 with .NET 9
+- **Framework**: Uno Platform 6.2 with .NET 9
 - **UI Pattern**: MVVM with C# Markup (fluent API)
 - **Database**: SQLite via sqlite-net-pcl
 - **Data Source**: Digital Pāḷi Dictionary (DPD) as git submodule
@@ -72,131 +72,144 @@ The app uses a normalized SQLite database:
 2. **Navigation**: Route-based navigation with Shell pattern
 3. **Database Access**: Async SQLite operations via DatabaseService
 4. **UI Construction**: C# Markup fluent API instead of XAML
+5. **Localization**: Supports 6 languages (en, es, fr, pt, th, ru)
 
 ### Working with the Codebase
 
 When modifying code:
 - Follow existing C# Markup patterns in Presentation layer
-- Prefer composition, avoid inheritance
 - Maintain MVVM separation (ViewModels handle logic)
 - Database models are in Models/ directory
 - Platform-specific code goes in Platforms/ subdirectories
+- The training.db is embedded as a resource and copied on first run
 
 For database changes:
 - Modify extraction script in scripts/extract_nouns_and_verbs.py
 - Run validation with scripts/validate_db.py
 - Regenerate C# models if schema changes
 
-## Uno Fluent C# Markup for bulding UIs
+Example of Uno Fluent C# Markup for building UIs:
 
-### Simple example
+```csharp
+public sealed partial class MainPage : Page
+{
+    public MainPage()
+    {
+        this.DataContext(new MainViewModel(), (page, vm) => page
+            .Background(ThemeResource.Get<Brush>("ApplicationPageBackgroundThemeBrush"))
+            .Content(
+                new StackPanel()
+                    .VerticalAlignment(VerticalAlignment.Center)
+                    .Children(
+                        new Image()
+                            .Margin(12)
+                            .HorizontalAlignment(HorizontalAlignment.Center)
+                            .Width(150)
+                            .Height(150)
+                            .Source("ms-appx:///Assets/logo.png"),
+                        new TextBox()
+                            .Margin(12)
+                            .HorizontalAlignment(HorizontalAlignment.Center)
+                            .TextAlignment(Microsoft.UI.Xaml.TextAlignment.Center)
+                            .PlaceholderText("Step Size")
+                            .Text(x => x.Binding(() => vm.Step).TwoWay()),
+                        new TextBlock()
+                            .Margin(12)
+                            .HorizontalAlignment(HorizontalAlignment.Center)
+                            .TextAlignment(Microsoft.UI.Xaml.TextAlignment.Center)
+                            .Text(() => vm.Count, txt => $"Counter: {txt}"),
+                        new Button()
+                            .Margin(12)
+                            .HorizontalAlignment(HorizontalAlignment.Center)
+                            .Command(() => vm.IncrementCommand)
+                            .Content("Increment Counter by Step Size")
+                    )
+            )
+        );
+    }
+}
+```
 
-  ```csharp
-  public sealed partial class MainPage : Page
-  {
-      public MainPage()
-      {
-          this.DataContext(new MainViewModel(), (page, vm) => page
-              .Background(ThemeResource.Get<Brush>("ApplicationPageBackgroundThemeBrush"))
-              .Content(
-                  new StackPanel()
-                      .VerticalAlignment(VerticalAlignment.Center)
-                      .Children(
-                          new Image()
-                              .Margin(12)
-                              .HorizontalAlignment(HorizontalAlignment.Center)
-                              .Width(150)
-                              .Height(150)
-                              .Source("ms-appx:///Assets/logo.png"),
-                          new TextBox()
-                              .Margin(12)
-                              .HorizontalAlignment(HorizontalAlignment.Center)
-                              .TextAlignment(Microsoft.UI.Xaml.TextAlignment.Center)
-                              .PlaceholderText("Step Size")
-                              .Text(x => x.Binding(() => vm.Step).TwoWay()),
-                          new TextBlock()
-                              .Margin(12)
-                              .HorizontalAlignment(HorizontalAlignment.Center)
-                              .TextAlignment(Microsoft.UI.Xaml.TextAlignment.Center)
-                              .Text(() => vm.Count, txt => $"Counter: {txt}"),
-                          new Button()
-                              .Margin(12)
-                              .HorizontalAlignment(HorizontalAlignment.Center)
-                              .Command(() => vm.IncrementCommand)
-                              .Content("Increment Counter by Step Size")
-                      )
-              )
-          );
-      }
-  }
-  ```
-
-## Composition rules
+## Composition Rules for Uno C# Markup
 
 When using `this.DataContext<TViewModel>((page, vm) => ...)`, the *only* legal way to access `vm` is **inside binding lambdas**. You must not pass `vm.Property` eagerly to helper/build methods.
 
-**Rules**
+### Critical: Uno C# Markup Compiled Binding Limitation
 
-* Access the view model only as `() => vm.Property` or `() => vm.Command`.
-* Make reusable UI builders accept **providers** (`Func<T>`), not instances.
-* Dereference providers **only inside binding lambdas**.
-* Build controls **eagerly** and pass them to `.Children(...)` / `.Content(control)`.
-* Bind a property with `.Content(() => vm.SomeUiElement)` only if you’re binding to an existing property; never construct UI inside a `.Content(() => ...)` binding.
+Uno's compiled C# Markup bindings rely on source generators that must "see" the lambda at the call site. When you capture a lambda in a `Func<T>` parameter and pass it through another method, the generator can't analyze it, so no binding is produced. Instead, a non-binding overload is used (often the `object` overload), resulting in `ToString()` output.
 
-### Minimal example
-
-**A small selector component that binds to a behavior**
-
+**Wrong approach (shows class names instead of values):**
 ```csharp
-// Component: accepts provider, binds inside lambdas
-public static class NumberSelector
-{
-    public static UIElement Build(Func<NumberSelectionBehavior> number) =>
-        new StackPanel().Orientation(Orientation.Horizontal).Spacing(8).Children(
-            new ToggleButton()
-                .Content(new TextBlock().Text("Singular"))
-                .IsChecked(() => number().IsSingularSelected)
-                .Command(() => number().SelectSingularCommand),
-            new ToggleButton()
-                .Content(new TextBlock().Text("Plural"))
-                .IsChecked(() => number().IsPluralSelected)
-                .Command(() => number().SelectPluralCommand)
-        );
-}
+// Component that accepts Func<T> - DOESN'T WORK!
+public static Border Build(Func<string> currentWord) =>
+    new Border().Child(
+        new TextBlock().Text(currentWord)  // Generator can't see the vm.Card.CurrentWord lambda!
+    );
+
+// Page calling with lambda
+WordCard.Build(() => vm.Card.CurrentWord)  // Lambda is hidden from generator
 ```
 
-**A card component that uses a behavior provider**
-
+**Correct approach (bind at call site):**
 ```csharp
+// Component that accepts Action<T> for binding
 public static class WordCard
 {
-    public static Border Build(Func<CardStateBehavior> card, string rankPrefix) =>
-        new Border()
-            .Visibility(() => card().IsLoading, l => !l ? Visibility.Visible : Visibility.Collapsed)
-            .Padding(24)
+    public static Border Build(
+        Func<bool> isLoading,  // OK - Visibility accepts Func<bool> directly
+        Action<TextBlock> bindCurrentWord,
+        Action<TextBlock> bindUsageExample)
+    {
+        var wordTextBlock = new TextBlock();
+        bindCurrentWord(wordTextBlock);  // Binding happens at call site where generator can see it
+        
+        var exampleTextBlock = new TextBlock();
+        bindUsageExample(exampleTextBlock);
+        
+        return new Border()
+            .Visibility(isLoading, l => !l ? Visibility.Visible : Visibility.Collapsed)
             .Child(
-                new Grid().RowDefinitions("Auto,Auto,Auto").Children(
-                    new TextBlock().Text(() => card().AnkiState).Grid(row:0),
-                    new TextBlock().Text(() => card().CurrentWord).FontSize(48).Grid(row:1),
-                    new TextBlock().Text(() => card().UsageExample).Grid(row:2)
+                new StackPanel().Children(
+                    wordTextBlock.FontSize(48),
+                    exampleTextBlock.FontSize(16)
                 )
             );
+    }
 }
-```
 
-**Page composition (gluing pieces correctly)**
-
-```csharp
+// Page using the component - binding lambdas are visible to generator
 public sealed partial class PracticePage : Page
 {
     public PracticePage()
     {
         this.DataContext<MyViewModel>((page, vm) => page
-            .Content(new Grid().Children(
-                // Build concrete UI now; all VM access stays inside lambdas:
-                WordCard.Build(() => vm.Card, rankPrefix: "N"),
-                NumberSelector.Build(() => vm.Number)
-            )));
+            .Content(
+                WordCard.Build(
+                    isLoading: () => vm.Card.IsLoading,
+                    bindCurrentWord: tb => tb.Text(() => vm.Card.CurrentWord),  // Generator sees this!
+                    bindUsageExample: tb => tb.Text(() => vm.Card.UsageExample)
+                )
+            ));
     }
 }
 ```
+
+### Rules for Composition
+
+1. **Never pass `Func<T>` for bindings** - The generator won't see the lambda
+2. **Use `Action<TControl>` parameters** - Apply bindings at the call site
+3. **Keep lambdas visible** - All `() => vm.Property` must be at the call site
+4. **Build controls eagerly** - Create UI structure, then apply bindings
+5. **Don't use ContentPresenter for composition** - It has similar limitations
+
+### Why This Works
+
+- The Uno source generator analyzes the C# code at compile time
+- It looks for patterns like `.Text(() => vm.Property)` to generate bindings
+- When the lambda is inside a parameter, the generator can't "see" it
+- By using `Action<T>`, we ensure the binding lambda stays at the call site
+- The generator can then properly create `INotifyPropertyChanged` subscriptions
+
+### Special Cases
+
+Some fluent methods like `.Visibility()` accept `Func<bool>` directly and work correctly because they're designed to work with the source generator. However, most property bindings (`.Text()`, `.Value()`, `.Command()`) need the lambda to be visible at the call site.

@@ -3,7 +3,7 @@ namespace PaliPractice.Presentation.Behaviors;
 public sealed class NounWordSource : IWordSource
 {
     readonly IDatabaseService _db;
-    public List<Headword> Words { get; } = new();
+    public List<Headword> Words { get; } = [];
     public int CurrentIndex { get; set; }
 
     public NounWordSource(IDatabaseService db) => _db = db;

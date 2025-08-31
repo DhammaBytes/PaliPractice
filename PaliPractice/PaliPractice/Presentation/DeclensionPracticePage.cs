@@ -13,10 +13,13 @@ public sealed partial class DeclensionPracticePage : Page
             .Background(Theme.Brushes.Background.Default)
             .Content(new Grid()
                 .SafeArea(SafeArea.InsetMask.VisibleBounds)
-                .RowDefinitions("Auto,*,Auto,Auto")
+                .RowDefinitions("Auto,Auto,*,Auto,Auto")
                 .Children(
                     AppTitleBar.Build("Declension Practice", btn => btn.Command(() => vm.Nav.GoBackCommand)),
-                    new ScrollViewer().Grid(row:1).Content(
+                    DailyGoalBar.Build(
+                        bindDailyGoalText: tb => tb.Text(() => vm.Card.DailyGoalText),
+                        bindDailyProgress: pb => pb.Value(() => vm.Card.DailyProgress)).Grid(row:1),
+                    new ScrollViewer().Grid(row:2).Content(
                         new Grid().HorizontalAlignment(HorizontalAlignment.Center).VerticalAlignment(VerticalAlignment.Center).Children(
                             new Grid().MaxWidth(600).Children(
                                 new StackPanel().Padding(20).Spacing(24).HorizontalAlignment(HorizontalAlignment.Stretch).Children(
@@ -38,16 +41,17 @@ public sealed partial class DeclensionPracticePage : Page
                                 )
                             )
                         )),
-                    new StackPanel().Grid(row:2).Padding(20).Spacing(16)
+                    new StackPanel().Grid(row:3).Padding(20).Spacing(16)
                         .Visibility(() => vm.Card.IsLoading, l => !l ? Visibility.Visible : Visibility.Collapsed)
                         .Children(
                             NumberSelector.Build(() => vm.Number),
                             GenderSelector.Build(() => vm.Gender),
                             CaseSelector.Build(() => vm.Cases)
                         ),
-                    DailyGoalBar.Build(
-                        bindDailyGoalText: tb => tb.Text(() => vm.Card.DailyGoalText),
-                        bindDailyProgress: pb => pb.Value(() => vm.Card.DailyProgress)).Grid(row:3)
+                    CardNavigationSelector.Build(
+                        bindPreviousCommand: btn => btn.Command(() => vm.CardNavigation.PreviousCommand),
+                        bindNextCommand: btn => btn.Command(() => vm.CardNavigation.NextCommand))
+                        .Grid(row:4)
                 )
             )
         );

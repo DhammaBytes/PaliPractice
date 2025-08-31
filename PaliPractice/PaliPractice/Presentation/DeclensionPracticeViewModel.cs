@@ -1,8 +1,9 @@
 using PaliPractice.Presentation.Behaviors;
+using System.ComponentModel;
 
 namespace PaliPractice.Presentation;
 
-[Bindable]
+[Microsoft.UI.Xaml.Data.Bindable]
 public class DeclensionPracticeViewModel : ObservableObject
 {
     readonly IWordSource _words;
@@ -13,6 +14,7 @@ public class DeclensionPracticeViewModel : ObservableObject
     public GenderSelectionBehavior Gender { get; }
     public CaseSelectionBehavior Cases { get; }
     public NavigationBehavior Nav { get; }
+    public CardNavigationBehavior CardNavigation { get; }
     
     public DeclensionPracticeViewModel(
         NounWordSource words,
@@ -26,6 +28,10 @@ public class DeclensionPracticeViewModel : ObservableObject
         _words = words;
         Card = card; Number = number; Gender = gender; Cases = @case; Nav = nav;
         _logger = logger;
+        
+        CardNavigation = new CardNavigationBehavior(words, card, SetNounExamples, CanProceedToNext);
+        
+        SetupSelectionChangeHandlers();
         _ = InitializeAsync();
     }
 
@@ -49,4 +55,28 @@ public class DeclensionPracticeViewModel : ObservableObject
         Card.SuttaReference = "AN4.67 ahirājasuttaṃ";
     }
 
+    bool CanProceedToNext()
+    {
+        return HasAnyNumberSelected() && HasAnyGenderSelected() && HasAnyCaseSelected();
+    }
+
+    bool HasAnyNumberSelected() => Number.IsSingularSelected || Number.IsPluralSelected;
+    
+    bool HasAnyGenderSelected() => Gender.IsMasculineSelected || Gender.IsNeuterSelected || Gender.IsFeminineSelected;
+    
+    bool HasAnyCaseSelected() => Cases.IsNominativeSelected || Cases.IsAccusativeSelected || Cases.IsInstrumentalSelected || 
+                                Cases.IsDativeSelected || Cases.IsAblativeSelected || Cases.IsGenitiveSelected || 
+                                Cases.IsLocativeSelected || Cases.IsVocativeSelected;
+
+    void SetupSelectionChangeHandlers()
+    {
+        Number.PropertyChanged += OnSelectionChanged;
+        Gender.PropertyChanged += OnSelectionChanged;
+        Cases.PropertyChanged += OnSelectionChanged;
+    }
+
+    void OnSelectionChanged(object sender, PropertyChangedEventArgs e)
+    {
+        CardNavigation.UpdateNavigationState();
+    }
 }

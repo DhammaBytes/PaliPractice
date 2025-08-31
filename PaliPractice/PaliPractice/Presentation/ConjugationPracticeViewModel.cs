@@ -1,8 +1,9 @@
 using PaliPractice.Presentation.Behaviors;
+using System.ComponentModel;
 
 namespace PaliPractice.Presentation;
 
-[Bindable]
+[Microsoft.UI.Xaml.Data.Bindable]
 public class ConjugationPracticeViewModel : ObservableObject
 {
     readonly IWordSource _words;
@@ -14,6 +15,7 @@ public class ConjugationPracticeViewModel : ObservableObject
     public VoiceSelectionBehavior Voice { get; }
     public TenseSelectionBehavior Tense { get; }
     public NavigationBehavior Nav { get; }
+    public CardNavigationBehavior CardNavigation { get; }
     
     public ConjugationPracticeViewModel(
         VerbWordSource words,
@@ -28,6 +30,10 @@ public class ConjugationPracticeViewModel : ObservableObject
         _words = words;
         Card = card; Number = number; Person = person; Voice = voice; Tense = tense; Nav = nav;
         _logger = logger;
+        
+        CardNavigation = new CardNavigationBehavior(words, card, SetVerbExamples, CanProceedToNext);
+        
+        SetupSelectionChangeHandlers();
         _ = InitializeAsync();
     }
 
@@ -51,4 +57,30 @@ public class ConjugationPracticeViewModel : ObservableObject
         Card.SuttaReference = "MN1 mūlapariyāya";
     }
 
+    bool CanProceedToNext()
+    {
+        return HasAnyNumberSelected() && HasAnyPersonSelected() && HasAnyVoiceSelected() && HasAnyTenseSelected();
+    }
+
+    bool HasAnyNumberSelected() => Number.IsSingularSelected || Number.IsPluralSelected;
+    
+    bool HasAnyPersonSelected() => Person.IsFirstPersonSelected || Person.IsSecondPersonSelected || Person.IsThirdPersonSelected;
+    
+    bool HasAnyVoiceSelected() => Voice.IsNormalSelected || Voice.IsReflexiveSelected;
+    
+    bool HasAnyTenseSelected() => Tense.IsPresentSelected || Tense.IsImperativeSelected || Tense.IsAoristSelected || 
+                                 Tense.IsOptativeSelected || Tense.IsFutureSelected;
+
+    void SetupSelectionChangeHandlers()
+    {
+        Number.PropertyChanged += OnSelectionChanged;
+        Person.PropertyChanged += OnSelectionChanged;
+        Voice.PropertyChanged += OnSelectionChanged;
+        Tense.PropertyChanged += OnSelectionChanged;
+    }
+
+    void OnSelectionChanged(object sender, PropertyChangedEventArgs e)
+    {
+        CardNavigation.UpdateNavigationState();
+    }
 }

@@ -1,5 +1,5 @@
 using PaliPractice.Presentation.Components;
-using PaliPractice.Presentation.Components.ButtonGroups;
+using PaliPractice.Presentation.ViewModels;
 
 namespace PaliPractice.Presentation;
 
@@ -43,26 +43,34 @@ public sealed partial class ConjugationPracticePage : Page
                     new StackPanel().Grid(row:3).Padding(20).Spacing(16)
                         .Visibility(() => vm.Card.IsLoading, l => !l ? Visibility.Visible : Visibility.Collapsed)
                         .Children(
-                            NumberButtonGroup.Build(
-                                bindSingular: btn => btn.IsChecked(x => x.Binding(() => vm.Number.IsSingularSelected)).Command(() => vm.Number.SelectSingularCommand),
-                                bindPlural: btn => btn.IsChecked(x => x.Binding(() => vm.Number.IsPluralSelected)).Command(() => vm.Number.SelectPluralCommand)
-                            ),
-                            PersonButtonGroup.Build(
-                                bindFirst: btn => btn.IsChecked(x => x.Binding(() => vm.Person.IsFirstPersonSelected)).Command(() => vm.Person.SelectFirstPersonCommand),
-                                bindSecond: btn => btn.IsChecked(x => x.Binding(() => vm.Person.IsSecondPersonSelected)).Command(() => vm.Person.SelectSecondPersonCommand),
-                                bindThird: btn => btn.IsChecked(x => x.Binding(() => vm.Person.IsThirdPersonSelected)).Command(() => vm.Person.SelectThirdPersonCommand)
-                            ),
-                            VoiceButtonGroup.Build(
-                                bindNormal: btn => btn.IsChecked(x => x.Binding(() => vm.Voice.IsNormalSelected)).Command(() => vm.Voice.SelectNormalCommand),
-                                bindReflexive: btn => btn.IsChecked(x => x.Binding(() => vm.Voice.IsReflexiveSelected)).Command(() => vm.Voice.SelectReflexiveCommand)
-                            ),
-                            TenseButtonGroup.Build(
-                                bindPresent: btn => btn.IsChecked(x => x.Binding(() => vm.Tense.IsPresentSelected)).Command(() => vm.Tense.SelectPresentCommand),
-                                bindImperative: btn => btn.IsChecked(x => x.Binding(() => vm.Tense.IsImperativeSelected)).Command(() => vm.Tense.SelectImperativeCommand),
-                                bindAorist: btn => btn.IsChecked(x => x.Binding(() => vm.Tense.IsAoristSelected)).Command(() => vm.Tense.SelectAoristCommand),
-                                bindOptative: btn => btn.IsChecked(x => x.Binding(() => vm.Tense.IsOptativeSelected)).Command(() => vm.Tense.SelectOptativeCommand),
-                                bindFuture: btn => btn.IsChecked(x => x.Binding(() => vm.Tense.IsFutureSelected)).Command(() => vm.Tense.SelectFutureCommand)
-                            )
+                            EnumToggleGroup.Build(
+                                new[] {
+                                    new EnumOption<Number>(Models.Number.Singular, "Singular", "\uE77B", Color.FromArgb(255, 230, 230, 255)),
+                                    new EnumOption<Number>(Models.Number.Plural, "Plural", "\uE716", Color.FromArgb(255, 230, 230, 255))
+                                },
+                                () => vm.Number),
+                            EnumToggleGroup.Build(
+                                new[] {
+                                    new EnumOption<Person>(Models.Person.First, "1st", "\uE77B", Color.FromArgb(255, 230, 255, 230)),
+                                    new EnumOption<Person>(Models.Person.Second, "2nd", "\uE748", Color.FromArgb(255, 230, 255, 230)),
+                                    new EnumOption<Person>(Models.Person.Third, "3rd", "\uE716", Color.FromArgb(255, 230, 255, 230))
+                                },
+                                () => vm.Person),
+                            EnumToggleGroup.Build(
+                                new[] {
+                                    new EnumOption<Voice>(Models.Voice.Normal, "Active", "\uE768", Color.FromArgb(255, 255, 230, 230)),
+                                    new EnumOption<Voice>(Models.Voice.Reflexive, "Reflexive", "\uE74C", Color.FromArgb(255, 255, 230, 230))
+                                },
+                                () => vm.Voice),
+                            EnumToggleGroup.Build(
+                                new[] {
+                                    new EnumOption<Tense>(Models.Tense.Present, "Present", null, Color.FromArgb(255, 240, 240, 255)),
+                                    new EnumOption<Tense>(Models.Tense.Imperative, "Imper.", null, Color.FromArgb(255, 240, 240, 255)),
+                                    new EnumOption<Tense>(Models.Tense.Aorist, "Aorist", null, Color.FromArgb(255, 240, 240, 255)),
+                                    new EnumOption<Tense>(Models.Tense.Optative, "Opt.", null, Color.FromArgb(255, 240, 240, 255)),
+                                    new EnumOption<Tense>(Models.Tense.Future, "Future", null, Color.FromArgb(255, 240, 240, 255))
+                                },
+                                () => vm.Tense)
                         ),
                     CardNavigation.Build(
                         bindPreviousCommand: btn => btn.Command(() => vm.PreviousCommand),

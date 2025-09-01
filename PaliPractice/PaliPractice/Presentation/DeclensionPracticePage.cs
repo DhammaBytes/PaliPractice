@@ -1,5 +1,5 @@
 using PaliPractice.Presentation.Components;
-using PaliPractice.Presentation.Components.ButtonGroups;
+using PaliPractice.Presentation.ViewModels;
 
 namespace PaliPractice.Presentation;
 
@@ -43,25 +43,31 @@ public sealed partial class DeclensionPracticePage : Page
                     new StackPanel().Grid(row:3).Padding(20).Spacing(16)
                         .Visibility(() => vm.Card.IsLoading, l => !l ? Visibility.Visible : Visibility.Collapsed)
                         .Children(
-                            NumberButtonGroup.Build(
-                                bindSingular: btn => btn.IsChecked(x => x.Binding(() => vm.Number.IsSingularSelected)).Command(() => vm.Number.SelectSingularCommand),
-                                bindPlural: btn => btn.IsChecked(x => x.Binding(() => vm.Number.IsPluralSelected)).Command(() => vm.Number.SelectPluralCommand)
-                            ),
-                            GenderButtonGroup.Build(
-                                bindMasculine: btn => btn.IsChecked(x => x.Binding(() => vm.Gender.IsMasculineSelected)).Command(() => vm.Gender.SelectMasculineCommand),
-                                bindNeuter: btn => btn.IsChecked(x => x.Binding(() => vm.Gender.IsNeuterSelected)).Command(() => vm.Gender.SelectNeuterCommand),
-                                bindFeminine: btn => btn.IsChecked(x => x.Binding(() => vm.Gender.IsFeminineSelected)).Command(() => vm.Gender.SelectFeminineCommand)
-                            ),
-                            CaseButtonGroup.Build(
-                                bindNominative: btn => btn.IsChecked(x => x.Binding(() => vm.Cases.IsNominativeSelected)).Command(() => vm.Cases.SelectNominativeCommand),
-                                bindAccusative: btn => btn.IsChecked(x => x.Binding(() => vm.Cases.IsAccusativeSelected)).Command(() => vm.Cases.SelectAccusativeCommand),
-                                bindInstrumental: btn => btn.IsChecked(x => x.Binding(() => vm.Cases.IsInstrumentalSelected)).Command(() => vm.Cases.SelectInstrumentalCommand),
-                                bindDative: btn => btn.IsChecked(x => x.Binding(() => vm.Cases.IsDativeSelected)).Command(() => vm.Cases.SelectDativeCommand),
-                                bindAblative: btn => btn.IsChecked(x => x.Binding(() => vm.Cases.IsAblativeSelected)).Command(() => vm.Cases.SelectAblativeCommand),
-                                bindGenitive: btn => btn.IsChecked(x => x.Binding(() => vm.Cases.IsGenitiveSelected)).Command(() => vm.Cases.SelectGenitiveCommand),
-                                bindLocative: btn => btn.IsChecked(x => x.Binding(() => vm.Cases.IsLocativeSelected)).Command(() => vm.Cases.SelectLocativeCommand),
-                                bindVocative: btn => btn.IsChecked(x => x.Binding(() => vm.Cases.IsVocativeSelected)).Command(() => vm.Cases.SelectVocativeCommand)
-                            )
+                            EnumToggleGroup.Build(
+                                new[] {
+                                    new EnumOption<Number>(Models.Number.Singular, "Singular", "\uE77B", Color.FromArgb(255, 230, 230, 255)),
+                                    new EnumOption<Number>(Models.Number.Plural, "Plural", "\uE716", Color.FromArgb(255, 230, 230, 255))
+                                },
+                                () => vm.Number),
+                            EnumToggleGroup.Build(
+                                new[] {
+                                    new EnumOption<Gender>(Models.Gender.Masculine, "Masculine", "\uE71A", Color.FromArgb(255, 220, 255, 220)),
+                                    new EnumOption<Gender>(Models.Gender.Neuter, "Neuter", "\uE734", Color.FromArgb(255, 220, 255, 220)),
+                                    new EnumOption<Gender>(Models.Gender.Feminine, "Feminine", "\uE716", Color.FromArgb(255, 220, 255, 220))
+                                },
+                                () => vm.Gender),
+                            EnumToggleGroup.Build(
+                                new[] {
+                                    new EnumOption<NounCase>(NounCase.Nominative, "Nom", null, Color.FromArgb(255, 255, 243, 224)),
+                                    new EnumOption<NounCase>(NounCase.Accusative, "Acc", null, Color.FromArgb(255, 255, 243, 224)),
+                                    new EnumOption<NounCase>(NounCase.Instrumental, "Ins", null, Color.FromArgb(255, 255, 243, 224)),
+                                    new EnumOption<NounCase>(NounCase.Dative, "Dat", null, Color.FromArgb(255, 255, 243, 224)),
+                                    new EnumOption<NounCase>(NounCase.Ablative, "Abl", null, Color.FromArgb(255, 255, 243, 224)),
+                                    new EnumOption<NounCase>(NounCase.Genitive, "Gen", null, Color.FromArgb(255, 255, 243, 224)),
+                                    new EnumOption<NounCase>(NounCase.Locative, "Loc", null, Color.FromArgb(255, 255, 243, 224)),
+                                    new EnumOption<NounCase>(NounCase.Vocative, "Voc", null, Color.FromArgb(255, 255, 243, 224))
+                                },
+                                () => vm.Cases)
                         ),
                     CardNavigation.Build(
                         bindPreviousCommand: btn => btn.Command(() => vm.PreviousCommand),

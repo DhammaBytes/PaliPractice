@@ -1,6 +1,6 @@
 using System.ComponentModel;
 using PaliPractice.Presentation.Providers;
-using PaliPractice.Presentation.ViewModels.ButtonGroups;
+using PaliPractice.Presentation.ViewModels;
 using CardViewModel = PaliPractice.Presentation.ViewModels.CardViewModel;
 
 namespace PaliPractice.Presentation;
@@ -13,10 +13,10 @@ public partial class ConjugationPracticeViewModel : ObservableObject
     readonly ILogger<ConjugationPracticeViewModel> _logger;
 
     public CardViewModel Card { get; }
-    public NumberButtonGroupViewModel Number { get; }
-    public PersonButtonGroupViewModel Person { get; }
-    public VoiceButtonGroupViewModel Voice { get; }
-    public TenseButtonGroupViewModel Tense { get; }
+    public EnumChoiceViewModel<Number> Number { get; }
+    public EnumChoiceViewModel<Person> Person { get; }
+    public EnumChoiceViewModel<Voice> Voice { get; }
+    public EnumChoiceViewModel<Tense> Tense { get; }
     readonly INavigator _navigator;
     [ObservableProperty] bool _canGoToPrevious;
     [ObservableProperty] bool _canGoToNext;
@@ -36,18 +36,37 @@ public partial class ConjugationPracticeViewModel : ObservableObject
         _navigator = navigator;
         _logger = logger;
         
-        Number = new NumberButtonGroupViewModel();
-        Person = new PersonButtonGroupViewModel();
-        Voice = new VoiceButtonGroupViewModel();
-        Tense = new TenseButtonGroupViewModel();
+        Number = new EnumChoiceViewModel<Number>(new[] {
+            new EnumOption<Number>(Models.Number.Singular, "Singular", "\uE77B", Color.FromArgb(255, 230, 230, 255)),
+            new EnumOption<Number>(Models.Number.Plural, "Plural", "\uE716", Color.FromArgb(255, 230, 230, 255))
+        }, Models.Number.None);
+        
+        Person = new EnumChoiceViewModel<Person>(new[] {
+            new EnumOption<Person>(Models.Person.First, "1st", "\uE77B", Color.FromArgb(255, 230, 255, 230)),
+            new EnumOption<Person>(Models.Person.Second, "2nd", "\uE748", Color.FromArgb(255, 230, 255, 230)),
+            new EnumOption<Person>(Models.Person.Third, "3rd", "\uE716", Color.FromArgb(255, 230, 255, 230))
+        }, Models.Person.None);
+        
+        Voice = new EnumChoiceViewModel<Voice>(new[] {
+            new EnumOption<Voice>(Models.Voice.Normal, "Active", "\uE768", Color.FromArgb(255, 255, 230, 230)),
+            new EnumOption<Voice>(Models.Voice.Reflexive, "Reflexive", "\uE74C", Color.FromArgb(255, 255, 230, 230))
+        }, Models.Voice.None);
+        
+        Tense = new EnumChoiceViewModel<Tense>(new[] {
+            new EnumOption<Tense>(Models.Tense.Present, "Present", null, Color.FromArgb(255, 240, 240, 255)),
+            new EnumOption<Tense>(Models.Tense.Imperative, "Imper.", null, Color.FromArgb(255, 240, 240, 255)),
+            new EnumOption<Tense>(Models.Tense.Aorist, "Aorist", null, Color.FromArgb(255, 240, 240, 255)),
+            new EnumOption<Tense>(Models.Tense.Optative, "Opt.", null, Color.FromArgb(255, 240, 240, 255)),
+            new EnumOption<Tense>(Models.Tense.Future, "Future", null, Color.FromArgb(255, 240, 240, 255))
+        }, Models.Tense.None);
         
         GoBackCommand = new AsyncRelayCommand(GoBack);
         PreviousCommand = new RelayCommand(GoToPrevious, () => CanGoToPrevious);
         NextCommand = new RelayCommand(GoToNext, () => CanGoToNext);
         
         SetupSelectionChangeHandlers();
+        _ = InitializeAsync();
     }
-
 
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {

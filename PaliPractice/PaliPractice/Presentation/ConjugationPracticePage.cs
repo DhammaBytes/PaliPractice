@@ -15,7 +15,7 @@ public sealed partial class ConjugationPracticePage : Page
                 .SafeArea(SafeArea.InsetMask.VisibleBounds)
                 .RowDefinitions("Auto,Auto,*,Auto,Auto")
                 .Children(
-                    AppTitleBar.Build("Conjugation Practice", btn => btn.Command(() => vm.Nav.GoBackCommand)),
+                    AppTitleBar.Build("Conjugation Practice", btn => btn.Command(() => vm.GoBackCommand)),
                     DailyGoalBar.Build(
                         bindDailyGoalText: tb => tb.Text(() => vm.Card.DailyGoalText),
                         bindDailyProgress: pb => pb.Value(() => vm.Card.DailyProgress)).Grid(row:1),

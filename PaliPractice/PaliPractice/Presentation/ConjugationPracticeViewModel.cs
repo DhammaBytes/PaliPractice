@@ -12,26 +12,28 @@ public partial class ConjugationPracticeViewModel : ObservableObject
     int _currentIndex;
     readonly ILogger<ConjugationPracticeViewModel> _logger;
 
-    public CardStateBehavior Card { get; }
+    public CardState Card { get; }
     public NumberSelection Number { get; }
     public PersonSelection Person { get; }
     public VoiceSelection Voice { get; }
     public TenseSelection Tense { get; }
-    public NavigationBehavior Nav { get; }
+    readonly INavigator _navigator;
     [ObservableProperty] bool _canGoToPrevious;
     [ObservableProperty] bool _canGoToNext;
 
+    public ICommand GoBackCommand { get; }
     public ICommand PreviousCommand { get; }
     public ICommand NextCommand { get; }
     
     public ConjugationPracticeViewModel(
-        VerbWordProvider words,
-        CardStateBehavior card,
-        NavigationBehavior nav,
+        [FromKeyedServices("verb")] IWordProvider words,
+        CardState card,
+        INavigator navigator,
         ILogger<ConjugationPracticeViewModel> logger)
     {
         _words = words;
-        Card = card; Nav = nav;
+        Card = card; 
+        _navigator = navigator;
         _logger = logger;
         
         Number = new NumberSelection();
@@ -39,24 +41,25 @@ public partial class ConjugationPracticeViewModel : ObservableObject
         Voice = new VoiceSelection();
         Tense = new TenseSelection();
         
+        GoBackCommand = new AsyncRelayCommand(GoBack);
         PreviousCommand = new RelayCommand(GoToPrevious, () => CanGoToPrevious);
         NextCommand = new RelayCommand(GoToNext, () => CanGoToNext);
         
         SetupSelectionChangeHandlers();
-        _ = InitializeAsync();
     }
 
 
-    async Task InitializeAsync()
+    public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
         try
         {
             Card.IsLoading = true;
-            await _words.LoadAsync();
+            await _words.LoadAsync(cancellationToken);
             if (_words.Words.Count == 0) { Card.ErrorMessage = "No verbs found in database"; return; }
             Card.DisplayCurrentCard(_words.Words, _currentIndex, SetVerbExamples);
             UpdateNavigationState();
         }
+        catch (OperationCanceledException) { /* Expected during navigation */ }
         catch (Exception ex) { _logger.LogError(ex, "Failed to load verbs"); Card.ErrorMessage = $"Failed to load data: {ex.Message}"; }
         finally { Card.IsLoading = false; }
     }
@@ -91,6 +94,11 @@ public partial class ConjugationPracticeViewModel : ObservableObject
     void OnSelectionChanged(object? sender, PropertyChangedEventArgs e)
     {
         UpdateNavigationState();
+    }
+
+    async Task GoBack()
+    {
+        await _navigator.NavigateBackAsync(this);
     }
 
     void GoToPrevious()

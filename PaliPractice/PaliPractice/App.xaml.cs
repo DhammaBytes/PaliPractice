@@ -76,12 +76,11 @@ public partial class App : Application
                     services.AddSingleton<IDatabaseService, DatabaseService>();
                     
                     // Behaviors: transient is fine
-                    services.AddTransient<CardStateBehavior>();
-                    services.AddTransient<NavigationBehavior>();
+                    services.AddTransient<CardState>();
                     
                     // Word providers
-                    services.AddTransient<NounWordProvider>();
-                    services.AddTransient<VerbWordProvider>();
+                    services.AddKeyedTransient<IWordProvider, NounWordProvider>("noun");
+                    services.AddKeyedTransient<IWordProvider, VerbWordProvider>("verb");
                     
                     // ViewModels
                     services.AddTransient<DeclensionPracticeViewModel>();

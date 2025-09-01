@@ -1,7 +1,7 @@
 namespace PaliPractice.Presentation.Behaviors;
 
 [Bindable]
-public partial class CardStateBehavior : ObservableObject
+public partial class CardState : ObservableObject
 {
     [ObservableProperty] string _currentWord = string.Empty;
     [ObservableProperty] string _rankText = "Top-100";

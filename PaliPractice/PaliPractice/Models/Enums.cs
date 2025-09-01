@@ -1,4 +1,4 @@
-namespace PaliPractice.Presentation.Shared.ViewModels;
+namespace PaliPractice.Models;
 
 public enum Number
 {

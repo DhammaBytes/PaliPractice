@@ -1,11 +1,11 @@
 using System.ComponentModel;
 
-namespace PaliPractice.Presentation.Shared.ViewModels;
+namespace PaliPractice.Presentation.ViewModels.ButtonGroups;
 
 [Microsoft.UI.Xaml.Data.Bindable]
-public partial class CaseSelection : Selection<NounCase>
+public partial class CaseButtonGroupViewModel : ButtonGroupViewModel<NounCase>
 {
-    public CaseSelection() : base(NounCase.None) 
+    public CaseButtonGroupViewModel() : base(NounCase.None) 
     {
         SelectNominativeCommand = new RelayCommand(() => Select(NounCase.Nominative));
         SelectAccusativeCommand = new RelayCommand(() => Select(NounCase.Accusative));

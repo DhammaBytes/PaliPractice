@@ -1,6 +1,6 @@
-namespace PaliPractice.Presentation.Components.Selectors;
+namespace PaliPractice.Presentation.Components.ButtonGroups;
 
-public static class CaseSelector
+public static class CaseButtonGroup
 {
     public static UIElement Build(
         Action<ToggleButton> bindNominative,

@@ -1,11 +1,11 @@
 using System.ComponentModel;
 
-namespace PaliPractice.Presentation.Shared.ViewModels;
+namespace PaliPractice.Presentation.ViewModels.ButtonGroups;
 
 [Microsoft.UI.Xaml.Data.Bindable]
-public partial class TenseSelection : Selection<Tense>
+public partial class TenseButtonGroupViewModel : ButtonGroupViewModel<Tense>
 {
-    public TenseSelection() : base(Tense.None) 
+    public TenseButtonGroupViewModel() : base(Tense.None) 
     {
         SelectPresentCommand = new RelayCommand(() => Select(Tense.Present));
         SelectImperativeCommand = new RelayCommand(() => Select(Tense.Imperative));

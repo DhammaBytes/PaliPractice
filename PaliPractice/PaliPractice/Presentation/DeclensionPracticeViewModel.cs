@@ -1,7 +1,7 @@
-using PaliPractice.Presentation.Behaviors;
 using System.ComponentModel;
 using PaliPractice.Presentation.Providers;
-using PaliPractice.Presentation.Shared.ViewModels;
+using PaliPractice.Presentation.ViewModels;
+using PaliPractice.Presentation.ViewModels.ButtonGroups;
 
 namespace PaliPractice.Presentation;
 
@@ -12,10 +12,10 @@ public partial class DeclensionPracticeViewModel : ObservableObject
     int _currentIndex;
     readonly ILogger<DeclensionPracticeViewModel> _logger;
 
-    public CardState Card { get; }
-    public NumberSelection Number { get; }
-    public GenderSelection Gender { get; }
-    public CaseSelection Cases { get; }
+    public CardViewModel Card { get; }
+    public NumberButtonGroupViewModel Number { get; }
+    public GenderButtonGroupViewModel Gender { get; }
+    public CaseButtonGroupViewModel Cases { get; }
     readonly INavigator _navigator;
     [ObservableProperty] bool _canGoToPrevious;
     [ObservableProperty] bool _canGoToNext;
@@ -26,7 +26,7 @@ public partial class DeclensionPracticeViewModel : ObservableObject
     
     public DeclensionPracticeViewModel(
         [FromKeyedServices("noun")] IWordProvider words,
-        CardState card,
+        CardViewModel card,
         INavigator navigator,
         ILogger<DeclensionPracticeViewModel> logger)
     {
@@ -35,9 +35,9 @@ public partial class DeclensionPracticeViewModel : ObservableObject
         _navigator = navigator;
         _logger = logger;
         
-        Number = new NumberSelection();
-        Gender = new GenderSelection();
-        Cases = new CaseSelection();
+        Number = new NumberButtonGroupViewModel();
+        Gender = new GenderButtonGroupViewModel();
+        Cases = new CaseButtonGroupViewModel();
         
         GoBackCommand = new AsyncRelayCommand(GoBack);
         PreviousCommand = new RelayCommand(GoToPrevious, () => CanGoToPrevious);
@@ -73,9 +73,9 @@ public partial class DeclensionPracticeViewModel : ObservableObject
         return HasAnyNumberSelected() && HasAnyGenderSelected() && HasAnyCaseSelected();
     }
 
-    bool HasAnyNumberSelected() => Number.Selected != Shared.ViewModels.Number.None;
+    bool HasAnyNumberSelected() => Number.Selected != Models.Number.None;
     
-    bool HasAnyGenderSelected() => Gender.Selected != Shared.ViewModels.Gender.None;
+    bool HasAnyGenderSelected() => Gender.Selected != Models.Gender.None;
     
     bool HasAnyCaseSelected() => Cases.Selected != NounCase.None;
 

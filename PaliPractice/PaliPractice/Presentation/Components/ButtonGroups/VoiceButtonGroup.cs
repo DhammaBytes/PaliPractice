@@ -1,6 +1,6 @@
-namespace PaliPractice.Presentation.Components.Selectors;
+namespace PaliPractice.Presentation.Components.ButtonGroups;
 
-public static class VoiceSelector
+public static class VoiceButtonGroup
 {
     public static UIElement Build(
         Action<ToggleButton> bindNormal,

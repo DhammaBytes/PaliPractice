@@ -1,6 +1,5 @@
 using PaliPractice.Presentation.Components;
-using PaliPractice.Presentation.Components.Selectors;
-using PaliPractice.Presentation.Shared.ViewModels;
+using PaliPractice.Presentation.Components.ButtonGroups;
 
 namespace PaliPractice.Presentation;
 
@@ -44,16 +43,16 @@ public sealed partial class DeclensionPracticePage : Page
                     new StackPanel().Grid(row:3).Padding(20).Spacing(16)
                         .Visibility(() => vm.Card.IsLoading, l => !l ? Visibility.Visible : Visibility.Collapsed)
                         .Children(
-                            NumberSelector.Build(
+                            NumberButtonGroup.Build(
                                 bindSingular: btn => btn.IsChecked(x => x.Binding(() => vm.Number.IsSingularSelected)).Command(() => vm.Number.SelectSingularCommand),
                                 bindPlural: btn => btn.IsChecked(x => x.Binding(() => vm.Number.IsPluralSelected)).Command(() => vm.Number.SelectPluralCommand)
                             ),
-                            GenderSelector.Build(
+                            GenderButtonGroup.Build(
                                 bindMasculine: btn => btn.IsChecked(x => x.Binding(() => vm.Gender.IsMasculineSelected)).Command(() => vm.Gender.SelectMasculineCommand),
                                 bindNeuter: btn => btn.IsChecked(x => x.Binding(() => vm.Gender.IsNeuterSelected)).Command(() => vm.Gender.SelectNeuterCommand),
                                 bindFeminine: btn => btn.IsChecked(x => x.Binding(() => vm.Gender.IsFeminineSelected)).Command(() => vm.Gender.SelectFeminineCommand)
                             ),
-                            CaseSelector.Build(
+                            CaseButtonGroup.Build(
                                 bindNominative: btn => btn.IsChecked(x => x.Binding(() => vm.Cases.IsNominativeSelected)).Command(() => vm.Cases.SelectNominativeCommand),
                                 bindAccusative: btn => btn.IsChecked(x => x.Binding(() => vm.Cases.IsAccusativeSelected)).Command(() => vm.Cases.SelectAccusativeCommand),
                                 bindInstrumental: btn => btn.IsChecked(x => x.Binding(() => vm.Cases.IsInstrumentalSelected)).Command(() => vm.Cases.SelectInstrumentalCommand),
@@ -64,7 +63,7 @@ public sealed partial class DeclensionPracticePage : Page
                                 bindVocative: btn => btn.IsChecked(x => x.Binding(() => vm.Cases.IsVocativeSelected)).Command(() => vm.Cases.SelectVocativeCommand)
                             )
                         ),
-                    CardNavigationSelector.Build(
+                    CardNavigation.Build(
                         bindPreviousCommand: btn => btn.Command(() => vm.PreviousCommand),
                         bindNextCommand: btn => btn.Command(() => vm.NextCommand))
                         .Grid(row:4)

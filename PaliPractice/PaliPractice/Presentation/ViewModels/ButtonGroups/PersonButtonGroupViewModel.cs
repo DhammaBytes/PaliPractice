@@ -1,11 +1,11 @@
 using System.ComponentModel;
 
-namespace PaliPractice.Presentation.Shared.ViewModels;
+namespace PaliPractice.Presentation.ViewModels.ButtonGroups;
 
 [Microsoft.UI.Xaml.Data.Bindable]
-public partial class PersonSelection : Selection<Person>
+public partial class PersonButtonGroupViewModel : ButtonGroupViewModel<Person>
 {
-    public PersonSelection() : base(Person.None) 
+    public PersonButtonGroupViewModel() : base(Person.None) 
     {
         SelectFirstPersonCommand = new RelayCommand(() => Select(Person.First));
         SelectSecondPersonCommand = new RelayCommand(() => Select(Person.Second));

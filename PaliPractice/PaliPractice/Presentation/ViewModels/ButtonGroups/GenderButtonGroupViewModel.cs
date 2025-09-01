@@ -1,11 +1,11 @@
 using System.ComponentModel;
 
-namespace PaliPractice.Presentation.Shared.ViewModels;
+namespace PaliPractice.Presentation.ViewModels.ButtonGroups;
 
 [Microsoft.UI.Xaml.Data.Bindable]
-public partial class GenderSelection : Selection<Gender>
+public partial class GenderButtonGroupViewModel : ButtonGroupViewModel<Gender>
 {
-    public GenderSelection() : base(Gender.None) 
+    public GenderButtonGroupViewModel() : base(Gender.None) 
     {
         SelectMasculineCommand = new RelayCommand(() => Select(Gender.Masculine));
         SelectNeuterCommand = new RelayCommand(() => Select(Gender.Neuter));

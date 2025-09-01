@@ -1,6 +1,5 @@
 using PaliPractice.Presentation.Components;
-using PaliPractice.Presentation.Components.Selectors;
-using PaliPractice.Presentation.Shared.ViewModels;
+using PaliPractice.Presentation.Components.ButtonGroups;
 
 namespace PaliPractice.Presentation;
 
@@ -44,20 +43,20 @@ public sealed partial class ConjugationPracticePage : Page
                     new StackPanel().Grid(row:3).Padding(20).Spacing(16)
                         .Visibility(() => vm.Card.IsLoading, l => !l ? Visibility.Visible : Visibility.Collapsed)
                         .Children(
-                            NumberSelector.Build(
+                            NumberButtonGroup.Build(
                                 bindSingular: btn => btn.IsChecked(x => x.Binding(() => vm.Number.IsSingularSelected)).Command(() => vm.Number.SelectSingularCommand),
                                 bindPlural: btn => btn.IsChecked(x => x.Binding(() => vm.Number.IsPluralSelected)).Command(() => vm.Number.SelectPluralCommand)
                             ),
-                            PersonSelector.Build(
+                            PersonButtonGroup.Build(
                                 bindFirst: btn => btn.IsChecked(x => x.Binding(() => vm.Person.IsFirstPersonSelected)).Command(() => vm.Person.SelectFirstPersonCommand),
                                 bindSecond: btn => btn.IsChecked(x => x.Binding(() => vm.Person.IsSecondPersonSelected)).Command(() => vm.Person.SelectSecondPersonCommand),
                                 bindThird: btn => btn.IsChecked(x => x.Binding(() => vm.Person.IsThirdPersonSelected)).Command(() => vm.Person.SelectThirdPersonCommand)
                             ),
-                            VoiceSelector.Build(
+                            VoiceButtonGroup.Build(
                                 bindNormal: btn => btn.IsChecked(x => x.Binding(() => vm.Voice.IsNormalSelected)).Command(() => vm.Voice.SelectNormalCommand),
                                 bindReflexive: btn => btn.IsChecked(x => x.Binding(() => vm.Voice.IsReflexiveSelected)).Command(() => vm.Voice.SelectReflexiveCommand)
                             ),
-                            TenseSelector.Build(
+                            TenseButtonGroup.Build(
                                 bindPresent: btn => btn.IsChecked(x => x.Binding(() => vm.Tense.IsPresentSelected)).Command(() => vm.Tense.SelectPresentCommand),
                                 bindImperative: btn => btn.IsChecked(x => x.Binding(() => vm.Tense.IsImperativeSelected)).Command(() => vm.Tense.SelectImperativeCommand),
                                 bindAorist: btn => btn.IsChecked(x => x.Binding(() => vm.Tense.IsAoristSelected)).Command(() => vm.Tense.SelectAoristCommand),
@@ -65,7 +64,7 @@ public sealed partial class ConjugationPracticePage : Page
                                 bindFuture: btn => btn.IsChecked(x => x.Binding(() => vm.Tense.IsFutureSelected)).Command(() => vm.Tense.SelectFutureCommand)
                             )
                         ),
-                    CardNavigationSelector.Build(
+                    CardNavigation.Build(
                         bindPreviousCommand: btn => btn.Command(() => vm.PreviousCommand),
                         bindNextCommand: btn => btn.Command(() => vm.NextCommand))
                         .Grid(row:4)

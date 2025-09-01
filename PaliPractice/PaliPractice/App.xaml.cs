@@ -1,5 +1,5 @@
-using PaliPractice.Presentation.Behaviors;
 using PaliPractice.Presentation.Providers;
+using PaliPractice.Presentation.ViewModels;
 
 namespace PaliPractice;
 
@@ -75,8 +75,7 @@ public partial class App : Application
                     // Register database service
                     services.AddSingleton<IDatabaseService, DatabaseService>();
                     
-                    // Behaviors: transient is fine
-                    services.AddTransient<CardState>();
+                    services.AddTransient<CardViewModel>();
                     
                     // Word providers
                     services.AddKeyedTransient<IWordProvider, NounWordProvider>("noun");

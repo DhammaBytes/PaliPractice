@@ -1,11 +1,11 @@
-namespace PaliPractice.Presentation.Shared.ViewModels;
+namespace PaliPractice.Presentation.ViewModels.ButtonGroups;
 
 [Microsoft.UI.Xaml.Data.Bindable]
-public partial class Selection<T> : ObservableObject where T : struct, Enum
+public partial class ButtonGroupViewModel<T> : ObservableObject where T : struct, Enum
 {
     [ObservableProperty] private T _selected;
 
-    public Selection(T defaultValue = default)
+    public ButtonGroupViewModel(T defaultValue = default)
     {
         _selected = defaultValue;
         SelectCommand = new RelayCommand<T>(Select);

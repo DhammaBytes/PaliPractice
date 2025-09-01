@@ -1,11 +1,11 @@
 using System.ComponentModel;
 
-namespace PaliPractice.Presentation.Shared.ViewModels;
+namespace PaliPractice.Presentation.ViewModels.ButtonGroups;
 
 [Microsoft.UI.Xaml.Data.Bindable]
-public partial class VoiceSelection : Selection<Voice>
+public partial class VoiceButtonGroupViewModel : ButtonGroupViewModel<Voice>
 {
-    public VoiceSelection() : base(Voice.None) 
+    public VoiceButtonGroupViewModel() : base(Voice.None) 
     {
         SelectNormalCommand = new RelayCommand(() => Select(Voice.Normal));
         SelectReflexiveCommand = new RelayCommand(() => Select(Voice.Reflexive));

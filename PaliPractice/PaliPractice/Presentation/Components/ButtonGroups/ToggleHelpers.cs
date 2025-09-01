@@ -1,4 +1,4 @@
-namespace PaliPractice.Presentation.Components;
+namespace PaliPractice.Presentation.Components.ButtonGroups;
 
 public static class ToggleHelpers
 {

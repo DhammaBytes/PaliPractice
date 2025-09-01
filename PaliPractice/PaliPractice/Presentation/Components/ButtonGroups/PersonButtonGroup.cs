@@ -1,6 +1,6 @@
-namespace PaliPractice.Presentation.Components.Selectors;
+namespace PaliPractice.Presentation.Components.ButtonGroups;
 
-public static class PersonSelector
+public static class PersonButtonGroup
 {
     public static UIElement Build(
         Action<ToggleButton> bindFirst,

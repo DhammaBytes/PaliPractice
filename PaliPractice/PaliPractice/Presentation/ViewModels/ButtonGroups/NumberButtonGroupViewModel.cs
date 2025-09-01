@@ -1,11 +1,11 @@
 using System.ComponentModel;
 
-namespace PaliPractice.Presentation.Shared.ViewModels;
+namespace PaliPractice.Presentation.ViewModels.ButtonGroups;
 
 [Microsoft.UI.Xaml.Data.Bindable]
-public partial class NumberSelection : Selection<Number>
+public partial class NumberButtonGroupViewModel : ButtonGroupViewModel<Number>
 {
-    public NumberSelection() : base(Number.None) 
+    public NumberButtonGroupViewModel() : base(Number.None) 
     {
         SelectSingularCommand = new RelayCommand(() => Select(Number.Singular));
         SelectPluralCommand = new RelayCommand(() => Select(Number.Plural));

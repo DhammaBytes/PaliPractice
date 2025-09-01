@@ -1,6 +1,6 @@
-namespace PaliPractice.Presentation.Components.Selectors;
+namespace PaliPractice.Presentation.Components.ButtonGroups;
 
-public static class TenseSelector
+public static class TenseButtonGroup
 {
     public static UIElement Build(
         Action<ToggleButton> bindPresent,

@@ -1,7 +1,7 @@
-namespace PaliPractice.Presentation.Behaviors;
+namespace PaliPractice.Presentation.ViewModels;
 
 [Bindable]
-public partial class CardState : ObservableObject
+public partial class CardViewModel : ObservableObject
 {
     [ObservableProperty] string _currentWord = string.Empty;
     [ObservableProperty] string _rankText = "Top-100";

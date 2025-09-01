@@ -1,6 +1,6 @@
-namespace PaliPractice.Presentation.Components.Selectors;
+namespace PaliPractice.Presentation.Components;
 
-public static class CardNavigationSelector
+public static class CardNavigation
 {
     public static UIElement Build(
         Action<Button> bindPreviousCommand,

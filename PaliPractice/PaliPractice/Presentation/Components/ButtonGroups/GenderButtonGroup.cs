@@ -1,6 +1,6 @@
-namespace PaliPractice.Presentation.Components.Selectors;
+namespace PaliPractice.Presentation.Components.ButtonGroups;
 
-public static class GenderSelector
+public static class GenderButtonGroup
 {
     public static UIElement Build(
         Action<ToggleButton> bindMasculine,

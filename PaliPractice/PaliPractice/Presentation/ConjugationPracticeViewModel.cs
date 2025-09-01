@@ -1,7 +1,7 @@
-using PaliPractice.Presentation.Behaviors;
 using System.ComponentModel;
 using PaliPractice.Presentation.Providers;
-using PaliPractice.Presentation.Shared.ViewModels;
+using PaliPractice.Presentation.ViewModels.ButtonGroups;
+using CardViewModel = PaliPractice.Presentation.ViewModels.CardViewModel;
 
 namespace PaliPractice.Presentation;
 
@@ -12,11 +12,11 @@ public partial class ConjugationPracticeViewModel : ObservableObject
     int _currentIndex;
     readonly ILogger<ConjugationPracticeViewModel> _logger;
 
-    public CardState Card { get; }
-    public NumberSelection Number { get; }
-    public PersonSelection Person { get; }
-    public VoiceSelection Voice { get; }
-    public TenseSelection Tense { get; }
+    public CardViewModel Card { get; }
+    public NumberButtonGroupViewModel Number { get; }
+    public PersonButtonGroupViewModel Person { get; }
+    public VoiceButtonGroupViewModel Voice { get; }
+    public TenseButtonGroupViewModel Tense { get; }
     readonly INavigator _navigator;
     [ObservableProperty] bool _canGoToPrevious;
     [ObservableProperty] bool _canGoToNext;
@@ -27,7 +27,7 @@ public partial class ConjugationPracticeViewModel : ObservableObject
     
     public ConjugationPracticeViewModel(
         [FromKeyedServices("verb")] IWordProvider words,
-        CardState card,
+        CardViewModel card,
         INavigator navigator,
         ILogger<ConjugationPracticeViewModel> logger)
     {
@@ -36,10 +36,10 @@ public partial class ConjugationPracticeViewModel : ObservableObject
         _navigator = navigator;
         _logger = logger;
         
-        Number = new NumberSelection();
-        Person = new PersonSelection();
-        Voice = new VoiceSelection();
-        Tense = new TenseSelection();
+        Number = new NumberButtonGroupViewModel();
+        Person = new PersonButtonGroupViewModel();
+        Voice = new VoiceButtonGroupViewModel();
+        Tense = new TenseButtonGroupViewModel();
         
         GoBackCommand = new AsyncRelayCommand(GoBack);
         PreviousCommand = new RelayCommand(GoToPrevious, () => CanGoToPrevious);
@@ -75,13 +75,13 @@ public partial class ConjugationPracticeViewModel : ObservableObject
         return HasAnyNumberSelected() && HasAnyPersonSelected() && HasAnyVoiceSelected() && HasAnyTenseSelected();
     }
 
-    bool HasAnyNumberSelected() => Number.Selected != Shared.ViewModels.Number.None;
+    bool HasAnyNumberSelected() => Number.Selected != Models.Number.None;
     
-    bool HasAnyPersonSelected() => Person.Selected != Shared.ViewModels.Person.None;
+    bool HasAnyPersonSelected() => Person.Selected != Models.Person.None;
     
-    bool HasAnyVoiceSelected() => Voice.Selected != Shared.ViewModels.Voice.None;
+    bool HasAnyVoiceSelected() => Voice.Selected != Models.Voice.None;
     
-    bool HasAnyTenseSelected() => Tense.Selected != Shared.ViewModels.Tense.None;
+    bool HasAnyTenseSelected() => Tense.Selected != Models.Tense.None;
 
     void SetupSelectionChangeHandlers()
     {

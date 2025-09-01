@@ -1,13 +1,13 @@
-namespace PaliPractice.Presentation.Behaviors;
+namespace PaliPractice.Presentation.Behaviors.Selection;
 
 [Bindable]
 public partial class TenseSelectionBehavior : ObservableObject
 {
-    [ObservableProperty] bool isPresentSelected;
-    [ObservableProperty] bool isImperativeSelected;
-    [ObservableProperty] bool isAoristSelected;
-    [ObservableProperty] bool isOptativeSelected;
-    [ObservableProperty] bool isFutureSelected;
+    [ObservableProperty] bool _isPresentSelected;
+    [ObservableProperty] bool _isImperativeSelected;
+    [ObservableProperty] bool _isAoristSelected;
+    [ObservableProperty] bool _isOptativeSelected;
+    [ObservableProperty] bool _isFutureSelected;
 
     public ICommand SelectPresentCommand { get; }
     public ICommand SelectImperativeCommand { get; }

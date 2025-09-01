@@ -1,3 +1,5 @@
+using PaliPractice.Presentation.Behaviors.Sources;
+
 namespace PaliPractice.Presentation.Behaviors;
 
 [Bindable]
@@ -8,8 +10,8 @@ public partial class CardNavigationBehavior : ObservableObject
     readonly Action<Headword> _setExamples;
     readonly Func<bool> _canProceedNext;
 
-    [ObservableProperty] bool canGoToPrevious;
-    [ObservableProperty] bool canGoToNext;
+    [ObservableProperty] bool _canGoToPrevious;
+    [ObservableProperty] bool _canGoToNext;
 
     public ICommand PreviousCommand { get; }
     public ICommand NextCommand { get; }

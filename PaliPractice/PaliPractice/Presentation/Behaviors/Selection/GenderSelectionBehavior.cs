@@ -1,11 +1,11 @@
-namespace PaliPractice.Presentation.Behaviors;
+namespace PaliPractice.Presentation.Behaviors.Selection;
 
 [Bindable]
 public partial class GenderSelectionBehavior : ObservableObject
 {
-    [ObservableProperty] bool isMasculineSelected;
-    [ObservableProperty] bool isNeuterSelected;
-    [ObservableProperty] bool isFeminineSelected;
+    [ObservableProperty] bool _isMasculineSelected;
+    [ObservableProperty] bool _isNeuterSelected;
+    [ObservableProperty] bool _isFeminineSelected;
 
     public ICommand SelectMasculineCommand { get; }
     public ICommand SelectNeuterCommand { get; }

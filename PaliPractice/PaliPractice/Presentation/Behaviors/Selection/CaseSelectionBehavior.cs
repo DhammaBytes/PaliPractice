@@ -1,16 +1,16 @@
-namespace PaliPractice.Presentation.Behaviors;
+namespace PaliPractice.Presentation.Behaviors.Selection;
 
 [Bindable]
 public partial class CaseSelectionBehavior : ObservableObject
 {
-    [ObservableProperty] bool isNominativeSelected;
-    [ObservableProperty] bool isAccusativeSelected;
-    [ObservableProperty] bool isInstrumentalSelected;
-    [ObservableProperty] bool isDativeSelected;
-    [ObservableProperty] bool isAblativeSelected;
-    [ObservableProperty] bool isGenitiveSelected;
-    [ObservableProperty] bool isLocativeSelected;
-    [ObservableProperty] bool isVocativeSelected;
+    [ObservableProperty] bool _isNominativeSelected;
+    [ObservableProperty] bool _isAccusativeSelected;
+    [ObservableProperty] bool _isInstrumentalSelected;
+    [ObservableProperty] bool _isDativeSelected;
+    [ObservableProperty] bool _isAblativeSelected;
+    [ObservableProperty] bool _isGenitiveSelected;
+    [ObservableProperty] bool _isLocativeSelected;
+    [ObservableProperty] bool _isVocativeSelected;
 
     public ICommand SelectNominativeCommand { get; }
     public ICommand SelectAccusativeCommand { get; }

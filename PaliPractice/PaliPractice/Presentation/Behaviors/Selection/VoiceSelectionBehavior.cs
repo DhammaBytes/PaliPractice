@@ -1,10 +1,10 @@
-namespace PaliPractice.Presentation.Behaviors;
+namespace PaliPractice.Presentation.Behaviors.Selection;
 
 [Bindable]
 public partial class VoiceSelectionBehavior : ObservableObject
 {
-    [ObservableProperty] bool isNormalSelected = true;
-    [ObservableProperty] bool isReflexiveSelected;
+    [ObservableProperty] bool _isNormalSelected = true;
+    [ObservableProperty] bool _isReflexiveSelected;
 
     public ICommand SelectNormalCommand { get; }
     public ICommand SelectReflexiveCommand { get; }

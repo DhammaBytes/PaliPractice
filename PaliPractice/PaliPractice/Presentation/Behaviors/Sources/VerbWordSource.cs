@@ -1,4 +1,4 @@
-namespace PaliPractice.Presentation.Behaviors;
+namespace PaliPractice.Presentation.Behaviors.Sources;
 
 public sealed class VerbWordSource : IWordSource
 {

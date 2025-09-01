@@ -1,4 +1,3 @@
-using Microsoft.UI;
 using PaliPractice.Presentation.Components;
 using PaliPractice.Presentation.Components.Selectors;
 
@@ -44,9 +43,25 @@ public sealed partial class DeclensionPracticePage : Page
                     new StackPanel().Grid(row:3).Padding(20).Spacing(16)
                         .Visibility(() => vm.Card.IsLoading, l => !l ? Visibility.Visible : Visibility.Collapsed)
                         .Children(
-                            NumberSelector.Build(() => vm.Number),
-                            GenderSelector.Build(() => vm.Gender),
-                            CaseSelector.Build(() => vm.Cases)
+                            NumberSelector.Build(
+                                bindSingular: btn => btn.IsChecked(x => x.Binding(() => vm.Number.IsSingularSelected).TwoWay()).Command(() => vm.Number.SelectSingularCommand),
+                                bindPlural: btn => btn.IsChecked(x => x.Binding(() => vm.Number.IsPluralSelected).TwoWay()).Command(() => vm.Number.SelectPluralCommand)
+                            ),
+                            GenderSelector.Build(
+                                bindMasculine: btn => btn.IsChecked(x => x.Binding(() => vm.Gender.IsMasculineSelected).TwoWay()).Command(() => vm.Gender.SelectMasculineCommand),
+                                bindNeuter: btn => btn.IsChecked(x => x.Binding(() => vm.Gender.IsNeuterSelected).TwoWay()).Command(() => vm.Gender.SelectNeuterCommand),
+                                bindFeminine: btn => btn.IsChecked(x => x.Binding(() => vm.Gender.IsFeminineSelected).TwoWay()).Command(() => vm.Gender.SelectFeminineCommand)
+                            ),
+                            CaseSelector.Build(
+                                bindNominative: btn => btn.IsChecked(x => x.Binding(() => vm.Cases.IsNominativeSelected).TwoWay()).Command(() => vm.Cases.SelectNominativeCommand),
+                                bindAccusative: btn => btn.IsChecked(x => x.Binding(() => vm.Cases.IsAccusativeSelected).TwoWay()).Command(() => vm.Cases.SelectAccusativeCommand),
+                                bindInstrumental: btn => btn.IsChecked(x => x.Binding(() => vm.Cases.IsInstrumentalSelected).TwoWay()).Command(() => vm.Cases.SelectInstrumentalCommand),
+                                bindDative: btn => btn.IsChecked(x => x.Binding(() => vm.Cases.IsDativeSelected).TwoWay()).Command(() => vm.Cases.SelectDativeCommand),
+                                bindAblative: btn => btn.IsChecked(x => x.Binding(() => vm.Cases.IsAblativeSelected).TwoWay()).Command(() => vm.Cases.SelectAblativeCommand),
+                                bindGenitive: btn => btn.IsChecked(x => x.Binding(() => vm.Cases.IsGenitiveSelected).TwoWay()).Command(() => vm.Cases.SelectGenitiveCommand),
+                                bindLocative: btn => btn.IsChecked(x => x.Binding(() => vm.Cases.IsLocativeSelected).TwoWay()).Command(() => vm.Cases.SelectLocativeCommand),
+                                bindVocative: btn => btn.IsChecked(x => x.Binding(() => vm.Cases.IsVocativeSelected).TwoWay()).Command(() => vm.Cases.SelectVocativeCommand)
+                            )
                         ),
                     CardNavigationSelector.Build(
                         bindPreviousCommand: btn => btn.Command(() => vm.CardNavigation.PreviousCommand),

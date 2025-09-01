@@ -1,6 +1,3 @@
-using Microsoft.UI;
-using PaliPractice.Presentation.Behaviors;
-
 namespace PaliPractice.Presentation.Components.Selectors;
 
 public static class CardNavigationSelector

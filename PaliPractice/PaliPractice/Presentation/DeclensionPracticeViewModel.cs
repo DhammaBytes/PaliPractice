@@ -1,5 +1,7 @@
 using PaliPractice.Presentation.Behaviors;
 using System.ComponentModel;
+using PaliPractice.Presentation.Behaviors.Selection;
+using PaliPractice.Presentation.Behaviors.Sources;
 
 namespace PaliPractice.Presentation;
 

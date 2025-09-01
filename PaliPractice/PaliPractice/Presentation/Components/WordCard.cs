@@ -1,5 +1,3 @@
-using PaliPractice.Presentation.Behaviors;
-
 namespace PaliPractice.Presentation.Components;
 
 public static class WordCard

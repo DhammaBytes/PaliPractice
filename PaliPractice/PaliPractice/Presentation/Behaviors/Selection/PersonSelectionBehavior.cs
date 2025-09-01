@@ -1,11 +1,11 @@
-namespace PaliPractice.Presentation.Behaviors;
+namespace PaliPractice.Presentation.Behaviors.Selection;
 
 [Bindable]
 public partial class PersonSelectionBehavior : ObservableObject
 {
-    [ObservableProperty] bool isFirstPersonSelected;
-    [ObservableProperty] bool isSecondPersonSelected;
-    [ObservableProperty] bool isThirdPersonSelected;
+    [ObservableProperty] bool _isFirstPersonSelected;
+    [ObservableProperty] bool _isSecondPersonSelected;
+    [ObservableProperty] bool _isThirdPersonSelected;
 
     public ICommand SelectFirstPersonCommand { get; }
     public ICommand SelectSecondPersonCommand { get; }

@@ -3,15 +3,15 @@ namespace PaliPractice.Presentation.Behaviors;
 [Bindable]
 public partial class CardStateBehavior : ObservableObject
 {
-    [ObservableProperty] string currentWord = string.Empty;
-    [ObservableProperty] string rankText = "Top-100";
-    [ObservableProperty] string ankiState = "Anki state: 6/10";
-    [ObservableProperty] string usageExample = string.Empty;
-    [ObservableProperty] string suttaReference = string.Empty;
-    [ObservableProperty] string dailyGoalText = "25/50";
-    [ObservableProperty] double dailyProgress = 50.0;
-    [ObservableProperty] bool isLoading = true;
-    [ObservableProperty] string errorMessage = string.Empty;
+    [ObservableProperty] string _currentWord = string.Empty;
+    [ObservableProperty] string _rankText = "Top-100";
+    [ObservableProperty] string _ankiState = "Anki state: 6/10";
+    [ObservableProperty] string _usageExample = string.Empty;
+    [ObservableProperty] string _suttaReference = string.Empty;
+    [ObservableProperty] string _dailyGoalText = "25/50";
+    [ObservableProperty] double _dailyProgress = 50.0;
+    [ObservableProperty] bool _isLoading = true;
+    [ObservableProperty] string _errorMessage = string.Empty;
 
     public void DisplayCurrentCard(List<Headword> words, int index, Action<Headword>? setExamples = null)
     {

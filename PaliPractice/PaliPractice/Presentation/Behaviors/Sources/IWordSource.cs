@@ -1,4 +1,4 @@
-namespace PaliPractice.Presentation.Behaviors;
+namespace PaliPractice.Presentation.Behaviors.Sources;
 
 public interface IWordSource
 {

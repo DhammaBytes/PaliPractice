@@ -1,10 +1,10 @@
-namespace PaliPractice.Presentation.Behaviors;
+namespace PaliPractice.Presentation.Behaviors.Selection;
 
 [Bindable]
 public partial class NumberSelectionBehavior : ObservableObject
 {
-    [ObservableProperty] bool isSingularSelected;
-    [ObservableProperty] bool isPluralSelected;
+    [ObservableProperty] bool _isSingularSelected;
+    [ObservableProperty] bool _isPluralSelected;
 
     public ICommand SelectSingularCommand { get; }
     public ICommand SelectPluralCommand { get; }

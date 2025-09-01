@@ -13,7 +13,7 @@ public partial class CardStateBehavior : ObservableObject
     [ObservableProperty] bool _isLoading = true;
     [ObservableProperty] string _errorMessage = string.Empty;
 
-    public void DisplayCurrentCard(List<Headword> words, int index, Action<Headword>? setExamples = null)
+    public void DisplayCurrentCard(IReadOnlyList<Headword> words, int index, Action<Headword>? setExamples = null)
     {
         if (words.Count == 0) return;
         var word = words[index];

@@ -1,6 +1,5 @@
 using PaliPractice.Presentation.Behaviors;
-using PaliPractice.Presentation.Behaviors.Selection;
-using PaliPractice.Presentation.Behaviors.Sources;
+using PaliPractice.Presentation.Providers;
 
 namespace PaliPractice;
 
@@ -78,17 +77,11 @@ public partial class App : Application
                     
                     // Behaviors: transient is fine
                     services.AddTransient<CardStateBehavior>();
-                    services.AddTransient<NumberSelectionBehavior>();
-                    services.AddTransient<PersonSelectionBehavior>();
-                    services.AddTransient<VoiceSelectionBehavior>();
-                    services.AddTransient<TenseSelectionBehavior>();
-                    services.AddTransient<GenderSelectionBehavior>();
-                    services.AddTransient<CaseSelectionBehavior>();
                     services.AddTransient<NavigationBehavior>();
                     
-                    // Word sources
-                    services.AddTransient<NounWordSource>();
-                    services.AddTransient<VerbWordSource>();
+                    // Word providers
+                    services.AddTransient<NounWordProvider>();
+                    services.AddTransient<VerbWordProvider>();
                     
                     // ViewModels
                     services.AddTransient<DeclensionPracticeViewModel>();

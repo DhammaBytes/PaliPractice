@@ -1,39 +1,46 @@
 using PaliPractice.Presentation.Behaviors;
 using System.ComponentModel;
-using PaliPractice.Presentation.Behaviors.Selection;
-using PaliPractice.Presentation.Behaviors.Sources;
+using PaliPractice.Presentation.Providers;
+using PaliPractice.Presentation.Shared.ViewModels;
 
 namespace PaliPractice.Presentation;
 
 [Microsoft.UI.Xaml.Data.Bindable]
-public class ConjugationPracticeViewModel : ObservableObject
+public partial class ConjugationPracticeViewModel : ObservableObject
 {
-    readonly IWordSource _words;
+    readonly IWordProvider _words;
+    int _currentIndex;
     readonly ILogger<ConjugationPracticeViewModel> _logger;
 
     public CardStateBehavior Card { get; }
-    public NumberSelectionBehavior Number { get; }
-    public PersonSelectionBehavior Person { get; }
-    public VoiceSelectionBehavior Voice { get; }
-    public TenseSelectionBehavior Tense { get; }
+    public NumberSelection Number { get; }
+    public PersonSelection Person { get; }
+    public VoiceSelection Voice { get; }
+    public TenseSelection Tense { get; }
     public NavigationBehavior Nav { get; }
-    public CardNavigationBehavior CardNavigation { get; }
+    [ObservableProperty] bool _canGoToPrevious;
+    [ObservableProperty] bool _canGoToNext;
+
+    public ICommand PreviousCommand { get; }
+    public ICommand NextCommand { get; }
     
     public ConjugationPracticeViewModel(
-        VerbWordSource words,
+        VerbWordProvider words,
         CardStateBehavior card,
-        NumberSelectionBehavior number,
-        PersonSelectionBehavior person,
-        VoiceSelectionBehavior voice,
-        TenseSelectionBehavior tense,
         NavigationBehavior nav,
         ILogger<ConjugationPracticeViewModel> logger)
     {
         _words = words;
-        Card = card; Number = number; Person = person; Voice = voice; Tense = tense; Nav = nav;
+        Card = card; Nav = nav;
         _logger = logger;
         
-        CardNavigation = new CardNavigationBehavior(words, card, SetVerbExamples, CanProceedToNext);
+        Number = new NumberSelection();
+        Person = new PersonSelection();
+        Voice = new VoiceSelection();
+        Tense = new TenseSelection();
+        
+        PreviousCommand = new RelayCommand(GoToPrevious, () => CanGoToPrevious);
+        NextCommand = new RelayCommand(GoToNext, () => CanGoToNext);
         
         SetupSelectionChangeHandlers();
         _ = InitializeAsync();
@@ -47,7 +54,8 @@ public class ConjugationPracticeViewModel : ObservableObject
             Card.IsLoading = true;
             await _words.LoadAsync();
             if (_words.Words.Count == 0) { Card.ErrorMessage = "No verbs found in database"; return; }
-            Card.DisplayCurrentCard(_words.Words, _words.CurrentIndex, SetVerbExamples);
+            Card.DisplayCurrentCard(_words.Words, _currentIndex, SetVerbExamples);
+            UpdateNavigationState();
         }
         catch (Exception ex) { _logger.LogError(ex, "Failed to load verbs"); Card.ErrorMessage = $"Failed to load data: {ex.Message}"; }
         finally { Card.IsLoading = false; }
@@ -64,14 +72,13 @@ public class ConjugationPracticeViewModel : ObservableObject
         return HasAnyNumberSelected() && HasAnyPersonSelected() && HasAnyVoiceSelected() && HasAnyTenseSelected();
     }
 
-    bool HasAnyNumberSelected() => Number.IsSingularSelected || Number.IsPluralSelected;
+    bool HasAnyNumberSelected() => Number.Selected != Shared.ViewModels.Number.None;
     
-    bool HasAnyPersonSelected() => Person.IsFirstPersonSelected || Person.IsSecondPersonSelected || Person.IsThirdPersonSelected;
+    bool HasAnyPersonSelected() => Person.Selected != Shared.ViewModels.Person.None;
     
-    bool HasAnyVoiceSelected() => Voice.IsNormalSelected || Voice.IsReflexiveSelected;
+    bool HasAnyVoiceSelected() => Voice.Selected != Shared.ViewModels.Voice.None;
     
-    bool HasAnyTenseSelected() => Tense.IsPresentSelected || Tense.IsImperativeSelected || Tense.IsAoristSelected || 
-                                 Tense.IsOptativeSelected || Tense.IsFutureSelected;
+    bool HasAnyTenseSelected() => Tense.Selected != Shared.ViewModels.Tense.None;
 
     void SetupSelectionChangeHandlers()
     {
@@ -81,8 +88,37 @@ public class ConjugationPracticeViewModel : ObservableObject
         Tense.PropertyChanged += OnSelectionChanged;
     }
 
-    void OnSelectionChanged(object sender, PropertyChangedEventArgs e)
+    void OnSelectionChanged(object? sender, PropertyChangedEventArgs e)
     {
-        CardNavigation.UpdateNavigationState();
+        UpdateNavigationState();
+    }
+
+    void GoToPrevious()
+    {
+        if (_currentIndex > 0)
+        {
+            _currentIndex--;
+            Card.DisplayCurrentCard(_words.Words, _currentIndex, SetVerbExamples);
+            UpdateNavigationState();
+        }
+    }
+
+    void GoToNext()
+    {
+        if (_currentIndex < _words.Words.Count - 1)
+        {
+            _currentIndex++;
+            Card.DisplayCurrentCard(_words.Words, _currentIndex, SetVerbExamples);
+            UpdateNavigationState();
+        }
+    }
+
+    void UpdateNavigationState()
+    {
+        CanGoToPrevious = _currentIndex > 0;
+        CanGoToNext = _currentIndex < _words.Words.Count - 1 && CanProceedToNext();
+        
+        ((RelayCommand)PreviousCommand).NotifyCanExecuteChanged();
+        ((RelayCommand)NextCommand).NotifyCanExecuteChanged();
     }
 }

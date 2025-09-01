@@ -1,37 +1,44 @@
 using PaliPractice.Presentation.Behaviors;
 using System.ComponentModel;
-using PaliPractice.Presentation.Behaviors.Selection;
-using PaliPractice.Presentation.Behaviors.Sources;
+using PaliPractice.Presentation.Providers;
+using PaliPractice.Presentation.Shared.ViewModels;
 
 namespace PaliPractice.Presentation;
 
 [Microsoft.UI.Xaml.Data.Bindable]
-public class DeclensionPracticeViewModel : ObservableObject
+public partial class DeclensionPracticeViewModel : ObservableObject
 {
-    readonly IWordSource _words;
+    readonly IWordProvider _words;
+    int _currentIndex;
     readonly ILogger<DeclensionPracticeViewModel> _logger;
 
     public CardStateBehavior Card { get; }
-    public NumberSelectionBehavior Number { get; }
-    public GenderSelectionBehavior Gender { get; }
-    public CaseSelectionBehavior Cases { get; }
+    public NumberSelection Number { get; }
+    public GenderSelection Gender { get; }
+    public CaseSelection Cases { get; }
     public NavigationBehavior Nav { get; }
-    public CardNavigationBehavior CardNavigation { get; }
+    [ObservableProperty] bool _canGoToPrevious;
+    [ObservableProperty] bool _canGoToNext;
+
+    public ICommand PreviousCommand { get; }
+    public ICommand NextCommand { get; }
     
     public DeclensionPracticeViewModel(
-        NounWordSource words,
+        NounWordProvider words,
         CardStateBehavior card,
-        NumberSelectionBehavior number,
-        GenderSelectionBehavior gender,
-        CaseSelectionBehavior @case,
         NavigationBehavior nav,
         ILogger<DeclensionPracticeViewModel> logger)
     {
         _words = words;
-        Card = card; Number = number; Gender = gender; Cases = @case; Nav = nav;
+        Card = card; Nav = nav;
         _logger = logger;
         
-        CardNavigation = new CardNavigationBehavior(words, card, SetNounExamples, CanProceedToNext);
+        Number = new NumberSelection();
+        Gender = new GenderSelection();
+        Cases = new CaseSelection();
+        
+        PreviousCommand = new RelayCommand(GoToPrevious, () => CanGoToPrevious);
+        NextCommand = new RelayCommand(GoToNext, () => CanGoToNext);
         
         SetupSelectionChangeHandlers();
         _ = InitializeAsync();
@@ -45,7 +52,8 @@ public class DeclensionPracticeViewModel : ObservableObject
             Card.IsLoading = true;
             await _words.LoadAsync();
             if (_words.Words.Count == 0) { Card.ErrorMessage = "No nouns found in database"; return; }
-            Card.DisplayCurrentCard(_words.Words, _words.CurrentIndex, SetNounExamples);
+            Card.DisplayCurrentCard(_words.Words, _currentIndex, SetNounExamples);
+            UpdateNavigationState();
         }
         catch (Exception ex) { _logger.LogError(ex, "Failed to load nouns"); Card.ErrorMessage = $"Failed to load data: {ex.Message}"; }
         finally { Card.IsLoading = false; }
@@ -62,13 +70,11 @@ public class DeclensionPracticeViewModel : ObservableObject
         return HasAnyNumberSelected() && HasAnyGenderSelected() && HasAnyCaseSelected();
     }
 
-    bool HasAnyNumberSelected() => Number.IsSingularSelected || Number.IsPluralSelected;
+    bool HasAnyNumberSelected() => Number.Selected != Shared.ViewModels.Number.None;
     
-    bool HasAnyGenderSelected() => Gender.IsMasculineSelected || Gender.IsNeuterSelected || Gender.IsFeminineSelected;
+    bool HasAnyGenderSelected() => Gender.Selected != Shared.ViewModels.Gender.None;
     
-    bool HasAnyCaseSelected() => Cases.IsNominativeSelected || Cases.IsAccusativeSelected || Cases.IsInstrumentalSelected || 
-                                Cases.IsDativeSelected || Cases.IsAblativeSelected || Cases.IsGenitiveSelected || 
-                                Cases.IsLocativeSelected || Cases.IsVocativeSelected;
+    bool HasAnyCaseSelected() => Cases.Selected != NounCase.None;
 
     void SetupSelectionChangeHandlers()
     {
@@ -77,8 +83,37 @@ public class DeclensionPracticeViewModel : ObservableObject
         Cases.PropertyChanged += OnSelectionChanged;
     }
 
-    void OnSelectionChanged(object sender, PropertyChangedEventArgs e)
+    void OnSelectionChanged(object? sender, PropertyChangedEventArgs e)
     {
-        CardNavigation.UpdateNavigationState();
+        UpdateNavigationState();
+    }
+
+    void GoToPrevious()
+    {
+        if (_currentIndex > 0)
+        {
+            _currentIndex--;
+            Card.DisplayCurrentCard(_words.Words, _currentIndex, SetNounExamples);
+            UpdateNavigationState();
+        }
+    }
+
+    void GoToNext()
+    {
+        if (_currentIndex < _words.Words.Count - 1)
+        {
+            _currentIndex++;
+            Card.DisplayCurrentCard(_words.Words, _currentIndex, SetNounExamples);
+            UpdateNavigationState();
+        }
+    }
+
+    void UpdateNavigationState()
+    {
+        CanGoToPrevious = _currentIndex > 0;
+        CanGoToNext = _currentIndex < _words.Words.Count - 1 && CanProceedToNext();
+        
+        ((RelayCommand)PreviousCommand).NotifyCanExecuteChanged();
+        ((RelayCommand)NextCommand).NotifyCanExecuteChanged();
     }
 }

@@ -1,5 +1,6 @@
 using PaliPractice.Presentation.Components;
 using PaliPractice.Presentation.Components.Selectors;
+using PaliPractice.Presentation.Shared.ViewModels;
 
 namespace PaliPractice.Presentation;
 
@@ -44,29 +45,29 @@ public sealed partial class ConjugationPracticePage : Page
                         .Visibility(() => vm.Card.IsLoading, l => !l ? Visibility.Visible : Visibility.Collapsed)
                         .Children(
                             NumberSelector.Build(
-                                bindSingular: btn => btn.IsChecked(x => x.Binding(() => vm.Number.IsSingularSelected).TwoWay()).Command(() => vm.Number.SelectSingularCommand),
-                                bindPlural: btn => btn.IsChecked(x => x.Binding(() => vm.Number.IsPluralSelected).TwoWay()).Command(() => vm.Number.SelectPluralCommand)
+                                bindSingular: btn => btn.IsChecked(x => x.Binding(() => vm.Number.IsSingularSelected)).Command(() => vm.Number.SelectSingularCommand),
+                                bindPlural: btn => btn.IsChecked(x => x.Binding(() => vm.Number.IsPluralSelected)).Command(() => vm.Number.SelectPluralCommand)
                             ),
                             PersonSelector.Build(
-                                bindFirst: btn => btn.IsChecked(x => x.Binding(() => vm.Person.IsFirstPersonSelected).TwoWay()).Command(() => vm.Person.SelectFirstPersonCommand),
-                                bindSecond: btn => btn.IsChecked(x => x.Binding(() => vm.Person.IsSecondPersonSelected).TwoWay()).Command(() => vm.Person.SelectSecondPersonCommand),
-                                bindThird: btn => btn.IsChecked(x => x.Binding(() => vm.Person.IsThirdPersonSelected).TwoWay()).Command(() => vm.Person.SelectThirdPersonCommand)
+                                bindFirst: btn => btn.IsChecked(x => x.Binding(() => vm.Person.IsFirstPersonSelected)).Command(() => vm.Person.SelectFirstPersonCommand),
+                                bindSecond: btn => btn.IsChecked(x => x.Binding(() => vm.Person.IsSecondPersonSelected)).Command(() => vm.Person.SelectSecondPersonCommand),
+                                bindThird: btn => btn.IsChecked(x => x.Binding(() => vm.Person.IsThirdPersonSelected)).Command(() => vm.Person.SelectThirdPersonCommand)
                             ),
                             VoiceSelector.Build(
-                                bindNormal: btn => btn.IsChecked(x => x.Binding(() => vm.Voice.IsNormalSelected).TwoWay()).Command(() => vm.Voice.SelectNormalCommand),
-                                bindReflexive: btn => btn.IsChecked(x => x.Binding(() => vm.Voice.IsReflexiveSelected).TwoWay()).Command(() => vm.Voice.SelectReflexiveCommand)
+                                bindNormal: btn => btn.IsChecked(x => x.Binding(() => vm.Voice.IsNormalSelected)).Command(() => vm.Voice.SelectNormalCommand),
+                                bindReflexive: btn => btn.IsChecked(x => x.Binding(() => vm.Voice.IsReflexiveSelected)).Command(() => vm.Voice.SelectReflexiveCommand)
                             ),
                             TenseSelector.Build(
-                                bindPresent: btn => btn.IsChecked(x => x.Binding(() => vm.Tense.IsPresentSelected).TwoWay()).Command(() => vm.Tense.SelectPresentCommand),
-                                bindImperative: btn => btn.IsChecked(x => x.Binding(() => vm.Tense.IsImperativeSelected).TwoWay()).Command(() => vm.Tense.SelectImperativeCommand),
-                                bindAorist: btn => btn.IsChecked(x => x.Binding(() => vm.Tense.IsAoristSelected).TwoWay()).Command(() => vm.Tense.SelectAoristCommand),
-                                bindOptative: btn => btn.IsChecked(x => x.Binding(() => vm.Tense.IsOptativeSelected).TwoWay()).Command(() => vm.Tense.SelectOptativeCommand),
-                                bindFuture: btn => btn.IsChecked(x => x.Binding(() => vm.Tense.IsFutureSelected).TwoWay()).Command(() => vm.Tense.SelectFutureCommand)
+                                bindPresent: btn => btn.IsChecked(x => x.Binding(() => vm.Tense.IsPresentSelected)).Command(() => vm.Tense.SelectPresentCommand),
+                                bindImperative: btn => btn.IsChecked(x => x.Binding(() => vm.Tense.IsImperativeSelected)).Command(() => vm.Tense.SelectImperativeCommand),
+                                bindAorist: btn => btn.IsChecked(x => x.Binding(() => vm.Tense.IsAoristSelected)).Command(() => vm.Tense.SelectAoristCommand),
+                                bindOptative: btn => btn.IsChecked(x => x.Binding(() => vm.Tense.IsOptativeSelected)).Command(() => vm.Tense.SelectOptativeCommand),
+                                bindFuture: btn => btn.IsChecked(x => x.Binding(() => vm.Tense.IsFutureSelected)).Command(() => vm.Tense.SelectFutureCommand)
                             )
                         ),
                     CardNavigationSelector.Build(
-                        bindPreviousCommand: btn => btn.Command(() => vm.CardNavigation.PreviousCommand),
-                        bindNextCommand: btn => btn.Command(() => vm.CardNavigation.NextCommand))
+                        bindPreviousCommand: btn => btn.Command(() => vm.PreviousCommand),
+                        bindNextCommand: btn => btn.Command(() => vm.NextCommand))
                         .Grid(row:4)
                 )
             )

@@ -55,7 +55,7 @@ public sealed partial class DeclensionPracticePage : Page
                                     new EnumOption<Gender>(Gender.Feminine, "Feminine")
                                 ],
                                 () => vm.Gender),
-                            EnumToggleGroup.Build(
+                            EnumToggleGroup.BuildWithLayout(
                                 [
                                     new EnumOption<NounCase>(NounCase.Nominative, "Nom"),
                                     new EnumOption<NounCase>(NounCase.Accusative, "Acc"),
@@ -66,7 +66,8 @@ public sealed partial class DeclensionPracticePage : Page
                                     new EnumOption<NounCase>(NounCase.Locative, "Loc"),
                                     new EnumOption<NounCase>(NounCase.Vocative, "Voc")
                                 ],
-                                () => vm.Cases)
+                                () => vm.Cases,
+                                [4, 4])
                         ),
                     CardNavigation.Build(
                         bindPreviousCommand: btn => btn.Command(() => vm.PreviousCommand),

@@ -61,7 +61,7 @@ public sealed partial class ConjugationPracticePage : Page
                                     new EnumOption<Voice>(Voice.Reflexive, "Reflexive")
                                 ],
                                 () => vm.Voice),
-                            EnumToggleGroup.Build(
+                            EnumToggleGroup.BuildWithLayout(
                                 [
                                     new EnumOption<Tense>(Tense.Present, "Present"),
                                     new EnumOption<Tense>(Tense.Imperative, "Imper."),
@@ -69,7 +69,8 @@ public sealed partial class ConjugationPracticePage : Page
                                     new EnumOption<Tense>(Tense.Optative, "Opt."),
                                     new EnumOption<Tense>(Tense.Future, "Future")
                                 ],
-                                () => vm.Tense)
+                                () => vm.Tense,
+                                [3, 2])
                         ),
                     CardNavigation.Build(
                         bindPreviousCommand: btn => btn.Command(() => vm.PreviousCommand),

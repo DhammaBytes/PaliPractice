@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 PaliPractice is a cross-platform language learning app for practicing Pali noun declensions and verb conjugations. Built with .NET 9 and Uno Platform for Windows, Mac, Linux, Android, and iOS.
 
+Uno Platform implements the entire WinUI and WinRT API (like Microsoft.UI) surface across platforms. So when developing in Uno, think as an experienced WinUI/WinRT developer.
+
 ## Key Commands
 
 ### Build and Run
@@ -40,7 +42,7 @@ uv run python db/inflections/generate_inflection_tables.py
 ## Architecture Overview
 
 ### Technology Stack
-- **Framework**: Uno Platform 6.2 with .NET 9
+- **Framework**: Uno Platform 6 with .NET 9
 - **UI Pattern**: MVVM with C# Markup (fluent API)
 - **Database**: SQLite via sqlite-net-pcl
 - **Data Source**: Digital Pāḷi Dictionary (DPD) as git submodule
@@ -48,7 +50,7 @@ uv run python db/inflections/generate_inflection_tables.py
 ### Project Structure
 - `/PaliPractice/PaliPractice/` - Main app code
   - `Models/` - Entity classes (Headword, Declension, Conjugation, Pattern)
-  - `Presentation/` - Pages and their components, ViewModels and their parts (behaviors)
+  - `Presentation/` - Pages and ViewModels
   - `Services/` - DatabaseService for SQLite access
   - `Data/training.db` - Embedded SQLite database
   - `Platforms/` - Platform-specific implementations
@@ -138,18 +140,6 @@ When using `this.DataContext<TViewModel>((page, vm) => ...)`, the *only* legal w
 
 Uno's compiled C# Markup bindings rely on source generators that must "see" the lambda at the call site. When you capture a lambda in a `Func<T>` parameter and pass it through another method, the generator can't analyze it, so no binding is produced. Instead, a non-binding overload is used (often the `object` overload), resulting in `ToString()` output.
 
-**Wrong approach (shows class names instead of values):**
-```csharp
-// Component that accepts Func<T> - DOESN'T WORK!
-public static Border Build(Func<string> currentWord) =>
-    new Border().Child(
-        new TextBlock().Text(currentWord)  // Generator can't see the vm.Card.CurrentWord lambda!
-    );
-
-// Page calling with lambda
-WordCard.Build(() => vm.Card.CurrentWord)  // Lambda is hidden from generator
-```
-
 **Correct approach (bind at call site):**
 ```csharp
 // Component that accepts Action<T> for binding
@@ -210,6 +200,6 @@ public sealed partial class PracticePage : Page
 - By using `Action<T>`, we ensure the binding lambda stays at the call site
 - The generator can then properly create `INotifyPropertyChanged` subscriptions
 
-### Special Cases
+### Binding 101
 
-Some fluent methods like `.Visibility()` accept `Func<bool>` directly and work correctly because they're designed to work with the source generator. However, most property bindings (`.Text()`, `.Value()`, `.Command()`) need the lambda to be visible at the call site.
+It is important to consider that within the `DataContext` method the vm property will **always** be null.

@@ -45,8 +45,4 @@
       <EmbeddedResource Include="Data\training.db" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Presentation\Behaviors\" />
-    </ItemGroup>
-
 </Project>

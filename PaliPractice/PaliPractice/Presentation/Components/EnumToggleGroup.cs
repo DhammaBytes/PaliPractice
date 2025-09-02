@@ -5,18 +5,21 @@ namespace PaliPractice.Presentation.Components;
 
 public static class EnumToggleGroup
 {
-    // We need to pre-define the structure since we can't access VM at build time
-    // This means we need to know the options beforehand
+    // Single row layout - original method
     public static StackPanel Build<T>(
         EnumOption<T>[] options,
         Func<EnumChoiceViewModel<T>> getViewModel) where T : struct, Enum
     {
-        var container = new StackPanel()
-            .Orientation(Orientation.Horizontal)
-            .HorizontalAlignment(HorizontalAlignment.Center)
-            .Spacing(8);
+        return BuildWithLayout(options, getViewModel, null);
+    }
 
-        // Build the UI structure with the known options
+    // Multi-row layout with specified row sizes
+    public static StackPanel BuildWithLayout<T>(
+        EnumOption<T>[] options,
+        Func<EnumChoiceViewModel<T>> getViewModel,
+        int[]? rowSizes = null) where T : struct, Enum
+    {
+        // Build all buttons first
         var buttons = options.Select(option =>
         {
             var button = new ToggleButton()
@@ -50,7 +53,40 @@ public static class EnumToggleGroup
             return button;
         }).ToArray();
 
-        container.Children(buttons);
+        // If no row sizes specified, single horizontal row
+        if (rowSizes == null || rowSizes.Length == 0)
+        {
+            var singleRow = new StackPanel()
+                .Orientation(Orientation.Horizontal)
+                .HorizontalAlignment(HorizontalAlignment.Center)
+                .Spacing(8);
+            singleRow.Children(buttons);
+            return singleRow;
+        }
+
+        // Multi-row layout
+        var container = new StackPanel()
+            .Orientation(Orientation.Vertical)
+            .HorizontalAlignment(HorizontalAlignment.Center)
+            .Spacing(8);
+
+        var buttonIndex = 0;
+        foreach (var rowSize in rowSizes)
+        {
+            if (buttonIndex >= buttons.Length) break;
+
+            var row = new StackPanel()
+                .Orientation(Orientation.Horizontal)
+                .HorizontalAlignment(HorizontalAlignment.Center)
+                .Spacing(8);
+
+            var buttonsForRow = buttons.Skip(buttonIndex).Take(rowSize).ToArray();
+            row.Children(buttonsForRow);
+            container.Children(row);
+            
+            buttonIndex += rowSize;
+        }
+
         return container;
     }
 }

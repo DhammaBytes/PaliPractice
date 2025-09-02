@@ -1,6 +1,6 @@
 namespace PaliPractice.Presentation.ViewModels;
 
-[Microsoft.UI.Xaml.Data.Bindable]
+[Bindable]
 public sealed partial class EnumChoiceViewModel<T> : ObservableObject where T : struct, Enum
 {
     [ObservableProperty] private T _selected;
@@ -15,4 +15,4 @@ public sealed partial class EnumChoiceViewModel<T> : ObservableObject where T : 
     }
 }
 
-public sealed record EnumOption<T>(T Value, string Label, string? Glyph = null, Color? ChipColor = null) where T : struct, Enum;
+public sealed record EnumOption<T>(T Value, string Label) where T : struct, Enum;

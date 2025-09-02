@@ -41,35 +41,34 @@ public sealed partial class ConjugationPracticePage : Page
                             )
                         )),
                     new StackPanel().Grid(row:3).Padding(20).Spacing(16)
-                        .Visibility(() => vm.Card.IsLoading, l => !l ? Visibility.Visible : Visibility.Collapsed)
                         .Children(
                             EnumToggleGroup.Build(
-                                new[] {
-                                    new EnumOption<Number>(Models.Number.Singular, "Singular", "\uE77B", Color.FromArgb(255, 230, 230, 255)),
-                                    new EnumOption<Number>(Models.Number.Plural, "Plural", "\uE716", Color.FromArgb(255, 230, 230, 255))
-                                },
+                                [
+                                    new EnumOption<Number>(Number.Singular, "Singular"),
+                                    new EnumOption<Number>(Number.Plural, "Plural")
+                                ],
                                 () => vm.Number),
                             EnumToggleGroup.Build(
-                                new[] {
-                                    new EnumOption<Person>(Models.Person.First, "1st", "\uE77B", Color.FromArgb(255, 230, 255, 230)),
-                                    new EnumOption<Person>(Models.Person.Second, "2nd", "\uE748", Color.FromArgb(255, 230, 255, 230)),
-                                    new EnumOption<Person>(Models.Person.Third, "3rd", "\uE716", Color.FromArgb(255, 230, 255, 230))
-                                },
+                                [
+                                    new EnumOption<Person>(Person.First, "1st"),
+                                    new EnumOption<Person>(Person.Second, "2nd"),
+                                    new EnumOption<Person>(Person.Third, "3rd")
+                                ],
                                 () => vm.Person),
                             EnumToggleGroup.Build(
-                                new[] {
-                                    new EnumOption<Voice>(Models.Voice.Normal, "Active", "\uE768", Color.FromArgb(255, 255, 230, 230)),
-                                    new EnumOption<Voice>(Models.Voice.Reflexive, "Reflexive", "\uE74C", Color.FromArgb(255, 255, 230, 230))
-                                },
+                                [
+                                    new EnumOption<Voice>(Voice.Normal, "Active"),
+                                    new EnumOption<Voice>(Voice.Reflexive, "Reflexive")
+                                ],
                                 () => vm.Voice),
                             EnumToggleGroup.Build(
-                                new[] {
-                                    new EnumOption<Tense>(Models.Tense.Present, "Present", null, Color.FromArgb(255, 240, 240, 255)),
-                                    new EnumOption<Tense>(Models.Tense.Imperative, "Imper.", null, Color.FromArgb(255, 240, 240, 255)),
-                                    new EnumOption<Tense>(Models.Tense.Aorist, "Aorist", null, Color.FromArgb(255, 240, 240, 255)),
-                                    new EnumOption<Tense>(Models.Tense.Optative, "Opt.", null, Color.FromArgb(255, 240, 240, 255)),
-                                    new EnumOption<Tense>(Models.Tense.Future, "Future", null, Color.FromArgb(255, 240, 240, 255))
-                                },
+                                [
+                                    new EnumOption<Tense>(Tense.Present, "Present"),
+                                    new EnumOption<Tense>(Tense.Imperative, "Imper."),
+                                    new EnumOption<Tense>(Tense.Aorist, "Aorist"),
+                                    new EnumOption<Tense>(Tense.Optative, "Opt."),
+                                    new EnumOption<Tense>(Tense.Future, "Future")
+                                ],
                                 () => vm.Tense)
                         ),
                     CardNavigation.Build(

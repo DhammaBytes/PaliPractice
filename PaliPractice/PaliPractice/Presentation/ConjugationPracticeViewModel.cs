@@ -36,29 +36,29 @@ public partial class ConjugationPracticeViewModel : ObservableObject
         _navigator = navigator;
         _logger = logger;
         
-        Number = new EnumChoiceViewModel<Number>(new[] {
-            new EnumOption<Number>(Models.Number.Singular, "Singular", "\uE77B", Color.FromArgb(255, 230, 230, 255)),
-            new EnumOption<Number>(Models.Number.Plural, "Plural", "\uE716", Color.FromArgb(255, 230, 230, 255))
-        }, Models.Number.None);
+        Number = new EnumChoiceViewModel<Number>([
+            new EnumOption<Number>(Models.Number.Singular, "Singular"),
+            new EnumOption<Number>(Models.Number.Plural, "Plural")
+        ], Models.Number.None);
         
-        Person = new EnumChoiceViewModel<Person>(new[] {
-            new EnumOption<Person>(Models.Person.First, "1st", "\uE77B", Color.FromArgb(255, 230, 255, 230)),
-            new EnumOption<Person>(Models.Person.Second, "2nd", "\uE748", Color.FromArgb(255, 230, 255, 230)),
-            new EnumOption<Person>(Models.Person.Third, "3rd", "\uE716", Color.FromArgb(255, 230, 255, 230))
-        }, Models.Person.None);
+        Person = new EnumChoiceViewModel<Person>([
+            new EnumOption<Person>(Models.Person.First, "1st"),
+            new EnumOption<Person>(Models.Person.Second, "2nd"),
+            new EnumOption<Person>(Models.Person.Third, "3rd")
+        ], Models.Person.None);
         
-        Voice = new EnumChoiceViewModel<Voice>(new[] {
-            new EnumOption<Voice>(Models.Voice.Normal, "Active", "\uE768", Color.FromArgb(255, 255, 230, 230)),
-            new EnumOption<Voice>(Models.Voice.Reflexive, "Reflexive", "\uE74C", Color.FromArgb(255, 255, 230, 230))
-        }, Models.Voice.None);
+        Voice = new EnumChoiceViewModel<Voice>([
+            new EnumOption<Voice>(Models.Voice.Normal, "Active"),
+            new EnumOption<Voice>(Models.Voice.Reflexive, "Reflexive")
+        ], Models.Voice.None);
         
-        Tense = new EnumChoiceViewModel<Tense>(new[] {
-            new EnumOption<Tense>(Models.Tense.Present, "Present", null, Color.FromArgb(255, 240, 240, 255)),
-            new EnumOption<Tense>(Models.Tense.Imperative, "Imper.", null, Color.FromArgb(255, 240, 240, 255)),
-            new EnumOption<Tense>(Models.Tense.Aorist, "Aorist", null, Color.FromArgb(255, 240, 240, 255)),
-            new EnumOption<Tense>(Models.Tense.Optative, "Opt.", null, Color.FromArgb(255, 240, 240, 255)),
-            new EnumOption<Tense>(Models.Tense.Future, "Future", null, Color.FromArgb(255, 240, 240, 255))
-        }, Models.Tense.None);
+        Tense = new EnumChoiceViewModel<Tense>([
+            new EnumOption<Tense>(Models.Tense.Present, "Present"),
+            new EnumOption<Tense>(Models.Tense.Imperative, "Imper."),
+            new EnumOption<Tense>(Models.Tense.Aorist, "Aorist"),
+            new EnumOption<Tense>(Models.Tense.Optative, "Opt."),
+            new EnumOption<Tense>(Models.Tense.Future, "Future")
+        ], Models.Tense.None);
         
         GoBackCommand = new AsyncRelayCommand(GoBack);
         PreviousCommand = new RelayCommand(GoToPrevious, () => CanGoToPrevious);

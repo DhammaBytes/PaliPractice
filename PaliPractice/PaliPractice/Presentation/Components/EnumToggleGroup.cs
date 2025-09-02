@@ -1,4 +1,5 @@
 using PaliPractice.Presentation.ViewModels;
+using PaliPractice.Presentation.Helpers;
 
 namespace PaliPractice.Presentation.Components;
 
@@ -21,15 +22,17 @@ public static class EnumToggleGroup
             var button = new ToggleButton()
                 .Padding(12, 6);
 
-            if (option.ChipColor != null)
+            var chipColor = OptionPresentation.GetChipColor(option.Value);
+            if (chipColor != null)
             {
-                button.Background(new SolidColorBrush(option.ChipColor.Value));
+                button.Background(new SolidColorBrush(chipColor.Value));
             }
 
             var contentChildren = new List<UIElement>();
-            if (option.Glyph != null)
+            var glyph = OptionPresentation.GetGlyph(option.Value);
+            if (glyph != null)
             {
-                contentChildren.Add(new FontIcon().Glyph(option.Glyph).FontSize(14));
+                contentChildren.Add(new FontIcon().Glyph(glyph).FontSize(14));
             }
             contentChildren.Add(new TextBlock().Text(option.Label));
 

@@ -34,27 +34,27 @@ public partial class DeclensionPracticeViewModel : ObservableObject
         _navigator = navigator;
         _logger = logger;
         
-        Number = new EnumChoiceViewModel<Number>(new[] {
-            new EnumOption<Number>(Models.Number.Singular, "Singular", "\uE77B", Color.FromArgb(255, 230, 230, 255)),
-            new EnumOption<Number>(Models.Number.Plural, "Plural", "\uE716", Color.FromArgb(255, 230, 230, 255))
-        }, Models.Number.None);
+        Number = new EnumChoiceViewModel<Number>([
+            new EnumOption<Number>(Models.Number.Singular, "Singular"),
+            new EnumOption<Number>(Models.Number.Plural, "Plural")
+        ], Models.Number.None);
         
-        Gender = new EnumChoiceViewModel<Gender>(new[] {
-            new EnumOption<Gender>(Models.Gender.Masculine, "Masculine", "\uE71A", Color.FromArgb(255, 220, 255, 220)),
-            new EnumOption<Gender>(Models.Gender.Neuter, "Neuter", "\uE734", Color.FromArgb(255, 220, 255, 220)),
-            new EnumOption<Gender>(Models.Gender.Feminine, "Feminine", "\uE716", Color.FromArgb(255, 220, 255, 220))
-        }, Models.Gender.None);
+        Gender = new EnumChoiceViewModel<Gender>([
+            new EnumOption<Gender>(Models.Gender.Masculine, "Masculine"),
+            new EnumOption<Gender>(Models.Gender.Neuter, "Neuter"),
+            new EnumOption<Gender>(Models.Gender.Feminine, "Feminine")
+        ], Models.Gender.None);
         
-        Cases = new EnumChoiceViewModel<NounCase>(new[] {
-            new EnumOption<NounCase>(NounCase.Nominative, "Nom", null, Color.FromArgb(255, 255, 243, 224)),
-            new EnumOption<NounCase>(NounCase.Accusative, "Acc", null, Color.FromArgb(255, 255, 243, 224)),
-            new EnumOption<NounCase>(NounCase.Instrumental, "Ins", null, Color.FromArgb(255, 255, 243, 224)),
-            new EnumOption<NounCase>(NounCase.Dative, "Dat", null, Color.FromArgb(255, 255, 243, 224)),
-            new EnumOption<NounCase>(NounCase.Ablative, "Abl", null, Color.FromArgb(255, 255, 243, 224)),
-            new EnumOption<NounCase>(NounCase.Genitive, "Gen", null, Color.FromArgb(255, 255, 243, 224)),
-            new EnumOption<NounCase>(NounCase.Locative, "Loc", null, Color.FromArgb(255, 255, 243, 224)),
-            new EnumOption<NounCase>(NounCase.Vocative, "Voc", null, Color.FromArgb(255, 255, 243, 224))
-        }, NounCase.None);
+        Cases = new EnumChoiceViewModel<NounCase>([
+            new EnumOption<NounCase>(NounCase.Nominative, "Nom"),
+            new EnumOption<NounCase>(NounCase.Accusative, "Acc"),
+            new EnumOption<NounCase>(NounCase.Instrumental, "Ins"),
+            new EnumOption<NounCase>(NounCase.Dative, "Dat"),
+            new EnumOption<NounCase>(NounCase.Ablative, "Abl"),
+            new EnumOption<NounCase>(NounCase.Genitive, "Gen"),
+            new EnumOption<NounCase>(NounCase.Locative, "Loc"),
+            new EnumOption<NounCase>(NounCase.Vocative, "Voc")
+        ], NounCase.None);
         
         GoBackCommand = new AsyncRelayCommand(GoBack);
         PreviousCommand = new RelayCommand(GoToPrevious, () => CanGoToPrevious);

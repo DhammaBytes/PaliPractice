@@ -31,7 +31,7 @@ public static class WordCard
             .MinWidth(360)
             .MaxWidth(600)
             .Visibility(isLoading, l => !l ? Visibility.Visible : Visibility.Collapsed)
-            .Background(Theme.Brushes.Surface.Default)
+            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
             .CornerRadius(12)
             .Padding(24)
             .Child(
@@ -40,14 +40,14 @@ public static class WordCard
                     .Children(
                         // Header row: rank + anki
                         new Grid().ColumnDefinitions("Auto,*,Auto").Children(
-                            new Border().Background(Theme.Brushes.Primary.Default).CornerRadius(12).Padding(8,4).Child(
+                            new Border().Background(ThemeResource.Get<Brush>("PrimaryBrush")).CornerRadius(12).Padding(8,4).Child(
                                 new StackPanel().Orientation(Orientation.Horizontal).Spacing(4).Children(
-                                    new TextBlock().Text(rankPrefix).FontSize(12).FontWeight(Microsoft.UI.Text.FontWeights.Bold).Foreground(Theme.Brushes.OnPrimary.Default),
-                                    rankTextBlock.FontSize(12).FontWeight(Microsoft.UI.Text.FontWeights.Bold).Foreground(Theme.Brushes.OnPrimary.Default)))
+                                    new TextBlock().Text(rankPrefix).FontSize(12).FontWeight(Microsoft.UI.Text.FontWeights.Bold).Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush")),
+                                    rankTextBlock.FontSize(12).FontWeight(Microsoft.UI.Text.FontWeights.Bold).Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush"))))
                                 .Grid(column:0),
                             ankiTextBlock.FontSize(14)
                                 .HorizontalAlignment(HorizontalAlignment.Right)
-                                .Foreground(Theme.Brushes.OnBackground.Medium)
+                                .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                                 .Grid(column:2)
                         ).Grid(row:0),
 
@@ -57,7 +57,7 @@ public static class WordCard
                             .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
                             .HorizontalAlignment(HorizontalAlignment.Center)
                             .TextAlignment(TextAlignment.Center)
-                            .Foreground(Theme.Brushes.OnBackground.Default)
+                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
                             .Margin(0,16)
                             .Grid(row:1),
 
@@ -67,13 +67,13 @@ public static class WordCard
                                 .FontSize(16)
                                 .HorizontalAlignment(HorizontalAlignment.Center)
                                 .TextAlignment(TextAlignment.Center)
-                                .Foreground(Theme.Brushes.OnBackground.Default)
+                                .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
                                 .TextWrapping(TextWrapping.Wrap),
                             refTextBlock
                                 .FontSize(12)
                                 .HorizontalAlignment(HorizontalAlignment.Center)
                                 .TextAlignment(TextAlignment.Center)
-                                .Foreground(Theme.Brushes.OnBackground.Medium)
+                                .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                         ).Grid(row:2)
                     )
             );

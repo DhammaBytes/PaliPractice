@@ -9,7 +9,7 @@ public sealed partial class DeclensionPracticePage : Page
     {
         this.DataContext<DeclensionPracticeViewModel>((page, vm) => page
             .NavigationCacheMode(NavigationCacheMode.Required)
-            .Background(Theme.Brushes.Background.Default)
+            .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
             .Content(new Grid()
                 .SafeArea(SafeArea.InsetMask.VisibleBounds)
                 .RowDefinitions("Auto,Auto,*,Auto,Auto")
@@ -27,7 +27,7 @@ public sealed partial class DeclensionPracticePage : Page
                                     .HorizontalAlignment(HorizontalAlignment.Center).VerticalAlignment(VerticalAlignment.Center),
                                 new TextBlock().Text(() => vm.Card.ErrorMessage)
                                     .Visibility(() => vm.Card.ErrorMessage, e => !string.IsNullOrEmpty(e) ? Visibility.Visible : Visibility.Collapsed)
-                                    .Foreground(Theme.Brushes.OnBackground.Medium).TextAlignment(TextAlignment.Center)
+                                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush")).TextAlignment(TextAlignment.Center)
                                     .HorizontalAlignment(HorizontalAlignment.Center),
                                 WordCard.Build(
                                     isLoading: () => vm.Card.IsLoading,

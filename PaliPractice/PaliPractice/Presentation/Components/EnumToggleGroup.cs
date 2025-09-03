@@ -26,10 +26,7 @@ public static class EnumToggleGroup
                 .Padding(12, 6);
 
             var chipColor = OptionPresentation.GetChipColor(option.Value);
-            if (chipColor != null)
-            {
-                button.Background(new SolidColorBrush(chipColor.Value));
-            }
+            button.Background(new SolidColorBrush(chipColor));
 
             var contentChildren = new List<UIElement>();
             var glyph = OptionPresentation.GetGlyph(option.Value);

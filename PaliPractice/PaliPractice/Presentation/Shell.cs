@@ -25,7 +25,7 @@ public sealed partial class Shell : UserControl, IContentControlProvider
                             )
                         )
                 )
-                .Background(Theme.Brushes.Background.Default)
+                .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
         );
         ContentControl = splash;
     }

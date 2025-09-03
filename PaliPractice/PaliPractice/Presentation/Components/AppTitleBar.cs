@@ -10,11 +10,11 @@ public static class AppTitleBar
         return 
             new Grid()
                 .ColumnDefinitions("Auto,*,Auto")
-                .Background(Theme.Brushes.Surface.Default)
+                .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
                 .Padding(16,8)
                 .Children(
                     backButton.Content(new FontIcon().Glyph("\uE72B"))
-                        .Background(Theme.Brushes.Surface.Default)
+                        .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
                         .Grid(column:0),
                     new TextBlock()
                         .Text(title)
@@ -23,7 +23,7 @@ public static class AppTitleBar
                         .HorizontalAlignment(HorizontalAlignment.Center).VerticalAlignment(VerticalAlignment.Center).Grid(column:1),
                     new Button()
                         .Content(new FontIcon().Glyph("\uE734"))
-                        .Background(Theme.Brushes.Surface.Default)
+                        .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
                         .Grid(column:2));
     }
 }

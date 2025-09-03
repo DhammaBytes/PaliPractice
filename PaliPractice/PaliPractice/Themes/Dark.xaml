@@ -1,0 +1,48 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Dark Theme Resources -->
+    
+    <!-- Primary Colors -->
+    <SolidColorBrush x:Key="PrimaryBrush" Color="#FFC27A"/>
+    <SolidColorBrush x:Key="PrimaryInverseBrush" Color="#6D2F00"/>
+    <SolidColorBrush x:Key="PrimaryContainerBrush" Color="#6D3A00"/>
+    <SolidColorBrush x:Key="OnPrimaryBrush" Color="#3A1E00"/>
+    <SolidColorBrush x:Key="OnPrimaryContainerBrush" Color="#FFE7CF"/>
+    
+    <!-- Secondary Colors -->
+    <SolidColorBrush x:Key="SecondaryBrush" Color="#E2C39A"/>
+    <SolidColorBrush x:Key="SecondaryContainerBrush" Color="#5A3B14"/>
+    <SolidColorBrush x:Key="OnSecondaryBrush" Color="#332D41"/>
+    <SolidColorBrush x:Key="OnSecondaryContainerBrush" Color="#FFE2C6"/>
+    
+    <!-- Tertiary Colors -->
+    <SolidColorBrush x:Key="TertiaryBrush" Color="#9FCAFF"/>
+    <SolidColorBrush x:Key="TertiaryContainerBrush" Color="#00497D"/>
+    <SolidColorBrush x:Key="OnTertiaryBrush" Color="#003258"/>
+    <SolidColorBrush x:Key="OnTertiaryContainerBrush" Color="#D1E4FF"/>
+    
+    <!-- Error Colors -->
+    <SolidColorBrush x:Key="ErrorBrush" Color="#FFB4AB"/>
+    <SolidColorBrush x:Key="ErrorContainerBrush" Color="#93000A"/>
+    <SolidColorBrush x:Key="OnErrorBrush" Color="#690005"/>
+    <SolidColorBrush x:Key="OnErrorContainerBrush" Color="#FFDAD6"/>
+    
+    <!-- Background and Surface Colors -->
+    <SolidColorBrush x:Key="BackgroundBrush" Color="#1C1B1F"/>
+    <SolidColorBrush x:Key="OnBackgroundBrush" Color="#E5E1E6"/>
+    <SolidColorBrush x:Key="OnBackgroundMediumBrush" Color="#C9C5D0"/>
+    <SolidColorBrush x:Key="SurfaceBrush" Color="#302D37"/>
+    <SolidColorBrush x:Key="SurfaceVariantBrush" Color="#47464F"/>
+    <SolidColorBrush x:Key="SurfaceInverseBrush" Color="#E6E1E5"/>
+    <SolidColorBrush x:Key="SurfaceTintBrush" Color="#FFC27A"/>
+    <SolidColorBrush x:Key="OnSurfaceBrush" Color="#E6E1E5"/>
+    <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="#C9C5D0"/>
+    <SolidColorBrush x:Key="OnSurfaceInverseBrush" Color="#1C1B1F"/>
+    
+    <!-- Outline Colors -->
+    <SolidColorBrush x:Key="OutlineBrush" Color="#928F99"/>
+    <SolidColorBrush x:Key="OutlineVariantBrush" Color="#57545D"/>
+
+</ResourceDictionary>

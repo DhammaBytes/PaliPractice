@@ -6,7 +6,7 @@ public sealed partial class StartPage : Page
     {
         this.DataContext<StartViewModel>((page, vm) => page
             .NavigationCacheMode(NavigationCacheMode.Required)
-            .Background(Theme.Brushes.Background.Default)
+            .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
             .Content(new Grid()
                 .SafeArea(SafeArea.InsetMask.VisibleBounds)
                 .RowDefinitions("Auto,*")
@@ -31,7 +31,7 @@ public sealed partial class StartPage : Page
                                         .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
                                         .HorizontalAlignment(HorizontalAlignment.Center)
                                         .TextAlignment(TextAlignment.Center)
-                                        .Foreground(Theme.Brushes.Primary.Default),
+                                        .Foreground(ThemeResource.Get<Brush>("PrimaryBrush")),
                                     
                                     // Subtitle
                                     new TextBlock()
@@ -39,7 +39,7 @@ public sealed partial class StartPage : Page
                                         .FontSize(18)
                                         .HorizontalAlignment(HorizontalAlignment.Center)
                                         .TextAlignment(TextAlignment.Center)
-                                        .Foreground(Theme.Brushes.OnBackground.Medium)
+                                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                                         .Margin(0, 0, 0, 16),
                                     
                                     // Practice buttons
@@ -64,7 +64,7 @@ public sealed partial class StartPage : Page
                                                                 new TextBlock()
                                                                     .Text("Practice noun cases and forms")
                                                                     .FontSize(14)
-                                                                    .Foreground(Theme.Brushes.OnBackground.Medium)
+                                                                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                                                             )
                                                     )
                                                 )
@@ -72,7 +72,7 @@ public sealed partial class StartPage : Page
                                                 .HorizontalContentAlignment(HorizontalAlignment.Left)
                                                 .Padding(20, 16)
                                                 .Command(() => vm.GoToDeclensionCommand)
-                                                .Background(Theme.Brushes.Primary.Default),
+                                                .Background(ThemeResource.Get<Brush>("PrimaryBrush")),
                                             
                                             // Conjugation Practice Button
                                             new Button()
@@ -92,7 +92,7 @@ public sealed partial class StartPage : Page
                                                                 new TextBlock()
                                                                     .Text("Practice verb tenses and forms")
                                                                     .FontSize(14)
-                                                                    .Foreground(Theme.Brushes.OnBackground.Medium)
+                                                                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                                                             )
                                                     )
                                                 )
@@ -100,7 +100,7 @@ public sealed partial class StartPage : Page
                                                 .HorizontalContentAlignment(HorizontalAlignment.Left)
                                                 .Padding(20, 16)
                                                 .Command(() => vm.GoToConjugationCommand)
-                                                .Background(Theme.Brushes.Primary.Default),
+                                                .Background(ThemeResource.Get<Brush>("PrimaryBrush")),
                                             
                                             // Settings Button (for future use)
                                             new Button()
@@ -121,7 +121,7 @@ public sealed partial class StartPage : Page
                                                 .HorizontalContentAlignment(HorizontalAlignment.Left)
                                                 .Padding(20, 16)
                                                 .IsEnabled(false) // Disabled for now
-                                                .Background(Theme.Brushes.Surface.Default)
+                                                .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
                                         )
                                 )
                         )

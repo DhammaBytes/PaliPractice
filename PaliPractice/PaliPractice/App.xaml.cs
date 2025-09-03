@@ -11,7 +11,7 @@ public partial class App : Application
     /// </summary>
     public App()
     {
-        InitializeComponent();
+        this.InitializeComponent();
     }
 
     protected Window? MainWindow { get; private set; }
@@ -23,11 +23,9 @@ public partial class App : Application
         Resources.Build(r => r.Merged(
             new XamlControlsResources()));
 
-        // Load Uno.UI.Toolkit and Material Resources
+        // Load Uno.UI.Toolkit Resources
         Resources.Build(r => r.Merged(
-            new MaterialToolkitTheme(
-                new Styles.ColorPaletteOverride(),
-                new Styles.MaterialFontsOverride())));
+            new ToolkitResources()));
         var builder = this.CreateBuilder(args)
             // Add navigation support for toolkit controls such as TabBar and NavigationView
             .UseToolkitNavigation()
@@ -70,17 +68,17 @@ public partial class App : Application
                 )
                 // Enable localization (see appsettings.json for supported languages)
                 .UseLocalization()
-                .ConfigureServices((context, services) =>
+                .ConfigureServices((_, services) =>
                 {
-                    // Register database service
                     services.AddSingleton<IDatabaseService, DatabaseService>();
-                    
+
+
                     services.AddTransient<CardViewModel>();
-                    
+
                     // Word providers
                     services.AddKeyedTransient<IWordProvider, NounWordProvider>("noun");
                     services.AddKeyedTransient<IWordProvider, VerbWordProvider>("verb");
-                    
+
                     // ViewModels
                     services.AddTransient<DeclensionPracticeViewModel>();
                     services.AddTransient<ConjugationPracticeViewModel>();
@@ -97,7 +95,7 @@ public partial class App : Application
         Host = await builder.NavigateAsync<Shell>();
     }
 
-    static void RegisterRoutes(IViewRegistry views, IRouteRegistry routes)
+    private static void RegisterRoutes(IViewRegistry views, IRouteRegistry routes)
     {
         views.Register(
             new ViewMap(ViewModel: typeof(ShellViewModel)),

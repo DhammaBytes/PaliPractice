@@ -1,8 +1,8 @@
 using Uno.UI.Hosting;
 
-namespace PaliPractice.Desktop;
+namespace PaliPractice;
 
-class Program
+internal class Program
 {
     [STAThread]
     public static void Main(string[] args)

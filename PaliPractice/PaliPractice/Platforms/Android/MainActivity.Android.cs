@@ -2,18 +2,18 @@ using Android.App;
 using Android.OS;
 using Android.Views;
 
-namespace PaliPractice.Android;
+namespace PaliPractice.Droid;
 
 [Activity(
     MainLauncher = true,
-    ConfigurationChanges = ActivityHelper.AllConfigChanges,
+    ConfigurationChanges = global::Uno.UI.ActivityHelper.AllConfigChanges,
     WindowSoftInputMode = SoftInput.AdjustNothing | SoftInput.StateHidden
 )]
-public class MainActivity : ApplicationActivity
+public class MainActivity : Microsoft.UI.Xaml.ApplicationActivity
 {
     protected override void OnCreate(Bundle? savedInstanceState)
     {
-        AndroidX.Core.SplashScreen.SplashScreen.InstallSplashScreen(this);
+        global::AndroidX.Core.SplashScreen.SplashScreen.InstallSplashScreen(this);
 
         base.OnCreate(savedInstanceState);
     }

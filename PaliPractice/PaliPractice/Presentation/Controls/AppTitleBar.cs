@@ -26,7 +26,7 @@ public static class AppTitleBar
                         .VerticalAlignment(VerticalAlignment.Center)
                         .Grid(column: 1),
                     new Button()
-                        .Content(new FontIcon().Glyph("\uE734"))
+                        .Content(new FontIcon().Glyph("\uE713"))
                         .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
                         .Grid(column: 2)
                 );

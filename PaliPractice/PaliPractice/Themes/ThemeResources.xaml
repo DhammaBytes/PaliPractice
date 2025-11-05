@@ -11,25 +11,31 @@
             <SolidColorBrush x:Key="PrimaryContainerBrush" Color="#FFE2C6"/>
             <SolidColorBrush x:Key="OnPrimaryBrush" Color="#FFFFFF"/>
             <SolidColorBrush x:Key="OnPrimaryContainerBrush" Color="#3A1E00"/>
-            
+
             <!-- Secondary Colors (muted ochre-brown) -->
             <SolidColorBrush x:Key="SecondaryBrush" Color="#8A5A1A"/>
             <SolidColorBrush x:Key="SecondaryContainerBrush" Color="#F2D8B5"/>
             <SolidColorBrush x:Key="OnSecondaryBrush" Color="#FFFFFF"/>
             <SolidColorBrush x:Key="OnSecondaryContainerBrush" Color="#2F1600"/>
-            
+
             <!-- Tertiary Colors -->
             <SolidColorBrush x:Key="TertiaryBrush" Color="#0061A4"/>
             <SolidColorBrush x:Key="TertiaryContainerBrush" Color="#CFE4FF"/>
             <SolidColorBrush x:Key="OnTertiaryBrush" Color="#FFFFFF"/>
             <SolidColorBrush x:Key="OnTertiaryContainerBrush" Color="#001D36"/>
-            
+
             <!-- Error Colors -->
             <SolidColorBrush x:Key="ErrorBrush" Color="#B3261E"/>
             <SolidColorBrush x:Key="ErrorContainerBrush" Color="#F9DEDC"/>
             <SolidColorBrush x:Key="OnErrorBrush" Color="#FFFFFF"/>
             <SolidColorBrush x:Key="OnErrorContainerBrush" Color="#410E0B"/>
-            
+
+            <!-- Success Colors -->
+            <SolidColorBrush x:Key="SuccessBrush" Color="#2E7D32"/>
+            <SolidColorBrush x:Key="SuccessContainerBrush" Color="#C8E6C9"/>
+            <SolidColorBrush x:Key="OnSuccessBrush" Color="#FFFFFF"/>
+            <SolidColorBrush x:Key="OnSuccessContainerBrush" Color="#1B5E20"/>
+
             <!-- Background and Surface Colors -->
             <SolidColorBrush x:Key="BackgroundBrush" Color="#FCFBFF"/>
             <SolidColorBrush x:Key="OnBackgroundBrush" Color="#1C1B1F"/>
@@ -73,7 +79,13 @@
             <SolidColorBrush x:Key="ErrorContainerBrush" Color="#93000A"/>
             <SolidColorBrush x:Key="OnErrorBrush" Color="#690005"/>
             <SolidColorBrush x:Key="OnErrorContainerBrush" Color="#FFDAD6"/>
-            
+
+            <!-- Success Colors -->
+            <SolidColorBrush x:Key="SuccessBrush" Color="#81C784"/>
+            <SolidColorBrush x:Key="SuccessContainerBrush" Color="#1B5E20"/>
+            <SolidColorBrush x:Key="OnSuccessBrush" Color="#1B5E20"/>
+            <SolidColorBrush x:Key="OnSuccessContainerBrush" Color="#C8E6C9"/>
+
             <!-- Background and Surface Colors -->
             <SolidColorBrush x:Key="BackgroundBrush" Color="#1C1B1F"/>
             <SolidColorBrush x:Key="OnBackgroundBrush" Color="#E5E1E6"/>
@@ -99,25 +111,31 @@
             <SolidColorBrush x:Key="PrimaryContainerBrush" Color="#FFE2C6"/>
             <SolidColorBrush x:Key="OnPrimaryBrush" Color="#FFFFFF"/>
             <SolidColorBrush x:Key="OnPrimaryContainerBrush" Color="#3A1E00"/>
-            
+
             <!-- Secondary Colors (muted ochre-brown) -->
             <SolidColorBrush x:Key="SecondaryBrush" Color="#8A5A1A"/>
             <SolidColorBrush x:Key="SecondaryContainerBrush" Color="#F2D8B5"/>
             <SolidColorBrush x:Key="OnSecondaryBrush" Color="#FFFFFF"/>
             <SolidColorBrush x:Key="OnSecondaryContainerBrush" Color="#2F1600"/>
-            
+
             <!-- Tertiary Colors -->
             <SolidColorBrush x:Key="TertiaryBrush" Color="#0061A4"/>
             <SolidColorBrush x:Key="TertiaryContainerBrush" Color="#CFE4FF"/>
             <SolidColorBrush x:Key="OnTertiaryBrush" Color="#FFFFFF"/>
             <SolidColorBrush x:Key="OnTertiaryContainerBrush" Color="#001D36"/>
-            
+
             <!-- Error Colors -->
             <SolidColorBrush x:Key="ErrorBrush" Color="#B3261E"/>
             <SolidColorBrush x:Key="ErrorContainerBrush" Color="#F9DEDC"/>
             <SolidColorBrush x:Key="OnErrorBrush" Color="#FFFFFF"/>
             <SolidColorBrush x:Key="OnErrorContainerBrush" Color="#410E0B"/>
-            
+
+            <!-- Success Colors -->
+            <SolidColorBrush x:Key="SuccessBrush" Color="#2E7D32"/>
+            <SolidColorBrush x:Key="SuccessContainerBrush" Color="#C8E6C9"/>
+            <SolidColorBrush x:Key="OnSuccessBrush" Color="#FFFFFF"/>
+            <SolidColorBrush x:Key="OnSuccessContainerBrush" Color="#1B5E20"/>
+
             <!-- Background and Surface Colors -->
             <SolidColorBrush x:Key="BackgroundBrush" Color="#FCFBFF"/>
             <SolidColorBrush x:Key="OnBackgroundBrush" Color="#1C1B1F"/>

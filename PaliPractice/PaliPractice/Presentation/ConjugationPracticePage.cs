@@ -8,7 +8,7 @@ public sealed partial class ConjugationPracticePage : Page
 {
     public ConjugationPracticePage()
     {
-        this.DataContext<ConjugationPracticeViewModel>((page, vm) => page
+        this.DataContext<ConjugationPracticeViewModel>((page, _) => page
             .NavigationCacheMode(NavigationCacheMode.Required)
             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
             .Content(new Grid()
@@ -16,11 +16,7 @@ public sealed partial class ConjugationPracticePage : Page
                 .RowDefinitions("Auto,Auto,*,Auto,Auto")
                 .Children(
                     AppTitleBar.Build<ConjugationPracticeViewModel>("Conjugation Practice", vm => vm.GoBackCommand),
-                    DailyGoalBar.Build<ConjugationPracticeViewModel>(
-                        dailyGoalText: vm => vm.Card.DailyGoalText,
-                        dailyProgress: vm => vm.Card.DailyProgress)
-                        .Grid(row: 1),
-                    new ScrollViewer().Grid(row: 2).Content(
+                    new ScrollViewer().Grid(row: 1).Content(
                         new Grid()
                             .HorizontalAlignment(HorizontalAlignment.Center)
                             .VerticalAlignment(VerticalAlignment.Center)
@@ -50,7 +46,7 @@ public sealed partial class ConjugationPracticePage : Page
                             )
                     ),
                     new StackPanel()
-                        .Grid(row: 3)
+                        .Grid(row: 2)
                         .Padding(20)
                         .Spacing(16)
                         .Children(
@@ -85,8 +81,12 @@ public sealed partial class ConjugationPracticePage : Page
                                 [3, 2])
                         ),
                     CardNavigation.Build<ConjugationPracticeViewModel>(
-                        previousCommand: vm => vm.PreviousCommand,
-                        nextCommand: vm => vm.NextCommand)
+                        hardCommand: vm => vm.HardCommand,
+                        easyCommand: vm => vm.EasyCommand)
+                        .Grid(row: 3),
+                    DailyGoalBar.Build<ConjugationPracticeViewModel>(
+                            dailyGoalText: vm => vm.Card.DailyGoalText,
+                            dailyProgress: vm => vm.Card.DailyProgress)
                         .Grid(row: 4)
                 )
             )

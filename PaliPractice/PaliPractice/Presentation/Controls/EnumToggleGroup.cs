@@ -76,25 +76,49 @@ public static class EnumToggleGroup
             .CommandParameter(option.Value)
             .CommandWithin<ToggleButton, EnumChoiceViewModel<T>>(vm => vm.SelectCommand);
 
-        // Bind IsChecked using relative path + EqualityConverter
+        // Bind IsChecked to whether this option is selected
         var isCheckedBinding = BindExtensions.Relative<EnumChoiceViewModel<T>, T>(vm => vm.Selected);
         isCheckedBinding.Converter = EqualityConverter<T>.For(option.Value);
         button.SetBinding(ToggleButton.IsCheckedProperty, isCheckedBinding);
 
-        // Build content
+        // Build content with validation indicator
         var contentChildren = new List<UIElement>();
+
+        // Option glyph (if available)
         var glyph = OptionPresentation.GetGlyph(option.Value);
         if (glyph != null)
         {
             contentChildren.Add(new FontIcon().Glyph(glyph).FontSize(14));
         }
+
+        // Label
         contentChildren.Add(new TextBlock().Text(option.Label));
 
+        // Validation indicator glyph (check/cross) - shows validation state
+        var indicatorGlyph = new FontIcon()
+            .FontSize(14)
+            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"));
+
+        // Bind glyph to validation state (✓ for correct, ✗ for incorrect, empty for unknown)
+        var glyphBinding = BindExtensions.Relative<EnumChoiceViewModel<T>, ValidationState>(vm => vm.Validation);
+        glyphBinding.Converter = ValidationToGlyphConverter.Instance;
+        indicatorGlyph.SetBinding(FontIcon.GlyphProperty, glyphBinding);
+
+        // Only show indicator when this button is checked
+        indicatorGlyph.SetBinding(UIElement.VisibilityProperty, new Microsoft.UI.Xaml.Data.Binding
+        {
+            Source = button,
+            Path = new PropertyPath("IsChecked"),
+            Converter = BoolToVisibilityConverter.Instance
+        });
+
+        contentChildren.Add(indicatorGlyph);
+
+        // Set button content
         button.Content(new StackPanel()
             .Orientation(Orientation.Horizontal)
             .Spacing(8)
-            .Children(contentChildren.ToArray())
-        );
+            .Children(contentChildren.ToArray()));
 
         return button;
     }

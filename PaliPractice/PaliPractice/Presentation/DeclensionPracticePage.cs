@@ -1,4 +1,5 @@
-using PaliPractice.Presentation.Components;
+using PaliPractice.Presentation.Bindings;
+using PaliPractice.Presentation.Controls;
 using PaliPractice.Presentation.ViewModels;
 
 namespace PaliPractice.Presentation;
@@ -14,48 +15,59 @@ public sealed partial class DeclensionPracticePage : Page
                 .SafeArea(SafeArea.InsetMask.VisibleBounds)
                 .RowDefinitions("Auto,Auto,*,Auto,Auto")
                 .Children(
-                    AppTitleBar.Build("Declension Practice", btn => btn.Command(() => vm.GoBackCommand)),
-                    DailyGoalBar.Build(
-                        bindDailyGoalText: tb => tb.Text(() => vm.Card.DailyGoalText),
-                        bindDailyProgress: pb => pb.Value(() => vm.Card.DailyProgress)).Grid(row:1),
-                    new ScrollViewer().Grid(row:2).Content(
-                        new Grid().HorizontalAlignment(HorizontalAlignment.Center).VerticalAlignment(VerticalAlignment.Center).Children(
-                            new Grid().MaxWidth(600).Children(
-                                new StackPanel().Padding(20).Spacing(24).HorizontalAlignment(HorizontalAlignment.Stretch).Children(
-                                new ProgressRing().IsActive(() => vm.Card.IsLoading)
-                                    .Visibility(() => vm.Card.IsLoading, b => b ? Visibility.Visible : Visibility.Collapsed)
-                                    .HorizontalAlignment(HorizontalAlignment.Center).VerticalAlignment(VerticalAlignment.Center),
-                                new TextBlock().Text(() => vm.Card.ErrorMessage)
-                                    .Visibility(() => vm.Card.ErrorMessage, e => !string.IsNullOrEmpty(e) ? Visibility.Visible : Visibility.Collapsed)
-                                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush")).TextAlignment(TextAlignment.Center)
-                                    .HorizontalAlignment(HorizontalAlignment.Center),
-                                WordCard.Build(
-                                    isLoading: () => vm.Card.IsLoading,
-                                    bindRankText: tb => tb.Text(() => vm.Card.RankText),
-                                    bindAnkiState: tb => tb.Text(() => vm.Card.AnkiState),
-                                    bindCurrentWord: tb => tb.Text(() => vm.Card.CurrentWord),
-                                    bindUsageExample: tb => tb.Text(() => vm.Card.UsageExample),
-                                    bindSuttaReference: tb => tb.Text(() => vm.Card.SuttaReference),
-                                    rankPrefix: "N")
+                    AppTitleBar.Build<DeclensionPracticeViewModel>("Declension Practice", vm => vm.GoBackCommand),
+                    DailyGoalBar.Build<DeclensionPracticeViewModel>(
+                        dailyGoalText: vm => vm.Card.DailyGoalText,
+                        dailyProgress: vm => vm.Card.DailyProgress)
+                        .Grid(row: 1),
+                    new ScrollViewer().Grid(row: 2).Content(
+                        new Grid()
+                            .HorizontalAlignment(HorizontalAlignment.Center)
+                            .VerticalAlignment(VerticalAlignment.Center)
+                            .Children(
+                                new Grid().MaxWidth(600).Children(
+                                    new StackPanel()
+                                        .Padding(20)
+                                        .Spacing(24)
+                                        .HorizontalAlignment(HorizontalAlignment.Stretch)
+                                        .Children(
+                                            new ProgressRing()
+                                                .IsActive<DeclensionPracticeViewModel>(vm => vm.Card.IsLoading)
+                                                .BoolToVisibility<ProgressRing, DeclensionPracticeViewModel>(vm => vm.Card.IsLoading)
+                                                .HorizontalAlignment(HorizontalAlignment.Center)
+                                                .VerticalAlignment(VerticalAlignment.Center),
+                                            new TextBlock()
+                                                .Text<DeclensionPracticeViewModel>(vm => vm.Card.ErrorMessage)
+                                                .StringToVisibility<TextBlock, DeclensionPracticeViewModel>(vm => vm.Card.ErrorMessage)
+                                                .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                                                .TextAlignment(TextAlignment.Center)
+                                                .HorizontalAlignment(HorizontalAlignment.Center),
+                                            WordCard.Build<DeclensionPracticeViewModel>(
+                                                cardPath: vm => vm.Card,
+                                                rankPrefix: "N")
+                                        )
                                 )
                             )
-                        )),
-                    new StackPanel().Grid(row:3).Padding(20).Spacing(16)
+                    ),
+                    new StackPanel()
+                        .Grid(row: 3)
+                        .Padding(20)
+                        .Spacing(16)
                         .Children(
-                            EnumToggleGroup.Build(
+                            EnumToggleGroup.Build<DeclensionPracticeViewModel, Number>(
                                 [
                                     new EnumOption<Number>(Number.Singular, "Singular"),
                                     new EnumOption<Number>(Number.Plural, "Plural")
                                 ],
-                                () => vm.Number),
-                            EnumToggleGroup.Build(
+                                vm => vm.Number),
+                            EnumToggleGroup.Build<DeclensionPracticeViewModel, Gender>(
                                 [
                                     new EnumOption<Gender>(Gender.Masculine, "Masculine"),
                                     new EnumOption<Gender>(Gender.Neuter, "Neuter"),
                                     new EnumOption<Gender>(Gender.Feminine, "Feminine")
                                 ],
-                                () => vm.Gender),
-                            EnumToggleGroup.BuildWithLayout(
+                                vm => vm.Gender),
+                            EnumToggleGroup.BuildWithLayout<DeclensionPracticeViewModel, NounCase>(
                                 [
                                     new EnumOption<NounCase>(NounCase.Nominative, "Nom"),
                                     new EnumOption<NounCase>(NounCase.Accusative, "Acc"),
@@ -66,13 +78,13 @@ public sealed partial class DeclensionPracticePage : Page
                                     new EnumOption<NounCase>(NounCase.Locative, "Loc"),
                                     new EnumOption<NounCase>(NounCase.Vocative, "Voc")
                                 ],
-                                () => vm.Cases,
+                                vm => vm.Cases,
                                 [4, 4])
                         ),
-                    CardNavigation.Build(
-                        bindPreviousCommand: btn => btn.Command(() => vm.PreviousCommand),
-                        bindNextCommand: btn => btn.Command(() => vm.NextCommand))
-                        .Grid(row:4)
+                    CardNavigation.Build<DeclensionPracticeViewModel>(
+                        previousCommand: vm => vm.PreviousCommand,
+                        nextCommand: vm => vm.NextCommand)
+                        .Grid(row: 4)
                 )
             )
         );

@@ -1,30 +1,37 @@
-namespace PaliPractice.Presentation.Components;
+using System.Linq.Expressions;
+using PaliPractice.Presentation.Bindings;
+
+namespace PaliPractice.Presentation.Controls;
 
 public static class CardNavigation
 {
-    public static UIElement Build(
-        Action<Button> bindPreviousCommand,
-        Action<Button> bindNextCommand) =>
+    // Cached brush for button backgrounds
+    private static readonly SolidColorBrush ButtonBackground = new(Color.FromArgb(255, 240, 240, 255));
+
+    public static UIElement Build<TDC>(
+        Expression<Func<TDC, ICommand>> previousCommand,
+        Expression<Func<TDC, ICommand>> nextCommand) =>
         new Grid()
             .ColumnDefinitions("*,*")
             .Padding(20, 16)
             .ColumnSpacing(16)
             .Children(
-                CreateButton("Previous", "\uE72B", 0, bindPreviousCommand),
-                CreateButton("Next", "\uE72A", 1, bindNextCommand)
+                CreateButton("Previous", "\uE72B", 0, previousCommand),
+                CreateButton("Next", "\uE72A", 1, nextCommand)
             );
 
-    private static Button CreateButton(
+    private static Button CreateButton<TDC>(
         string text,
         string glyph,
         int column,
-        Action<Button> bindCommand)
+        Expression<Func<TDC, ICommand>> commandPath)
     {
-        var button = new Button()
+        return new Button()
             .Grid(column: column)
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Padding(16, 12)
-            .Background(new SolidColorBrush(Color.FromArgb(255, 240, 240, 255)))
+            .Background(ButtonBackground)
+            .Command<Button, TDC>(commandPath)
             .Content(new StackPanel()
                 .Orientation(Orientation.Horizontal)
                 .HorizontalAlignment(HorizontalAlignment.Center)
@@ -34,9 +41,5 @@ public static class CardNavigation
                     new TextBlock().Text(text).FontSize(16),
                     new FontIcon().Glyph(glyph).FontSize(16).Visibility(column == 1 ? Visibility.Visible : Visibility.Collapsed)
                 ));
-
-        bindCommand(button);
-        
-        return button;
     }
 }

@@ -65,20 +65,18 @@ public sealed partial class ConjugationPracticePage : Page
                                 vm => vm.Person),
                             EnumToggleGroup.Build<ConjugationPracticeViewModel, Voice>(
                                 [
-                                    new EnumOption<Voice>(Voice.Normal, "Active"),
+                                    new EnumOption<Voice>(Voice.Active, "Active"),
                                     new EnumOption<Voice>(Voice.Reflexive, "Reflexive")
                                 ],
                                 vm => vm.Voice),
                             EnumToggleGroup.BuildWithLayout<ConjugationPracticeViewModel, Tense>(
                                 [
                                     new EnumOption<Tense>(Tense.Present, "Present"),
-                                    new EnumOption<Tense>(Tense.Imperative, "Imper."),
                                     new EnumOption<Tense>(Tense.Aorist, "Aorist"),
-                                    new EnumOption<Tense>(Tense.Optative, "Opt."),
                                     new EnumOption<Tense>(Tense.Future, "Future")
                                 ],
                                 vm => vm.Tense,
-                                [3, 2])
+                                [3])
                         ),
                     CardNavigation.Build<ConjugationPracticeViewModel>(
                         hardCommand: vm => vm.HardCommand,

@@ -18,6 +18,112 @@ from db.models import DpdHeadword, InflectionTemplates
 from tools.pos import CONJUGATIONS, DECLENSIONS
 
 
+# Enum mappings matching C# Enums.cs
+class GrammarEnums:
+    """Enum values matching the C# Models/Enums.cs definitions."""
+
+    # NounCase enum
+    CASE_NONE = 0
+    CASE_NOMINATIVE = 1
+    CASE_ACCUSATIVE = 2
+    CASE_INSTRUMENTAL = 3
+    CASE_DATIVE = 4
+    CASE_ABLATIVE = 5
+    CASE_GENITIVE = 6
+    CASE_LOCATIVE = 7
+    CASE_VOCATIVE = 8
+
+    # Number enum
+    NUMBER_NONE = 0
+    NUMBER_SINGULAR = 1
+    NUMBER_PLURAL = 2
+
+    # Gender enum
+    GENDER_NONE = 0
+    GENDER_MASCULINE = 1
+    GENDER_NEUTER = 2
+    GENDER_FEMININE = 3
+
+    # Person enum
+    PERSON_NONE = 0
+    PERSON_FIRST = 1
+    PERSON_SECOND = 2
+    PERSON_THIRD = 3
+
+    # Voice enum
+    VOICE_NONE = 0
+    VOICE_ACTIVE = 1
+    VOICE_REFLEXIVE = 2
+    VOICE_PASSIVE = 3
+    VOICE_CAUSATIVE = 4
+
+    # Tense enum
+    TENSE_NONE = 0
+    TENSE_PRESENT = 1
+    TENSE_FUTURE = 2
+    TENSE_AORIST = 3
+    TENSE_IMPERFECT = 4
+    TENSE_PERFECT = 5
+
+    # Mood enum
+    MOOD_NONE = 0
+    MOOD_INDICATIVE = 1
+    MOOD_OPTATIVE = 2
+    MOOD_IMPERATIVE = 3
+    MOOD_CONDITIONAL = 4
+
+    # String to enum mappings
+    CASE_MAP = {
+        'nominative': CASE_NOMINATIVE,
+        'accusative': CASE_ACCUSATIVE,
+        'instrumental': CASE_INSTRUMENTAL,
+        'dative': CASE_DATIVE,
+        'ablative': CASE_ABLATIVE,
+        'genitive': CASE_GENITIVE,
+        'locative': CASE_LOCATIVE,
+        'vocative': CASE_VOCATIVE
+    }
+
+    NUMBER_MAP = {
+        'singular': NUMBER_SINGULAR,
+        'plural': NUMBER_PLURAL
+    }
+
+    GENDER_MAP = {
+        'masculine': GENDER_MASCULINE,
+        'neuter': GENDER_NEUTER,
+        'feminine': GENDER_FEMININE
+    }
+
+    PERSON_MAP = {
+        'first': PERSON_FIRST,
+        'second': PERSON_SECOND,
+        'third': PERSON_THIRD
+    }
+
+    VOICE_MAP = {
+        'active': VOICE_ACTIVE,
+        'reflexive': VOICE_REFLEXIVE,
+        'passive': VOICE_PASSIVE,
+        'causative': VOICE_CAUSATIVE
+    }
+
+    TENSE_MAP = {
+        'present': TENSE_PRESENT,
+        'future': TENSE_FUTURE,
+        'aorist': TENSE_AORIST,
+        'imperfect': TENSE_IMPERFECT,
+        'perfect': TENSE_PERFECT
+    }
+
+    MOOD_MAP = {
+        'indicative': MOOD_INDICATIVE,
+        'optative': MOOD_OPTATIVE,
+        'imperative': MOOD_IMPERATIVE,
+        'conditional': MOOD_CONDITIONAL
+    }
+
+
 class NounVerbExtractor:
     """Extract nouns and verbs with grammatical categorization."""
     
@@ -49,32 +155,32 @@ class NounVerbExtractor:
             )
         """)
         
-        # Declensions table - for nouns only (simplified columns)
+        # Declensions table - for nouns only (using enum integers)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS declensions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 headword_id INTEGER NOT NULL,
                 form TEXT NOT NULL,
-                case_name TEXT,  -- nominative, accusative, etc.
-                number TEXT,     -- singular, plural
-                gender TEXT,     -- masculine, feminine, neuter
-                
+                case_name INTEGER NOT NULL DEFAULT 0,  -- NounCase enum: 0=None, 1=Nominative, 2=Accusative, etc.
+                number INTEGER NOT NULL DEFAULT 0,     -- Number enum: 0=None, 1=Singular, 2=Plural
+                gender INTEGER NOT NULL DEFAULT 0,     -- Gender enum: 0=None, 1=Masculine, 2=Neuter, 3=Feminine
+
                 FOREIGN KEY (headword_id) REFERENCES headwords(id),
                 UNIQUE(headword_id, form, case_name, number, gender)
             )
         """)
         
-        # Conjugations table - for verbs only (simplified columns)
+        # Conjugations table - for verbs only (using enum integers)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS conjugations (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 headword_id INTEGER NOT NULL,
                 form TEXT NOT NULL,
-                person TEXT,     -- first, second, third
-                tense TEXT,      -- present, aorist, future, etc.
-                mood TEXT,       -- indicative, optative, imperative
-                voice TEXT,      -- active, passive, causative
-                
+                person INTEGER NOT NULL DEFAULT 0,  -- Person enum: 0=None, 1=First, 2=Second, 3=Third
+                tense INTEGER NOT NULL DEFAULT 0,   -- Tense enum: 0=None, 1=Present, 2=Future, 3=Aorist, 4=Imperfect, 5=Perfect
+                mood INTEGER NOT NULL DEFAULT 0,    -- Mood enum: 0=None, 1=Indicative, 2=Optative, 3=Imperative, 4=Conditional
+                voice INTEGER NOT NULL DEFAULT 0,   -- Voice enum: 0=None, 1=Active, 2=Reflexive, 3=Passive, 4=Causative
+
                 FOREIGN KEY (headword_id) REFERENCES headwords(id),
                 UNIQUE(headword_id, form, person, tense, mood, voice)
             )
@@ -225,96 +331,105 @@ class NounVerbExtractor:
         
         return forms
     
-    def parse_noun_grammar(self, grammar_str: str, label: str, pos: str) -> Dict[str, str]:
-        """Parse grammar string for nouns."""
-        result = {}
-        parts = grammar_str.lower().split()
-        
-        # Gender
-        if 'masc' in grammar_str:
-            result['gender'] = 'masculine'
-        elif 'fem' in grammar_str:
-            result['gender'] = 'feminine'
-        elif 'nt' in grammar_str:
-            result['gender'] = 'neuter'
-        
-        # Number
-        if 'sg' in parts or 'singular' in grammar_str:
-            result['number'] = 'singular'
-        elif 'pl' in parts or 'plural' in grammar_str:
-            result['number'] = 'plural'
-        
-        # Case
-        case_map = {
-            'nom': 'nominative',
-            'acc': 'accusative', 
-            'instr': 'instrumental',
-            'dat': 'dative',
-            'abl': 'ablative',
-            'gen': 'genitive',
-            'loc': 'locative',
-            'voc': 'vocative'
+    def parse_noun_grammar(self, grammar_str: str, label: str, pos: str) -> Dict[str, int]:
+        """Parse grammar string for nouns, returning enum integer values. Defaults to 0 (None) if not found."""
+        result = {
+            'case_name': GrammarEnums.CASE_NONE,
+            'number': GrammarEnums.NUMBER_NONE,
+            'gender': GrammarEnums.GENDER_NONE
         }
-        
+        parts = grammar_str.lower().split()
+
+        # Gender - return enum integer
+        if 'masc' in grammar_str:
+            result['gender'] = GrammarEnums.GENDER_MASCULINE
+        elif 'fem' in grammar_str:
+            result['gender'] = GrammarEnums.GENDER_FEMININE
+        elif 'nt' in grammar_str:
+            result['gender'] = GrammarEnums.GENDER_NEUTER
+
+        # Number - return enum integer
+        if 'sg' in parts or 'singular' in grammar_str:
+            result['number'] = GrammarEnums.NUMBER_SINGULAR
+        elif 'pl' in parts or 'plural' in grammar_str:
+            result['number'] = GrammarEnums.NUMBER_PLURAL
+
+        # Case - map abbreviation to enum integer
+        case_abbr_map = {
+            'nom': GrammarEnums.CASE_NOMINATIVE,
+            'acc': GrammarEnums.CASE_ACCUSATIVE,
+            'instr': GrammarEnums.CASE_INSTRUMENTAL,
+            'dat': GrammarEnums.CASE_DATIVE,
+            'abl': GrammarEnums.CASE_ABLATIVE,
+            'gen': GrammarEnums.CASE_GENITIVE,
+            'loc': GrammarEnums.CASE_LOCATIVE,
+            'voc': GrammarEnums.CASE_VOCATIVE
+        }
+
         # Check grammar string first
-        for abbr, full in case_map.items():
+        for abbr, enum_value in case_abbr_map.items():
             if abbr in parts:
-                result['case_name'] = full
+                result['case_name'] = enum_value
                 break
-        
+
         # Check label if not found
-        if 'case_name' not in result and label:
-            for abbr, full in case_map.items():
+        if result['case_name'] == GrammarEnums.CASE_NONE and label:
+            for abbr, enum_value in case_abbr_map.items():
                 if abbr in label.lower():
-                    result['case_name'] = full
+                    result['case_name'] = enum_value
                     break
-        
+
         return result
     
-    def parse_verb_grammar(self, grammar_str: str, label: str, pos: str) -> Dict[str, str]:
-        """Parse grammar string for verbs."""
-        result = {}
-        
-        # Person
+    def parse_verb_grammar(self, grammar_str: str, label: str, pos: str) -> Dict[str, int]:
+        """Parse grammar string for verbs, returning enum integer values. Defaults to 0 (None) if not found."""
+        result = {
+            'person': GrammarEnums.PERSON_NONE,
+            'tense': GrammarEnums.TENSE_NONE,
+            'mood': GrammarEnums.MOOD_NONE,
+            'voice': GrammarEnums.VOICE_NONE
+        }
+
+        # Person - return enum integer
         if '1st' in grammar_str or 'first' in grammar_str:
-            result['person'] = 'first'
+            result['person'] = GrammarEnums.PERSON_FIRST
         elif '2nd' in grammar_str or 'second' in grammar_str:
-            result['person'] = 'second'
+            result['person'] = GrammarEnums.PERSON_SECOND
         elif '3rd' in grammar_str or 'third' in grammar_str:
-            result['person'] = 'third'
-        
-        # Tense (from POS or grammar string)
+            result['person'] = GrammarEnums.PERSON_THIRD
+
+        # Tense - return enum integer (from POS or grammar string)
         if pos == 'pr' or 'pres' in grammar_str:
-            result['tense'] = 'present'
+            result['tense'] = GrammarEnums.TENSE_PRESENT
         elif pos == 'aor' or 'aor' in grammar_str:
-            result['tense'] = 'aorist'
+            result['tense'] = GrammarEnums.TENSE_AORIST
         elif pos == 'fut' or 'fut' in grammar_str:
-            result['tense'] = 'future'
+            result['tense'] = GrammarEnums.TENSE_FUTURE
         elif pos == 'imperf' or 'imperf' in grammar_str:
-            result['tense'] = 'imperfect'
+            result['tense'] = GrammarEnums.TENSE_IMPERFECT
         elif pos == 'perf' or 'perf' in grammar_str:
-            result['tense'] = 'perfect'
-        
-        # Mood
+            result['tense'] = GrammarEnums.TENSE_PERFECT
+
+        # Mood - return enum integer
         if pos == 'opt' or 'opt' in grammar_str:
-            result['mood'] = 'optative'
+            result['mood'] = GrammarEnums.MOOD_OPTATIVE
         elif pos == 'imp' or 'imp' in grammar_str:
-            result['mood'] = 'imperative'
+            result['mood'] = GrammarEnums.MOOD_IMPERATIVE
         elif pos == 'cond' or 'cond' in grammar_str:
-            result['mood'] = 'conditional'
-        elif result.get('tense'):  # Default mood for tenses
-            result['mood'] = 'indicative'
-        
-        # Voice
+            result['mood'] = GrammarEnums.MOOD_CONDITIONAL
+        elif result['tense'] != GrammarEnums.TENSE_NONE:  # Default mood for tenses
+            result['mood'] = GrammarEnums.MOOD_INDICATIVE
+
+        # Voice - return enum integer (default to Active if not specified)
         if 'caus' in grammar_str:
-            result['voice'] = 'causative'
+            result['voice'] = GrammarEnums.VOICE_CAUSATIVE
         elif 'pass' in grammar_str:
-            result['voice'] = 'passive'
+            result['voice'] = GrammarEnums.VOICE_PASSIVE
         elif 'reflx' in grammar_str:
-            result['voice'] = 'reflexive'
+            result['voice'] = GrammarEnums.VOICE_REFLEXIVE
         else:
-            result['voice'] = 'active'
-        
+            result['voice'] = GrammarEnums.VOICE_ACTIVE
+
         return result
     
     def extract_and_save(self):
@@ -367,7 +482,7 @@ class NounVerbExtractor:
             if forms:
                 # For nouns, check if we have a nominative singular form
                 has_nom_sg = any(
-                    f.get('case_name') == 'nominative' and f.get('number') == 'singular'
+                    f.get('case_name') == GrammarEnums.CASE_NOMINATIVE and f.get('number') == GrammarEnums.NUMBER_SINGULAR
                     for f in forms
                 )
                 
@@ -382,8 +497,11 @@ class NounVerbExtractor:
                                     headword_id, form, case_name, number, gender
                                 ) VALUES (?, ?, ?, ?, ?)
                             """, (
-                                word.id, form['form'], form.get('case_name'),
-                                form.get('number'), form.get('gender')
+                                word.id,
+                                form['form'],
+                                form.get('case_name', GrammarEnums.CASE_NONE),
+                                form.get('number', GrammarEnums.NUMBER_NONE),
+                                form.get('gender', GrammarEnums.GENDER_NONE)
                             ))
                             total_declensions += 1
                         except sqlite3.IntegrityError:
@@ -423,8 +541,12 @@ class NounVerbExtractor:
                                 headword_id, form, person, tense, mood, voice
                             ) VALUES (?, ?, ?, ?, ?, ?)
                         """, (
-                            word.id, form['form'], form.get('person'),
-                            form.get('tense'), form.get('mood'), form.get('voice')
+                            word.id,
+                            form['form'],
+                            form.get('person', GrammarEnums.PERSON_NONE),
+                            form.get('tense', GrammarEnums.TENSE_NONE),
+                            form.get('mood', GrammarEnums.MOOD_NONE),
+                            form.get('voice', GrammarEnums.VOICE_NONE)
                         ))
                         total_conjugations += 1
                     except sqlite3.IntegrityError:

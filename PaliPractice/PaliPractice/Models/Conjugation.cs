@@ -7,22 +7,22 @@ public class Conjugation
 {
     [PrimaryKey, AutoIncrement]
     public int Id { get; set; }
-    
+
     [Column("headword_id")]
     public int HeadwordId { get; set; }
-    
+
     [Column("form")]
     public string Form { get; set; } = string.Empty;
-    
+
     [Column("person")]
-    public string? Person { get; set; }
-    
+    public Person Person { get; set; }
+
     [Column("tense")]
-    public string? Tense { get; set; }
-    
+    public Tense Tense { get; set; }
+
     [Column("mood")]
-    public string? Mood { get; set; }
-    
+    public Mood Mood { get; set; }
+
     [Column("voice")]
-    public string? Voice { get; set; }
+    public Voice Voice { get; set; }
 }

@@ -90,18 +90,20 @@ pip install -r scripts/requirements.txt
 
 ### declensions (nouns only)
 - `headword_id`: Foreign key
-- `form`: Inflected form
-- `case_name`: nominative, accusative, etc.
-- `number`: singular, plural
-- `gender`: masculine, feminine, neuter
+- `form`: Inflected form (TEXT)
+- `case_name`: INTEGER - NounCase enum (1=Nominative, 2=Accusative, 3=Instrumental, 4=Dative, 5=Ablative, 6=Genitive, 7=Locative, 8=Vocative)
+- `number`: INTEGER - Number enum (1=Singular, 2=Plural)
+- `gender`: INTEGER - Gender enum (1=Masculine, 2=Neuter, 3=Feminine)
 
 ### conjugations (verbs only)
 - `headword_id`: Foreign key
-- `form`: Conjugated form
-- `person`: first, second, third
-- `tense`: present, aorist, future, etc.
-- `mood`: indicative, optative, imperative
-- `voice`: active, passive, causative
+- `form`: Conjugated form (TEXT)
+- `person`: INTEGER - Person enum (1=First, 2=Second, 3=Third)
+- `tense`: INTEGER - Tense enum (1=Present, 2=Future, 3=Aorist, 4=Imperfect, 5=Perfect)
+- `mood`: INTEGER - Mood enum (1=Indicative, 2=Optative, 3=Imperative, 4=Conditional)
+- `voice`: INTEGER - Voice enum (1=Active, 2=Reflexive, 3=Passive, 4=Causative)
+
+**Note**: All grammatical attributes (case, number, gender, person, tense, mood, voice) are stored as INTEGER values that map to C# enums defined in `PaliPractice/Models/Enums.cs`. This provides type safety and better performance in the .NET application.
 
 ## DPD Database Rebuild Instructions
 

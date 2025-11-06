@@ -36,15 +36,13 @@ public class ConjugationPracticeViewModel
         ]);
 
         Voice = new EnumChoiceViewModel<Voice>([
-            new EnumOption<Voice>(Models.Voice.Normal, "Active"),
+            new EnumOption<Voice>(Models.Voice.Active, "Active"),
             new EnumOption<Voice>(Models.Voice.Reflexive, "Reflexive")
         ]);
 
         Tense = new EnumChoiceViewModel<Tense>([
             new EnumOption<Tense>(Models.Tense.Present, "Present"),
-            new EnumOption<Tense>(Models.Tense.Imperative, "Imper."),
             new EnumOption<Tense>(Models.Tense.Aorist, "Aorist"),
-            new EnumOption<Tense>(Models.Tense.Optative, "Opt."),
             new EnumOption<Tense>(Models.Tense.Future, "Future")
         ]);
 
@@ -58,15 +56,13 @@ public class ConjugationPracticeViewModel
         return new ConjugationAnswer(
             (id % 2 == 0) ? Models.Number.Singular : Models.Number.Plural,
             (Person)((id % 3) + 1),  // 1..3
-            (id % 2 == 0) ? Models.Voice.Normal : Models.Voice.Reflexive,
+            (id % 2 == 0) ? Models.Voice.Active : Models.Voice.Reflexive,
             (Tense)(new[]
             {
                 Models.Tense.Present,
-                Models.Tense.Imperative,
                 Models.Tense.Aorist,
-                Models.Tense.Optative,
                 Models.Tense.Future
-            }[id % 5])
+            }[id % 3])
         );
     }
 

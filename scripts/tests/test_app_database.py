@@ -7,6 +7,25 @@ import sqlite3
 import sys
 from pathlib import Path
 
+
+# Enum value mappings for display (matching C# Enums.cs)
+CASE_NAMES = {
+    0: 'None', 1: 'Nominative', 2: 'Accusative', 3: 'Instrumental',
+    4: 'Dative', 5: 'Ablative', 6: 'Genitive', 7: 'Locative', 8: 'Vocative'
+}
+
+NUMBER_NAMES = {0: 'None', 1: 'Singular', 2: 'Plural'}
+
+GENDER_NAMES = {0: 'None', 1: 'Masculine', 2: 'Neuter', 3: 'Feminine'}
+
+PERSON_NAMES = {0: 'None', 1: 'First', 2: 'Second', 3: 'Third'}
+
+VOICE_NAMES = {0: 'None', 1: 'Active', 2: 'Reflexive', 3: 'Passive', 4: 'Causative'}
+
+TENSE_NAMES = {0: 'None', 1: 'Present', 2: 'Future', 3: 'Aorist', 4: 'Imperfect', 5: 'Perfect'}
+
+MOOD_NAMES = {0: 'None', 1: 'Indicative', 2: 'Optative', 3: 'Imperative', 4: 'Conditional'}
+
 def test_database_access():
     """Test database access using the same embedded resource approach as the app."""
     db_path = Path("../PaliPractice/PaliPractice/Data/training.db")
@@ -53,7 +72,10 @@ def test_database_access():
         if len(declensions) > 0:
             print(f"✅ Successfully retrieved {len(declensions)} declensions for first noun")
             for decl in declensions[:3]:  # Show first 3
-                print(f"   {decl[0]} - {decl[1]} {decl[2]} ({decl[3]})")
+                case_name = CASE_NAMES.get(decl[1], f'Unknown({decl[1]})')
+                number = NUMBER_NAMES.get(decl[2], f'Unknown({decl[2]})')
+                gender = GENDER_NAMES.get(decl[3], f'Unknown({decl[3]})')
+                print(f"   {decl[0]} - {case_name} {number} ({gender})")
         else:
             print("❌ No declensions found for first noun")
             return False
@@ -110,7 +132,11 @@ def test_database_access():
         if len(conjugations) > 0:
             print(f"✅ Successfully retrieved {len(conjugations)} conjugations for first verb")
             for conj in conjugations[:3]:  # Show first 3
-                print(f"   {conj[0]} - {conj[1]} {conj[2]} {conj[3]} ({conj[4]})")
+                person = PERSON_NAMES.get(conj[1], f'Unknown({conj[1]})')
+                tense = TENSE_NAMES.get(conj[2], f'Unknown({conj[2]})')
+                mood = MOOD_NAMES.get(conj[3], f'Unknown({conj[3]})')
+                voice = VOICE_NAMES.get(conj[4], f'Unknown({conj[4]})')
+                print(f"   {conj[0]} - {person} {tense} {mood} ({voice})")
         else:
             print("❌ No conjugations found for first verb")
             return False

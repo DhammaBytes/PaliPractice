@@ -23,8 +23,10 @@ public static class OptionPresentation
         Person.Second => "\uE748",
         Person.Third => "\uE716",
 
-        Voice.Normal => "\uE768",
+        Voice.Active => "\uE768",
         Voice.Reflexive => "\uE74C",
+        Voice.Passive => "\uE72C",
+        Voice.Causative => "\uE74E",
 
         Gender.Masculine => "\uE71A",
         Gender.Neuter => "\uE734",
@@ -42,14 +44,21 @@ public static class OptionPresentation
         Person.Second => PersonColor,
         Person.Third => PersonColor,
 
-        Voice.Normal => VoiceColor,
+        Voice.Active => VoiceColor,
         Voice.Reflexive => VoiceColor,
+        Voice.Passive => VoiceColor,
+        Voice.Causative => VoiceColor,
 
         Tense.Present => TenseColor,
-        Tense.Imperative => TenseColor,
-        Tense.Aorist => TenseColor,
-        Tense.Optative => TenseColor,
         Tense.Future => TenseColor,
+        Tense.Aorist => TenseColor,
+        Tense.Imperfect => TenseColor,
+        Tense.Perfect => TenseColor,
+
+        Mood.Indicative => TenseColor,
+        Mood.Imperative => TenseColor,
+        Mood.Optative => TenseColor,
+        Mood.Conditional => TenseColor,
 
         Gender.Masculine => GenderColor,
         Gender.Neuter => GenderColor,

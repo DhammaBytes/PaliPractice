@@ -11,7 +11,7 @@ public static class Bind
     /// <summary>
     /// Creates a binding from an expression like "vm => vm.Card.RankText" to path "Card.RankText"
     /// </summary>
-    public static Microsoft.UI.Xaml.Data.Binding Path<TDC, TProp>(Expression<Func<TDC, TProp>> expr)
+    public static Binding Path<TDC, TProp>(Expression<Func<TDC, TProp>> expr)
     {
         var path = string.Join(".", GetMemberPath(expr.Body).Reverse());
 
@@ -20,36 +20,36 @@ public static class Bind
         {
             System.Diagnostics.Debug.WriteLine($"[Bind.Path] Warning: Non-member expression detected: {expr.Body}");
             System.Diagnostics.Debug.WriteLine($"  Expression type: {expr.Body.GetType().Name}");
-            System.Diagnostics.Debug.WriteLine($"  This may result in incorrect bindings. Use converters for complex expressions.");
+            System.Diagnostics.Debug.WriteLine("  This may result in incorrect bindings. Use converters for complex expressions.");
         }
 #endif
 
-        return new Microsoft.UI.Xaml.Data.Binding
+        return new Binding
         {
             Path = new PropertyPath(path),
-            Mode = Microsoft.UI.Xaml.Data.BindingMode.OneWay
+            Mode = BindingMode.OneWay
         };
     }
 
     /// <summary>
     /// Creates a two-way binding from an expression
     /// </summary>
-    public static Microsoft.UI.Xaml.Data.Binding TwoWayPath<TDC, TProp>(Expression<Func<TDC, TProp>> expr)
+    public static Binding TwoWayPath<TDC, TProp>(Expression<Func<TDC, TProp>> expr)
     {
         var path = string.Join(".", GetMemberPath(expr.Body).Reverse());
-        return new Microsoft.UI.Xaml.Data.Binding
+        return new Binding
         {
             Path = new PropertyPath(path),
-            Mode = Microsoft.UI.Xaml.Data.BindingMode.TwoWay
+            Mode = BindingMode.TwoWay
         };
     }
 
-    private static IEnumerable<string> GetMemberPath(Expression expr)
+    static IEnumerable<string> GetMemberPath(Expression expr)
     {
         while (true)
         {
             // Unwrap Convert expressions (e.g., value-type to object)
-            if (expr is UnaryExpression unary && unary.NodeType == ExpressionType.Convert)
+            if (expr is UnaryExpression { NodeType: ExpressionType.Convert } unary)
             {
                 expr = unary.Operand;
             }

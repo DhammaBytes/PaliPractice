@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using PaliPractice.Presentation.Providers;
-using Uno.Extensions.Navigation;
 
 namespace PaliPractice.Presentation.ViewModels;
 
@@ -15,14 +14,14 @@ public abstract partial class PracticeViewModelBase<TAnswer> : ObservableObject
     protected readonly INavigator Navigator;
     protected readonly ILogger Logger;
 
-    protected int _currentIndex;
-    [ObservableProperty] private bool _canRateCard;
+    protected int CurrentIndex;
+    [ObservableProperty] bool _canRateCard;
 
     public CardViewModel Card { get; }
 
     // Commands - stored as fields to maintain reference for NotifyCanExecuteChanged
-    private readonly RelayCommand _hardCommand;
-    private readonly RelayCommand _easyCommand;
+    readonly RelayCommand _hardCommand;
+    readonly RelayCommand _easyCommand;
 
     /// <summary>
     /// All toggle groups for this practice type. Used to check if all selections are correct.
@@ -102,8 +101,8 @@ public abstract partial class PracticeViewModelBase<TAnswer> : ObservableObject
 
     void DisplayAndBindCurrentCard()
     {
-        var w = Words.Words[_currentIndex];
-        Card.DisplayCurrentCard(Words.Words, _currentIndex, SetExamples);
+        var w = Words.Words[CurrentIndex];
+        Card.DisplayCurrentCard(Words.Words, CurrentIndex, SetExamples);
         var answer = BuildAnswerFor(w);
         ApplyAnswerToGroups(answer);
         UpdateNavigationState();
@@ -131,7 +130,7 @@ public abstract partial class PracticeViewModelBase<TAnswer> : ObservableObject
 
     protected void UpdateNavigationState()
     {
-        var hasNext = _currentIndex < Words.Words.Count - 1;
+        var hasNext = CurrentIndex < Words.Words.Count - 1;
         var allCorrect = AllGroupsCorrect();
         CanRateCard = hasNext && allCorrect;
 
@@ -166,29 +165,29 @@ public abstract partial class PracticeViewModelBase<TAnswer> : ObservableObject
 
     void MoveToNextCard()
     {
-        if (_currentIndex >= Words.Words.Count - 1) return;
+        if (CurrentIndex >= Words.Words.Count - 1) return;
 
-        _currentIndex++;
+        CurrentIndex++;
         ResetAllGroups();          // Clear toggles
         DisplayAndBindCurrentCard();
     }
 
     // Simple daily goal math; tune targets as needed
-    int _dailyTarget = 50;
+    const int DailyTarget = 50;
     int _completedToday = 0;
 
     void InitializeDailyGoal()
     {
-        Card.DailyGoalText = $"{_completedToday}/{_dailyTarget}";
-        Card.DailyProgress = 100.0 * _completedToday / _dailyTarget;
+        Card.DailyGoalText = $"{_completedToday}/{DailyTarget}";
+        Card.DailyProgress = 100.0 * _completedToday / DailyTarget;
         Logger.LogInformation("InitializeDailyGoal: Set to {Text}, Progress={Progress}%",
             Card.DailyGoalText, Card.DailyProgress);
     }
 
     protected void AdvanceDailyGoal()
     {
-        _completedToday = Math.Min(_dailyTarget, _completedToday + 1);
-        Card.DailyGoalText = $"{_completedToday}/{_dailyTarget}";
-        Card.DailyProgress = 100.0 * _completedToday / _dailyTarget;
+        _completedToday = Math.Min(DailyTarget, _completedToday + 1);
+        Card.DailyGoalText = $"{_completedToday}/{DailyTarget}";
+        Card.DailyProgress = 100.0 * _completedToday / DailyTarget;
     }
 }

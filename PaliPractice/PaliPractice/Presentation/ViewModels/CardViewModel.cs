@@ -17,7 +17,7 @@ public partial class CardViewModel : ObservableObject
     {
         if (words.Count == 0) return;
         var word = words[index];
-        CurrentWord = word.LemmaClean ?? word.Lemma1;
+        CurrentWord = word.LemmaClean;
         RankText = word.EbtCount switch { > 1000 => "Top-100", > 500 => "Top-300", > 200 => "Top-500", _ => "Top-1000" };
         setExamples?.Invoke(word);
     }

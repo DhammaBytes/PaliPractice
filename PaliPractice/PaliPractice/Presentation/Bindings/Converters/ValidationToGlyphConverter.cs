@@ -8,11 +8,11 @@ namespace PaliPractice.Presentation.Bindings.Converters;
 /// Incorrect → Cancel/Cross (✗)
 /// Unknown → Empty string
 /// </summary>
-public sealed class ValidationToGlyphConverter : Microsoft.UI.Xaml.Data.IValueConverter
+public sealed class ValidationToGlyphConverter : IValueConverter
 {
     public static readonly ValidationToGlyphConverter Instance = new();
 
-    private ValidationToGlyphConverter() { }
+    ValidationToGlyphConverter() { }
 
     public object Convert(object value, Type targetType, object parameter, string language)
     {

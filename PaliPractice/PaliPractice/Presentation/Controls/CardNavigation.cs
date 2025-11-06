@@ -21,7 +21,7 @@ public static class CardNavigation
                     .HorizontalAlignment(HorizontalAlignment.Stretch)
             );
 
-    private static Button CreateButton<TDC>(
+    static Button CreateButton<TDC>(
         string text,
         string glyph,
         Expression<Func<TDC, ICommand>> commandPath)
@@ -29,7 +29,7 @@ public static class CardNavigation
         return new Button()
             .Padding(16, 12)
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Command<Button, TDC>(commandPath)
+            .Command(commandPath)
             .Content(new StackPanel()
                 .Orientation(Orientation.Horizontal)
                 .HorizontalAlignment(HorizontalAlignment.Center)

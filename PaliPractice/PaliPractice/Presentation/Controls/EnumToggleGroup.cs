@@ -13,7 +13,7 @@ public static class EnumToggleGroup
         EnumOption<T>[] options,
         Expression<Func<TDC, EnumChoiceViewModel<T>>> viewModelPath) where T : struct, Enum
     {
-        return BuildWithLayout(options, viewModelPath, null);
+        return BuildWithLayout(options, viewModelPath);
     }
 
     // Multi-row layout with specified row sizes
@@ -24,10 +24,10 @@ public static class EnumToggleGroup
     {
         // Create container and set its DataContext to the EnumChoiceViewModel
         var container = new StackPanel()
-            .Scope<StackPanel, TDC, EnumChoiceViewModel<T>>(viewModelPath);
+            .Scope(viewModelPath);
 
         // Build all buttons using relative bindings within the scoped DataContext
-        var buttons = options.Select(option => CreateButton<T>(option)).ToArray();
+        var buttons = options.Select(CreateButton).ToArray();
 
         // Layout buttons based on row sizes
         if (rowSizes == null || rowSizes.Length == 0)
@@ -68,7 +68,7 @@ public static class EnumToggleGroup
         return container;
     }
 
-    private static ToggleButton CreateButton<T>(EnumOption<T> option) where T : struct, Enum
+    static ToggleButton CreateButton<T>(EnumOption<T> option) where T : struct, Enum
     {
         var button = new ToggleButton()
             .Padding(12, 6)
@@ -105,7 +105,7 @@ public static class EnumToggleGroup
         indicatorGlyph.SetBinding(FontIcon.GlyphProperty, glyphBinding);
 
         // Only show indicator when this button is checked
-        indicatorGlyph.SetBinding(UIElement.VisibilityProperty, new Microsoft.UI.Xaml.Data.Binding
+        indicatorGlyph.SetBinding(UIElement.VisibilityProperty, new Binding
         {
             Source = button,
             Path = new PropertyPath("IsChecked"),

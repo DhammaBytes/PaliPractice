@@ -16,7 +16,7 @@ public static class WordCard
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
             .CornerRadius(12)
             .Padding(24)
-            .Scope<Border, TDC, CardViewModel>(cardPath) // Bind scope once
+            .Scope(cardPath) // Bind scope once
             .VisibilityWithin<Border, CardViewModel>(c => !c.IsLoading) // Within the CardViewModel scope
             .Child(
                 new Grid()

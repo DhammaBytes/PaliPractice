@@ -4,13 +4,13 @@ namespace PaliPractice.Presentation.Bindings.Converters;
 /// Converts a value to a bool by comparing it to a target value.
 /// Used for binding enum values to ToggleButton.IsChecked.
 /// </summary>
-public sealed class EqualityConverter<T> : Microsoft.UI.Xaml.Data.IValueConverter where T : notnull
+public sealed class EqualityConverter<T> : IValueConverter where T : notnull
 {
-    private static readonly Dictionary<T, EqualityConverter<T>> _cache = new();
+    static readonly Dictionary<T, EqualityConverter<T>> Cache = new();
 
     public T Target { get; private set; } = default!;
 
-    private EqualityConverter() { }
+    EqualityConverter() { }
 
     public object Convert(object value, Type targetType, object parameter, string language)
     {
@@ -28,10 +28,10 @@ public sealed class EqualityConverter<T> : Microsoft.UI.Xaml.Data.IValueConverte
     /// </summary>
     public static EqualityConverter<T> For(T target)
     {
-        if (!_cache.TryGetValue(target, out var converter))
+        if (!Cache.TryGetValue(target, out var converter))
         {
             converter = new EqualityConverter<T> { Target = target };
-            _cache[target] = converter;
+            Cache[target] = converter;
         }
         return converter;
     }

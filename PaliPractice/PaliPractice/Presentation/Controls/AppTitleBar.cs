@@ -16,7 +16,7 @@ public static class AppTitleBar
                     new Button()
                         .Content(new FontIcon().Glyph("\uE72B"))
                         .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-                        .Command<Button, TDC>(goBackCommand)
+                        .Command(goBackCommand)
                         .Grid(column: 0),
                     new TextBlock()
                         .Text(title)

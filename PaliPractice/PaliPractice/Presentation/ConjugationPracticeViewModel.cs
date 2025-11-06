@@ -1,11 +1,10 @@
 using PaliPractice.Presentation.Providers;
 using PaliPractice.Presentation.ViewModels;
-using Uno.Extensions.Navigation;
 
 namespace PaliPractice.Presentation;
 
-[Microsoft.UI.Xaml.Data.Bindable]
-public partial class ConjugationPracticeViewModel
+[Bindable]
+public class ConjugationPracticeViewModel
     : PracticeViewModelBase<ConjugationAnswer>
 {
     public EnumChoiceViewModel<Number> Number { get; }
@@ -13,10 +12,10 @@ public partial class ConjugationPracticeViewModel
     public EnumChoiceViewModel<Voice> Voice { get; }
     public EnumChoiceViewModel<Tense> Tense { get; }
 
-    protected override IReadOnlyList<IValidatableChoice> Groups => new IValidatableChoice[]
-    {
+    protected override IReadOnlyList<IValidatableChoice> Groups =>
+    [
         Number, Person, Voice, Tense
-    };
+    ];
 
     public ConjugationPracticeViewModel(
         [FromKeyedServices("verb")] IWordProvider words,
@@ -28,18 +27,18 @@ public partial class ConjugationPracticeViewModel
         Number = new EnumChoiceViewModel<Number>([
             new EnumOption<Number>(Models.Number.Singular, "Singular"),
             new EnumOption<Number>(Models.Number.Plural, "Plural")
-        ], Models.Number.None);
+        ]);
 
         Person = new EnumChoiceViewModel<Person>([
             new EnumOption<Person>(Models.Person.First, "1st"),
             new EnumOption<Person>(Models.Person.Second, "2nd"),
             new EnumOption<Person>(Models.Person.Third, "3rd")
-        ], Models.Person.None);
+        ]);
 
         Voice = new EnumChoiceViewModel<Voice>([
             new EnumOption<Voice>(Models.Voice.Normal, "Active"),
             new EnumOption<Voice>(Models.Voice.Reflexive, "Reflexive")
-        ], Models.Voice.None);
+        ]);
 
         Tense = new EnumChoiceViewModel<Tense>([
             new EnumOption<Tense>(Models.Tense.Present, "Present"),
@@ -47,7 +46,7 @@ public partial class ConjugationPracticeViewModel
             new EnumOption<Tense>(Models.Tense.Aorist, "Aorist"),
             new EnumOption<Tense>(Models.Tense.Optative, "Opt."),
             new EnumOption<Tense>(Models.Tense.Future, "Future")
-        ], Models.Tense.None);
+        ]);
 
         _ = InitializeAsync();
     }
@@ -58,9 +57,9 @@ public partial class ConjugationPracticeViewModel
         var id = w.Id;
         return new ConjugationAnswer(
             (id % 2 == 0) ? Models.Number.Singular : Models.Number.Plural,
-            (Models.Person)((id % 3) + 1),  // 1..3
+            (Person)((id % 3) + 1),  // 1..3
             (id % 2 == 0) ? Models.Voice.Normal : Models.Voice.Reflexive,
-            (Models.Tense)(new[]
+            (Tense)(new[]
             {
                 Models.Tense.Present,
                 Models.Tense.Imperative,

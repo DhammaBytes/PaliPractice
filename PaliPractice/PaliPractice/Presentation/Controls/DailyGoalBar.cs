@@ -21,7 +21,7 @@ public static class DailyGoalBar
                             .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                             .Grid(column: 0),
                         new TextBlock()
-                            .Text<TDC>(dailyGoalText)
+                            .Text(dailyGoalText)
                             .FontSize(14)
                             .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                             .Grid(column: 1)
@@ -30,7 +30,7 @@ public static class DailyGoalBar
                         .Maximum(100)
                         .Height(6)
                         .CornerRadius(3)
-                        .Value<TDC>(dailyProgress)
+                        .Value(dailyProgress)
                 )
             );
     }

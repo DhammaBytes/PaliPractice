@@ -4,9 +4,9 @@ namespace PaliPractice.Presentation.ViewModels;
 public sealed partial class EnumChoiceViewModel<T> : ObservableObject, IValidatableChoice
     where T : struct, Enum
 {
-    [ObservableProperty] private T _selected;
-    [ObservableProperty] private T _expected;
-    [ObservableProperty] private ValidationState _validation = ValidationState.Unknown;
+    [ObservableProperty] T _selected;
+    [ObservableProperty] T _expected;
+    [ObservableProperty] ValidationState _validation = ValidationState.Unknown;
 
     public IReadOnlyList<EnumOption<T>> Options { get; }
     public IRelayCommand<T> SelectCommand { get; }

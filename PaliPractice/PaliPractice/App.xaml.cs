@@ -11,7 +11,7 @@ public partial class App : Application
     /// </summary>
     public App()
     {
-        this.InitializeComponent();
+        InitializeComponent();
     }
 
     protected Window? MainWindow { get; private set; }
@@ -95,7 +95,7 @@ public partial class App : Application
         Host = await builder.NavigateAsync<Shell>();
     }
 
-    private static void RegisterRoutes(IViewRegistry views, IRouteRegistry routes)
+    static void RegisterRoutes(IViewRegistry views, IRouteRegistry routes)
     {
         views.Register(
             new ViewMap(ViewModel: typeof(ShellViewModel)),

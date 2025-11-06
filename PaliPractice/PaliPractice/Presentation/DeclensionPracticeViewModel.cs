@@ -1,10 +1,9 @@
 using PaliPractice.Presentation.Providers;
 using PaliPractice.Presentation.ViewModels;
-using Uno.Extensions.Navigation;
 
 namespace PaliPractice.Presentation;
 
-[Microsoft.UI.Xaml.Data.Bindable]
+[Bindable]
 public partial class DeclensionPracticeViewModel
     : PracticeViewModelBase<DeclensionAnswer>
 {
@@ -12,10 +11,10 @@ public partial class DeclensionPracticeViewModel
     public EnumChoiceViewModel<Gender> Gender { get; }
     public EnumChoiceViewModel<NounCase> Cases { get; }
 
-    protected override IReadOnlyList<IValidatableChoice> Groups => new IValidatableChoice[]
-    {
+    protected override IReadOnlyList<IValidatableChoice> Groups =>
+    [
         Number, Gender, Cases
-    };
+    ];
 
     public DeclensionPracticeViewModel(
         [FromKeyedServices("noun")] IWordProvider words,
@@ -27,13 +26,13 @@ public partial class DeclensionPracticeViewModel
         Number = new EnumChoiceViewModel<Number>([
             new EnumOption<Number>(Models.Number.Singular, "Singular"),
             new EnumOption<Number>(Models.Number.Plural, "Plural")
-        ], Models.Number.None);
+        ]);
 
         Gender = new EnumChoiceViewModel<Gender>([
             new EnumOption<Gender>(Models.Gender.Masculine, "Masculine"),
             new EnumOption<Gender>(Models.Gender.Neuter, "Neuter"),
             new EnumOption<Gender>(Models.Gender.Feminine, "Feminine")
-        ], Models.Gender.None);
+        ]);
 
         Cases = new EnumChoiceViewModel<NounCase>([
             new EnumOption<NounCase>(NounCase.Nominative, "Nom"),
@@ -44,7 +43,7 @@ public partial class DeclensionPracticeViewModel
             new EnumOption<NounCase>(NounCase.Genitive, "Gen"),
             new EnumOption<NounCase>(NounCase.Locative, "Loc"),
             new EnumOption<NounCase>(NounCase.Vocative, "Voc")
-        ], NounCase.None);
+        ]);
 
         _ = InitializeAsync();
     }
@@ -55,7 +54,7 @@ public partial class DeclensionPracticeViewModel
         var id = w.Id;
         return new DeclensionAnswer(
             (id % 2 == 0) ? Models.Number.Singular : Models.Number.Plural,
-            (Models.Gender)(new[]
+            (Gender)(new[]
             {
                 Models.Gender.Masculine,
                 Models.Gender.Neuter,

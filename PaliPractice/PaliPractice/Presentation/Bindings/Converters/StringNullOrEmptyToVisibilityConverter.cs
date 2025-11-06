@@ -5,11 +5,11 @@ namespace PaliPractice.Presentation.Bindings.Converters;
 /// Empty or null strings → Collapsed
 /// Non-empty strings → Visible
 /// </summary>
-public sealed class StringNullOrEmptyToVisibilityConverter : Microsoft.UI.Xaml.Data.IValueConverter
+public sealed class StringNullOrEmptyToVisibilityConverter : IValueConverter
 {
     public static readonly StringNullOrEmptyToVisibilityConverter Instance = new();
 
-    private StringNullOrEmptyToVisibilityConverter() { }
+    StringNullOrEmptyToVisibilityConverter() { }
 
     public object Convert(object value, Type targetType, object parameter, string language)
     {

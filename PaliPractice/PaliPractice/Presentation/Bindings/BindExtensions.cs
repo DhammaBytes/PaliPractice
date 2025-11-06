@@ -24,7 +24,7 @@ public static class BindExtensions
     /// Creates a binding relative to the current DataContext type (no parent TDC).
     /// Use this inside components that have set their own DataContext via Scope.
     /// </summary>
-    public static Microsoft.UI.Xaml.Data.Binding Relative<TScope, TProp>(Expression<Func<TScope, TProp>> expr)
+    public static Binding Relative<TScope, TProp>(Expression<Func<TScope, TProp>> expr)
         => Bind.Path(expr);
 
     // Absolute bindings (from parent DataContext)
@@ -134,7 +134,7 @@ public static class BindWithin
         where T : UIElement
     {
         // Detect and unwrap logical NOT
-        if (path.Body is UnaryExpression u && u.NodeType == ExpressionType.Not)
+        if (path.Body is UnaryExpression { NodeType: ExpressionType.Not } u)
         {
             invert = !invert;
             path = Expression.Lambda<Func<TScope, bool>>(u.Operand, path.Parameters);

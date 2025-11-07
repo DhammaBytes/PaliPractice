@@ -32,6 +32,9 @@ public class Noun : IWord
     [Column("meaning")]
     public string? Meaning { get; set; }
 
+    [Column("plus_case")]
+    public string PlusCase { get; set; } = string.Empty;
+
     [Column("source_1")]
     public string Source1 { get; set; } = string.Empty;
 

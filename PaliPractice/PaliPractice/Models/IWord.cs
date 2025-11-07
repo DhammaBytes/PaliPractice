@@ -15,6 +15,7 @@ public interface IWord
     string? Pattern { get; set; }
     string FamilyRoot { get; set; }
     string? Meaning { get; set; }
+    string PlusCase { get; set; }
     string Source1 { get; set; }
     string Sutta1 { get; set; }
     string Example1 { get; set; }

@@ -20,6 +20,12 @@ public class Verb : IWord
     [Column("pos")]
     public string Pos { get; set; } = string.Empty;
 
+    [Column("type")]
+    public string VerbType { get; set; } = string.Empty;
+
+    [Column("trans")]
+    public string Trans { get; set; } = string.Empty;
+
     [Column("stem")]
     public string? Stem { get; set; }
 
@@ -31,6 +37,22 @@ public class Verb : IWord
 
     [Column("meaning")]
     public string? Meaning { get; set; }
+
+    [Column("plus_case")]
+    public string PlusCase { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets the transitivity as an enum value.
+    /// Maps: "trans" -> Transitive, "intrans" -> Intransitive, "ditrans" -> Ditransitive, "-" or empty -> None
+    /// </summary>
+    [Ignore]
+    public Transitivity Transitivity => Trans switch
+    {
+        "trans" => Transitivity.Transitive,
+        "intrans" => Transitivity.Intransitive,
+        "ditrans" => Transitivity.Ditransitive,
+        _ => Transitivity.None
+    };
 
     [Column("source_1")]
     public string Source1 { get; set; } = string.Empty;

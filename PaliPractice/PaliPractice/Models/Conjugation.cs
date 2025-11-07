@@ -25,4 +25,7 @@ public class Conjugation
 
     [Column("voice")]
     public Voice Voice { get; set; }
+
+    [Column("in_corpus")]
+    public bool InCorpus { get; set; }
 }

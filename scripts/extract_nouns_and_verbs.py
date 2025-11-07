@@ -8,8 +8,9 @@ import re
 import json
 import sqlite3
 import os
+import pickle
 from pathlib import Path
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Optional, Tuple, Set
 import sys
 
 sys.path.append('../dpd-db')
@@ -127,13 +128,21 @@ class GrammarEnums:
 
 class NounVerbExtractor:
     """Extract nouns and verbs with grammatical categorization."""
-    
+
     def __init__(self, output_db_path: str = "../PaliPractice/PaliPractice/Data/training.db",
                  noun_limit: int = 3000, verb_limit: int = 2000):
         self.output_db_path = output_db_path
         self.noun_limit = noun_limit
         self.verb_limit = verb_limit
         self.db_session = get_db_session(Path("../dpd-db/dpd.db"))
+
+        # Load all words found in the Pali Tipitaka corpus
+        # This is used to filter out inflections that don't appear in actual texts
+        tipitaka_words_path = Path("../dpd-db/shared_data/all_tipitaka_words")
+        print(f"Loading Tipitaka word corpus from {tipitaka_words_path}")
+        with open(tipitaka_words_path, "rb") as f:
+            self.all_tipitaka_words: Set[str] = pickle.load(f)
+        print(f"Loaded {len(self.all_tipitaka_words)} words from Tipitaka corpus")
         
     def create_schema(self):
         """Create a normalized database schema for nouns and verbs."""
@@ -157,6 +166,7 @@ class NounVerbExtractor:
                 pattern TEXT,
                 family_root TEXT DEFAULT '',
                 meaning TEXT,
+                plus_case TEXT DEFAULT '',
                 source_1 TEXT DEFAULT '',
                 sutta_1 TEXT DEFAULT '',
                 example_1 TEXT DEFAULT '',
@@ -174,10 +184,13 @@ class NounVerbExtractor:
                 lemma TEXT NOT NULL UNIQUE,
                 lemma_clean TEXT NOT NULL,
                 pos TEXT NOT NULL,
+                type TEXT DEFAULT '',
+                trans TEXT DEFAULT '',
                 stem TEXT,
                 pattern TEXT,
                 family_root TEXT DEFAULT '',
                 meaning TEXT,
+                plus_case TEXT DEFAULT '',
                 source_1 TEXT DEFAULT '',
                 sutta_1 TEXT DEFAULT '',
                 example_1 TEXT DEFAULT '',
@@ -196,6 +209,7 @@ class NounVerbExtractor:
                 case_name INTEGER NOT NULL DEFAULT 0,  -- NounCase enum: 0=None, 1=Nominative, 2=Accusative, etc.
                 number INTEGER NOT NULL DEFAULT 0,     -- Number enum: 0=None, 1=Singular, 2=Plural
                 gender INTEGER NOT NULL DEFAULT 0,     -- Gender enum: 0=None, 1=Masculine, 2=Neuter, 3=Feminine
+                in_corpus INTEGER NOT NULL DEFAULT 0,  -- 1 if form appears in Tipitaka corpus, 0 if theoretical only
 
                 FOREIGN KEY (noun_id) REFERENCES nouns(id),
                 UNIQUE(noun_id, form, case_name, number, gender)
@@ -212,6 +226,7 @@ class NounVerbExtractor:
                 tense INTEGER NOT NULL DEFAULT 0,   -- Tense enum: 0=None, 1=Present, 2=Future, 3=Aorist, 4=Imperfect, 5=Perfect
                 mood INTEGER NOT NULL DEFAULT 0,    -- Mood enum: 0=None, 1=Indicative, 2=Optative, 3=Imperative, 4=Conditional
                 voice INTEGER NOT NULL DEFAULT 0,   -- Voice enum: 0=None, 1=Active, 2=Reflexive, 3=Passive, 4=Causative
+                in_corpus INTEGER NOT NULL DEFAULT 0,  -- 1 if form appears in Tipitaka corpus, 0 if theoretical only
 
                 FOREIGN KEY (verb_id) REFERENCES verbs(id),
                 UNIQUE(verb_id, form, person, tense, mood, voice)
@@ -271,10 +286,13 @@ class NounVerbExtractor:
             # Filter: must have source_1
             DpdHeadword.source_1.isnot(None),
             DpdHeadword.source_1 != '',
-            # Filter: meaning must not contain "(gram)", "(abhi)", or "(comm)"
+            # Filter: meaning must not contain "(gram)", "(abhi)", "(comm)", "in reference to", "name of", or "family name"
             ~DpdHeadword.meaning_1.contains('(gram)'),
             ~DpdHeadword.meaning_1.contains('(abhi)'),
-            ~DpdHeadword.meaning_1.contains('(comm)')
+            ~DpdHeadword.meaning_1.contains('(comm)'),
+            ~DpdHeadword.meaning_1.contains('in reference to'),
+            ~DpdHeadword.meaning_1.contains('name of'),
+            ~DpdHeadword.meaning_1.contains('family name')
         ).order_by(
             DpdHeadword.ebt_count.desc()
         ).limit(self.noun_limit).all()
@@ -292,7 +310,7 @@ class NounVerbExtractor:
         verb_pos = self.get_verb_pos_list()
 
         # Excluded verb POS types
-        excluded_verb_pos = ['pp', 'prp', 'ptp', 'imperf']
+        excluded_verb_pos = ['pp', 'prp', 'ptp', 'imperf', 'perf']
 
         # Apply filters BEFORE limiting to top N
         words = self.db_session.query(DpdHeadword).filter(
@@ -310,10 +328,13 @@ class NounVerbExtractor:
             # Filter: must have source_1
             DpdHeadword.source_1.isnot(None),
             DpdHeadword.source_1 != '',
-            # Filter: meaning must not contain "(gram)", "(abhi)", or "(comm)"
+            # Filter: meaning must not contain "(gram)", "(abhi)", "(comm)", "in reference to", "name of", or "family name"
             ~DpdHeadword.meaning_1.contains('(gram)'),
             ~DpdHeadword.meaning_1.contains('(abhi)'),
-            ~DpdHeadword.meaning_1.contains('(comm)')
+            ~DpdHeadword.meaning_1.contains('(comm)'),
+            ~DpdHeadword.meaning_1.contains('in reference to'),
+            ~DpdHeadword.meaning_1.contains('name of'),
+            ~DpdHeadword.meaning_1.contains('family name')
         ).order_by(
             DpdHeadword.ebt_count.desc()
         ).limit(self.verb_limit).all()
@@ -326,17 +347,21 @@ class NounVerbExtractor:
             print(f"Verb frequency range: {words_with_templates[0].ebt_count} (highest) to {words_with_templates[-1].ebt_count} (lowest)")
         return words_with_templates
     
-    def parse_inflection_template(self, word: DpdHeadword, word_type: str) -> List[Dict[str, Any]]:
-        """Parse inflection/conjugation template to extract individual forms with grammar info."""
+    def parse_inflection_template(self, word: DpdHeadword, word_type: str) -> Tuple[List[Dict[str, Any]], int, int]:
+        """Parse inflection/conjugation template to extract individual forms with grammar info.
+        Returns: (forms list, total_forms_generated, forms_not_in_corpus)
+        """
         if not word.it or not word.it.data:
-            return []
-            
+            return [], 0, 0
+
         try:
             template_data = json.loads(word.it.data)
         except json.JSONDecodeError:
-            return []
-        
+            return [], 0, 0
+
         forms = []
+        total_generated = 0
+        not_in_corpus = 0
         stem = re.sub(r"[!*]", "", word.stem or "")
         
         # Template structure:
@@ -373,22 +398,29 @@ class NounVerbExtractor:
                 for ending in endings:
                     if ending:
                         inflected_form = f"{stem}{ending}" if ending != "-" else stem
-                        
+                        total_generated += 1
+
+                        # Check if form appears in the Pali Tipitaka corpus
+                        in_corpus = 1 if inflected_form in self.all_tipitaka_words else 0
+                        if in_corpus == 0:
+                            not_in_corpus += 1
+
                         # Parse grammar information based on word type
                         if word_type == 'noun':
                             parsed_grammar = self.parse_noun_grammar(grammar_info, grammar_label, word.pos)
                         else:  # verb
                             parsed_grammar = self.parse_verb_grammar(grammar_info, grammar_label, word.pos)
-                        
+
                         form_data = {
                             'form': inflected_form,
+                            'in_corpus': in_corpus,
                             **parsed_grammar
                         }
                         forms.append(form_data)
-                
+
                 col_idx += 2
-        
-        return forms
+
+        return forms, total_generated, not_in_corpus
     
     def pos_to_gender(self, pos: str) -> int:
         """Map noun POS to Gender enum value."""
@@ -533,52 +565,58 @@ class NounVerbExtractor:
         # Process nouns
         total_declensions = 0
         nouns_processed = 0
-        
+        total_noun_forms_generated = 0
+        total_noun_forms_filtered = 0
+
         print(f"\nProcessing {len(nouns)} nouns...")
         for i, word in enumerate(nouns, 1):
             if i % 100 == 0:
                 print(f"Processing noun {i}/{len(nouns)}: {word.lemma_1}")
-            
+
             # Insert noun
             gender = self.pos_to_gender(word.pos)
             cursor.execute("""
                 INSERT INTO nouns (
                     id, ebt_count, lemma, lemma_clean, gender, stem, pattern, family_root,
-                    meaning, source_1, sutta_1, example_1, source_2, sutta_2, example_2
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    meaning, plus_case, source_1, sutta_1, example_1, source_2, sutta_2, example_2
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 word.id, word.ebt_count or 0, word.lemma_1, word.lemma_clean, gender,
                 word.stem, word.pattern, word.family_root or '',
-                word.meaning_1, word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
+                word.meaning_1, word.plus_case or '',
+                word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
                 word.source_2 or '', word.sutta_2 or '', word.example_2 or ''
             ))
-            
+
             # Extract declensions
-            forms = self.parse_inflection_template(word, 'noun')
-            
+            forms, generated, filtered = self.parse_inflection_template(word, 'noun')
+            total_noun_forms_generated += generated
+            total_noun_forms_filtered += filtered
+
             if forms:
                 # For nouns, check if we have a nominative singular form
                 has_nom_sg = any(
                     f.get('case_name') == GrammarEnums.CASE_NOMINATIVE and f.get('number') == GrammarEnums.NUMBER_SINGULAR
                     for f in forms
                 )
-                
+
                 if has_nom_sg:
                     nouns_processed += 1
-                    
+
                     # Insert declensions
                     for form in forms:
                         try:
                             cursor.execute("""
                                 INSERT INTO declensions (
-                                    noun_id, form, case_name, number, gender
-                                ) VALUES (?, ?, ?, ?, ?)
+                                    noun_id, form, case_name, number, gender, in_corpus
+                                ) VALUES (?, ?, ?, ?, ?, ?)
                             """, (
                                 word.id,
                                 form['form'],
                                 form.get('case_name', GrammarEnums.CASE_NONE),
                                 form.get('number', GrammarEnums.NUMBER_NONE),
-                                form.get('gender', GrammarEnums.GENDER_NONE)
+                                form.get('gender', GrammarEnums.GENDER_NONE),
+                                form.get('in_corpus', 0)
                             ))
                             total_declensions += 1
                         except sqlite3.IntegrityError:
@@ -588,45 +626,51 @@ class NounVerbExtractor:
         # Process verbs
         total_conjugations = 0
         verbs_processed = 0
-        
+        total_verb_forms_generated = 0
+        total_verb_forms_filtered = 0
+
         print(f"\nProcessing {len(verbs)} verbs...")
         for i, word in enumerate(verbs, 1):
             if i % 100 == 0:
                 print(f"Processing verb {i}/{len(verbs)}: {word.lemma_1}")
-            
+
             # Insert verb
             cursor.execute("""
                 INSERT INTO verbs (
-                    id, ebt_count, lemma, lemma_clean, pos, stem, pattern, family_root,
-                    meaning, source_1, sutta_1, example_1, source_2, sutta_2, example_2
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    id, ebt_count, lemma, lemma_clean, pos, type, trans, stem, pattern, family_root,
+                    meaning, plus_case, source_1, sutta_1, example_1, source_2, sutta_2, example_2
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 word.id, word.ebt_count or 0, word.lemma_1, word.lemma_clean, word.pos,
-                word.stem, word.pattern, word.family_root or '',
-                word.meaning_1, word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
+                word.verb or '', word.trans or '', word.stem, word.pattern, word.family_root or '',
+                word.meaning_1, word.plus_case or '',
+                word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
                 word.source_2 or '', word.sutta_2 or '', word.example_2 or ''
             ))
 
             # Extract conjugations
-            forms = self.parse_inflection_template(word, 'verb')
-            
+            forms, generated, filtered = self.parse_inflection_template(word, 'verb')
+            total_verb_forms_generated += generated
+            total_verb_forms_filtered += filtered
+
             if forms:
                 verbs_processed += 1
-                
+
                 # Insert conjugations
                 for form in forms:
                     try:
                         cursor.execute("""
                             INSERT INTO conjugations (
-                                verb_id, form, person, tense, mood, voice
-                            ) VALUES (?, ?, ?, ?, ?, ?)
+                                verb_id, form, person, tense, mood, voice, in_corpus
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?)
                         """, (
                             word.id,
                             form['form'],
                             form.get('person', GrammarEnums.PERSON_NONE),
                             form.get('tense', GrammarEnums.TENSE_NONE),
                             form.get('mood', GrammarEnums.MOOD_NONE),
-                            form.get('voice', GrammarEnums.VOICE_NONE)
+                            form.get('voice', GrammarEnums.VOICE_NONE),
+                            form.get('in_corpus', 0)
                         ))
                         total_conjugations += 1
                     except sqlite3.IntegrityError:
@@ -635,7 +679,7 @@ class NounVerbExtractor:
         
         conn.commit()
         conn.close()
-        
+
         print(f"\n=== EXTRACTION COMPLETE ===")
         print(f"Database: {self.output_db_path}")
         print(f"Total headwords: {len(nouns) + len(verbs)}")
@@ -644,6 +688,19 @@ class NounVerbExtractor:
         print(f"Total declensions: {total_declensions}")
         print(f"Total conjugations: {total_conjugations}")
         print(f"Patterns: {len(patterns_added)}")
+
+        # Show corpus attestation statistics
+        total_forms_generated = total_noun_forms_generated + total_verb_forms_generated
+        total_forms_not_in_corpus = total_noun_forms_filtered + total_verb_forms_filtered
+        total_forms_in_corpus = total_forms_generated - total_forms_not_in_corpus
+        not_in_corpus_percentage = (total_forms_not_in_corpus / total_forms_generated * 100) if total_forms_generated > 0 else 0
+
+        print(f"\n=== CORPUS ATTESTATION STATISTICS ===")
+        print(f"Noun forms: {total_noun_forms_generated} total, {total_noun_forms_generated - total_noun_forms_filtered} in corpus, {total_noun_forms_filtered} theoretical ({total_noun_forms_filtered / total_noun_forms_generated * 100:.1f}%)")
+        print(f"Verb forms: {total_verb_forms_generated} total, {total_verb_forms_generated - total_verb_forms_filtered} in corpus, {total_verb_forms_filtered} theoretical ({total_verb_forms_filtered / total_verb_forms_generated * 100:.1f}%)")
+        print(f"Total: {total_forms_generated} forms")
+        print(f"  - In Tipitaka corpus (in_corpus=1): {total_forms_in_corpus} ({100-not_in_corpus_percentage:.1f}%)")
+        print(f"  - Theoretical only (in_corpus=0): {total_forms_not_in_corpus} ({not_in_corpus_percentage:.1f}%)")
         
         self.print_summary_stats()
     

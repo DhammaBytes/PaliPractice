@@ -63,3 +63,11 @@ public enum NounCase
     Locative = 7,
     Vocative = 8
 }
+
+public enum Transitivity
+{
+    None,
+    Transitive = 1,
+    Intransitive = 2,
+    Ditransitive = 3
+}

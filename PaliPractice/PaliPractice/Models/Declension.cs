@@ -22,4 +22,7 @@ public class Declension
 
     [Column("gender")]
     public Gender Gender { get; set; }
+
+    [Column("in_corpus")]
+    public bool InCorpus { get; set; }
 }

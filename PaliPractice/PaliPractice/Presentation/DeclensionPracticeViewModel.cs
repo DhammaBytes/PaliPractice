@@ -48,8 +48,11 @@ public partial class DeclensionPracticeViewModel
         _ = InitializeAsync();
     }
 
-    protected override DeclensionAnswer BuildAnswerFor(Headword w)
+    protected override DeclensionAnswer BuildAnswerFor(IWord w)
     {
+        // Cast to Noun if needed for noun-specific properties
+        // var noun = (Noun)w;
+
         // MOCK deterministic key (replace with DB-backed key later)
         var id = w.Id;
         return new DeclensionAnswer(
@@ -81,8 +84,11 @@ public partial class DeclensionPracticeViewModel
         Cases.SetExpected(a.Case);
     }
 
-    protected override void SetExamples(Headword w)
+    protected override void SetExamples(IWord w)
     {
+        // Cast to Noun if needed for noun-specific properties
+        // var noun = (Noun)w;
+
         Card.UsageExample = "virūp'akkhehi me mettaṃ, mettaṃ erāpathehi me";
         Card.SuttaReference = "AN4.67 ahirājasuttaṃ";
     }

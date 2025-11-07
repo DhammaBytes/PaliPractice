@@ -6,11 +6,12 @@ namespace PaliPractice.Services;
 public interface IDatabaseService
 {
     Task InitializeAsync();
-    Task<List<Headword>> GetRandomNounsAsync(int count = 10);
-    Task<List<Headword>> GetRandomVerbsAsync(int count = 10);
-    Task<Headword?> GetHeadwordByIdAsync(int id);
-    Task<List<Declension>> GetDeclensionsByHeadwordIdAsync(int headwordId);
-    Task<List<Conjugation>> GetConjugationsByHeadwordIdAsync(int headwordId);
+    Task<List<Noun>> GetRandomNounsAsync(int count = 10);
+    Task<List<Verb>> GetRandomVerbsAsync(int count = 10);
+    Task<Noun?> GetNounByIdAsync(int id);
+    Task<Verb?> GetVerbByIdAsync(int id);
+    Task<List<Declension>> GetDeclensionsByNounIdAsync(int nounId);
+    Task<List<Conjugation>> GetConjugationsByVerbIdAsync(int verbId);
     Task<int> GetNounCountAsync();
     Task<int> GetVerbCountAsync();
 }
@@ -97,54 +98,61 @@ public class DatabaseService : IDatabaseService
             await InitializeAsync();
     }
     
-    public async Task<List<Headword>> GetRandomNounsAsync(int count = 10)
+    public async Task<List<Noun>> GetRandomNounsAsync(int count = 10)
     {
         await EnsureInitializedAsync();
-        
-        return await _database!.Table<Headword>()
-            .Where(h => h.Type == "noun")
-            .OrderByDescending(h => h.EbtCount)
+
+        return await _database!.Table<Noun>()
+            .OrderByDescending(n => n.EbtCount)
             .Take(count)
             .ToListAsync();
     }
-    
-    public async Task<List<Headword>> GetRandomVerbsAsync(int count = 10)
+
+    public async Task<List<Verb>> GetRandomVerbsAsync(int count = 10)
     {
         await EnsureInitializedAsync();
-        
-        return await _database!.Table<Headword>()
-            .Where(h => h.Type == "verb")
-            .OrderByDescending(h => h.EbtCount)
+
+        return await _database!.Table<Verb>()
+            .OrderByDescending(v => v.EbtCount)
             .Take(count)
             .ToListAsync();
     }
-    
-    public async Task<Headword?> GetHeadwordByIdAsync(int id)
+
+    public async Task<Noun?> GetNounByIdAsync(int id)
     {
         await EnsureInitializedAsync();
-        
-        return await _database!.Table<Headword>()
-            .Where(h => h.Id == id)
+
+        return await _database!.Table<Noun>()
+            .Where(n => n.Id == id)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<Verb?> GetVerbByIdAsync(int id)
+    {
+        await EnsureInitializedAsync();
+
+        return await _database!.Table<Verb>()
+            .Where(v => v.Id == id)
             .FirstOrDefaultAsync();
     }
     
-    public async Task<List<Declension>> GetDeclensionsByHeadwordIdAsync(int headwordId)
+    public async Task<List<Declension>> GetDeclensionsByNounIdAsync(int nounId)
     {
         await EnsureInitializedAsync();
-        
+
         return await _database!.Table<Declension>()
-            .Where(d => d.HeadwordId == headwordId)
+            .Where(d => d.NounId == nounId)
             .OrderBy(d => d.CaseName)
             .ThenBy(d => d.Number)
             .ToListAsync();
     }
-    
-    public async Task<List<Conjugation>> GetConjugationsByHeadwordIdAsync(int headwordId)
+
+    public async Task<List<Conjugation>> GetConjugationsByVerbIdAsync(int verbId)
     {
         await EnsureInitializedAsync();
-        
+
         return await _database!.Table<Conjugation>()
-            .Where(c => c.HeadwordId == headwordId)
+            .Where(c => c.VerbId == verbId)
             .OrderBy(c => c.Person)
             .ThenBy(c => c.Tense)
             .ThenBy(c => c.Mood)
@@ -154,18 +162,16 @@ public class DatabaseService : IDatabaseService
     public async Task<int> GetNounCountAsync()
     {
         await EnsureInitializedAsync();
-        
-        return await _database!.Table<Headword>()
-            .Where(h => h.Type == "noun")
+
+        return await _database!.Table<Noun>()
             .CountAsync();
     }
-    
+
     public async Task<int> GetVerbCountAsync()
     {
         await EnsureInitializedAsync();
-        
-        return await _database!.Table<Headword>()
-            .Where(h => h.Type == "verb")
+
+        return await _database!.Table<Verb>()
             .CountAsync();
     }
     

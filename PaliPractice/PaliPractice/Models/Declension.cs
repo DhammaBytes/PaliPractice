@@ -8,8 +8,8 @@ public class Declension
     [PrimaryKey, AutoIncrement]
     public int Id { get; set; }
 
-    [Column("headword_id")]
-    public int HeadwordId { get; set; }
+    [Column("noun_id")]
+    public int NounId { get; set; }
 
     [Column("form")]
     public string Form { get; set; } = string.Empty;

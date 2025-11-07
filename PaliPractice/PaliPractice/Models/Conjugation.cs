@@ -8,8 +8,8 @@ public class Conjugation
     [PrimaryKey, AutoIncrement]
     public int Id { get; set; }
 
-    [Column("headword_id")]
-    public int HeadwordId { get; set; }
+    [Column("verb_id")]
+    public int VerbId { get; set; }
 
     [Column("form")]
     public string Form { get; set; } = string.Empty;

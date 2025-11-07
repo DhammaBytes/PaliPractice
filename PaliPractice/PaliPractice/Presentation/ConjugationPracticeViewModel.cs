@@ -49,8 +49,11 @@ public class ConjugationPracticeViewModel
         _ = InitializeAsync();
     }
 
-    protected override ConjugationAnswer BuildAnswerFor(Headword w)
+    protected override ConjugationAnswer BuildAnswerFor(IWord w)
     {
+        // Cast to Verb if needed for verb-specific properties
+        // var verb = (Verb)w;
+
         // MOCK deterministic key (replace with DB-backed key later)
         var id = w.Id;
         return new ConjugationAnswer(
@@ -74,8 +77,11 @@ public class ConjugationPracticeViewModel
         Tense.SetExpected(a.Tense);
     }
 
-    protected override void SetExamples(Headword w)
+    protected override void SetExamples(IWord w)
     {
+        // Cast to Verb if needed for verb-specific properties
+        // var verb = (Verb)w;
+
         Card.UsageExample = "bhagavā etadavoca: sādhu sādhu, bhikkhu";
         Card.SuttaReference = "MN1 mūlapariyāya";
     }

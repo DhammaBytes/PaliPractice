@@ -79,31 +79,56 @@ pip install -r scripts/requirements.txt
 
 ## Database Schema
 
-### headwords
-- `id`: Primary key
-- `lemma_1`: Dictionary form
+### nouns
+- `id`: Primary key (original DPD headword ID)
+- `ebt_count`: Frequency in Early Buddhist Texts (sorted by this)
+- `lemma`: Dictionary form (no _1 suffix)
 - `lemma_clean`: Clean lemma
-- `pos`: Part of speech
-- `type`: 'noun' or 'verb'
-- `meaning_1`: Primary meaning
-- `ebt_count`: Frequency in Early Buddhist Texts
+- `gender`: INTEGER - Gender enum (0=None, 1=Masculine, 2=Neuter, 3=Feminine)
+- `stem`: Word stem for inflection
+- `pattern`: Inflection pattern
+- `family_root`: Root family classification (e.g., "√kar", "√gam")
+- `meaning`: Primary meaning (no _1 suffix)
+- `source_1`: Primary source text reference (e.g., "AN3.103")
+- `sutta_1`: Primary sutta name (e.g., "nimittasuttaṃ")
+- `example_1`: Primary usage example with bold markup
+- `source_2`: Secondary source text reference
+- `sutta_2`: Secondary sutta name
+- `example_2`: Secondary usage example
 
-### declensions (nouns only)
-- `headword_id`: Foreign key
+### verbs
+- `id`: Primary key (original DPD headword ID)
+- `ebt_count`: Frequency in Early Buddhist Texts (sorted by this)
+- `lemma`: Dictionary form (no _1 suffix)
+- `lemma_clean`: Clean lemma
+- `pos`: Part of speech / verb type (kept for development)
+- `stem`: Word stem for inflection
+- `pattern`: Inflection pattern
+- `family_root`: Root family classification (e.g., "√kar", "√gam")
+- `meaning`: Primary meaning (no _1 suffix)
+- `source_1`: Primary source text reference (e.g., "AN3.103")
+- `sutta_1`: Primary sutta name (e.g., "nimittasuttaṃ")
+- `example_1`: Primary usage example with bold markup
+- `source_2`: Secondary source text reference
+- `sutta_2`: Secondary sutta name
+- `example_2`: Secondary usage example
+
+### declensions (for nouns)
+- `noun_id`: Foreign key to nouns table
 - `form`: Inflected form (TEXT)
-- `case_name`: INTEGER - NounCase enum (1=Nominative, 2=Accusative, 3=Instrumental, 4=Dative, 5=Ablative, 6=Genitive, 7=Locative, 8=Vocative)
-- `number`: INTEGER - Number enum (1=Singular, 2=Plural)
-- `gender`: INTEGER - Gender enum (1=Masculine, 2=Neuter, 3=Feminine)
+- `case_name`: INTEGER - NounCase enum (0=None, 1=Nominative, 2=Accusative, 3=Instrumental, 4=Dative, 5=Ablative, 6=Genitive, 7=Locative, 8=Vocative)
+- `number`: INTEGER - Number enum (0=None, 1=Singular, 2=Plural)
+- `gender`: INTEGER - Gender enum (0=None, 1=Masculine, 2=Neuter, 3=Feminine)
 
-### conjugations (verbs only)
-- `headword_id`: Foreign key
+### conjugations (for verbs)
+- `verb_id`: Foreign key to verbs table
 - `form`: Conjugated form (TEXT)
-- `person`: INTEGER - Person enum (1=First, 2=Second, 3=Third)
-- `tense`: INTEGER - Tense enum (1=Present, 2=Future, 3=Aorist, 4=Imperfect, 5=Perfect)
-- `mood`: INTEGER - Mood enum (1=Indicative, 2=Optative, 3=Imperative, 4=Conditional)
-- `voice`: INTEGER - Voice enum (1=Active, 2=Reflexive, 3=Passive, 4=Causative)
+- `person`: INTEGER - Person enum (0=None, 1=First, 2=Second, 3=Third)
+- `tense`: INTEGER - Tense enum (0=None, 1=Present, 2=Future, 3=Aorist, 4=Imperfect, 5=Perfect)
+- `mood`: INTEGER - Mood enum (0=None, 1=Indicative, 2=Optative, 3=Imperative, 4=Conditional)
+- `voice`: INTEGER - Voice enum (0=None, 1=Active, 2=Reflexive, 3=Passive, 4=Causative)
 
-**Note**: All grammatical attributes (case, number, gender, person, tense, mood, voice) are stored as INTEGER values that map to C# enums defined in `PaliPractice/Models/Enums.cs`. This provides type safety and better performance in the .NET application.
+**Note**: All grammatical attributes are stored as INTEGER values that map to C# enums defined in `PaliPractice/Models/Enums.cs`. This provides type safety and better performance in the .NET application.
 
 ## DPD Database Rebuild Instructions
 

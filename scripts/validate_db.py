@@ -38,69 +38,61 @@ def validate_database(db_path: str = "../PaliPractice/PaliPractice/Data/training
     # Check tables
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
     tables = [row[0] for row in cursor.fetchall()]
-    expected_tables = ['headwords', 'declensions', 'conjugations', 'patterns']
-    
+    expected_tables = ['nouns', 'verbs', 'declensions', 'conjugations', 'patterns']
+
     for table in expected_tables:
         if table in tables:
             print(f"✅ Table '{table}' exists")
         else:
             print(f"❌ Table '{table}' missing")
             return False
-    
+
     # Check data counts
-    cursor.execute("SELECT COUNT(*) FROM headwords")
-    headword_count = cursor.fetchone()[0]
-    print(f"✅ Headwords: {headword_count}")
-    
+    cursor.execute("SELECT COUNT(*) FROM nouns")
+    noun_count = cursor.fetchone()[0]
+    print(f"✅ Nouns: {noun_count}")
+
+    cursor.execute("SELECT COUNT(*) FROM verbs")
+    verb_count = cursor.fetchone()[0]
+    print(f"✅ Verbs: {verb_count}")
+
     cursor.execute("SELECT COUNT(*) FROM declensions")
     inflection_count = cursor.fetchone()[0]
     print(f"✅ Declensions: {inflection_count}")
-    
+
     cursor.execute("SELECT COUNT(*) FROM conjugations")
     conjugation_count = cursor.fetchone()[0]
     print(f"✅ Conjugations: {conjugation_count}")
-    
+
     cursor.execute("SELECT COUNT(*) FROM patterns")
     pattern_count = cursor.fetchone()[0]
     print(f"✅ Patterns: {pattern_count}")
     
     # Check grammatical data completeness
     print("\n📊 Grammar Data Completeness:")
-    
+
     # Nominal declensions
-    cursor.execute("""
-        SELECT COUNT(*) FROM declensions i
-        JOIN headwords h ON i.headword_id = h.id
-        WHERE h.pos IN ('masc', 'fem', 'nt', 'adj', 'pp', 'ptp', 'prp')
-    """)
+    cursor.execute("SELECT COUNT(*) FROM declensions")
     nominal_total = cursor.fetchone()[0]
-    
+
     cursor.execute("""
-        SELECT COUNT(*) FROM declensions i
-        JOIN headwords h ON i.headword_id = h.id
-        WHERE h.pos IN ('masc', 'fem', 'nt', 'adj', 'pp', 'ptp', 'prp')
-        AND i.case_name IS NOT NULL AND i.number IS NOT NULL
+        SELECT COUNT(*) FROM declensions
+        WHERE case_name != 0 AND number != 0
     """)
     nominal_complete = cursor.fetchone()[0]
-    
+
     print(f"  Nominal declensions with case+number: {nominal_complete}/{nominal_total} ({nominal_complete/nominal_total*100:.1f}%)")
-    
-    # Verbal declensions
-    cursor.execute("""
-        SELECT COUNT(*) FROM conjugations c
-        JOIN headwords h ON c.headword_id = h.id
-        WHERE h.type = 'verb'
-    """)
+
+    # Verbal conjugations
+    cursor.execute("SELECT COUNT(*) FROM conjugations")
     verbal_total = cursor.fetchone()[0]
-    
+
     cursor.execute("""
-        SELECT COUNT(*) FROM conjugations c
-        JOIN headwords h ON c.headword_id = h.id
-        WHERE h.type = 'verb'
-        AND c.person IS NOT NULL AND c.tense IS NOT NULL
+        SELECT COUNT(*) FROM conjugations
+        WHERE person != 0 AND tense != 0
     """)
     verbal_complete = cursor.fetchone()[0]
-    
+
     print(f"  Verbal conjugations with person+tense: {verbal_complete}/{verbal_total} ({verbal_complete/verbal_total*100:.1f}%)")
 
     # Validate enum values and check for NULLs
@@ -177,15 +169,15 @@ def validate_database(db_path: str = "../PaliPractice/PaliPractice/Data/training
     else:
         print("  ✅ All voice values are valid")
 
-    # Sample data by POS
-    print("\n📝 Sample declensions by POS:")
-    
-    # Noun sample (case_name=1 is Nominative)
+    # Sample data by gender
+    print("\n📝 Sample declensions:")
+
+    # Noun sample (case_name=1 is Nominative, gender=1 is Masculine)
     cursor.execute("""
-        SELECT h.lemma_1, i.form, i.case_name, i.number, i.gender
-        FROM headwords h
-        JOIN declensions i ON h.id = i.headword_id
-        WHERE h.pos = 'masc' AND i.case_name = 1
+        SELECT n.lemma, d.form, d.case_name, d.number, d.gender
+        FROM nouns n
+        JOIN declensions d ON n.id = d.noun_id
+        WHERE n.gender = 1 AND d.case_name = 1
         LIMIT 3
     """)
     print("\nMasculine nouns (nominative):")
@@ -194,13 +186,13 @@ def validate_database(db_path: str = "../PaliPractice/PaliPractice/Data/training
         number = NUMBER_NAMES.get(row[3], f'Unknown({row[3]})')
         gender = GENDER_NAMES.get(row[4], f'Unknown({row[4]})')
         print(f"  {row[0]}: {row[1]} ({case_name} {number} {gender})")
-    
+
     # Verb sample (person=3 is Third, tense=1 is Present)
     cursor.execute("""
-        SELECT h.lemma_1, c.form, c.person, c.tense, c.mood, c.voice
-        FROM headwords h
-        JOIN conjugations c ON h.id = c.headword_id
-        WHERE h.type = 'verb' AND c.person = 3 AND c.tense = 1
+        SELECT v.lemma, c.form, c.person, c.tense, c.mood, c.voice
+        FROM verbs v
+        JOIN conjugations c ON v.id = c.verb_id
+        WHERE c.person = 3 AND c.tense = 1
         LIMIT 3
     """)
     print("\nPresent tense verbs (3rd person):")
@@ -211,35 +203,35 @@ def validate_database(db_path: str = "../PaliPractice/PaliPractice/Data/training
         voice = VOICE_NAMES.get(row[5], f'Unknown({row[5]})')
         print(f"  {row[0]}: {row[1]} ({person} {tense} {mood} {voice})")
     
-    # Check for unique forms per word
+    # Check for unique forms per noun
     cursor.execute("""
-        SELECT h.lemma_1, COUNT(DISTINCT i.form) as unique_forms,
-               COUNT(i.id) as total_entries
-        FROM headwords h
-        JOIN declensions i ON h.id = i.headword_id
-        GROUP BY h.id
+        SELECT n.lemma, COUNT(DISTINCT d.form) as unique_forms,
+               COUNT(d.id) as total_entries
+        FROM nouns n
+        JOIN declensions d ON n.id = d.noun_id
+        GROUP BY n.id
         HAVING unique_forms < total_entries
         LIMIT 5
     """)
     duplicates = cursor.fetchall()
     if duplicates:
-        print("\n⚠️  Words with duplicate forms (different grammar):")
+        print("\n⚠️  Nouns with duplicate forms (different grammar):")
         for lemma, unique, total in duplicates:
             print(f"  {lemma}: {unique} unique forms, {total} entries")
-    
-    # Statistics by pattern
+
+    # Statistics by pattern for nouns
     cursor.execute("""
-        SELECT p.pattern_name, COUNT(DISTINCT h.id) as word_count,
-               COUNT(i.id) as inflection_count,
-               ROUND(CAST(COUNT(i.id) AS FLOAT) / COUNT(DISTINCT h.id), 1) as avg_declensions
+        SELECT p.pattern_name, COUNT(DISTINCT n.id) as word_count,
+               COUNT(d.id) as inflection_count,
+               ROUND(CAST(COUNT(d.id) AS FLOAT) / COUNT(DISTINCT n.id), 1) as avg_declensions
         FROM patterns p
-        JOIN headwords h ON p.pattern_name = h.pattern
-        JOIN declensions i ON h.id = i.headword_id
+        JOIN nouns n ON p.pattern_name = n.pattern
+        JOIN declensions d ON n.id = d.noun_id
         GROUP BY p.pattern_name
         ORDER BY word_count DESC
         LIMIT 10
     """)
-    print("\n📊 Top patterns by usage:")
+    print("\n📊 Top noun patterns by usage:")
     print(f"{'Pattern':<15} {'Words':<8} {'Inflections':<12} {'Avg/Word'}")
     print("-" * 50)
     for pattern, words, declensions, avg in cursor.fetchall():

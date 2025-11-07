@@ -7,6 +7,7 @@ with separate tables for inflections and conjugations.
 import re
 import json
 import sqlite3
+import os
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple
 import sys
@@ -128,7 +129,7 @@ class NounVerbExtractor:
     """Extract nouns and verbs with grammatical categorization."""
     
     def __init__(self, output_db_path: str = "../PaliPractice/PaliPractice/Data/training.db",
-                 noun_limit: int = 1000, verb_limit: int = 1000):
+                 noun_limit: int = 3000, verb_limit: int = 2000):
         self.output_db_path = output_db_path
         self.noun_limit = noun_limit
         self.verb_limit = verb_limit
@@ -136,22 +137,53 @@ class NounVerbExtractor:
         
     def create_schema(self):
         """Create a normalized database schema for nouns and verbs."""
+        # Delete old database if it exists
+        if os.path.exists(self.output_db_path):
+            os.remove(self.output_db_path)
+            print(f"Deleted old database: {self.output_db_path}")
+
         conn = sqlite3.connect(self.output_db_path)
         cursor = conn.cursor()
-        
-        # Headwords table - basic information with type column
+
+        # Nouns table
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS headwords (
+            CREATE TABLE IF NOT EXISTS nouns (
                 id INTEGER PRIMARY KEY,
-                lemma_1 TEXT NOT NULL UNIQUE,
+                ebt_count INTEGER DEFAULT 0,
+                lemma TEXT NOT NULL UNIQUE,
                 lemma_clean TEXT NOT NULL,
-                pos TEXT NOT NULL,
-                type TEXT NOT NULL CHECK(type IN ('noun', 'verb')),
+                gender INTEGER NOT NULL DEFAULT 0,
                 stem TEXT,
                 pattern TEXT,
-                meaning_1 TEXT,
+                family_root TEXT DEFAULT '',
+                meaning TEXT,
+                source_1 TEXT DEFAULT '',
+                sutta_1 TEXT DEFAULT '',
+                example_1 TEXT DEFAULT '',
+                source_2 TEXT DEFAULT '',
+                sutta_2 TEXT DEFAULT '',
+                example_2 TEXT DEFAULT ''
+            )
+        """)
+
+        # Verbs table
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS verbs (
+                id INTEGER PRIMARY KEY,
                 ebt_count INTEGER DEFAULT 0,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                lemma TEXT NOT NULL UNIQUE,
+                lemma_clean TEXT NOT NULL,
+                pos TEXT NOT NULL,
+                stem TEXT,
+                pattern TEXT,
+                family_root TEXT DEFAULT '',
+                meaning TEXT,
+                source_1 TEXT DEFAULT '',
+                sutta_1 TEXT DEFAULT '',
+                example_1 TEXT DEFAULT '',
+                source_2 TEXT DEFAULT '',
+                sutta_2 TEXT DEFAULT '',
+                example_2 TEXT DEFAULT ''
             )
         """)
         
@@ -159,14 +191,14 @@ class NounVerbExtractor:
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS declensions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                headword_id INTEGER NOT NULL,
+                noun_id INTEGER NOT NULL,
                 form TEXT NOT NULL,
                 case_name INTEGER NOT NULL DEFAULT 0,  -- NounCase enum: 0=None, 1=Nominative, 2=Accusative, etc.
                 number INTEGER NOT NULL DEFAULT 0,     -- Number enum: 0=None, 1=Singular, 2=Plural
                 gender INTEGER NOT NULL DEFAULT 0,     -- Gender enum: 0=None, 1=Masculine, 2=Neuter, 3=Feminine
 
-                FOREIGN KEY (headword_id) REFERENCES headwords(id),
-                UNIQUE(headword_id, form, case_name, number, gender)
+                FOREIGN KEY (noun_id) REFERENCES nouns(id),
+                UNIQUE(noun_id, form, case_name, number, gender)
             )
         """)
         
@@ -174,15 +206,15 @@ class NounVerbExtractor:
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS conjugations (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                headword_id INTEGER NOT NULL,
+                verb_id INTEGER NOT NULL,
                 form TEXT NOT NULL,
                 person INTEGER NOT NULL DEFAULT 0,  -- Person enum: 0=None, 1=First, 2=Second, 3=Third
                 tense INTEGER NOT NULL DEFAULT 0,   -- Tense enum: 0=None, 1=Present, 2=Future, 3=Aorist, 4=Imperfect, 5=Perfect
                 mood INTEGER NOT NULL DEFAULT 0,    -- Mood enum: 0=None, 1=Indicative, 2=Optative, 3=Imperative, 4=Conditional
                 voice INTEGER NOT NULL DEFAULT 0,   -- Voice enum: 0=None, 1=Active, 2=Reflexive, 3=Passive, 4=Causative
 
-                FOREIGN KEY (headword_id) REFERENCES headwords(id),
-                UNIQUE(headword_id, form, person, tense, mood, voice)
+                FOREIGN KEY (verb_id) REFERENCES verbs(id),
+                UNIQUE(verb_id, form, person, tense, mood, voice)
             )
         """)
         
@@ -197,14 +229,14 @@ class NounVerbExtractor:
         """)
         
         conn.commit()
-        
+
         # Create indexes after tables are created
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_declensions_headword ON declensions(headword_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_declensions_noun ON declensions(noun_id)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_declensions_form ON declensions(form)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_conjugations_headword ON conjugations(headword_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_conjugations_verb ON conjugations(verb_id)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_conjugations_form ON conjugations(form)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_headwords_type ON headwords(type)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_headwords_pos ON headwords(pos)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_nouns_gender ON nouns(gender)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_verbs_pos ON verbs(pos)")
         
         conn.commit()
         conn.close()
@@ -222,46 +254,73 @@ class NounVerbExtractor:
                 'prp', 'app', 'ptp', 'comp vb']
     
     def get_training_nouns(self) -> List[DpdHeadword]:
-        """Get most frequent nouns suitable for training."""
+        """Get most frequent nouns suitable for training, with filtering rules applied."""
         noun_pos = self.get_noun_pos_list()
-        
+
+        # Apply filters BEFORE limiting to top N
         words = self.db_session.query(DpdHeadword).filter(
             DpdHeadword.pos.in_(noun_pos),
             DpdHeadword.pattern.isnot(None),
             DpdHeadword.pattern != '',
             DpdHeadword.stem.isnot(None),
             DpdHeadword.stem != '-',
-            DpdHeadword.ebt_count > 0
+            DpdHeadword.ebt_count > 0,
+            # Filter: must have meaning_1
+            DpdHeadword.meaning_1.isnot(None),
+            DpdHeadword.meaning_1 != '',
+            # Filter: must have source_1
+            DpdHeadword.source_1.isnot(None),
+            DpdHeadword.source_1 != '',
+            # Filter: meaning must not contain "(gram)", "(abhi)", or "(comm)"
+            ~DpdHeadword.meaning_1.contains('(gram)'),
+            ~DpdHeadword.meaning_1.contains('(abhi)'),
+            ~DpdHeadword.meaning_1.contains('(comm)')
         ).order_by(
             DpdHeadword.ebt_count.desc()
         ).limit(self.noun_limit).all()
-        
+
         # Filter to only words with inflection templates
         words_with_templates = [w for w in words if w.it is not None]
-        
+
         print(f"Found {len(words_with_templates)} nouns with inflection templates")
         if words_with_templates:
             print(f"Noun frequency range: {words_with_templates[0].ebt_count} (highest) to {words_with_templates[-1].ebt_count} (lowest)")
         return words_with_templates
     
     def get_training_verbs(self) -> List[DpdHeadword]:
-        """Get most frequent verbs suitable for training."""
+        """Get most frequent verbs suitable for training, with filtering rules applied."""
         verb_pos = self.get_verb_pos_list()
-        
+
+        # Excluded verb POS types
+        excluded_verb_pos = ['pp', 'prp', 'ptp', 'imperf']
+
+        # Apply filters BEFORE limiting to top N
         words = self.db_session.query(DpdHeadword).filter(
             DpdHeadword.pos.in_(verb_pos),
+            # Filter: exclude specific POS types
+            ~DpdHeadword.pos.in_(excluded_verb_pos),
             DpdHeadword.pattern.isnot(None),
             DpdHeadword.pattern != '',
             DpdHeadword.stem.isnot(None),
             DpdHeadword.stem != '-',
-            DpdHeadword.ebt_count > 0
+            DpdHeadword.ebt_count > 0,
+            # Filter: must have meaning_1
+            DpdHeadword.meaning_1.isnot(None),
+            DpdHeadword.meaning_1 != '',
+            # Filter: must have source_1
+            DpdHeadword.source_1.isnot(None),
+            DpdHeadword.source_1 != '',
+            # Filter: meaning must not contain "(gram)", "(abhi)", or "(comm)"
+            ~DpdHeadword.meaning_1.contains('(gram)'),
+            ~DpdHeadword.meaning_1.contains('(abhi)'),
+            ~DpdHeadword.meaning_1.contains('(comm)')
         ).order_by(
             DpdHeadword.ebt_count.desc()
         ).limit(self.verb_limit).all()
-        
+
         # Filter to only words with inflection templates
         words_with_templates = [w for w in words if w.it is not None]
-        
+
         print(f"Found {len(words_with_templates)} verbs with inflection templates")
         if words_with_templates:
             print(f"Verb frequency range: {words_with_templates[0].ebt_count} (highest) to {words_with_templates[-1].ebt_count} (lowest)")
@@ -331,6 +390,20 @@ class NounVerbExtractor:
         
         return forms
     
+    def pos_to_gender(self, pos: str) -> int:
+        """Map noun POS to Gender enum value."""
+        pos_lower = pos.lower()
+        if pos_lower in ['masc', 'masculine']:
+            return GrammarEnums.GENDER_MASCULINE
+        elif pos_lower in ['fem', 'feminine']:
+            return GrammarEnums.GENDER_FEMININE
+        elif pos_lower in ['nt', 'neut', 'neuter']:
+            return GrammarEnums.GENDER_NEUTER
+        else:
+            # Default for other noun types (abstr, act, agent, dimin, etc.)
+            # Try to infer from word patterns, default to None
+            return GrammarEnums.GENDER_NONE
+
     def parse_noun_grammar(self, grammar_str: str, label: str, pos: str) -> Dict[str, int]:
         """Parse grammar string for nouns, returning enum integer values. Defaults to 0 (None) if not found."""
         result = {
@@ -466,14 +539,18 @@ class NounVerbExtractor:
             if i % 100 == 0:
                 print(f"Processing noun {i}/{len(nouns)}: {word.lemma_1}")
             
-            # Insert headword
+            # Insert noun
+            gender = self.pos_to_gender(word.pos)
             cursor.execute("""
-                INSERT INTO headwords (
-                    id, lemma_1, lemma_clean, pos, type, stem, pattern, meaning_1, ebt_count
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO nouns (
+                    id, ebt_count, lemma, lemma_clean, gender, stem, pattern, family_root,
+                    meaning, source_1, sutta_1, example_1, source_2, sutta_2, example_2
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
-                word.id, word.lemma_1, word.lemma_clean, word.pos, 'noun',
-                word.stem, word.pattern, word.meaning_1, word.ebt_count or 0
+                word.id, word.ebt_count or 0, word.lemma_1, word.lemma_clean, gender,
+                word.stem, word.pattern, word.family_root or '',
+                word.meaning_1, word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
+                word.source_2 or '', word.sutta_2 or '', word.example_2 or ''
             ))
             
             # Extract declensions
@@ -494,7 +571,7 @@ class NounVerbExtractor:
                         try:
                             cursor.execute("""
                                 INSERT INTO declensions (
-                                    headword_id, form, case_name, number, gender
+                                    noun_id, form, case_name, number, gender
                                 ) VALUES (?, ?, ?, ?, ?)
                             """, (
                                 word.id,
@@ -517,16 +594,19 @@ class NounVerbExtractor:
             if i % 100 == 0:
                 print(f"Processing verb {i}/{len(verbs)}: {word.lemma_1}")
             
-            # Insert headword
+            # Insert verb
             cursor.execute("""
-                INSERT INTO headwords (
-                    id, lemma_1, lemma_clean, pos, type, stem, pattern, meaning_1, ebt_count
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO verbs (
+                    id, ebt_count, lemma, lemma_clean, pos, stem, pattern, family_root,
+                    meaning, source_1, sutta_1, example_1, source_2, sutta_2, example_2
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
-                word.id, word.lemma_1, word.lemma_clean, word.pos, 'verb',
-                word.stem, word.pattern, word.meaning_1, word.ebt_count or 0
+                word.id, word.ebt_count or 0, word.lemma_1, word.lemma_clean, word.pos,
+                word.stem, word.pattern, word.family_root or '',
+                word.meaning_1, word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
+                word.source_2 or '', word.sutta_2 or '', word.example_2 or ''
             ))
-            
+
             # Extract conjugations
             forms = self.parse_inflection_template(word, 'verb')
             
@@ -538,7 +618,7 @@ class NounVerbExtractor:
                     try:
                         cursor.execute("""
                             INSERT INTO conjugations (
-                                headword_id, form, person, tense, mood, voice
+                                verb_id, form, person, tense, mood, voice
                             ) VALUES (?, ?, ?, ?, ?, ?)
                         """, (
                             word.id,
@@ -571,54 +651,59 @@ class NounVerbExtractor:
         """Print summary statistics of extracted data."""
         conn = sqlite3.connect(self.output_db_path)
         cursor = conn.cursor()
-        
+
         print("\n=== SUMMARY STATISTICS ===")
-        
+
         # Words by type
-        cursor.execute("SELECT type, COUNT(*) FROM headwords GROUP BY type")
+        cursor.execute("SELECT COUNT(*) FROM nouns")
+        noun_count = cursor.fetchone()[0]
+        cursor.execute("SELECT COUNT(*) FROM verbs")
+        verb_count = cursor.fetchone()[0]
         print("\nWords by Type:")
-        for word_type, count in cursor.fetchall():
-            print(f"  {word_type}: {count}")
-        
-        # Nouns by POS
-        cursor.execute("SELECT pos, COUNT(*) FROM headwords WHERE type = 'noun' GROUP BY pos ORDER BY COUNT(*) DESC")
-        print("\nNouns by Gender/Type:")
-        for pos, count in cursor.fetchall():
-            print(f"  {pos}: {count}")
-        
+        print(f"  nouns: {noun_count}")
+        print(f"  verbs: {verb_count}")
+
+        # Nouns by gender
+        cursor.execute("SELECT gender, COUNT(*) FROM nouns GROUP BY gender ORDER BY COUNT(*) DESC")
+        print("\nNouns by Gender:")
+        gender_names = {1: 'masculine', 2: 'neuter', 3: 'feminine', 0: 'none'}
+        for gender, count in cursor.fetchall():
+            print(f"  {gender_names.get(gender, f'unknown({gender})')}: {count}")
+
         # Verbs by POS
-        cursor.execute("SELECT pos, COUNT(*) FROM headwords WHERE type = 'verb' GROUP BY pos ORDER BY COUNT(*) DESC LIMIT 10")
+        cursor.execute("SELECT pos, COUNT(*) FROM verbs GROUP BY pos ORDER BY COUNT(*) DESC LIMIT 10")
         print("\nTop 10 Verb Types:")
         for pos, count in cursor.fetchall():
             print(f"  {pos}: {count}")
-        
+
         # Sample declensions
         cursor.execute("""
-            SELECT h.lemma_1, h.pos, d.form, d.case_name, d.number
-            FROM headwords h
-            JOIN declensions d ON h.id = d.headword_id
-            WHERE d.case_name IS NOT NULL
+            SELECT n.lemma, n.gender, d.form, d.case_name, d.number
+            FROM nouns n
+            JOIN declensions d ON n.id = d.noun_id
+            WHERE d.case_name > 0
             LIMIT 5
         """)
         print("\nSample Noun Declensions:")
         for row in cursor.fetchall():
-            print(f"  {row[0]} ({row[1]}): {row[2]} - {row[3]} {row[4]}")
-        
+            gender_name = gender_names.get(row[1], f'unknown({row[1]})')
+            print(f"  {row[0]} ({gender_name}): {row[2]} - {row[3]} {row[4]}")
+
         # Sample conjugations
         cursor.execute("""
-            SELECT h.lemma_1, h.pos, c.form, c.person, c.tense, c.mood
-            FROM headwords h
-            JOIN conjugations c ON h.id = c.headword_id
-            WHERE c.person IS NOT NULL
+            SELECT v.lemma, v.pos, c.form, c.person, c.tense, c.mood
+            FROM verbs v
+            JOIN conjugations c ON v.id = c.verb_id
+            WHERE c.person > 0
             LIMIT 5
         """)
         print("\nSample Verb Conjugations:")
         for row in cursor.fetchall():
             print(f"  {row[0]} ({row[1]}): {row[2]} - {row[3]} {row[4]} {row[5]}")
-        
+
         conn.close()
 
 
 if __name__ == "__main__":
-    extractor = NounVerbExtractor(noun_limit=1000, verb_limit=1000)
+    extractor = NounVerbExtractor(noun_limit=3000, verb_limit=2000)
     extractor.extract_and_save()

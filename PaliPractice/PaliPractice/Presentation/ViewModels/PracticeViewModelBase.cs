@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using PaliPractice.Models;
 using PaliPractice.Presentation.Providers;
 
 namespace PaliPractice.Presentation.ViewModels;
@@ -31,7 +32,7 @@ public abstract partial class PracticeViewModelBase<TAnswer> : ObservableObject
     /// <summary>
     /// Builds the answer key for a given word (deterministic or from database).
     /// </summary>
-    protected abstract TAnswer BuildAnswerFor(Headword w);
+    protected abstract TAnswer BuildAnswerFor(IWord w);
 
     /// <summary>
     /// Applies the answer to all toggle groups by calling SetExpected on each.
@@ -46,7 +47,7 @@ public abstract partial class PracticeViewModelBase<TAnswer> : ObservableObject
     /// <summary>
     /// Optional: Set usage examples specific to the word type (verb/noun).
     /// </summary>
-    protected virtual void SetExamples(Headword w) { }
+    protected virtual void SetExamples(IWord w) { }
 
     protected PracticeViewModelBase(
         IWordProvider words,

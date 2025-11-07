@@ -7,6 +7,7 @@ global using Microsoft.Extensions.Options;
 global using PaliPractice.Models;
 global using PaliPractice.Presentation;
 global using PaliPractice.Services;
+global using PaliPractice.Services.Database;
 global using PaliPractice.Services.Endpoints;
 global using ApplicationExecutionState = Windows.ApplicationModel.Activation.ApplicationExecutionState;
 global using Color = Windows.UI.Color;

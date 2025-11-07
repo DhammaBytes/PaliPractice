@@ -1,28 +1,38 @@
-using SQLite;
-
 namespace PaliPractice.Models;
 
-[Table("declensions")]
+/// <summary>
+/// Represents a generated noun declension form.
+/// This is a plain object created at runtime, not mapped to a database table.
+/// </summary>
 public class Declension
 {
-    [PrimaryKey, AutoIncrement]
-    public int Id { get; set; }
-
-    [Column("noun_id")]
-    public int NounId { get; set; }
-
-    [Column("form")]
+    /// <summary>
+    /// The inflected form (stem + ending).
+    /// </summary>
     public string Form { get; set; } = string.Empty;
 
-    [Column("case_name")]
+    /// <summary>
+    /// The grammatical case.
+    /// </summary>
     public NounCase CaseName { get; set; }
 
-    [Column("number")]
+    /// <summary>
+    /// Singular or Plural.
+    /// </summary>
     public Number Number { get; set; }
 
-    [Column("gender")]
+    /// <summary>
+    /// Masculine, Neuter, or Feminine.
+    /// </summary>
     public Gender Gender { get; set; }
 
-    [Column("in_corpus")]
+    /// <summary>
+    /// Which ending variant this is (0, 1, 2...) when multiple endings are valid.
+    /// </summary>
+    public int EndingIndex { get; set; }
+
+    /// <summary>
+    /// Whether this specific form appears in the Pali Tipitaka corpus.
+    /// </summary>
     public bool InCorpus { get; set; }
 }

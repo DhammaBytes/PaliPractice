@@ -1,31 +1,43 @@
-using SQLite;
-
 namespace PaliPractice.Models;
 
-[Table("conjugations")]
+/// <summary>
+/// Represents a generated verb conjugation form.
+/// This is a plain object created at runtime, not mapped to a database table.
+/// </summary>
 public class Conjugation
 {
-    [PrimaryKey, AutoIncrement]
-    public int Id { get; set; }
-
-    [Column("verb_id")]
-    public int VerbId { get; set; }
-
-    [Column("form")]
+    /// <summary>
+    /// The inflected form (stem + ending).
+    /// </summary>
     public string Form { get; set; } = string.Empty;
 
-    [Column("person")]
+    /// <summary>
+    /// First, Second, or Third person.
+    /// </summary>
     public Person Person { get; set; }
 
-    [Column("tense")]
+    /// <summary>
+    /// Present, Future, Aorist, etc.
+    /// </summary>
     public Tense Tense { get; set; }
 
-    [Column("mood")]
+    /// <summary>
+    /// Indicative, Optative, Imperative, Conditional.
+    /// </summary>
     public Mood Mood { get; set; }
 
-    [Column("voice")]
+    /// <summary>
+    /// Active, Reflexive, Passive, Causative.
+    /// </summary>
     public Voice Voice { get; set; }
 
-    [Column("in_corpus")]
+    /// <summary>
+    /// Which ending variant this is (0, 1, 2...) when multiple endings are valid.
+    /// </summary>
+    public int EndingIndex { get; set; }
+
+    /// <summary>
+    /// Whether this specific form appears in the Pali Tipitaka corpus.
+    /// </summary>
     public bool InCorpus { get; set; }
 }

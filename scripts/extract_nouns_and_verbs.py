@@ -200,36 +200,30 @@ class NounVerbExtractor:
             )
         """)
         
-        # Declensions table - for nouns only (using enum integers)
+        # Corpus attestation for noun declensions (only stores corpus-attested forms)
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS declensions (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+            CREATE TABLE IF NOT EXISTS corpus_declensions (
                 noun_id INTEGER NOT NULL,
-                form TEXT NOT NULL,
-                case_name INTEGER NOT NULL DEFAULT 0,  -- NounCase enum: 0=None, 1=Nominative, 2=Accusative, etc.
-                number INTEGER NOT NULL DEFAULT 0,     -- Number enum: 0=None, 1=Singular, 2=Plural
-                gender INTEGER NOT NULL DEFAULT 0,     -- Gender enum: 0=None, 1=Masculine, 2=Neuter, 3=Feminine
-                in_corpus INTEGER NOT NULL DEFAULT 0,  -- 1 if form appears in Tipitaka corpus, 0 if theoretical only
-
-                FOREIGN KEY (noun_id) REFERENCES nouns(id),
-                UNIQUE(noun_id, form, case_name, number, gender)
+                case_name INTEGER NOT NULL,  -- NounCase enum: 0=None, 1=Nominative, 2=Accusative, etc.
+                number INTEGER NOT NULL,     -- Number enum: 0=None, 1=Singular, 2=Plural
+                gender INTEGER NOT NULL,     -- Gender enum: 0=None, 1=Masculine, 2=Neuter, 3=Feminine
+                ending_index INTEGER NOT NULL DEFAULT 0,  -- For multiple endings (0, 1, 2...)
+                PRIMARY KEY (noun_id, case_name, number, gender, ending_index),
+                FOREIGN KEY (noun_id) REFERENCES nouns(id)
             )
         """)
-        
-        # Conjugations table - for verbs only (using enum integers)
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS conjugations (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                verb_id INTEGER NOT NULL,
-                form TEXT NOT NULL,
-                person INTEGER NOT NULL DEFAULT 0,  -- Person enum: 0=None, 1=First, 2=Second, 3=Third
-                tense INTEGER NOT NULL DEFAULT 0,   -- Tense enum: 0=None, 1=Present, 2=Future, 3=Aorist, 4=Imperfect, 5=Perfect
-                mood INTEGER NOT NULL DEFAULT 0,    -- Mood enum: 0=None, 1=Indicative, 2=Optative, 3=Imperative, 4=Conditional
-                voice INTEGER NOT NULL DEFAULT 0,   -- Voice enum: 0=None, 1=Active, 2=Reflexive, 3=Passive, 4=Causative
-                in_corpus INTEGER NOT NULL DEFAULT 0,  -- 1 if form appears in Tipitaka corpus, 0 if theoretical only
 
-                FOREIGN KEY (verb_id) REFERENCES verbs(id),
-                UNIQUE(verb_id, form, person, tense, mood, voice)
+        # Corpus attestation for verb conjugations (only stores corpus-attested forms)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS corpus_conjugations (
+                verb_id INTEGER NOT NULL,
+                person INTEGER NOT NULL,     -- Person enum: 0=None, 1=First, 2=Second, 3=Third
+                tense INTEGER NOT NULL,      -- Tense enum: 0=None, 1=Present, 2=Future, 3=Aorist, 4=Imperfect, 5=Perfect
+                mood INTEGER NOT NULL,       -- Mood enum: 0=None, 1=Indicative, 2=Optative, 3=Imperative, 4=Conditional
+                voice INTEGER NOT NULL,      -- Voice enum: 0=None, 1=Active, 2=Reflexive, 3=Passive, 4=Causative
+                ending_index INTEGER NOT NULL DEFAULT 0,  -- For multiple endings (0, 1, 2...)
+                PRIMARY KEY (verb_id, person, tense, mood, voice, ending_index),
+                FOREIGN KEY (verb_id) REFERENCES verbs(id)
             )
         """)
         
@@ -246,10 +240,8 @@ class NounVerbExtractor:
         conn.commit()
 
         # Create indexes after tables are created
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_declensions_noun ON declensions(noun_id)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_declensions_form ON declensions(form)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_conjugations_verb ON conjugations(verb_id)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_conjugations_form ON conjugations(form)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_corpus_decl_noun ON corpus_declensions(noun_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_corpus_conj_verb ON corpus_conjugations(verb_id)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_nouns_gender ON nouns(gender)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_verbs_pos ON verbs(pos)")
         
@@ -394,8 +386,8 @@ class NounVerbExtractor:
                     grammar_data = row[col_idx + 1]
                     grammar_info = grammar_data[0] if isinstance(grammar_data, list) else grammar_data
                 
-                # Create form entries
-                for ending in endings:
+                # Create form entries (track ending_index for multiple endings)
+                for ending_index, ending in enumerate(endings):
                     if ending:
                         inflected_form = f"{stem}{ending}" if ending != "-" else stem
                         total_generated += 1
@@ -414,6 +406,7 @@ class NounVerbExtractor:
                         form_data = {
                             'form': inflected_form,
                             'in_corpus': in_corpus,
+                            'ending_index': ending_index,
                             **parsed_grammar
                         }
                         forms.append(form_data)
@@ -603,25 +596,26 @@ class NounVerbExtractor:
                 if has_nom_sg:
                     nouns_processed += 1
 
-                    # Insert declensions
+                    # Insert corpus-attested declensions only
                     for form in forms:
-                        try:
-                            cursor.execute("""
-                                INSERT INTO declensions (
-                                    noun_id, form, case_name, number, gender, in_corpus
-                                ) VALUES (?, ?, ?, ?, ?, ?)
-                            """, (
-                                word.id,
-                                form['form'],
-                                form.get('case_name', GrammarEnums.CASE_NONE),
-                                form.get('number', GrammarEnums.NUMBER_NONE),
-                                form.get('gender', GrammarEnums.GENDER_NONE),
-                                form.get('in_corpus', 0)
-                            ))
-                            total_declensions += 1
-                        except sqlite3.IntegrityError:
-                            # Skip duplicates
-                            pass
+                        # Only insert forms that appear in the corpus
+                        if form.get('in_corpus', 0) == 1:
+                            try:
+                                cursor.execute("""
+                                    INSERT INTO corpus_declensions (
+                                        noun_id, case_name, number, gender, ending_index
+                                    ) VALUES (?, ?, ?, ?, ?)
+                                """, (
+                                    word.id,
+                                    form.get('case_name', GrammarEnums.CASE_NONE),
+                                    form.get('number', GrammarEnums.NUMBER_NONE),
+                                    form.get('gender', GrammarEnums.GENDER_NONE),
+                                    form.get('ending_index', 0)
+                                ))
+                                total_declensions += 1
+                            except sqlite3.IntegrityError:
+                                # Skip duplicates
+                                pass
         
         # Process verbs
         total_conjugations = 0
@@ -656,26 +650,27 @@ class NounVerbExtractor:
             if forms:
                 verbs_processed += 1
 
-                # Insert conjugations
+                # Insert corpus-attested conjugations only
                 for form in forms:
-                    try:
-                        cursor.execute("""
-                            INSERT INTO conjugations (
-                                verb_id, form, person, tense, mood, voice, in_corpus
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?)
-                        """, (
-                            word.id,
-                            form['form'],
-                            form.get('person', GrammarEnums.PERSON_NONE),
-                            form.get('tense', GrammarEnums.TENSE_NONE),
-                            form.get('mood', GrammarEnums.MOOD_NONE),
-                            form.get('voice', GrammarEnums.VOICE_NONE),
-                            form.get('in_corpus', 0)
-                        ))
-                        total_conjugations += 1
-                    except sqlite3.IntegrityError:
-                        # Skip duplicates
-                        pass
+                    # Only insert forms that appear in the corpus
+                    if form.get('in_corpus', 0) == 1:
+                        try:
+                            cursor.execute("""
+                                INSERT INTO corpus_conjugations (
+                                    verb_id, person, tense, mood, voice, ending_index
+                                ) VALUES (?, ?, ?, ?, ?, ?)
+                            """, (
+                                word.id,
+                                form.get('person', GrammarEnums.PERSON_NONE),
+                                form.get('tense', GrammarEnums.TENSE_NONE),
+                                form.get('mood', GrammarEnums.MOOD_NONE),
+                                form.get('voice', GrammarEnums.VOICE_NONE),
+                                form.get('ending_index', 0)
+                            ))
+                            total_conjugations += 1
+                        except sqlite3.IntegrityError:
+                            # Skip duplicates
+                            pass
         
         conn.commit()
         conn.close()
@@ -733,30 +728,15 @@ class NounVerbExtractor:
         for pos, count in cursor.fetchall():
             print(f"  {pos}: {count}")
 
-        # Sample declensions
-        cursor.execute("""
-            SELECT n.lemma, n.gender, d.form, d.case_name, d.number
-            FROM nouns n
-            JOIN declensions d ON n.id = d.noun_id
-            WHERE d.case_name > 0
-            LIMIT 5
-        """)
-        print("\nSample Noun Declensions:")
-        for row in cursor.fetchall():
-            gender_name = gender_names.get(row[1], f'unknown({row[1]})')
-            print(f"  {row[0]} ({gender_name}): {row[2]} - {row[3]} {row[4]}")
-
-        # Sample conjugations
-        cursor.execute("""
-            SELECT v.lemma, v.pos, c.form, c.person, c.tense, c.mood
-            FROM verbs v
-            JOIN conjugations c ON v.id = c.verb_id
-            WHERE c.person > 0
-            LIMIT 5
-        """)
-        print("\nSample Verb Conjugations:")
-        for row in cursor.fetchall():
-            print(f"  {row[0]} ({row[1]}): {row[2]} - {row[3]} {row[4]} {row[5]}")
+        # Corpus attestation counts
+        cursor.execute("SELECT COUNT(*) FROM corpus_declensions")
+        decl_count = cursor.fetchone()[0]
+        cursor.execute("SELECT COUNT(*) FROM corpus_conjugations")
+        conj_count = cursor.fetchone()[0]
+        print("\nCorpus Attestation Records:")
+        print(f"  Noun forms in corpus: {decl_count}")
+        print(f"  Verb forms in corpus: {conj_count}")
+        print(f"  Total: {decl_count + conj_count}")
 
         conn.close()
 

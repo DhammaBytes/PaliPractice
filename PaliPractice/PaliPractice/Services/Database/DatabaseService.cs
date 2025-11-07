@@ -1,7 +1,7 @@
 using SQLite;
 using System.Reflection;
 
-namespace PaliPractice.Services;
+namespace PaliPractice.Services.Database;
 
 public interface IDatabaseService
 {
@@ -10,10 +10,18 @@ public interface IDatabaseService
     Task<List<Verb>> GetRandomVerbsAsync(int count = 10);
     Task<Noun?> GetNounByIdAsync(int id);
     Task<Verb?> GetVerbByIdAsync(int id);
-    Task<List<Declension>> GetDeclensionsByNounIdAsync(int nounId);
-    Task<List<Conjugation>> GetConjugationsByVerbIdAsync(int verbId);
     Task<int> GetNounCountAsync();
     Task<int> GetVerbCountAsync();
+
+    /// <summary>
+    /// Check if a specific noun form appears in the Pali Tipitaka corpus.
+    /// </summary>
+    Task<bool> IsNounFormInCorpusAsync(int nounId, NounCase nounCase, Number number, Gender gender, int endingIndex = 0);
+
+    /// <summary>
+    /// Check if a specific verb form appears in the Pali Tipitaka corpus.
+    /// </summary>
+    Task<bool> IsVerbFormInCorpusAsync(int verbId, Person person, Tense tense, Mood mood, Voice voice, int endingIndex = 0);
 }
 
 public class DatabaseService : IDatabaseService
@@ -135,30 +143,7 @@ public class DatabaseService : IDatabaseService
             .Where(v => v.Id == id)
             .FirstOrDefaultAsync();
     }
-    
-    public async Task<List<Declension>> GetDeclensionsByNounIdAsync(int nounId)
-    {
-        await EnsureInitializedAsync();
 
-        return await _database!.Table<Declension>()
-            .Where(d => d.NounId == nounId)
-            .OrderBy(d => d.CaseName)
-            .ThenBy(d => d.Number)
-            .ToListAsync();
-    }
-
-    public async Task<List<Conjugation>> GetConjugationsByVerbIdAsync(int verbId)
-    {
-        await EnsureInitializedAsync();
-
-        return await _database!.Table<Conjugation>()
-            .Where(c => c.VerbId == verbId)
-            .OrderBy(c => c.Person)
-            .ThenBy(c => c.Tense)
-            .ThenBy(c => c.Mood)
-            .ToListAsync();
-    }
-    
     public async Task<int> GetNounCountAsync()
     {
         await EnsureInitializedAsync();
@@ -174,7 +159,49 @@ public class DatabaseService : IDatabaseService
         return await _database!.Table<Verb>()
             .CountAsync();
     }
-    
+
+    public async Task<bool> IsNounFormInCorpusAsync(
+        int nounId,
+        NounCase nounCase,
+        Number number,
+        Gender gender,
+        int endingIndex = 0)
+    {
+        await EnsureInitializedAsync();
+
+        var result = await _database!.Table<CorpusDeclension>()
+            .Where(d => d.NounId == nounId
+                     && d.CaseName == (int)nounCase
+                     && d.Number == (int)number
+                     && d.Gender == (int)gender
+                     && d.EndingIndex == endingIndex)
+            .CountAsync();
+
+        return result > 0;
+    }
+
+    public async Task<bool> IsVerbFormInCorpusAsync(
+        int verbId,
+        Person person,
+        Tense tense,
+        Mood mood,
+        Voice voice,
+        int endingIndex = 0)
+    {
+        await EnsureInitializedAsync();
+
+        var result = await _database!.Table<CorpusConjugation>()
+            .Where(c => c.VerbId == verbId
+                     && c.Person == (int)person
+                     && c.Tense == (int)tense
+                     && c.Mood == (int)mood
+                     && c.Voice == (int)voice
+                     && c.EndingIndex == endingIndex)
+            .CountAsync();
+
+        return result > 0;
+    }
+
     public void Dispose()
     {
         _database?.CloseAsync();

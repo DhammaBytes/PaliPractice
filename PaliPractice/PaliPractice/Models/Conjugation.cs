@@ -12,6 +12,11 @@ public class Conjugation
     public string Form { get; set; } = string.Empty;
 
     /// <summary>
+    /// The ending only (for UI highlighting).
+    /// </summary>
+    public string Ending { get; set; } = string.Empty;
+
+    /// <summary>
     /// First, Second, or Third person.
     /// </summary>
     public Person Person { get; set; }

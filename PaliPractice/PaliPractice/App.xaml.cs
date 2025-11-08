@@ -71,7 +71,7 @@ public partial class App : Application
                 .ConfigureServices((_, services) =>
                 {
                     services.AddSingleton<IDatabaseService, DatabaseService>();
-
+                    services.AddSingleton<IInflectionService, InflectionService>();
 
                     services.AddTransient<CardViewModel>();
 

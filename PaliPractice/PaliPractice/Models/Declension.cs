@@ -12,6 +12,11 @@ public class Declension
     public string Form { get; set; } = string.Empty;
 
     /// <summary>
+    /// The ending only (for UI highlighting).
+    /// </summary>
+    public string Ending { get; set; } = string.Empty;
+
+    /// <summary>
     /// The grammatical case.
     /// </summary>
     public NounCase CaseName { get; set; }

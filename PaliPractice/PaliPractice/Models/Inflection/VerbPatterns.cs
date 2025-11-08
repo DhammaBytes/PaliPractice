@@ -2,7 +2,8 @@ namespace PaliPractice.Models.Inflection;
 
 /// <summary>
 /// Provides verb conjugation endings for common patterns.
-/// Covers top 10 patterns = 93% of all verbs.
+/// Covers 3 regular present tense patterns: ati pr, eti pr, oti pr.
+/// Aorist and irregular patterns are excluded due to high variability.
 /// </summary>
 public static class VerbPatterns
 {
@@ -28,14 +29,7 @@ public static class VerbPatterns
         {
             "ati pr" => GetAti_Pr(person, number, tense, mood, voice),
             "eti pr" => GetEti_Pr(person, number, tense, mood, voice),
-            "i aor" => GetI_Aor(person, number, tense, mood, voice),
-            "āti pr" => GetAti_Long_Pr(person, number, tense, mood, voice),
-            "esi aor" => GetEsi_Aor(person, number, tense, mood, voice),
-            "āsi aor" => GetAsi_Long_Aor(person, number, tense, mood, voice),
             "oti pr" => GetOti_Pr(person, number, tense, mood, voice),
-            "hoti pr" => GetHoti_Pr(person, number, tense, mood, voice),
-            "i aor isuṃ" => GetI_Aor_Isum(person, number, tense, mood, voice),
-            "issati fut" => GetIssati_Fut(person, number, tense, mood, voice),
             _ => Array.Empty<string>()
         };
     }
@@ -275,119 +269,9 @@ public static class VerbPatterns
         return Array.Empty<string>();
     }
 
-    private static string[] GetI_Aor(Person person, Number number, Tense tense, Mood mood, Voice voice)
-    {
-        // Aorist tense, indicative mood, active voice
-        if (tense == Tense.Aorist && mood == Mood.Indicative && voice == Voice.Active)
-        {
-            return (person, number) switch
-            {
-                (Person.Third, Number.Singular) => ["i"],
-                (Person.Third, Number.Plural) => ["iṃsu", "uṃ"],
-                (Person.Second, Number.Singular) => ["i"],
-                (Person.Second, Number.Plural) => ["ittha"],
-                (Person.First, Number.Singular) => ["iṃ"],
-                (Person.First, Number.Plural) => ["imha", "imhā"],
-                _ => Array.Empty<string>()
-            };
-        }
-
-        return Array.Empty<string>();
-    }
-
-    private static string[] GetAti_Long_Pr(Person person, Number number, Tense tense, Mood mood, Voice voice)
-    {
-        // Present tense, indicative mood, active voice
-        if (tense == Tense.Present && mood == Mood.Indicative && voice == Voice.Active)
-        {
-            return (person, number) switch
-            {
-                (Person.Third, Number.Singular) => ["āti"],
-                (Person.Third, Number.Plural) => ["anti"],
-                (Person.Second, Number.Singular) => ["āsi"],
-                (Person.Second, Number.Plural) => ["ātha"],
-                (Person.First, Number.Singular) => ["āmi"],
-                (Person.First, Number.Plural) => ["āma"],
-                _ => Array.Empty<string>()
-            };
-        }
-
-        // Present tense, optative mood, active voice
-        if (tense == Tense.Present && mood == Mood.Optative && voice == Voice.Active)
-        {
-            return (person, number) switch
-            {
-                (Person.Third, Number.Singular) => ["eyya", "eyyā"],
-                (Person.Third, Number.Plural) => ["eyyuṃ"],
-                (Person.Second, Number.Singular) => ["eyyāsi"],
-                (Person.Second, Number.Plural) => ["eyyātha"],
-                (Person.First, Number.Singular) => ["eyyāmi"],
-                (Person.First, Number.Plural) => ["eyyāma"],
-                _ => Array.Empty<string>()
-            };
-        }
-
-        // Present tense, imperative mood, active voice
-        if (tense == Tense.Present && mood == Mood.Imperative && voice == Voice.Active)
-        {
-            return (person, number) switch
-            {
-                (Person.Third, Number.Singular) => ["ātu"],
-                (Person.Third, Number.Plural) => ["antu"],
-                (Person.Second, Number.Singular) => ["a", "āhi"],
-                (Person.Second, Number.Plural) => ["ātha"],
-                (Person.First, Number.Singular) => ["āmi"],
-                (Person.First, Number.Plural) => ["āma"],
-                _ => Array.Empty<string>()
-            };
-        }
-
-        return Array.Empty<string>();
-    }
-
-    private static string[] GetEsi_Aor(Person person, Number number, Tense tense, Mood mood, Voice voice)
-    {
-        // Aorist tense, indicative mood, active voice
-        if (tense == Tense.Aorist && mood == Mood.Indicative && voice == Voice.Active)
-        {
-            return (person, number) switch
-            {
-                (Person.Third, Number.Singular) => ["esi"],
-                (Person.Third, Number.Plural) => ["esuṃ"],
-                (Person.Second, Number.Singular) => ["esi"],
-                (Person.Second, Number.Plural) => ["ettha"],
-                (Person.First, Number.Singular) => ["esiṃ"],
-                (Person.First, Number.Plural) => ["esimha", "esimhā"],
-                _ => Array.Empty<string>()
-            };
-        }
-
-        return Array.Empty<string>();
-    }
-
-    private static string[] GetAsi_Long_Aor(Person person, Number number, Tense tense, Mood mood, Voice voice)
-    {
-        // Aorist tense, indicative mood, active voice
-        if (tense == Tense.Aorist && mood == Mood.Indicative && voice == Voice.Active)
-        {
-            return (person, number) switch
-            {
-                (Person.Third, Number.Singular) => ["āsi"],
-                (Person.Third, Number.Plural) => ["iṃsu", "uṃ"],
-                (Person.Second, Number.Singular) => ["āsi"],
-                (Person.Second, Number.Plural) => ["ittha"],
-                (Person.First, Number.Singular) => ["āsiṃ"],
-                (Person.First, Number.Plural) => ["imha", "imhā"],
-                _ => Array.Empty<string>()
-            };
-        }
-
-        return Array.Empty<string>();
-    }
-
     private static string[] GetOti_Pr(Person person, Number number, Tense tense, Mood mood, Voice voice)
     {
-        // Present tense, indicative mood, active voice
+        // Present indicative active
         if (tense == Tense.Present && mood == Mood.Indicative && voice == Voice.Active)
         {
             return (person, number) switch
@@ -402,29 +286,14 @@ public static class VerbPatterns
             };
         }
 
-        // Present tense, optative mood, active voice
-        if (tense == Tense.Present && mood == Mood.Optative && voice == Voice.Active)
-        {
-            return (person, number) switch
-            {
-                (Person.Third, Number.Singular) => ["eyya", "eyyā"],
-                (Person.Third, Number.Plural) => ["eyyuṃ"],
-                (Person.Second, Number.Singular) => ["eyyāsi"],
-                (Person.Second, Number.Plural) => ["eyyātha"],
-                (Person.First, Number.Singular) => ["eyyāmi"],
-                (Person.First, Number.Plural) => ["eyyāma"],
-                _ => Array.Empty<string>()
-            };
-        }
-
-        // Present tense, imperative mood, active voice
+        // Present imperative active
         if (tense == Tense.Present && mood == Mood.Imperative && voice == Voice.Active)
         {
             return (person, number) switch
             {
                 (Person.Third, Number.Singular) => ["otu"],
                 (Person.Third, Number.Plural) => ["ontu"],
-                (Person.Second, Number.Singular) => ["ohi"],
+                (Person.Second, Number.Singular) => ["a", "ohi"],
                 (Person.Second, Number.Plural) => ["otha"],
                 (Person.First, Number.Singular) => ["omi"],
                 (Person.First, Number.Plural) => ["oma"],
@@ -432,82 +301,37 @@ public static class VerbPatterns
             };
         }
 
-        return Array.Empty<string>();
-    }
-
-    private static string[] GetHoti_Pr(Person person, Number number, Tense tense, Mood mood, Voice voice)
-    {
-        // Present tense, indicative mood, active voice
-        if (tense == Tense.Present && mood == Mood.Indicative && voice == Voice.Active)
-        {
-            return (person, number) switch
-            {
-                (Person.Third, Number.Singular) => ["oti"],
-                (Person.Third, Number.Plural) => ["onti"],
-                (Person.Second, Number.Singular) => ["osi"],
-                (Person.Second, Number.Plural) => ["otha"],
-                (Person.First, Number.Singular) => ["omi"],
-                (Person.First, Number.Plural) => ["oma"],
-                _ => Array.Empty<string>()
-            };
-        }
-
-        // Present tense, optative mood, active voice
+        // Present optative active
         if (tense == Tense.Present && mood == Mood.Optative && voice == Voice.Active)
         {
             return (person, number) switch
             {
-                (Person.Third, Number.Singular) => ["eyya", "eyyā"],
+                (Person.Third, Number.Singular) => ["e", "eyya"],
                 (Person.Third, Number.Plural) => ["eyyuṃ"],
-                (Person.Second, Number.Singular) => ["eyyāsi"],
-                (Person.Second, Number.Plural) => ["eyyātha"],
-                (Person.First, Number.Singular) => ["eyyāmi"],
-                (Person.First, Number.Plural) => ["eyyāma"],
+                (Person.Second, Number.Singular) => ["e", "eyyāsi"],
+                (Person.Second, Number.Plural) => ["etha", "eyyātha"],
+                (Person.First, Number.Singular) => ["e", "eyyaṃ", "eyyāmi"],
+                (Person.First, Number.Plural) => ["ema", "emu", "eyyāma"],
                 _ => Array.Empty<string>()
             };
         }
 
-        // Present tense, imperative mood, active voice
-        if (tense == Tense.Present && mood == Mood.Imperative && voice == Voice.Active)
+        // Present optative reflexive
+        if (tense == Tense.Present && mood == Mood.Optative && voice == Voice.Reflexive)
         {
             return (person, number) switch
             {
-                (Person.Third, Number.Singular) => ["otu"],
-                (Person.Third, Number.Plural) => ["ontu"],
-                (Person.Second, Number.Singular) => ["ohi"],
-                (Person.Second, Number.Plural) => ["otha"],
-                (Person.First, Number.Singular) => ["omi"],
-                (Person.First, Number.Plural) => ["oma"],
+                (Person.Third, Number.Singular) => ["etha"],
+                (Person.Third, Number.Plural) => ["eraṃ"],
+                (Person.Second, Number.Singular) => ["etho", "eyyātho"],
+                (Person.Second, Number.Plural) => ["eyyavho", "eyyāvho"],
+                (Person.First, Number.Singular) => ["eyyaṃ"],
+                (Person.First, Number.Plural) => ["eyyāmhe"],
                 _ => Array.Empty<string>()
             };
         }
 
-        return Array.Empty<string>();
-    }
-
-    private static string[] GetI_Aor_Isum(Person person, Number number, Tense tense, Mood mood, Voice voice)
-    {
-        // Aorist tense, indicative mood, active voice
-        if (tense == Tense.Aorist && mood == Mood.Indicative && voice == Voice.Active)
-        {
-            return (person, number) switch
-            {
-                (Person.Third, Number.Singular) => ["i"],
-                (Person.Third, Number.Plural) => ["isuṃ"],
-                (Person.Second, Number.Singular) => ["i"],
-                (Person.Second, Number.Plural) => ["ittha"],
-                (Person.First, Number.Singular) => ["iṃ"],
-                (Person.First, Number.Plural) => ["imha", "imhā"],
-                _ => Array.Empty<string>()
-            };
-        }
-
-        return Array.Empty<string>();
-    }
-
-    private static string[] GetIssati_Fut(Person person, Number number, Tense tense, Mood mood, Voice voice)
-    {
-        // Future tense, indicative mood, active voice
+        // Future indicative active
         if (tense == Tense.Future && mood == Mood.Indicative && voice == Voice.Active)
         {
             return (person, number) switch
@@ -518,6 +342,21 @@ public static class VerbPatterns
                 (Person.Second, Number.Plural) => ["issatha"],
                 (Person.First, Number.Singular) => ["issāmi"],
                 (Person.First, Number.Plural) => ["issāma"],
+                _ => Array.Empty<string>()
+            };
+        }
+
+        // Future indicative reflexive
+        if (tense == Tense.Future && mood == Mood.Indicative && voice == Voice.Reflexive)
+        {
+            return (person, number) switch
+            {
+                (Person.Third, Number.Singular) => ["issate"],
+                (Person.Third, Number.Plural) => ["issante", "issare"],
+                (Person.Second, Number.Singular) => ["issase"],
+                (Person.Second, Number.Plural) => ["issavhe"],
+                (Person.First, Number.Singular) => ["issaṃ"],
+                (Person.First, Number.Plural) => ["issāmhe"],
                 _ => Array.Empty<string>()
             };
         }

@@ -10,10 +10,11 @@ public sealed class NounWordProvider : IWordProvider
 
     public NounWordProvider(IDatabaseService db) => _db = db;
 
-    public async Task LoadAsync(CancellationToken ct = default)
+    public Task LoadAsync(CancellationToken ct = default)
     {
-        await _db.InitializeAsync();
+        _db.Initialize();
         _words.Clear();
-        _words.AddRange(await _db.GetRandomNounsAsync(100));
+        _words.AddRange(_db.GetRandomNouns(100));
+        return Task.CompletedTask;
     }
 }

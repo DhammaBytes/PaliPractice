@@ -7,6 +7,10 @@ namespace PaliPractice.Presentation;
 public partial class DeclensionPracticeViewModel
     : PracticeViewModelBase<DeclensionAnswer>
 {
+    readonly IInflectionService _inflectionService;
+    readonly Random _random = new();
+    Declension? _currentDeclension;
+
     public EnumChoiceViewModel<Number> Number { get; }
     public EnumChoiceViewModel<Gender> Gender { get; }
     public EnumChoiceViewModel<NounCase> Cases { get; }
@@ -20,9 +24,11 @@ public partial class DeclensionPracticeViewModel
         [FromKeyedServices("noun")] IWordProvider words,
         CardViewModel card,
         INavigator navigator,
-        ILogger<DeclensionPracticeViewModel> logger)
+        ILogger<DeclensionPracticeViewModel> logger,
+        IInflectionService inflectionService)
         : base(words, card, navigator, logger)
     {
+        _inflectionService = inflectionService;
         Number = new EnumChoiceViewModel<Number>([
             new EnumOption<Number>(Models.Number.Singular, "Singular"),
             new EnumOption<Number>(Models.Number.Plural, "Plural")
@@ -50,30 +56,46 @@ public partial class DeclensionPracticeViewModel
 
     protected override DeclensionAnswer BuildAnswerFor(IWord w)
     {
-        // Cast to Noun if needed for noun-specific properties
-        // var noun = (Noun)w;
+        var noun = (Noun)w;
 
-        // MOCK deterministic key (replace with DB-backed key later)
-        var id = w.Id;
+        // Generate all possible declensions for this noun
+        var allDeclensions = new List<Declension>();
+        foreach (var nounCase in Enum.GetValues<NounCase>())
+        {
+            foreach (var number in Enum.GetValues<Models.Number>())
+            {
+                var declensions = _inflectionService.GenerateNounForms(noun, nounCase, number);
+                allDeclensions.AddRange(declensions);
+            }
+        }
+
+        // Filter to only InCorpus forms
+        var corpusForms = allDeclensions.Where(d => d.InCorpus).ToList();
+
+        if (corpusForms.Count == 0)
+        {
+            Logger.LogWarning("No corpus forms found for noun {Lemma} (id={Id}), falling back to all forms",
+                noun.Lemma, noun.Id);
+            corpusForms = allDeclensions;
+        }
+
+        if (corpusForms.Count == 0)
+        {
+            Logger.LogError("No declensions generated for noun {Lemma} (id={Id})", noun.Lemma, noun.Id);
+            // Fallback to a default answer
+            return new DeclensionAnswer(Models.Number.Singular, noun.Gender, NounCase.Nominative);
+        }
+
+        // Pick a random corpus form
+        _currentDeclension = corpusForms[_random.Next(corpusForms.Count)];
+
+        // Set the card to show the declined form
+        Card.CurrentWord = _currentDeclension.Form;
+
         return new DeclensionAnswer(
-            (id % 2 == 0) ? Models.Number.Singular : Models.Number.Plural,
-            (Gender)(new[]
-            {
-                Models.Gender.Masculine,
-                Models.Gender.Neuter,
-                Models.Gender.Feminine
-            }[id % 3]),
-            (NounCase)(new[]
-            {
-                NounCase.Nominative,
-                NounCase.Accusative,
-                NounCase.Instrumental,
-                NounCase.Dative,
-                NounCase.Ablative,
-                NounCase.Genitive,
-                NounCase.Locative,
-                NounCase.Vocative
-            }[id % 8])
+            _currentDeclension.Number,
+            _currentDeclension.Gender,
+            _currentDeclension.CaseName
         );
     }
 
@@ -86,11 +108,41 @@ public partial class DeclensionPracticeViewModel
 
     protected override void SetExamples(IWord w)
     {
-        // Cast to Noun if needed for noun-specific properties
-        // var noun = (Noun)w;
+        var noun = (Noun)w;
 
-        Card.UsageExample = "virūp'akkhehi me mettaṃ, mettaṃ erāpathehi me";
-        Card.SuttaReference = "AN4.67 ahirājasuttaṃ";
+        // Use real data from the noun
+        if (!string.IsNullOrEmpty(noun.Example1))
+        {
+            Card.UsageExample = noun.Example1;
+
+            // Combine source and sutta reference if available
+            var reference = "";
+            if (!string.IsNullOrEmpty(noun.Source1))
+                reference = noun.Source1;
+            if (!string.IsNullOrEmpty(noun.Sutta1))
+                reference = string.IsNullOrEmpty(reference) ? noun.Sutta1 : $"{reference} {noun.Sutta1}";
+
+            Card.SuttaReference = reference;
+        }
+        else if (!string.IsNullOrEmpty(noun.Example2))
+        {
+            // Fall back to second example if first is not available
+            Card.UsageExample = noun.Example2;
+
+            var reference = "";
+            if (!string.IsNullOrEmpty(noun.Source2))
+                reference = noun.Source2;
+            if (!string.IsNullOrEmpty(noun.Sutta2))
+                reference = string.IsNullOrEmpty(reference) ? noun.Sutta2 : $"{reference} {noun.Sutta2}";
+
+            Card.SuttaReference = reference;
+        }
+        else
+        {
+            // No examples available
+            Card.UsageExample = "";
+            Card.SuttaReference = "";
+        }
     }
 
     protected override void ResetAllGroups()

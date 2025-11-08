@@ -21,5 +21,6 @@
 
     <ItemGroup>
       <Folder Include="Grammar\" />
+      <Folder Include="ViewModels\" />
     </ItemGroup>
 </Project>

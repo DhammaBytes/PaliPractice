@@ -16,8 +16,8 @@ EXCLUDED_COLUMNS = {
     'source_1', 'sutta_1', 'example_1',
     'source_2', 'sutta_2', 'example_2',
     'plus_case', 'family_root', 'stem', 'derived_from',
-    'gender', 'pattern',
-    'trans', 'type'
+    'trans', 'type',
+    'gender', 'pattern'
 }
 
 
@@ -80,22 +80,24 @@ def analyze_table(cursor, table_name):
                 'col_to_idx': col_to_idx
             })
 
-    return differences, compare_columns
+    return differences, compare_columns, len(groups)
 
 
-def print_differences(table_name, differences, compare_columns):
+def print_differences(table_name, differences, compare_columns, unique_count):
     """Print differences in a readable format."""
 
     if not differences:
         print(f"\n{'='*80}")
         print(f"Table: {table_name.upper()}")
         print(f"{'='*80}")
+        print(f"Unique lemma_clean count: {unique_count}")
         print("✓ No grammatical differences found for lemmas with same lemma_clean")
         return
 
     print(f"\n{'='*80}")
     print(f"Table: {table_name.upper()}")
     print(f"{'='*80}")
+    print(f"Unique lemma_clean count: {unique_count}")
     print(f"\nFound {len(differences)} lemma groups with grammatical differences:\n")
 
     for diff_group in differences:
@@ -131,19 +133,19 @@ def main():
     cursor = conn.cursor()
 
     # Analyze nouns
-    noun_diffs, noun_cols = analyze_table(cursor, 'nouns')
-    print_differences('nouns', noun_diffs, noun_cols)
+    noun_diffs, noun_cols, noun_unique_count = analyze_table(cursor, 'nouns')
+    print_differences('nouns', noun_diffs, noun_cols, noun_unique_count)
 
     # Analyze verbs
-    verb_diffs, verb_cols = analyze_table(cursor, 'verbs')
-    print_differences('verbs', verb_diffs, verb_cols)
+    verb_diffs, verb_cols, verb_unique_count = analyze_table(cursor, 'verbs')
+    print_differences('verbs', verb_diffs, verb_cols, verb_unique_count)
 
     # Summary
     print(f"\n{'='*80}")
     print("SUMMARY")
     print(f"{'='*80}")
-    print(f"Nouns: {len(noun_diffs)} groups with differences")
-    print(f"Verbs: {len(verb_diffs)} groups with differences")
+    print(f"Nouns: {noun_unique_count} unique lemma_clean, {len(noun_diffs)} groups with differences")
+    print(f"Verbs: {verb_unique_count} unique lemma_clean, {len(verb_diffs)} groups with differences")
     print(f"\nColumns compared:")
     print(f"  Nouns: {', '.join(noun_cols)}")
     print(f"  Verbs: {', '.join(verb_cols)}")

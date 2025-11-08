@@ -10,10 +10,11 @@ public sealed class VerbWordProvider : IWordProvider
 
     public VerbWordProvider(IDatabaseService db) => _db = db;
 
-    public async Task LoadAsync(CancellationToken ct = default)
+    public Task LoadAsync(CancellationToken ct = default)
     {
-        await _db.InitializeAsync();
+        _db.Initialize();
         _words.Clear();
-        _words.AddRange(await _db.GetRandomVerbsAsync(100));
+        _words.AddRange(_db.GetRandomVerbs(100));
+        return Task.CompletedTask;
     }
 }

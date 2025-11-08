@@ -8,7 +8,7 @@ public interface IInflectionService
     /// Generate noun declension forms for a given noun and grammatical parameters.
     /// Returns a list of possible forms (usually 1, but can be multiple when there are alternative endings).
     /// </summary>
-    Task<List<Declension>> GenerateNounFormsAsync(
+    List<Declension> GenerateNounForms(
         Noun noun,
         NounCase nounCase,
         Number number);
@@ -17,13 +17,15 @@ public interface IInflectionService
     /// Generate verb conjugation forms for a given verb and grammatical parameters.
     /// Returns a list of possible forms (usually 1, but can be multiple when there are alternative endings).
     /// </summary>
-    Task<List<Conjugation>> GenerateVerbFormsAsync(
+    List<Conjugation> GenerateVerbForms(
         Verb verb,
         Person person,
         Number number,
         Tense tense,
         Voice voice);
 }
+
+// TODO: clean or reject stems with symbols
 
 public class InflectionService : IInflectionService
 {
@@ -34,7 +36,7 @@ public class InflectionService : IInflectionService
         _databaseService = databaseService;
     }
 
-    public async Task<List<Declension>> GenerateNounFormsAsync(
+    public List<Declension> GenerateNounForms(
         Noun noun,
         NounCase nounCase,
         Number number)
@@ -61,7 +63,7 @@ public class InflectionService : IInflectionService
             var form = noun.Stem + ending;
 
             // Check if this specific form appears in the corpus
-            var inCorpus = await _databaseService.IsNounFormInCorpusAsync(
+            var inCorpus = _databaseService.IsNounFormInCorpus(
                 noun.Id,
                 nounCase,
                 number,
@@ -84,7 +86,7 @@ public class InflectionService : IInflectionService
         return declensions;
     }
 
-    public async Task<List<Conjugation>> GenerateVerbFormsAsync(
+    public List<Conjugation> GenerateVerbForms(
         Verb verb,
         Person person,
         Number number,
@@ -119,7 +121,7 @@ public class InflectionService : IInflectionService
             var form = verb.Stem + ending;
 
             // Check if this specific form appears in the corpus
-            var inCorpus = await _databaseService.IsVerbFormInCorpusAsync(
+            var inCorpus = _databaseService.IsVerbFormInCorpus(
                 verb.Id,
                 person,
                 tense,

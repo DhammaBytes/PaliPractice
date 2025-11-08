@@ -28,7 +28,7 @@ public static class VerbPatterns
             "ati pr" => GetAti_Pr(person, number, tense, voice),
             "eti pr" => GetEti_Pr(person, number, tense, voice),
             "oti pr" => GetOti_Pr(person, number, tense, voice),
-            _ => Array.Empty<string>()
+            _ => []
         };
     }
 
@@ -45,7 +45,7 @@ public static class VerbPatterns
                 (Person.Second, Number.Plural) => ["atha"],
                 (Person.First, Number.Singular) => ["āmi"],
                 (Person.First, Number.Plural) => ["āma"],
-                _ => Array.Empty<string>()
+                _ => []
             };
         }
 
@@ -60,7 +60,7 @@ public static class VerbPatterns
                 (Person.Second, Number.Plural) => ["avhe"],
                 (Person.First, Number.Singular) => ["e"],
                 (Person.First, Number.Plural) => ["amhase", "āmhe"],
-                _ => Array.Empty<string>()
+                _ => []
             };
         }
 
@@ -75,7 +75,7 @@ public static class VerbPatterns
                 (Person.Second, Number.Plural) => ["atha"],
                 (Person.First, Number.Singular) => ["āmi"],
                 (Person.First, Number.Plural) => ["āma"],
-                _ => Array.Empty<string>()
+                _ => []
             };
         }
 
@@ -90,7 +90,7 @@ public static class VerbPatterns
                 (Person.Second, Number.Plural) => ["avho"],
                 (Person.First, Number.Singular) => ["e"],
                 (Person.First, Number.Plural) => ["āmase"],
-                _ => Array.Empty<string>()
+                _ => []
             };
         }
 
@@ -105,7 +105,7 @@ public static class VerbPatterns
                 (Person.Second, Number.Plural) => ["etha", "eyyātha"],
                 (Person.First, Number.Singular) => ["e", "eyyāmi"],
                 (Person.First, Number.Plural) => ["ema", "emu", "eyyāma"],
-                _ => Array.Empty<string>()
+                _ => []
             };
         }
 
@@ -120,7 +120,7 @@ public static class VerbPatterns
                 (Person.Second, Number.Plural) => ["eyyavho", "eyyāvho"],
                 (Person.First, Number.Singular) => ["eyyaṃ"],
                 (Person.First, Number.Plural) => ["emase", "eyyāmhe"],
-                _ => Array.Empty<string>()
+                _ => []
             };
         }
 
@@ -135,7 +135,7 @@ public static class VerbPatterns
                 (Person.Second, Number.Plural) => ["issatha"],
                 (Person.First, Number.Singular) => ["issāmi"],
                 (Person.First, Number.Plural) => ["issāma"],
-                _ => Array.Empty<string>()
+                _ => []
             };
         }
 
@@ -150,11 +150,11 @@ public static class VerbPatterns
                 (Person.Second, Number.Plural) => ["issavhe"],
                 (Person.First, Number.Singular) => ["issaṃ"],
                 (Person.First, Number.Plural) => ["issāmase", "issāmhe"],
-                _ => Array.Empty<string>()
+                _ => []
             };
         }
 
-        return Array.Empty<string>();
+        return [];
     }
 
     private static string[] GetEti_Pr(Person person, Number number, Tense tense, Voice voice)
@@ -170,7 +170,7 @@ public static class VerbPatterns
                 (Person.Second, Number.Plural) => ["etha"],
                 (Person.First, Number.Singular) => ["emi"],
                 (Person.First, Number.Plural) => ["ema"],
-                _ => Array.Empty<string>()
+                _ => []
             };
         }
 
@@ -185,7 +185,7 @@ public static class VerbPatterns
                 (Person.Second, Number.Plural) => ["etha"],
                 (Person.First, Number.Singular) => ["emi"],
                 (Person.First, Number.Plural) => ["ema"],
-                _ => Array.Empty<string>()
+                _ => []
             };
         }
 
@@ -200,7 +200,7 @@ public static class VerbPatterns
                 (Person.Second, Number.Plural) => ["avho", "evho"],
                 (Person.First, Number.Singular) => ["e"],
                 (Person.First, Number.Plural) => ["amase", "emase"],
-                _ => Array.Empty<string>()
+                _ => []
             };
         }
 
@@ -215,7 +215,7 @@ public static class VerbPatterns
                 (Person.Second, Number.Plural) => ["etha", "eyyātha"],
                 (Person.First, Number.Singular) => ["e", "eyyāmi"],
                 (Person.First, Number.Plural) => ["ema", "emu", "eyyāma"],
-                _ => Array.Empty<string>()
+                _ => []
             };
         }
 
@@ -230,7 +230,7 @@ public static class VerbPatterns
                 (Person.Second, Number.Plural) => ["eyyavho", "eyyāvho"],
                 (Person.First, Number.Singular) => ["eyyaṃ"],
                 (Person.First, Number.Plural) => ["eyyāmhe"],
-                _ => Array.Empty<string>()
+                _ => []
             };
         }
 
@@ -245,7 +245,7 @@ public static class VerbPatterns
                 (Person.Second, Number.Plural) => ["issatha", "essatha"],
                 (Person.First, Number.Singular) => ["issāmi", "essāmi"],
                 (Person.First, Number.Plural) => ["issāma", "essāma"],
-                _ => Array.Empty<string>()
+                _ => []
             };
         }
 
@@ -260,11 +260,11 @@ public static class VerbPatterns
                 (Person.Second, Number.Plural) => ["essavhe"],
                 (Person.First, Number.Singular) => ["essaṃ"],
                 (Person.First, Number.Plural) => ["essāmhe"],
-                _ => Array.Empty<string>()
+                _ => []
             };
         }
 
-        return Array.Empty<string>();
+        return [];
     }
 
     private static string[] GetOti_Pr(Person person, Number number, Tense tense, Voice voice)
@@ -280,7 +280,7 @@ public static class VerbPatterns
                 (Person.Second, Number.Plural) => ["otha"],
                 (Person.First, Number.Singular) => ["omi"],
                 (Person.First, Number.Plural) => ["oma"],
-                _ => Array.Empty<string>()
+                _ => []
             };
         }
 
@@ -295,7 +295,7 @@ public static class VerbPatterns
                 (Person.Second, Number.Plural) => ["otha"],
                 (Person.First, Number.Singular) => ["omi"],
                 (Person.First, Number.Plural) => ["oma"],
-                _ => Array.Empty<string>()
+                _ => []
             };
         }
 
@@ -310,7 +310,7 @@ public static class VerbPatterns
                 (Person.Second, Number.Plural) => ["etha", "eyyātha"],
                 (Person.First, Number.Singular) => ["e", "eyyaṃ", "eyyāmi"],
                 (Person.First, Number.Plural) => ["ema", "emu", "eyyāma"],
-                _ => Array.Empty<string>()
+                _ => []
             };
         }
 
@@ -325,7 +325,7 @@ public static class VerbPatterns
                 (Person.Second, Number.Plural) => ["eyyavho", "eyyāvho"],
                 (Person.First, Number.Singular) => ["eyyaṃ"],
                 (Person.First, Number.Plural) => ["eyyāmhe"],
-                _ => Array.Empty<string>()
+                _ => []
             };
         }
 
@@ -340,7 +340,7 @@ public static class VerbPatterns
                 (Person.Second, Number.Plural) => ["issatha"],
                 (Person.First, Number.Singular) => ["issāmi"],
                 (Person.First, Number.Plural) => ["issāma"],
-                _ => Array.Empty<string>()
+                _ => []
             };
         }
 
@@ -355,10 +355,10 @@ public static class VerbPatterns
                 (Person.Second, Number.Plural) => ["issavhe"],
                 (Person.First, Number.Singular) => ["issaṃ"],
                 (Person.First, Number.Plural) => ["issāmhe"],
-                _ => Array.Empty<string>()
+                _ => []
             };
         }
 
-        return Array.Empty<string>();
+        return [];
     }
 }

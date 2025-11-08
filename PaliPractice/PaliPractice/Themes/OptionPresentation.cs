@@ -50,15 +50,10 @@ public static class OptionPresentation
         Voice.Causative => VoiceColor,
 
         Tense.Present => TenseColor,
+        Tense.Imperative => TenseColor,
+        Tense.Optative => TenseColor,
         Tense.Future => TenseColor,
         Tense.Aorist => TenseColor,
-        Tense.Imperfect => TenseColor,
-        Tense.Perfect => TenseColor,
-
-        Mood.Indicative => TenseColor,
-        Mood.Imperative => TenseColor,
-        Mood.Optative => TenseColor,
-        Mood.Conditional => TenseColor,
 
         Gender.Masculine => GenderColor,
         Gender.Neuter => GenderColor,

@@ -22,14 +22,9 @@ public class Conjugation
     public Person Person { get; set; }
 
     /// <summary>
-    /// Present, Future, Aorist, etc.
+    /// Tense (includes traditional moods): Present, Imperative, Optative, Future, Aorist.
     /// </summary>
     public Tense Tense { get; set; }
-
-    /// <summary>
-    /// Indicative, Optative, Imperative, Conditional.
-    /// </summary>
-    public Mood Mood { get; set; }
 
     /// <summary>
     /// Active, Reflexive, Passive, Causative.

@@ -8,7 +8,6 @@ This directory contains all setup instructions and scripts to build the PaliPrac
 scripts/
 ├── extract_nouns_and_verbs.py   # Main extraction script
 ├── validate_db.py                # Database validation
-├── generate_csharp_models.py     # C# model generation
 ├── setup.py                      # Python setup utilities
 ├── requirements.txt              # Python dependencies
 ├── frequency/                    # Custom Go files for corpus processing
@@ -34,9 +33,6 @@ Validates the generated database:
 - Checks table structure
 - Verifies data integrity
 - Provides statistics on extracted data
-
-### `generate_csharp_models.py`
-Generates C# Entity Framework models from the database schema.
 
 ## Complete Setup Instructions
 

@@ -26,6 +26,9 @@ public class Noun : IWord
     [Column("pattern")]
     public string? Pattern { get; set; }
 
+    [Column("derived_from")]
+    public string DerivedFrom { get; set; } = string.Empty;
+
     [Column("family_root")]
     public string FamilyRoot { get; set; } = string.Empty;
 

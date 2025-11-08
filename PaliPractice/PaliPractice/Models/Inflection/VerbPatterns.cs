@@ -13,8 +13,7 @@ public static class VerbPatterns
     /// <param name="pattern">Pattern name (e.g., "ati pr", "eti pr")</param>
     /// <param name="person">First, second, or third person</param>
     /// <param name="number">Singular or plural</param>
-    /// <param name="tense">Tense (present, future, aorist, etc.)</param>
-    /// <param name="mood">Mood (indicative, optative, imperative, conditional)</param>
+    /// <param name="tense">Tense (includes traditional moods: present, imperative, optative, future, aorist)</param>
     /// <param name="voice">Voice (active, reflexive, passive, causative)</param>
     /// <returns>Array of endings. Empty array if combination not supported.</returns>
     public static string[] GetEndings(
@@ -22,22 +21,21 @@ public static class VerbPatterns
         Person person,
         Number number,
         Tense tense,
-        Mood mood,
         Voice voice)
     {
         return pattern switch
         {
-            "ati pr" => GetAti_Pr(person, number, tense, mood, voice),
-            "eti pr" => GetEti_Pr(person, number, tense, mood, voice),
-            "oti pr" => GetOti_Pr(person, number, tense, mood, voice),
+            "ati pr" => GetAti_Pr(person, number, tense, voice),
+            "eti pr" => GetEti_Pr(person, number, tense, voice),
+            "oti pr" => GetOti_Pr(person, number, tense, voice),
             _ => Array.Empty<string>()
         };
     }
 
-    private static string[] GetAti_Pr(Person person, Number number, Tense tense, Mood mood, Voice voice)
+    private static string[] GetAti_Pr(Person person, Number number, Tense tense, Voice voice)
     {
-        // Present tense, indicative mood, active voice
-        if (tense == Tense.Present && mood == Mood.Indicative && voice == Voice.Active)
+        // Present tense, active voice
+        if (tense == Tense.Present && voice == Voice.Active)
         {
             return (person, number) switch
             {
@@ -51,8 +49,8 @@ public static class VerbPatterns
             };
         }
 
-        // Present tense, indicative mood, reflexive voice
-        if (tense == Tense.Present && mood == Mood.Indicative && voice == Voice.Reflexive)
+        // Present tense, reflexive voice
+        if (tense == Tense.Present && voice == Voice.Reflexive)
         {
             return (person, number) switch
             {
@@ -66,8 +64,8 @@ public static class VerbPatterns
             };
         }
 
-        // Imperative mood, active voice
-        if (tense == Tense.Present && mood == Mood.Imperative && voice == Voice.Active)
+        // Imperative tense, active voice
+        if (tense == Tense.Imperative && voice == Voice.Active)
         {
             return (person, number) switch
             {
@@ -81,8 +79,8 @@ public static class VerbPatterns
             };
         }
 
-        // Imperative mood, reflexive voice
-        if (tense == Tense.Present && mood == Mood.Imperative && voice == Voice.Reflexive)
+        // Imperative tense, reflexive voice
+        if (tense == Tense.Imperative && voice == Voice.Reflexive)
         {
             return (person, number) switch
             {
@@ -96,8 +94,8 @@ public static class VerbPatterns
             };
         }
 
-        // Optative mood, active voice
-        if (tense == Tense.Present && mood == Mood.Optative && voice == Voice.Active)
+        // Optative tense, active voice
+        if (tense == Tense.Optative && voice == Voice.Active)
         {
             return (person, number) switch
             {
@@ -111,8 +109,8 @@ public static class VerbPatterns
             };
         }
 
-        // Optative mood, reflexive voice
-        if (tense == Tense.Present && mood == Mood.Optative && voice == Voice.Reflexive)
+        // Optative tense, reflexive voice
+        if (tense == Tense.Optative && voice == Voice.Reflexive)
         {
             return (person, number) switch
             {
@@ -127,7 +125,7 @@ public static class VerbPatterns
         }
 
         // Future tense, active voice
-        if (tense == Tense.Future && mood == Mood.Indicative && voice == Voice.Active)
+        if (tense == Tense.Future && voice == Voice.Active)
         {
             return (person, number) switch
             {
@@ -142,7 +140,7 @@ public static class VerbPatterns
         }
 
         // Future tense, reflexive voice
-        if (tense == Tense.Future && mood == Mood.Indicative && voice == Voice.Reflexive)
+        if (tense == Tense.Future && voice == Voice.Reflexive)
         {
             return (person, number) switch
             {
@@ -159,10 +157,10 @@ public static class VerbPatterns
         return Array.Empty<string>();
     }
 
-    private static string[] GetEti_Pr(Person person, Number number, Tense tense, Mood mood, Voice voice)
+    private static string[] GetEti_Pr(Person person, Number number, Tense tense, Voice voice)
     {
-        // Present tense, indicative mood, active voice (no reflexive forms for present indicative)
-        if (tense == Tense.Present && mood == Mood.Indicative && voice == Voice.Active)
+        // Present tense, active voice (no reflexive forms for present indicative)
+        if (tense == Tense.Present && voice == Voice.Active)
         {
             return (person, number) switch
             {
@@ -176,8 +174,8 @@ public static class VerbPatterns
             };
         }
 
-        // Imperative mood, active voice
-        if (tense == Tense.Present && mood == Mood.Imperative && voice == Voice.Active)
+        // Imperative tense, active voice
+        if (tense == Tense.Imperative && voice == Voice.Active)
         {
             return (person, number) switch
             {
@@ -191,8 +189,8 @@ public static class VerbPatterns
             };
         }
 
-        // Imperative mood, reflexive voice
-        if (tense == Tense.Present && mood == Mood.Imperative && voice == Voice.Reflexive)
+        // Imperative tense, reflexive voice
+        if (tense == Tense.Imperative && voice == Voice.Reflexive)
         {
             return (person, number) switch
             {
@@ -206,8 +204,8 @@ public static class VerbPatterns
             };
         }
 
-        // Optative mood, active voice
-        if (tense == Tense.Present && mood == Mood.Optative && voice == Voice.Active)
+        // Optative tense, active voice
+        if (tense == Tense.Optative && voice == Voice.Active)
         {
             return (person, number) switch
             {
@@ -221,8 +219,8 @@ public static class VerbPatterns
             };
         }
 
-        // Optative mood, reflexive voice
-        if (tense == Tense.Present && mood == Mood.Optative && voice == Voice.Reflexive)
+        // Optative tense, reflexive voice
+        if (tense == Tense.Optative && voice == Voice.Reflexive)
         {
             return (person, number) switch
             {
@@ -237,7 +235,7 @@ public static class VerbPatterns
         }
 
         // Future tense, active voice
-        if (tense == Tense.Future && mood == Mood.Indicative && voice == Voice.Active)
+        if (tense == Tense.Future && voice == Voice.Active)
         {
             return (person, number) switch
             {
@@ -252,7 +250,7 @@ public static class VerbPatterns
         }
 
         // Future tense, reflexive voice
-        if (tense == Tense.Future && mood == Mood.Indicative && voice == Voice.Reflexive)
+        if (tense == Tense.Future && voice == Voice.Reflexive)
         {
             return (person, number) switch
             {
@@ -269,10 +267,10 @@ public static class VerbPatterns
         return Array.Empty<string>();
     }
 
-    private static string[] GetOti_Pr(Person person, Number number, Tense tense, Mood mood, Voice voice)
+    private static string[] GetOti_Pr(Person person, Number number, Tense tense, Voice voice)
     {
-        // Present indicative active
-        if (tense == Tense.Present && mood == Mood.Indicative && voice == Voice.Active)
+        // Present tense, active voice
+        if (tense == Tense.Present && voice == Voice.Active)
         {
             return (person, number) switch
             {
@@ -286,8 +284,8 @@ public static class VerbPatterns
             };
         }
 
-        // Present imperative active
-        if (tense == Tense.Present && mood == Mood.Imperative && voice == Voice.Active)
+        // Imperative tense, active voice
+        if (tense == Tense.Imperative && voice == Voice.Active)
         {
             return (person, number) switch
             {
@@ -301,8 +299,8 @@ public static class VerbPatterns
             };
         }
 
-        // Present optative active
-        if (tense == Tense.Present && mood == Mood.Optative && voice == Voice.Active)
+        // Optative tense, active voice
+        if (tense == Tense.Optative && voice == Voice.Active)
         {
             return (person, number) switch
             {
@@ -316,8 +314,8 @@ public static class VerbPatterns
             };
         }
 
-        // Present optative reflexive
-        if (tense == Tense.Present && mood == Mood.Optative && voice == Voice.Reflexive)
+        // Optative tense, reflexive voice
+        if (tense == Tense.Optative && voice == Voice.Reflexive)
         {
             return (person, number) switch
             {
@@ -331,8 +329,8 @@ public static class VerbPatterns
             };
         }
 
-        // Future indicative active
-        if (tense == Tense.Future && mood == Mood.Indicative && voice == Voice.Active)
+        // Future tense, active voice
+        if (tense == Tense.Future && voice == Voice.Active)
         {
             return (person, number) switch
             {
@@ -346,8 +344,8 @@ public static class VerbPatterns
             };
         }
 
-        // Future indicative reflexive
-        if (tense == Tense.Future && mood == Mood.Indicative && voice == Voice.Reflexive)
+        // Future tense, reflexive voice
+        if (tense == Tense.Future && voice == Voice.Reflexive)
         {
             return (person, number) switch
             {

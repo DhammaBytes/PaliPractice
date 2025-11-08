@@ -59,20 +59,13 @@ class GrammarEnums:
     VOICE_PASSIVE = 3
     VOICE_CAUSATIVE = 4
 
-    # Tense enum
+    # Tense enum (includes traditional moods: imperative, optative)
     TENSE_NONE = 0
     TENSE_PRESENT = 1
-    TENSE_FUTURE = 2
-    TENSE_AORIST = 3
-    TENSE_IMPERFECT = 4
-    TENSE_PERFECT = 5
-
-    # Mood enum
-    MOOD_NONE = 0
-    MOOD_INDICATIVE = 1
-    MOOD_OPTATIVE = 2
-    MOOD_IMPERATIVE = 3
-    MOOD_CONDITIONAL = 4
+    TENSE_IMPERATIVE = 2
+    TENSE_OPTATIVE = 3
+    TENSE_FUTURE = 4
+    TENSE_AORIST = 5
 
     # String to enum mappings
     CASE_MAP = {
@@ -112,17 +105,10 @@ class GrammarEnums:
 
     TENSE_MAP = {
         'present': TENSE_PRESENT,
+        'imperative': TENSE_IMPERATIVE,
+        'optative': TENSE_OPTATIVE,
         'future': TENSE_FUTURE,
-        'aorist': TENSE_AORIST,
-        'imperfect': TENSE_IMPERFECT,
-        'perfect': TENSE_PERFECT
-    }
-
-    MOOD_MAP = {
-        'indicative': MOOD_INDICATIVE,
-        'optative': MOOD_OPTATIVE,
-        'imperative': MOOD_IMPERATIVE,
-        'conditional': MOOD_CONDITIONAL
+        'aorist': TENSE_AORIST
     }
 
 
@@ -162,11 +148,12 @@ class NounVerbExtractor:
                 lemma TEXT NOT NULL UNIQUE,
                 lemma_clean TEXT NOT NULL,
                 gender INTEGER NOT NULL DEFAULT 0,
-                stem TEXT,
                 pattern TEXT,
+                derived_from TEXT DEFAULT '',
                 family_root TEXT DEFAULT '',
-                meaning TEXT,
+                stem TEXT,
                 plus_case TEXT DEFAULT '',
+                meaning TEXT,
                 source_1 TEXT DEFAULT '',
                 sutta_1 TEXT DEFAULT '',
                 example_1 TEXT DEFAULT '',
@@ -186,11 +173,12 @@ class NounVerbExtractor:
                 pos TEXT NOT NULL,
                 type TEXT DEFAULT '',
                 trans TEXT DEFAULT '',
-                stem TEXT,
                 pattern TEXT,
+                derived_from TEXT DEFAULT '',
                 family_root TEXT DEFAULT '',
-                meaning TEXT,
+                stem TEXT,
                 plus_case TEXT DEFAULT '',
+                meaning TEXT,
                 source_1 TEXT DEFAULT '',
                 sutta_1 TEXT DEFAULT '',
                 example_1 TEXT DEFAULT '',
@@ -218,27 +206,14 @@ class NounVerbExtractor:
             CREATE TABLE IF NOT EXISTS corpus_conjugations (
                 verb_id INTEGER NOT NULL,
                 person INTEGER NOT NULL,     -- Person enum: 0=None, 1=First, 2=Second, 3=Third
-                tense INTEGER NOT NULL,      -- Tense enum: 0=None, 1=Present, 2=Future, 3=Aorist, 4=Imperfect, 5=Perfect
-                mood INTEGER NOT NULL,       -- Mood enum: 0=None, 1=Indicative, 2=Optative, 3=Imperative, 4=Conditional
+                tense INTEGER NOT NULL,      -- Tense enum (includes moods): 0=None, 1=Present, 2=Imperative, 3=Optative, 4=Future, 5=Aorist
                 voice INTEGER NOT NULL,      -- Voice enum: 0=None, 1=Active, 2=Reflexive, 3=Passive, 4=Causative
                 ending_index INTEGER NOT NULL DEFAULT 0,  -- For multiple endings (0, 1, 2...)
-                PRIMARY KEY (verb_id, person, tense, mood, voice, ending_index),
+                PRIMARY KEY (verb_id, person, tense, voice, ending_index),
                 FOREIGN KEY (verb_id) REFERENCES verbs(id)
             )
         """)
         
-        # Inflection patterns table for reference
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS patterns (
-                pattern_name TEXT PRIMARY KEY,
-                like_word TEXT,
-                pos_category TEXT,
-                template_data TEXT
-            )
-        """)
-        
-        conn.commit()
-
         # Create indexes after tables are created
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_corpus_decl_noun ON corpus_declensions(noun_id)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_corpus_conj_verb ON corpus_conjugations(verb_id)")
@@ -275,9 +250,9 @@ class NounVerbExtractor:
             # Filter: must have meaning_1
             DpdHeadword.meaning_1.isnot(None),
             DpdHeadword.meaning_1 != '',
-            # Filter: must have source_1
-            DpdHeadword.source_1.isnot(None),
-            DpdHeadword.source_1 != '',
+            # Filter: must have sutta_1 (skip words not attested in suttas)
+            DpdHeadword.sutta_1.isnot(None),
+            DpdHeadword.sutta_1 != '',
             # Filter: meaning must not contain "(gram)", "(abhi)", "(comm)", "in reference to", "name of", or "family name"
             ~DpdHeadword.meaning_1.contains('(gram)'),
             ~DpdHeadword.meaning_1.contains('(abhi)'),
@@ -317,9 +292,9 @@ class NounVerbExtractor:
             # Filter: must have meaning_1
             DpdHeadword.meaning_1.isnot(None),
             DpdHeadword.meaning_1 != '',
-            # Filter: must have source_1
-            DpdHeadword.source_1.isnot(None),
-            DpdHeadword.source_1 != '',
+            # Filter: must have sutta_1 (skip words not attested in suttas)
+            DpdHeadword.sutta_1.isnot(None),
+            DpdHeadword.sutta_1 != '',
             # Filter: meaning must not contain "(gram)", "(abhi)", "(comm)", "in reference to", "name of", or "family name"
             ~DpdHeadword.meaning_1.contains('(gram)'),
             ~DpdHeadword.meaning_1.contains('(abhi)'),
@@ -480,11 +455,11 @@ class NounVerbExtractor:
         return result
     
     def parse_verb_grammar(self, grammar_str: str, label: str, pos: str) -> Dict[str, int]:
-        """Parse grammar string for verbs, returning enum integer values. Defaults to 0 (None) if not found."""
+        """Parse grammar string for verbs, returning enum integer values. Defaults to 0 (None) if not found.
+        Note: Tense enum now includes traditional moods (imperative, optative)."""
         result = {
             'person': GrammarEnums.PERSON_NONE,
             'tense': GrammarEnums.TENSE_NONE,
-            'mood': GrammarEnums.MOOD_NONE,
             'voice': GrammarEnums.VOICE_NONE
         }
 
@@ -496,27 +471,18 @@ class NounVerbExtractor:
         elif '3rd' in grammar_str or 'third' in grammar_str:
             result['person'] = GrammarEnums.PERSON_THIRD
 
-        # Tense - return enum integer (from POS or grammar string)
-        if pos == 'pr' or 'pres' in grammar_str:
-            result['tense'] = GrammarEnums.TENSE_PRESENT
-        elif pos == 'aor' or 'aor' in grammar_str:
-            result['tense'] = GrammarEnums.TENSE_AORIST
+        # Tense - includes traditional moods (imperative, optative)
+        # Priority order: opt > imp > fut > aor > pr
+        if pos == 'opt' or 'opt' in grammar_str:
+            result['tense'] = GrammarEnums.TENSE_OPTATIVE
+        elif pos == 'imp' or 'imp' in grammar_str:
+            result['tense'] = GrammarEnums.TENSE_IMPERATIVE
         elif pos == 'fut' or 'fut' in grammar_str:
             result['tense'] = GrammarEnums.TENSE_FUTURE
-        elif pos == 'imperf' or 'imperf' in grammar_str:
-            result['tense'] = GrammarEnums.TENSE_IMPERFECT
-        elif pos == 'perf' or 'perf' in grammar_str:
-            result['tense'] = GrammarEnums.TENSE_PERFECT
-
-        # Mood - return enum integer
-        if pos == 'opt' or 'opt' in grammar_str:
-            result['mood'] = GrammarEnums.MOOD_OPTATIVE
-        elif pos == 'imp' or 'imp' in grammar_str:
-            result['mood'] = GrammarEnums.MOOD_IMPERATIVE
-        elif pos == 'cond' or 'cond' in grammar_str:
-            result['mood'] = GrammarEnums.MOOD_CONDITIONAL
-        elif result['tense'] != GrammarEnums.TENSE_NONE:  # Default mood for tenses
-            result['mood'] = GrammarEnums.MOOD_INDICATIVE
+        elif pos == 'aor' or 'aor' in grammar_str:
+            result['tense'] = GrammarEnums.TENSE_AORIST
+        elif pos == 'pr' or 'pres' in grammar_str:
+            result['tense'] = GrammarEnums.TENSE_PRESENT
 
         # Voice - return enum integer (default to Active if not specified)
         if 'caus' in grammar_str:
@@ -544,17 +510,6 @@ class NounVerbExtractor:
         conn = sqlite3.connect(self.output_db_path)
         cursor = conn.cursor()
         
-        # Extract patterns first
-        patterns_added = set()
-        all_words = nouns + verbs
-        for word in all_words:
-            if word.pattern and word.pattern not in patterns_added and word.it:
-                cursor.execute("""
-                    INSERT OR REPLACE INTO patterns (pattern_name, like_word, pos_category, template_data)
-                    VALUES (?, ?, ?, ?)
-                """, (word.pattern, word.it.like, word.pos, word.it.data))
-                patterns_added.add(word.pattern)
-        
         # Process nouns
         total_declensions = 0
         nouns_processed = 0
@@ -570,13 +525,13 @@ class NounVerbExtractor:
             gender = self.pos_to_gender(word.pos)
             cursor.execute("""
                 INSERT INTO nouns (
-                    id, ebt_count, lemma, lemma_clean, gender, stem, pattern, family_root,
-                    meaning, plus_case, source_1, sutta_1, example_1, source_2, sutta_2, example_2
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    id, ebt_count, lemma, lemma_clean, gender, pattern, derived_from, family_root,
+                    stem, plus_case, meaning, source_1, sutta_1, example_1, source_2, sutta_2, example_2
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 word.id, word.ebt_count or 0, word.lemma_1, word.lemma_clean, gender,
-                word.stem, word.pattern, word.family_root or '',
-                word.meaning_1, word.plus_case or '',
+                word.pattern, word.derived_from or '', word.family_root or '',
+                word.stem, word.plus_case or '', word.meaning_1,
                 word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
                 word.source_2 or '', word.sutta_2 or '', word.example_2 or ''
             ))
@@ -631,13 +586,13 @@ class NounVerbExtractor:
             # Insert verb
             cursor.execute("""
                 INSERT INTO verbs (
-                    id, ebt_count, lemma, lemma_clean, pos, type, trans, stem, pattern, family_root,
-                    meaning, plus_case, source_1, sutta_1, example_1, source_2, sutta_2, example_2
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    id, ebt_count, lemma, lemma_clean, pos, type, trans, pattern, derived_from, family_root,
+                    stem, plus_case, meaning, source_1, sutta_1, example_1, source_2, sutta_2, example_2
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 word.id, word.ebt_count or 0, word.lemma_1, word.lemma_clean, word.pos,
-                word.verb or '', word.trans or '', word.stem, word.pattern, word.family_root or '',
-                word.meaning_1, word.plus_case or '',
+                word.verb or '', word.trans or '', word.pattern, word.derived_from or '', word.family_root or '',
+                word.stem, word.plus_case or '', word.meaning_1,
                 word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
                 word.source_2 or '', word.sutta_2 or '', word.example_2 or ''
             ))
@@ -657,13 +612,12 @@ class NounVerbExtractor:
                         try:
                             cursor.execute("""
                                 INSERT INTO corpus_conjugations (
-                                    verb_id, person, tense, mood, voice, ending_index
-                                ) VALUES (?, ?, ?, ?, ?, ?)
+                                    verb_id, person, tense, voice, ending_index
+                                ) VALUES (?, ?, ?, ?, ?)
                             """, (
                                 word.id,
                                 form.get('person', GrammarEnums.PERSON_NONE),
                                 form.get('tense', GrammarEnums.TENSE_NONE),
-                                form.get('mood', GrammarEnums.MOOD_NONE),
                                 form.get('voice', GrammarEnums.VOICE_NONE),
                                 form.get('ending_index', 0)
                             ))
@@ -682,7 +636,6 @@ class NounVerbExtractor:
         print(f"Verbs processed: {verbs_processed}/{len(verbs)}")
         print(f"Total declensions: {total_declensions}")
         print(f"Total conjugations: {total_conjugations}")
-        print(f"Patterns: {len(patterns_added)}")
 
         # Show corpus attestation statistics
         total_forms_generated = total_noun_forms_generated + total_verb_forms_generated

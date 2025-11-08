@@ -19,9 +19,6 @@ internal class CorpusConjugation
     [Column("tense")]
     public int Tense { get; set; }
 
-    [Column("mood")]
-    public int Mood { get; set; }
-
     [Column("voice")]
     public int Voice { get; set; }
 

@@ -28,19 +28,10 @@ public enum Tense
 {
     None,
     Present = 1,
-    Future = 2,
-    Aorist = 3,
-    Imperfect = 4,
-    Perfect = 5
-}
-
-public enum Mood
-{
-    None,
-    Indicative = 1,
-    Optative = 2,
-    Imperative = 3,
-    Conditional = 4
+    Imperative = 2,
+    Optative = 3,
+    Future = 4,
+    Aorist = 5
 }
 
 public enum Gender

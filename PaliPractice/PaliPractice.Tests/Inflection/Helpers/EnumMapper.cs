@@ -26,8 +26,9 @@ public static class EnumMapper
 
     /// <summary>
     /// Parse a verb title like "pr 3rd sg" or "reflx opt 1st pl" into enum values.
+    /// Note: Tense now includes traditional moods (imperative, optative).
     /// </summary>
-    public static (Tense tense, Mood mood, Person person, Number number, Voice voice) ParseVerbTitle(string title)
+    public static (Tense tense, Person person, Number number, Voice voice) ParseVerbTitle(string title)
     {
         var parts = title.ToLower().Split(' ');
 
@@ -51,9 +52,9 @@ public static class EnumMapper
             throw new ArgumentException($"Invalid verb title format: {title}");
         }
 
-        // Parse tense/mood indicator (pr, fut, imp, opt)
+        // Parse tense indicator (includes imperative and optative)
         var tenseIndicator = parts[offset];
-        var (tense, mood) = ParseTenseMood(tenseIndicator);
+        var tense = ParseTense(tenseIndicator);
 
         // Parse person (1st, 2nd, 3rd)
         var person = ParsePerson(parts[offset + 1]);
@@ -61,7 +62,7 @@ public static class EnumMapper
         // Parse number (sg, pl)
         var number = ParseNumber(parts[offset + 2]);
 
-        return (tense, mood, person, number, voice);
+        return (tense, person, number, voice);
     }
 
     private static Gender ParseGender(string gender)
@@ -112,18 +113,16 @@ public static class EnumMapper
         };
     }
 
-    private static (Tense tense, Mood mood) ParseTenseMood(string indicator)
+    private static Tense ParseTense(string indicator)
     {
         return indicator switch
         {
-            "pr" => (Tense.Present, Mood.Indicative),
-            "fut" => (Tense.Future, Mood.Indicative),
-            "imp" => (Tense.Present, Mood.Imperative),
-            "opt" => (Tense.Present, Mood.Optative),
-            "aor" => (Tense.Aorist, Mood.Indicative),
-            "perf" => (Tense.Perfect, Mood.Indicative),
-            "imperf" => (Tense.Imperfect, Mood.Indicative),
-            _ => throw new ArgumentException($"Unknown tense/mood indicator: {indicator}")
+            "pr" => Tense.Present,
+            "imp" => Tense.Imperative,
+            "opt" => Tense.Optative,
+            "fut" => Tense.Future,
+            "aor" => Tense.Aorist,
+            _ => throw new ArgumentException($"Unknown tense indicator: {indicator}. Only pr, imp, opt, fut, aor are supported.")
         };
     }
 }

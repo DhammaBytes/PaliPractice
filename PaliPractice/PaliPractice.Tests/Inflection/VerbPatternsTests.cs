@@ -20,14 +20,13 @@ public class VerbPatternsTests
         string Pattern,
         string Word,
         Tense Tense,
-        Mood Mood,
         Person Person,
         Number Number,
         Voice Voice,
         string[] ExpectedEndings)
     {
         public override string ToString() =>
-            $"{Pattern} | {Word} | {Tense} {Mood} {Voice} {Person} {Number} | [{string.Join(", ", ExpectedEndings)}]";
+            $"{Pattern} | {Word} | {Tense} {Voice} {Person} {Number} | [{string.Join(", ", ExpectedEndings)}]";
     }
 
     [OneTimeSetUp]
@@ -76,8 +75,8 @@ public class VerbPatternsTests
                     }
 
                     // Parse the DPD title to our enum values
-                    // Skip forms we don't support yet (e.g., passive, causative, perf, imperf, aor for some patterns)
-                    (Tense tense, Mood mood, Person person, Number number, Voice voice)? parsed = null;
+                    // Skip forms we don't support yet (e.g., passive, causative)
+                    (Tense tense, Person person, Number number, Voice voice)? parsed = null;
 
                     try
                     {
@@ -91,13 +90,12 @@ public class VerbPatternsTests
 
                     if (parsed.HasValue)
                     {
-                        var (tense, mood, person, number, voice) = parsed.Value;
+                        var (tense, person, number, voice) = parsed.Value;
 
                         yield return new VerbTestCase(
                             pattern,
                             word.Lemma1,
                             tense,
-                            mood,
                             person,
                             number,
                             voice,
@@ -119,13 +117,12 @@ public class VerbPatternsTests
             testCase.Person,
             testCase.Number,
             testCase.Tense,
-            testCase.Mood,
             testCase.Voice
         );
 
         // Assert: Should match DPD exactly (including order)
         actualEndings.Should().Equal(testCase.ExpectedEndings,
-            because: $"pattern '{testCase.Pattern}' for {testCase.Tense} {testCase.Mood} {testCase.Voice} {testCase.Person} {testCase.Number} should match DPD");
+            because: $"pattern '{testCase.Pattern}' for {testCase.Tense} {testCase.Voice} {testCase.Person} {testCase.Number} should match DPD");
     }
 
     /// <summary>
@@ -134,25 +131,23 @@ public class VerbPatternsTests
     [Test]
     public void EnumMapper_ShouldParseVerbTitle_Active()
     {
-        var (tense, mood, person, number, voice) = EnumMapper.ParseVerbTitle("pr 3rd sg");
+        var (tense, person, number, voice) = EnumMapper.ParseVerbTitle("pr 3rd sg");
 
         tense.Should().Be(Tense.Present);
-        mood.Should().Be(Mood.Indicative);
         person.Should().Be(Person.Third);
         number.Should().Be(Number.Singular);
         voice.Should().Be(Voice.Active);
     }
 
     /// <summary>
-    /// Sanity test: Verify we can parse reflexive verb titles correctly.
+    /// Sanity test: Verify we can parse reflexive verb titles correctly (optative tense).
     /// </summary>
     [Test]
     public void EnumMapper_ShouldParseVerbTitle_Reflexive()
     {
-        var (tense, mood, person, number, voice) = EnumMapper.ParseVerbTitle("reflx opt 1st pl");
+        var (tense, person, number, voice) = EnumMapper.ParseVerbTitle("reflx opt 1st pl");
 
-        tense.Should().Be(Tense.Present);
-        mood.Should().Be(Mood.Optative);
+        tense.Should().Be(Tense.Optative);
         person.Should().Be(Person.First);
         number.Should().Be(Number.Plural);
         voice.Should().Be(Voice.Reflexive);

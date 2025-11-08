@@ -22,7 +22,6 @@ public interface IInflectionService
         Person person,
         Number number,
         Tense tense,
-        Mood mood,
         Voice voice);
 }
 
@@ -90,7 +89,6 @@ public class InflectionService : IInflectionService
         Person person,
         Number number,
         Tense tense,
-        Mood mood,
         Voice voice)
     {
         if (string.IsNullOrEmpty(verb.Pattern) || string.IsNullOrEmpty(verb.Stem))
@@ -104,7 +102,6 @@ public class InflectionService : IInflectionService
             person,
             number,
             tense,
-            mood,
             voice
         );
 
@@ -126,7 +123,6 @@ public class InflectionService : IInflectionService
                 verb.Id,
                 person,
                 tense,
-                mood,
                 voice,
                 endingIndex: i
             );
@@ -137,7 +133,6 @@ public class InflectionService : IInflectionService
                 Ending = ending,
                 Person = person,
                 Tense = tense,
-                Mood = mood,
                 Voice = voice,
                 EndingIndex = i,
                 InCorpus = inCorpus

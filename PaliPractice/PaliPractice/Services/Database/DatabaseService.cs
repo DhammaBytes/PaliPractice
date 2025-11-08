@@ -21,7 +21,7 @@ public interface IDatabaseService
     /// <summary>
     /// Check if a specific verb form appears in the Pali Tipitaka corpus.
     /// </summary>
-    Task<bool> IsVerbFormInCorpusAsync(int verbId, Person person, Tense tense, Mood mood, Voice voice, int endingIndex = 0);
+    Task<bool> IsVerbFormInCorpusAsync(int verbId, Person person, Tense tense, Voice voice, int endingIndex = 0);
 }
 
 public class DatabaseService : IDatabaseService
@@ -184,7 +184,6 @@ public class DatabaseService : IDatabaseService
         int verbId,
         Person person,
         Tense tense,
-        Mood mood,
         Voice voice,
         int endingIndex = 0)
     {
@@ -194,7 +193,6 @@ public class DatabaseService : IDatabaseService
             .Where(c => c.VerbId == verbId
                      && c.Person == (int)person
                      && c.Tense == (int)tense
-                     && c.Mood == (int)mood
                      && c.Voice == (int)voice
                      && c.EndingIndex == endingIndex)
             .CountAsync();

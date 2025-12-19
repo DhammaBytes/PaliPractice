@@ -1,5 +1,22 @@
-using PaliPractice.Presentation.Providers;
-using PaliPractice.Presentation.ViewModels;
+using PaliPractice.Presentation.Main;
+using PaliPractice.Presentation.Practice;
+using PaliPractice.Presentation.Practice.Providers;
+using PaliPractice.Presentation.Settings;
+using AboutPage = PaliPractice.Presentation.Main.AboutPage;
+using CardViewModel = PaliPractice.Presentation.Practice.Controls.CardViewModel;
+using ConjugationPracticePage = PaliPractice.Presentation.Practice.ConjugationPracticePage;
+using ConjugationPracticeViewModel = PaliPractice.Presentation.Practice.ConjugationPracticeViewModel;
+using ConjugationSettingsPage = PaliPractice.Presentation.Settings.ConjugationSettingsPage;
+using ConjugationSettingsViewModel = PaliPractice.Presentation.Settings.ConjugationSettingsViewModel;
+using DeclensionPracticePage = PaliPractice.Presentation.Practice.DeclensionPracticePage;
+using DeclensionPracticeViewModel = PaliPractice.Presentation.Practice.DeclensionPracticeViewModel;
+using DeclensionSettingsPage = PaliPractice.Presentation.Settings.DeclensionSettingsPage;
+using DeclensionSettingsViewModel = PaliPractice.Presentation.Settings.DeclensionSettingsViewModel;
+using HelpPage = PaliPractice.Presentation.Main.HelpPage;
+using HistoryPage = PaliPractice.Presentation.Practice.HistoryPage;
+using SettingsPage = PaliPractice.Presentation.Settings.SettingsPage;
+using Shell = PaliPractice.Presentation.Main.Shell;
+using StartPage = PaliPractice.Presentation.Main.StartPage;
 
 namespace PaliPractice;
 

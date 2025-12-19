@@ -18,7 +18,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     protected int CurrentIndex;
     [ObservableProperty] bool _canRateCard;
 
-    public CardViewModel Card { get; }
+    public WordCardViewModel WordCard { get; }
     public FlashcardStateViewModel Flashcard { get; }
     public DailyGoalViewModel DailyGoal { get; }
     public ExampleCarouselViewModel ExampleCarousel { get; }
@@ -46,12 +46,12 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     protected PracticeViewModelBase(
         IWordProvider words,
-        CardViewModel card,
+        WordCardViewModel wordCard,
         INavigator navigator,
         ILogger logger)
     {
         Words = words;
-        Card = card;
+        WordCard = wordCard;
         Navigator = navigator;
         Logger = logger;
         Flashcard = new FlashcardStateViewModel();
@@ -77,12 +77,12 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     {
         try
         {
-            Card.IsLoading = true;
+            WordCard.IsLoading = true;
 
             await Words.LoadAsync(ct);
             if (Words.Lemmas.Count == 0)
             {
-                Card.ErrorMessage = "No words found";
+                WordCard.ErrorMessage = "No words found";
                 return;
             }
 
@@ -96,18 +96,18 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to load words");
-            Card.ErrorMessage = $"Failed to load data: {ex.Message}";
+            WordCard.ErrorMessage = $"Failed to load data: {ex.Message}";
         }
         finally
         {
-            Card.IsLoading = false;
+            WordCard.IsLoading = false;
         }
     }
 
     void DisplayCurrentCard()
     {
         var lemma = Words.Lemmas[CurrentIndex];
-        Card.DisplayCurrentCard(lemma);
+        WordCard.DisplayCurrentCard(lemma);
         ExampleCarousel.Initialize(lemma);
         PrepareCardAnswer(lemma);
         Flashcard.SetAnswer(GetInflectedForm());
@@ -145,7 +145,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     void MarkAsHard()
     {
         if (!CanRateCard) return;
-        Logger.LogInformation("Marked hard: {Word}", Card.CurrentWord);
+        Logger.LogInformation("Marked hard: {Word}", WordCard.CurrentWord);
         DailyGoal.Advance();
         MoveToNextCard();
     }
@@ -153,7 +153,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     void MarkAsEasy()
     {
         if (!CanRateCard) return;
-        Logger.LogInformation("Marked easy: {Word}", Card.CurrentWord);
+        Logger.LogInformation("Marked easy: {Word}", WordCard.CurrentWord);
         DailyGoal.Advance();
         MoveToNextCard();
     }

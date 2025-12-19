@@ -28,10 +28,10 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
 
     public ConjugationPracticeViewModel(
         [FromKeyedServices("verb")] IWordProvider words,
-        CardViewModel card,
+        WordCardViewModel wordCard,
         INavigator navigator,
         ILogger<ConjugationPracticeViewModel> logger)
-        : base(words, card, navigator, logger)
+        : base(words, wordCard, navigator, logger)
     {
         _ = InitializeAsync();
     }
@@ -125,6 +125,6 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
 
     protected override string GetInflectedForm()
     {
-        return _currentConjugation?.Form ?? Card.CurrentWord;
+        return _currentConjugation?.Form ?? WordCard.CurrentWord;
     }
 }

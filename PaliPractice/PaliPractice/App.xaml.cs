@@ -1,9 +1,9 @@
 using PaliPractice.Presentation.Main;
 using PaliPractice.Presentation.Practice;
+using PaliPractice.Presentation.Practice.Controls;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Presentation.Settings;
 using AboutPage = PaliPractice.Presentation.Main.AboutPage;
-using CardViewModel = PaliPractice.Presentation.Practice.Controls.CardViewModel;
 using ConjugationPracticePage = PaliPractice.Presentation.Practice.ConjugationPracticePage;
 using ConjugationPracticeViewModel = PaliPractice.Presentation.Practice.ConjugationPracticeViewModel;
 using ConjugationSettingsPage = PaliPractice.Presentation.Settings.ConjugationSettingsPage;
@@ -90,7 +90,7 @@ public partial class App : Application
                     services.AddSingleton<IDatabaseService, DatabaseService>();
                     services.AddSingleton<IInflectionService, InflectionService>();
 
-                    services.AddTransient<CardViewModel>();
+                    services.AddTransient<WordCardViewModel>();
 
                     // Word providers
                     services.AddKeyedTransient<IWordProvider, NounWordProvider>("noun");

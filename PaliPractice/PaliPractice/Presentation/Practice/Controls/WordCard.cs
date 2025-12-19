@@ -1,17 +1,18 @@
 using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
+using PaliPractice.Presentation.Common;
 
 namespace PaliPractice.Presentation.Practice.Controls;
 
 public static class WordCard
 {
     public static Border Build<TDC>(
-        Expression<Func<TDC, CardViewModel>> cardPath,
+        Expression<Func<TDC, WordCardViewModel>> cardPath,
         Expression<Func<TDC, ExampleCarouselViewModel>> carouselPath,
         string rankPrefix)
     {
         return new Border()
-            .MaxWidth(450)
+            .MaxWidth(LayoutConstants.ContentMaxWidth)
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
             .CornerRadius(12)
@@ -32,7 +33,7 @@ public static class WordCard
             );
     }
 
-    static Grid BuildHeaderRow<TDC>(Expression<Func<TDC, CardViewModel>> cardPath, string rankPrefix)
+    static Grid BuildHeaderRow<TDC>(Expression<Func<TDC, WordCardViewModel>> cardPath, string rankPrefix)
     {
         return new Grid()
             .ColumnDefinitions("Auto,*,Auto")
@@ -53,7 +54,7 @@ public static class WordCard
                                     .Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush")),
                                 new TextBlock()
                                     .Scope(cardPath)
-                                    .TextWithin<CardViewModel>(c => c.RankText)
+                                    .TextWithin<WordCardViewModel>(c => c.RankText)
                                     .FontSize(12)
                                     .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
                                     .Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush"))
@@ -62,7 +63,7 @@ public static class WordCard
                     .Grid(column: 0),
                 new TextBlock()
                     .Scope(cardPath)
-                    .TextWithin<CardViewModel>(c => c.AnkiState)
+                    .TextWithin<WordCardViewModel>(c => c.AnkiState)
                     .FontSize(14)
                     .HorizontalAlignment(HorizontalAlignment.Right)
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
@@ -70,11 +71,11 @@ public static class WordCard
             );
     }
 
-    static TextBlock BuildMainWordRow<TDC>(Expression<Func<TDC, CardViewModel>> cardPath)
+    static TextBlock BuildMainWordRow<TDC>(Expression<Func<TDC, WordCardViewModel>> cardPath)
     {
         return new TextBlock()
             .Scope(cardPath)
-            .TextWithin<CardViewModel>(c => c.CurrentWord)
+            .TextWithin<WordCardViewModel>(c => c.CurrentWord)
             .FontSize(48)
             .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
             .HorizontalAlignment(HorizontalAlignment.Center)

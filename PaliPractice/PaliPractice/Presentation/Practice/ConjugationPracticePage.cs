@@ -31,22 +31,22 @@ public sealed partial class ConjugationPracticePage : Page
                             .Children(
                                 // Loading indicator
                                 new ProgressRing()
-                                    .IsActive<ConjugationPracticeViewModel>(vm => vm.Card.IsLoading)
-                                    .BoolToVisibility<ProgressRing, ConjugationPracticeViewModel>(vm => vm.Card.IsLoading)
+                                    .IsActive<ConjugationPracticeViewModel>(vm => vm.WordCard.IsLoading)
+                                    .BoolToVisibility<ProgressRing, ConjugationPracticeViewModel>(vm => vm.WordCard.IsLoading)
                                     .HorizontalAlignment(HorizontalAlignment.Center)
                                     .VerticalAlignment(VerticalAlignment.Center),
 
                                 // Error message
                                 new TextBlock()
-                                    .Text<ConjugationPracticeViewModel>(vm => vm.Card.ErrorMessage)
-                                    .StringToVisibility<TextBlock, ConjugationPracticeViewModel>(vm => vm.Card.ErrorMessage)
+                                    .Text<ConjugationPracticeViewModel>(vm => vm.WordCard.ErrorMessage)
+                                    .StringToVisibility<TextBlock, ConjugationPracticeViewModel>(vm => vm.WordCard.ErrorMessage)
                                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                                     .TextAlignment(TextAlignment.Center)
                                     .HorizontalAlignment(HorizontalAlignment.Center),
 
                                 // Word card (with rank, lemma, example carousel)
                                 WordCard.Build<ConjugationPracticeViewModel>(
-                                    cardPath: vm => vm.Card,
+                                    cardPath: vm => vm.WordCard,
                                     carouselPath: vm => vm.ExampleCarousel,
                                     rankPrefix: "V"),
 
@@ -138,7 +138,7 @@ public sealed partial class ConjugationPracticePage : Page
                     ),
 
                     // Row 2: Navigation (Reveal button or Easy/Hard buttons)
-                    CardNavigation.BuildWithReveal<ConjugationPracticeViewModel>(
+                    PracticeNavigation.BuildWithReveal<ConjugationPracticeViewModel>(
                         revealCommand: vm => vm.RevealCommand,
                         hardCommand: vm => vm.HardCommand,
                         easyCommand: vm => vm.EasyCommand,

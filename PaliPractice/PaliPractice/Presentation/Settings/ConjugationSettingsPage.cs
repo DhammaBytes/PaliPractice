@@ -24,7 +24,7 @@ public sealed partial class ConjugationSettingsPage : Page
                         .HorizontalScrollMode(ScrollMode.Disabled)
                         .Content(
                             new StackPanel()
-                                .MaxWidth(450)
+                                .MaxWidth(LayoutConstants.ContentMaxWidth)
                                 .Children(
                                     // Person section
                                     SettingsSection.Build("Person",

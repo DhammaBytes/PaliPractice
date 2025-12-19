@@ -3,7 +3,7 @@ using PaliPractice.Presentation.Bindings;
 
 namespace PaliPractice.Presentation.Practice.Controls;
 
-public static class CardNavigation
+public static class PracticeNavigation
 {
     /// <summary>
     /// Legacy overload for backwards compatibility.

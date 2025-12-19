@@ -1,3 +1,5 @@
+using PaliPractice.Presentation.Common;
+
 namespace PaliPractice.Presentation.Practice;
 
 public sealed partial class HistoryPage : Page
@@ -12,39 +14,11 @@ public sealed partial class HistoryPage : Page
                 .RowDefinitions("Auto,*")
                 .Children(
                     // Row 0: Title bar
-                    new Grid()
-                        .ColumnDefinitions("Auto,*,Auto")
-                        .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-                        .Padding(16, 8)
-                        .Children(
-                            new Button()
-                                .Content(
-                                    new StackPanel()
-                                        .Orientation(Orientation.Horizontal)
-                                        .Spacing(6)
-                                        .Children(
-                                            new FontIcon()
-                                                .Glyph("\uE72B")
-                                                .FontSize(16),
-                                            new TextBlock()
-                                                .Text("Back")
-                                                .VerticalAlignment(VerticalAlignment.Center)
-                                        )
-                                )
-                                .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-                                .Command(() => vm.GoBackCommand)
-                                .Grid(column: 0),
-                            new TextBlock()
-                                .Text(() => vm.Title)
-                                .FontSize(20)
-                                .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                                .HorizontalAlignment(HorizontalAlignment.Center)
-                                .VerticalAlignment(VerticalAlignment.Center)
-                                .Grid(column: 1)
-                        ),
+                    AppTitleBar.Build<HistoryViewModel>("History", v => v.GoBackCommand),
 
                     // Row 1: Content
                     new ListView()
+                        .MaxWidth(LayoutConstants.ContentMaxWidth)
                         .Grid(row: 1)
                         .ItemsSource(() => vm.Records)
                         .ItemTemplate<HistoryRecord>(record =>

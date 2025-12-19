@@ -29,11 +29,11 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
 
     public DeclensionPracticeViewModel(
         [FromKeyedServices("noun")] IWordProvider words,
-        CardViewModel card,
+        WordCardViewModel wordCard,
         INavigator navigator,
         ILogger<DeclensionPracticeViewModel> logger,
         IInflectionService inflectionService)
-        : base(words, card, navigator, logger)
+        : base(words, wordCard, navigator, logger)
     {
         _inflectionService = inflectionService;
         _ = InitializeAsync();
@@ -136,6 +136,6 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
 
     protected override string GetInflectedForm()
     {
-        return _currentDeclension?.Form ?? Card.CurrentWord;
+        return _currentDeclension?.Form ?? WordCard.CurrentWord;
     }
 }

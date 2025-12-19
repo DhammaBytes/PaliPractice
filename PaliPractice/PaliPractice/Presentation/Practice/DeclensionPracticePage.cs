@@ -31,22 +31,22 @@ public sealed partial class DeclensionPracticePage : Page
                             .Children(
                                 // Loading indicator
                                 new ProgressRing()
-                                    .IsActive<DeclensionPracticeViewModel>(vm => vm.Card.IsLoading)
-                                    .BoolToVisibility<ProgressRing, DeclensionPracticeViewModel>(vm => vm.Card.IsLoading)
+                                    .IsActive<DeclensionPracticeViewModel>(vm => vm.WordCard.IsLoading)
+                                    .BoolToVisibility<ProgressRing, DeclensionPracticeViewModel>(vm => vm.WordCard.IsLoading)
                                     .HorizontalAlignment(HorizontalAlignment.Center)
                                     .VerticalAlignment(VerticalAlignment.Center),
 
                                 // Error message
                                 new TextBlock()
-                                    .Text<DeclensionPracticeViewModel>(vm => vm.Card.ErrorMessage)
-                                    .StringToVisibility<TextBlock, DeclensionPracticeViewModel>(vm => vm.Card.ErrorMessage)
+                                    .Text<DeclensionPracticeViewModel>(vm => vm.WordCard.ErrorMessage)
+                                    .StringToVisibility<TextBlock, DeclensionPracticeViewModel>(vm => vm.WordCard.ErrorMessage)
                                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                                     .TextAlignment(TextAlignment.Center)
                                     .HorizontalAlignment(HorizontalAlignment.Center),
 
                                 // Word card (with rank, lemma, example carousel)
                                 WordCard.Build<DeclensionPracticeViewModel>(
-                                    cardPath: vm => vm.Card,
+                                    cardPath: vm => vm.WordCard,
                                     carouselPath: vm => vm.ExampleCarousel,
                                     rankPrefix: "N"),
 
@@ -138,7 +138,7 @@ public sealed partial class DeclensionPracticePage : Page
                     ),
 
                     // Row 2: Navigation (Reveal button or Easy/Hard buttons)
-                    CardNavigation.BuildWithReveal<DeclensionPracticeViewModel>(
+                    PracticeNavigation.BuildWithReveal<DeclensionPracticeViewModel>(
                         revealCommand: vm => vm.RevealCommand,
                         hardCommand: vm => vm.HardCommand,
                         easyCommand: vm => vm.EasyCommand,

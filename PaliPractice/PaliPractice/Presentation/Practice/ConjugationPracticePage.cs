@@ -44,9 +44,10 @@ public sealed partial class ConjugationPracticePage : Page
                                     .TextAlignment(TextAlignment.Center)
                                     .HorizontalAlignment(HorizontalAlignment.Center),
 
-                                // Word card (with translation, dictionary form, example)
+                                // Word card (with rank, lemma, example carousel)
                                 WordCard.Build<ConjugationPracticeViewModel>(
                                     cardPath: vm => vm.Card,
+                                    carouselPath: vm => vm.ExampleCarousel,
                                     rankPrefix: "V"),
 
                                 // Badge row: [Person] [Number] [Tense]
@@ -127,7 +128,12 @@ public sealed partial class ConjugationPracticePage : Page
                                             .TextAlignment(TextAlignment.Center)
                                             .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
                                             .Text<ConjugationPracticeViewModel>(vm => vm.Flashcard.Answer)
-                                    )
+                                    ),
+
+                                // Translation display (visible only after reveal)
+                                TranslationDisplay.Build<ConjugationPracticeViewModel>(
+                                    carouselPath: vm => vm.ExampleCarousel,
+                                    isRevealedPath: vm => vm.Flashcard.IsRevealed)
                             )
                     ),
 

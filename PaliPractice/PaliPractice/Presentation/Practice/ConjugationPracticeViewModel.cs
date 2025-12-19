@@ -36,9 +36,10 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
         _ = InitializeAsync();
     }
 
-    protected override void PrepareCardAnswer(IWord w)
+    protected override void PrepareCardAnswer(ILemma lemma)
     {
-        var verb = (Verb)w;
+        // Use primary word for inflection generation
+        var verb = (Verb)lemma.PrimaryWord;
 
         // TODO: Implement real verb inflection service similar to noun declensions.
         // For now, generate mock conjugation data based on word id.
@@ -125,42 +126,5 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
     protected override string GetInflectedForm()
     {
         return _currentConjugation?.Form ?? Card.CurrentWord;
-    }
-
-    protected override void SetExamples(IWord w)
-    {
-        var verb = (Verb)w;
-
-        // Use real data from the verb if available
-        if (!string.IsNullOrEmpty(verb.Example1))
-        {
-            Card.UsageExample = verb.Example1;
-
-            var reference = "";
-            if (!string.IsNullOrEmpty(verb.Source1))
-                reference = verb.Source1;
-            if (!string.IsNullOrEmpty(verb.Sutta1))
-                reference = string.IsNullOrEmpty(reference) ? verb.Sutta1 : $"{reference} {verb.Sutta1}";
-
-            Card.SuttaReference = reference;
-        }
-        else if (!string.IsNullOrEmpty(verb.Example2))
-        {
-            Card.UsageExample = verb.Example2;
-
-            var reference = "";
-            if (!string.IsNullOrEmpty(verb.Source2))
-                reference = verb.Source2;
-            if (!string.IsNullOrEmpty(verb.Sutta2))
-                reference = string.IsNullOrEmpty(reference) ? verb.Sutta2 : $"{reference} {verb.Sutta2}";
-
-            Card.SuttaReference = reference;
-        }
-        else
-        {
-            // Fallback mock example
-            Card.UsageExample = "bhagavā etadavoca: sādhu sādhu, bhikkhu";
-            Card.SuttaReference = "MN1 mūlapariyāya";
-        }
     }
 }

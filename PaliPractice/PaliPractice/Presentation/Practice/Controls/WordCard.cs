@@ -7,92 +7,144 @@ public static class WordCard
 {
     public static Border Build<TDC>(
         Expression<Func<TDC, CardViewModel>> cardPath,
+        Expression<Func<TDC, ExampleCarouselViewModel>> carouselPath,
         string rankPrefix)
     {
         return new Border()
-            .MinWidth(360)
-            .MaxWidth(600)
+            .MaxWidth(450)
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
             .CornerRadius(12)
             .Padding(24)
-            .Scope(cardPath) // Bind scope once
-            .VisibilityWithin<Border, CardViewModel>(c => !c.IsLoading) // Within the CardViewModel scope
             .Child(
                 new Grid()
-                    .RowDefinitions("Auto,Auto,Auto,Auto") // Added translation row
+                    .RowDefinitions("Auto,Auto,Auto") // Header, Main word, Example with arrows
                     .Children(
-                        // Header row: rank + anki
-                        new Grid().ColumnDefinitions("Auto,*,Auto").Children(
-                            new Border()
-                                .Background(ThemeResource.Get<Brush>("PrimaryBrush"))
-                                .CornerRadius(12)
-                                .Padding(8, 4)
-                                .Child(
-                                    new StackPanel()
-                                        .Orientation(Orientation.Horizontal)
-                                        .Spacing(4)
-                                        .Children(
-                                            new TextBlock()
-                                                .Text(rankPrefix)
-                                                .FontSize(12)
-                                                .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
-                                                .Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush")),
-                                            new TextBlock()
-                                                .TextWithin<CardViewModel>(c => c.RankText)
-                                                .FontSize(12)
-                                                .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
-                                                .Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush"))
-                                        )
-                                )
-                                .Grid(column: 0),
-                            new TextBlock()
-                                .TextWithin<CardViewModel>(c => c.AnkiState)
-                                .FontSize(14)
-                                .HorizontalAlignment(HorizontalAlignment.Right)
-                                .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
-                                .Grid(column: 2)
-                        ).Grid(row: 0),
+                        // Row 0: Header (rank + anki)
+                        BuildHeaderRow<TDC>(cardPath, rankPrefix).Grid(row: 0),
 
-                        // Translation/meaning (smaller, italic, centered)
+                        // Row 1: Main word (lemma)
+                        BuildMainWordRow<TDC>(cardPath).Grid(row: 1),
+
+                        // Row 2: Example with arrows (always visible)
+                        BuildExampleRow<TDC>(carouselPath).Grid(row: 2)
+                    )
+            );
+    }
+
+    static Grid BuildHeaderRow<TDC>(Expression<Func<TDC, CardViewModel>> cardPath, string rankPrefix)
+    {
+        return new Grid()
+            .ColumnDefinitions("Auto,*,Auto")
+            .Children(
+                new Border()
+                    .Background(ThemeResource.Get<Brush>("PrimaryBrush"))
+                    .CornerRadius(12)
+                    .Padding(8, 4)
+                    .Child(
+                        new StackPanel()
+                            .Orientation(Orientation.Horizontal)
+                            .Spacing(4)
+                            .Children(
+                                new TextBlock()
+                                    .Text(rankPrefix)
+                                    .FontSize(12)
+                                    .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
+                                    .Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush")),
+                                new TextBlock()
+                                    .Scope(cardPath)
+                                    .TextWithin<CardViewModel>(c => c.RankText)
+                                    .FontSize(12)
+                                    .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
+                                    .Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush"))
+                            )
+                    )
+                    .Grid(column: 0),
+                new TextBlock()
+                    .Scope(cardPath)
+                    .TextWithin<CardViewModel>(c => c.AnkiState)
+                    .FontSize(14)
+                    .HorizontalAlignment(HorizontalAlignment.Right)
+                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                    .Grid(column: 2)
+            );
+    }
+
+    static TextBlock BuildMainWordRow<TDC>(Expression<Func<TDC, CardViewModel>> cardPath)
+    {
+        return new TextBlock()
+            .Scope(cardPath)
+            .TextWithin<CardViewModel>(c => c.CurrentWord)
+            .FontSize(48)
+            .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
+            .HorizontalAlignment(HorizontalAlignment.Center)
+            .TextAlignment(TextAlignment.Center)
+            .TextWrapping(TextWrapping.Wrap)
+            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+            .Margin(0, 16, 0, 8);
+    }
+
+    static Grid BuildExampleRow<TDC>(Expression<Func<TDC, ExampleCarouselViewModel>> carouselPath)
+    {
+        return new Grid()
+            .ColumnDefinitions("Auto,*,Auto")
+            .Margin(0, 8, 0, 0)
+            .Children(
+                // Left arrow button
+                new Button()
+                    .Grid(column: 0)
+                    .Background(ThemeResource.Get<Brush>("SurfaceVariantBrush"))
+                    .CornerRadius(20)
+                    .Padding(8)
+                    .MinWidth(40)
+                    .MinHeight(40)
+                    .VerticalAlignment(VerticalAlignment.Center)
+                    .Scope(carouselPath)
+                    .CommandWithin<Button, ExampleCarouselViewModel>(c => c.PreviousCommand)
+                    .VisibilityWithin<Button, ExampleCarouselViewModel>(c => c.HasMultipleExamples)
+                    .Content(new FontIcon()
+                        .Glyph("\uE76B") // ChevronLeft
+                        .FontSize(16)
+                        .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))),
+
+                // Center: Example + Reference
+                new StackPanel()
+                    .Grid(column: 1)
+                    .Spacing(4)
+                    .Margin(12, 0)
+                    .HorizontalAlignment(HorizontalAlignment.Center)
+                    .Scope(carouselPath)
+                    .Children(
                         new TextBlock()
-                            .TextWithin<CardViewModel>(c => c.Meaning)
-                            .FontSize(16)
-                            .FontStyle(Windows.UI.Text.FontStyle.Italic)
-                            .HorizontalAlignment(HorizontalAlignment.Center)
+                            .TextWithin<ExampleCarouselViewModel>(c => c.CurrentExample)
+                            .FontSize(14)
+                            .TextWrapping(TextWrapping.Wrap)
+                            .TextAlignment(TextAlignment.Center)
+                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
+                        new TextBlock()
+                            .TextWithin<ExampleCarouselViewModel>(c => c.CurrentReference)
+                            .FontSize(12)
+                            .TextWrapping(TextWrapping.Wrap)
                             .TextAlignment(TextAlignment.Center)
                             .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
-                            .TextWrapping(TextWrapping.Wrap)
-                            .Margin(0, 12, 0, 0)
-                            .Grid(row: 1),
+                    ),
 
-                        // Main word (dictionary form / lemma)
-                        new TextBlock()
-                            .TextWithin<CardViewModel>(c => c.CurrentWord)
-                            .FontSize(48)
-                            .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
-                            .HorizontalAlignment(HorizontalAlignment.Center)
-                            .TextAlignment(TextAlignment.Center)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
-                            .Margin(0, 8, 0, 16)
-                            .Grid(row: 2),
-
-                        // Example + reference
-                        new StackPanel().Spacing(8).Children(
-                            new TextBlock()
-                                .TextWithin<CardViewModel>(c => c.UsageExample)
-                                .FontSize(16)
-                                .HorizontalAlignment(HorizontalAlignment.Center)
-                                .TextAlignment(TextAlignment.Center)
-                                .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
-                                .TextWrapping(TextWrapping.Wrap),
-                            new TextBlock()
-                                .TextWithin<CardViewModel>(c => c.SuttaReference)
-                                .FontSize(12)
-                                .HorizontalAlignment(HorizontalAlignment.Center)
-                                .TextAlignment(TextAlignment.Center)
-                                .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
-                        ).Grid(row: 3)
-                    )
+                // Right arrow button
+                new Button()
+                    .Grid(column: 2)
+                    .Background(ThemeResource.Get<Brush>("SurfaceVariantBrush"))
+                    .CornerRadius(20)
+                    .Padding(8)
+                    .MinWidth(40)
+                    .MinHeight(40)
+                    .VerticalAlignment(VerticalAlignment.Center)
+                    .Scope(carouselPath)
+                    .CommandWithin<Button, ExampleCarouselViewModel>(c => c.NextCommand)
+                    .VisibilityWithin<Button, ExampleCarouselViewModel>(c => c.HasMultipleExamples)
+                    .Content(new FontIcon()
+                        .Glyph("\uE76C") // ChevronRight
+                        .FontSize(16)
+                        .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush")))
             );
     }
 }

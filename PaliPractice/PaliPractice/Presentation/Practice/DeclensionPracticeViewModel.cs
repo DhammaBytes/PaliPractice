@@ -39,9 +39,10 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
         _ = InitializeAsync();
     }
 
-    protected override void PrepareCardAnswer(IWord w)
+    protected override void PrepareCardAnswer(ILemma lemma)
     {
-        var noun = (Noun)w;
+        // Use primary word for inflection generation
+        var noun = (Noun)lemma.PrimaryWord;
 
         // Generate all possible declensions for this noun
         var allDeclensions = new List<Declension>();
@@ -136,44 +137,5 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
     protected override string GetInflectedForm()
     {
         return _currentDeclension?.Form ?? Card.CurrentWord;
-    }
-
-    protected override void SetExamples(IWord w)
-    {
-        var noun = (Noun)w;
-
-        // Use real data from the noun
-        if (!string.IsNullOrEmpty(noun.Example1))
-        {
-            Card.UsageExample = noun.Example1;
-
-            // Combine source and sutta reference if available
-            var reference = "";
-            if (!string.IsNullOrEmpty(noun.Source1))
-                reference = noun.Source1;
-            if (!string.IsNullOrEmpty(noun.Sutta1))
-                reference = string.IsNullOrEmpty(reference) ? noun.Sutta1 : $"{reference} {noun.Sutta1}";
-
-            Card.SuttaReference = reference;
-        }
-        else if (!string.IsNullOrEmpty(noun.Example2))
-        {
-            // Fall back to second example if first is not available
-            Card.UsageExample = noun.Example2;
-
-            var reference = "";
-            if (!string.IsNullOrEmpty(noun.Source2))
-                reference = noun.Source2;
-            if (!string.IsNullOrEmpty(noun.Sutta2))
-                reference = string.IsNullOrEmpty(reference) ? noun.Sutta2 : $"{reference} {noun.Sutta2}";
-
-            Card.SuttaReference = reference;
-        }
-        else
-        {
-            // No examples available
-            Card.UsageExample = "";
-            Card.SuttaReference = "";
-        }
     }
 }

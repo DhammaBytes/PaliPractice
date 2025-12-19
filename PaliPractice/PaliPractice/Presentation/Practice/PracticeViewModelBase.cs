@@ -21,6 +21,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     public CardViewModel Card { get; }
     public FlashcardStateViewModel Flashcard { get; }
     public DailyGoalViewModel DailyGoal { get; }
+    public ExampleCarouselViewModel ExampleCarousel { get; }
 
     // Commands - stored as fields to maintain reference for NotifyCanExecuteChanged
     readonly RelayCommand _hardCommand;
@@ -29,9 +30,9 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     /// <summary>
     /// Called when a new card is displayed. Subclasses should generate the inflected form
-    /// for the current word and set up badge display properties.
+    /// for the current lemma and set up badge display properties.
     /// </summary>
-    protected abstract void PrepareCardAnswer(IWord word);
+    protected abstract void PrepareCardAnswer(ILemma lemma);
 
     /// <summary>
     /// Returns the inflected form to display when the answer is revealed.
@@ -42,11 +43,6 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     /// Returns the practice type (Declension or Conjugation) for history navigation.
     /// </summary>
     public abstract PracticeType CurrentPracticeType { get; }
-
-    /// <summary>
-    /// Optional: Set usage examples specific to the word type (verb/noun).
-    /// </summary>
-    protected virtual void SetExamples(IWord w) { }
 
     protected PracticeViewModelBase(
         IWordProvider words,
@@ -60,6 +56,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         Logger = logger;
         Flashcard = new FlashcardStateViewModel();
         DailyGoal = new DailyGoalViewModel();
+        ExampleCarousel = new ExampleCarouselViewModel();
 
         // Initialize commands with CanExecute predicates
         _hardCommand = new RelayCommand(MarkAsHard, () => CanRateCard);
@@ -83,7 +80,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
             Card.IsLoading = true;
 
             await Words.LoadAsync(ct);
-            if (Words.Words.Count == 0)
+            if (Words.Lemmas.Count == 0)
             {
                 Card.ErrorMessage = "No words found";
                 return;
@@ -109,9 +106,10 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     void DisplayCurrentCard()
     {
-        var word = Words.Words[CurrentIndex];
-        Card.DisplayCurrentCard(Words.Words, CurrentIndex, SetExamples);
-        PrepareCardAnswer(word);
+        var lemma = Words.Lemmas[CurrentIndex];
+        Card.DisplayCurrentCard(lemma);
+        ExampleCarousel.Initialize(lemma);
+        PrepareCardAnswer(lemma);
         Flashcard.SetAnswer(GetInflectedForm());
     }
 
@@ -123,7 +121,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     void UpdateNavigationState()
     {
-        var hasNext = CurrentIndex < Words.Words.Count - 1;
+        var hasNext = CurrentIndex < Words.Lemmas.Count - 1;
         var isRevealed = Flashcard.IsRevealed;
         CanRateCard = hasNext && isRevealed;
 
@@ -162,10 +160,11 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     void MoveToNextCard()
     {
-        if (CurrentIndex >= Words.Words.Count - 1) return;
+        if (CurrentIndex >= Words.Lemmas.Count - 1) return;
 
         CurrentIndex++;
         Flashcard.Reset();
+        ExampleCarousel.Reset();
         DisplayCurrentCard();
         UpdateNavigationState();
     }

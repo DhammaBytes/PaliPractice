@@ -44,9 +44,10 @@ public sealed partial class DeclensionPracticePage : Page
                                     .TextAlignment(TextAlignment.Center)
                                     .HorizontalAlignment(HorizontalAlignment.Center),
 
-                                // Word card (with translation, dictionary form, example)
+                                // Word card (with rank, lemma, example carousel)
                                 WordCard.Build<DeclensionPracticeViewModel>(
                                     cardPath: vm => vm.Card,
+                                    carouselPath: vm => vm.ExampleCarousel,
                                     rankPrefix: "N"),
 
                                 // Badge row: [Gender] [Number] [Case]
@@ -127,7 +128,12 @@ public sealed partial class DeclensionPracticePage : Page
                                             .TextAlignment(TextAlignment.Center)
                                             .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
                                             .Text<DeclensionPracticeViewModel>(vm => vm.Flashcard.Answer)
-                                    )
+                                    ),
+
+                                // Translation display (visible only after reveal)
+                                TranslationDisplay.Build<DeclensionPracticeViewModel>(
+                                    carouselPath: vm => vm.ExampleCarousel,
+                                    isRevealedPath: vm => vm.Flashcard.IsRevealed)
                             )
                     ),
 

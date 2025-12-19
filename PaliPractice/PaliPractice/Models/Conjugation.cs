@@ -22,6 +22,11 @@ public class Conjugation
     public Person Person { get; set; }
 
     /// <summary>
+    /// Singular or Plural.
+    /// </summary>
+    public Number Number { get; set; }
+
+    /// <summary>
     /// Tense (includes traditional moods): Present, Imperative, Optative, Future, Aorist.
     /// </summary>
     public Tense Tense { get; set; }

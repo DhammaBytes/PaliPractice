@@ -20,7 +20,7 @@ public static class WordCard
             .VisibilityWithin<Border, CardViewModel>(c => !c.IsLoading) // Within the CardViewModel scope
             .Child(
                 new Grid()
-                    .RowDefinitions("Auto,Auto,Auto")
+                    .RowDefinitions("Auto,Auto,Auto,Auto") // Added translation row
                     .Children(
                         // Header row: rank + anki
                         new Grid().ColumnDefinitions("Auto,*,Auto").Children(
@@ -54,7 +54,19 @@ public static class WordCard
                                 .Grid(column: 2)
                         ).Grid(row: 0),
 
-                        // Main word
+                        // Translation/meaning (smaller, italic, centered)
+                        new TextBlock()
+                            .TextWithin<CardViewModel>(c => c.Meaning)
+                            .FontSize(16)
+                            .FontStyle(Windows.UI.Text.FontStyle.Italic)
+                            .HorizontalAlignment(HorizontalAlignment.Center)
+                            .TextAlignment(TextAlignment.Center)
+                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                            .TextWrapping(TextWrapping.Wrap)
+                            .Margin(0, 12, 0, 0)
+                            .Grid(row: 1),
+
+                        // Main word (dictionary form / lemma)
                         new TextBlock()
                             .TextWithin<CardViewModel>(c => c.CurrentWord)
                             .FontSize(48)
@@ -62,8 +74,8 @@ public static class WordCard
                             .HorizontalAlignment(HorizontalAlignment.Center)
                             .TextAlignment(TextAlignment.Center)
                             .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
-                            .Margin(0, 16)
-                            .Grid(row: 1),
+                            .Margin(0, 8, 0, 16)
+                            .Grid(row: 2),
 
                         // Example + reference
                         new StackPanel().Spacing(8).Children(
@@ -80,7 +92,7 @@ public static class WordCard
                                 .HorizontalAlignment(HorizontalAlignment.Center)
                                 .TextAlignment(TextAlignment.Center)
                                 .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
-                        ).Grid(row: 2)
+                        ).Grid(row: 3)
                     )
             );
     }

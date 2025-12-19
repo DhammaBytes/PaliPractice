@@ -99,6 +99,46 @@ public static class BindExtensions
         element.SetBinding(UIElement.VisibilityProperty, binding);
         return element;
     }
+
+    /// <summary>
+    /// Binds Control.Background to a Brush property path
+    /// </summary>
+    public static T Background<T, TDC>(this T control, Expression<Func<TDC, Brush>> path)
+        where T : Control
+    {
+        control.SetBinding(Control.BackgroundProperty, Bind.Path(path));
+        return control;
+    }
+
+    /// <summary>
+    /// Binds Border.Background to a Brush property path
+    /// </summary>
+    public static Border Background<TDC>(this Border border, Expression<Func<TDC, Brush>> path)
+    {
+        border.SetBinding(Border.BackgroundProperty, Bind.Path(path));
+        return border;
+    }
+
+    /// <summary>
+    /// Binds FontIcon.Glyph to a string property path
+    /// </summary>
+    public static FontIcon Glyph<TDC>(this FontIcon icon, Expression<Func<TDC, string?>> path)
+    {
+        icon.SetBinding(FontIcon.GlyphProperty, Bind.Path(path));
+        return icon;
+    }
+
+    /// <summary>
+    /// Binds FontIcon visibility to whether the glyph string is non-null/non-empty
+    /// </summary>
+    public static FontIcon GlyphWithVisibility<TDC>(this FontIcon icon, Expression<Func<TDC, string?>> path)
+    {
+        icon.SetBinding(FontIcon.GlyphProperty, Bind.Path(path));
+        var visBinding = Bind.Path(path);
+        visBinding.Converter = StringNullOrEmptyToVisibilityConverter.Instance;
+        icon.SetBinding(UIElement.VisibilityProperty, visBinding);
+        return icon;
+    }
 }
 
 /// <summary>

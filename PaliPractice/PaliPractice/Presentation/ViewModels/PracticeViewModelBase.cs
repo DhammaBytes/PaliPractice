@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using PaliPractice.Models;
 using PaliPractice.Presentation.Providers;
 
@@ -6,10 +5,11 @@ namespace PaliPractice.Presentation.ViewModels;
 
 /// <summary>
 /// Base class for practice ViewModels (Conjugation and Declension).
-/// Encapsulates shared logic: card loading, answer validation, navigation, and daily goal tracking.
+/// Implements flashcard reveal mechanics: user sees dictionary form, guesses inflected form,
+/// reveals answer, then rates Easy/Hard.
 /// </summary>
 [Microsoft.UI.Xaml.Data.Bindable]
-public abstract partial class PracticeViewModelBase<TAnswer> : ObservableObject
+public abstract partial class PracticeViewModelBase : ObservableObject
 {
     protected readonly IWordProvider Words;
     protected readonly INavigator Navigator;
@@ -19,30 +19,24 @@ public abstract partial class PracticeViewModelBase<TAnswer> : ObservableObject
     [ObservableProperty] bool _canRateCard;
 
     public CardViewModel Card { get; }
+    public FlashcardStateViewModel Flashcard { get; }
+    public DailyGoalViewModel DailyGoal { get; }
 
     // Commands - stored as fields to maintain reference for NotifyCanExecuteChanged
     readonly RelayCommand _hardCommand;
     readonly RelayCommand _easyCommand;
+    readonly RelayCommand _revealCommand;
 
     /// <summary>
-    /// All toggle groups for this practice type. Used to check if all selections are correct.
+    /// Called when a new card is displayed. Subclasses should generate the inflected form
+    /// for the current word and set up badge display properties.
     /// </summary>
-    protected abstract IReadOnlyList<IValidatableChoice> Groups { get; }
+    protected abstract void PrepareCardAnswer(IWord word);
 
     /// <summary>
-    /// Builds the answer key for a given word (deterministic or from database).
+    /// Returns the inflected form to display when the answer is revealed.
     /// </summary>
-    protected abstract TAnswer BuildAnswerFor(IWord w);
-
-    /// <summary>
-    /// Applies the answer to all toggle groups by calling SetExpected on each.
-    /// </summary>
-    protected abstract void ApplyAnswerToGroups(TAnswer answer);
-
-    /// <summary>
-    /// Resets all toggle groups to their default state.
-    /// </summary>
-    protected abstract void ResetAllGroups();
+    protected abstract string GetInflectedForm();
 
     /// <summary>
     /// Optional: Set usage examples specific to the word type (verb/noun).
@@ -59,13 +53,22 @@ public abstract partial class PracticeViewModelBase<TAnswer> : ObservableObject
         Card = card;
         Navigator = navigator;
         Logger = logger;
+        Flashcard = new FlashcardStateViewModel();
+        DailyGoal = new DailyGoalViewModel();
 
         // Initialize commands with CanExecute predicates
         _hardCommand = new RelayCommand(MarkAsHard, () => CanRateCard);
         _easyCommand = new RelayCommand(MarkAsEasy, () => CanRateCard);
+        _revealCommand = new RelayCommand(RevealAnswer, () => !Flashcard.IsRevealed);
 
-        // Initialize daily goal immediately (don't wait for async initialization)
-        InitializeDailyGoal();
+        // Subscribe to flashcard state changes to update navigation
+        Flashcard.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(FlashcardStateViewModel.IsRevealed))
+            {
+                UpdateNavigationState();
+            }
+        };
     }
 
     public async Task InitializeAsync(CancellationToken ct = default)
@@ -81,8 +84,7 @@ public abstract partial class PracticeViewModelBase<TAnswer> : ObservableObject
                 return;
             }
 
-            DisplayAndBindCurrentCard();
-            WireGroupEvents();
+            DisplayCurrentCard();
             UpdateNavigationState();
         }
         catch (OperationCanceledException)
@@ -100,59 +102,46 @@ public abstract partial class PracticeViewModelBase<TAnswer> : ObservableObject
         }
     }
 
-    void DisplayAndBindCurrentCard()
+    void DisplayCurrentCard()
     {
-        var w = Words.Words[CurrentIndex];
+        var word = Words.Words[CurrentIndex];
         Card.DisplayCurrentCard(Words.Words, CurrentIndex, SetExamples);
-        var answer = BuildAnswerFor(w);
-        ApplyAnswerToGroups(answer);
-        UpdateNavigationState();
+        PrepareCardAnswer(word);
+        Flashcard.SetAnswer(GetInflectedForm());
     }
 
-    void WireGroupEvents()
+    void RevealAnswer()
     {
-        foreach (var group in Groups)
-        {
-            if (group is INotifyPropertyChanged npc)
-            {
-                npc.PropertyChanged += (_, __) => UpdateNavigationState();
-            }
-        }
+        Flashcard.Reveal();
+        Logger.LogDebug("Answer revealed: {Form}", Flashcard.Answer);
     }
 
-    protected bool AllGroupsCorrect()
-    {
-        var allCorrect = Groups.All(g => g.Validation == ValidationState.Correct);
-        Logger.LogDebug("AllGroupsCorrect check: {Result}. States: [{States}]",
-            allCorrect,
-            string.Join(", ", Groups.Select(g => g.Validation)));
-        return allCorrect;
-    }
-
-    protected void UpdateNavigationState()
+    void UpdateNavigationState()
     {
         var hasNext = CurrentIndex < Words.Words.Count - 1;
-        var allCorrect = AllGroupsCorrect();
-        CanRateCard = hasNext && allCorrect;
+        var isRevealed = Flashcard.IsRevealed;
+        CanRateCard = hasNext && isRevealed;
 
-        Logger.LogDebug("UpdateNavigationState: hasNext={HasNext}, allCorrect={AllCorrect}, CanRateCard={CanRate}",
-            hasNext, allCorrect, CanRateCard);
+        Logger.LogDebug("UpdateNavigationState: hasNext={HasNext}, isRevealed={IsRevealed}, CanRateCard={CanRate}",
+            hasNext, isRevealed, CanRateCard);
 
         // Notify commands to re-evaluate their CanExecute
         _hardCommand.NotifyCanExecuteChanged();
         _easyCommand.NotifyCanExecuteChanged();
+        _revealCommand.NotifyCanExecuteChanged();
     }
 
-    // Commands - expose the stored instances
+    // Commands
     public ICommand GoBackCommand => new AsyncRelayCommand(() => Navigator.NavigateBackAsync(this));
     public ICommand HardCommand => _hardCommand;
     public ICommand EasyCommand => _easyCommand;
+    public ICommand RevealCommand => _revealCommand;
 
     void MarkAsHard()
     {
         if (!CanRateCard) return;
         Logger.LogInformation("Marked hard: {Word}", Card.CurrentWord);
-        AdvanceDailyGoal();
+        DailyGoal.Advance();
         MoveToNextCard();
     }
 
@@ -160,7 +149,7 @@ public abstract partial class PracticeViewModelBase<TAnswer> : ObservableObject
     {
         if (!CanRateCard) return;
         Logger.LogInformation("Marked easy: {Word}", Card.CurrentWord);
-        AdvanceDailyGoal();
+        DailyGoal.Advance();
         MoveToNextCard();
     }
 
@@ -169,26 +158,8 @@ public abstract partial class PracticeViewModelBase<TAnswer> : ObservableObject
         if (CurrentIndex >= Words.Words.Count - 1) return;
 
         CurrentIndex++;
-        ResetAllGroups();          // Clear toggles
-        DisplayAndBindCurrentCard();
-    }
-
-    // Simple daily goal math; tune targets as needed
-    const int DailyTarget = 50;
-    int _completedToday = 0;
-
-    void InitializeDailyGoal()
-    {
-        Card.DailyGoalText = $"{_completedToday}/{DailyTarget}";
-        Card.DailyProgress = 100.0 * _completedToday / DailyTarget;
-        Logger.LogInformation("InitializeDailyGoal: Set to {Text}, Progress={Progress}%",
-            Card.DailyGoalText, Card.DailyProgress);
-    }
-
-    protected void AdvanceDailyGoal()
-    {
-        _completedToday = Math.Min(DailyTarget, _completedToday + 1);
-        Card.DailyGoalText = $"{_completedToday}/{DailyTarget}";
-        Card.DailyProgress = 100.0 * _completedToday / DailyTarget;
+        Flashcard.Reset();
+        DisplayCurrentCard();
+        UpdateNavigationState();
     }
 }

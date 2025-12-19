@@ -101,7 +101,9 @@ public partial class App : Application
             new ViewMap(ViewModel: typeof(ShellViewModel)),
             new ViewMap<StartPage, StartViewModel>(),
             new ViewMap<DeclensionPracticePage, DeclensionPracticeViewModel>(),
-            new ViewMap<ConjugationPracticePage, ConjugationPracticeViewModel>()
+            new ViewMap<ConjugationPracticePage, ConjugationPracticeViewModel>(),
+            new ViewMap<HelpPage, HelpViewModel>(),
+            new ViewMap<AboutPage, AboutViewModel>()
         );
 
         routes.Register(
@@ -111,6 +113,8 @@ public partial class App : Application
                     new("Start", View: views.FindByViewModel<StartViewModel>(), IsDefault: true),
                     new("DeclensionPractice", View: views.FindByViewModel<DeclensionPracticeViewModel>()),
                     new("ConjugationPractice", View: views.FindByViewModel<ConjugationPracticeViewModel>()),
+                    new("Help", View: views.FindByViewModel<HelpViewModel>()),
+                    new("About", View: views.FindByViewModel<AboutViewModel>()),
                 ]
             )
         );

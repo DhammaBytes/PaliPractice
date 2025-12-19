@@ -11,8 +11,6 @@ public sealed partial class StartPage : Page
                 .SafeArea(SafeArea.InsetMask.VisibleBounds)
                 .RowDefinitions("Auto,*")
                 .Children(
-                    new NavigationBar().Content(() => vm.Title),
-                    
                     // Main content area
                     new Grid()
                         .Grid(row: 1)
@@ -32,15 +30,6 @@ public sealed partial class StartPage : Page
                                         .HorizontalAlignment(HorizontalAlignment.Center)
                                         .TextAlignment(TextAlignment.Center)
                                         .Foreground(ThemeResource.Get<Brush>("PrimaryBrush")),
-                                    
-                                    // Subtitle
-                                    new TextBlock()
-                                        .Text("Choose your practice mode")
-                                        .FontSize(18)
-                                        .HorizontalAlignment(HorizontalAlignment.Center)
-                                        .TextAlignment(TextAlignment.Center)
-                                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
-                                        .Margin(0, 0, 0, 16),
                                     
                                     // Practice buttons
                                     new StackPanel()
@@ -62,7 +51,7 @@ public sealed partial class StartPage : Page
                                                                     .FontSize(18)
                                                                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold),
                                                                 new TextBlock()
-                                                                    .Text("Practice noun cases and forms")
+                                                                    .Text("Nouns and cases")
                                                                     .FontSize(14)
                                                                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                                                             )
@@ -90,7 +79,7 @@ public sealed partial class StartPage : Page
                                                                     .FontSize(18)
                                                                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold),
                                                                 new TextBlock()
-                                                                    .Text("Practice verb tenses and forms")
+                                                                    .Text("Verbs and tenses")
                                                                     .FontSize(14)
                                                                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                                                             )
@@ -121,7 +110,56 @@ public sealed partial class StartPage : Page
                                                 .HorizontalContentAlignment(HorizontalAlignment.Left)
                                                 .Padding(20, 16)
                                                 .IsEnabled(false) // Disabled for now
-                                                .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+                                                .Background(ThemeResource.Get<Brush>("SurfaceBrush")),
+
+                                            // Help and About buttons (50/50 split)
+                                            new Grid()
+                                                .ColumnDefinitions("*,12,*")
+                                                .Children(
+                                                    // Help Button
+                                                    new Button()
+                                                        .Grid(column: 0)
+                                                        .Content(new StackPanel()
+                                                            .Orientation(Orientation.Horizontal)
+                                                            .Spacing(8)
+                                                            .Children(
+                                                                new FontIcon()
+                                                                    .Glyph("\uE897") // Help icon
+                                                                    .FontSize(20),
+                                                                new TextBlock()
+                                                                    .Text("Help")
+                                                                    .FontSize(16)
+                                                                    .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+                                                            )
+                                                        )
+                                                        .HorizontalAlignment(HorizontalAlignment.Stretch)
+                                                        .HorizontalContentAlignment(HorizontalAlignment.Center)
+                                                        .Padding(16, 12)
+                                                        .Command(() => vm.GoToHelpCommand)
+                                                        .Background(ThemeResource.Get<Brush>("SurfaceBrush")),
+
+                                                    // About Button
+                                                    new Button()
+                                                        .Grid(column: 2)
+                                                        .Content(new StackPanel()
+                                                            .Orientation(Orientation.Horizontal)
+                                                            .Spacing(8)
+                                                            .Children(
+                                                                new FontIcon()
+                                                                    .Glyph("\uE946") // Info icon
+                                                                    .FontSize(20),
+                                                                new TextBlock()
+                                                                    .Text("About")
+                                                                    .FontSize(16)
+                                                                    .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+                                                            )
+                                                        )
+                                                        .HorizontalAlignment(HorizontalAlignment.Stretch)
+                                                        .HorizontalContentAlignment(HorizontalAlignment.Center)
+                                                        .Padding(16, 12)
+                                                        .Command(() => vm.GoToAboutCommand)
+                                                        .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+                                                )
                                         )
                                 )
                         )

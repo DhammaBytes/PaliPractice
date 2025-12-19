@@ -39,6 +39,11 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     protected abstract string GetInflectedForm();
 
     /// <summary>
+    /// Returns the practice type (Declension or Conjugation) for history navigation.
+    /// </summary>
+    public abstract PracticeType CurrentPracticeType { get; }
+
+    /// <summary>
     /// Optional: Set usage examples specific to the word type (verb/noun).
     /// </summary>
     protected virtual void SetExamples(IWord w) { }
@@ -133,6 +138,8 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     // Commands
     public ICommand GoBackCommand => new AsyncRelayCommand(() => Navigator.NavigateBackAsync(this));
+    public ICommand GoToHistoryCommand => new AsyncRelayCommand(() =>
+        Navigator.NavigateViewModelAsync<HistoryViewModel>(this, data: new HistoryNavigationData(CurrentPracticeType)));
     public ICommand HardCommand => _hardCommand;
     public ICommand EasyCommand => _easyCommand;
     public ICommand RevealCommand => _revealCommand;

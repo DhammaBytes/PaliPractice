@@ -91,7 +91,7 @@ public sealed partial class StartPage : Page
                                                 .Command(() => vm.GoToConjugationCommand)
                                                 .Background(ThemeResource.Get<Brush>("PrimaryBrush")),
                                             
-                                            // Settings Button (for future use)
+                                            // Settings Button
                                             new Button()
                                                 .Content(new StackPanel()
                                                     .Orientation(Orientation.Horizontal)
@@ -109,7 +109,7 @@ public sealed partial class StartPage : Page
                                                 .HorizontalAlignment(HorizontalAlignment.Stretch)
                                                 .HorizontalContentAlignment(HorizontalAlignment.Left)
                                                 .Padding(20, 16)
-                                                .IsEnabled(false) // Disabled for now
+                                                .Command(() => vm.GoToSettingsCommand)
                                                 .Background(ThemeResource.Get<Brush>("SurfaceBrush")),
 
                                             // Help and About buttons (50/50 split)

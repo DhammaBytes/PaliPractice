@@ -82,6 +82,10 @@ public partial class App : Application
                     // ViewModels
                     services.AddTransient<DeclensionPracticeViewModel>();
                     services.AddTransient<ConjugationPracticeViewModel>();
+                    services.AddTransient<SettingsViewModel>();
+                    services.AddTransient<ConjugationSettingsViewModel>();
+                    services.AddTransient<DeclensionSettingsViewModel>();
+                    services.AddTransient<HistoryViewModel>();
                 })
                 .UseNavigation(RegisterRoutes)
             );
@@ -103,7 +107,11 @@ public partial class App : Application
             new ViewMap<DeclensionPracticePage, DeclensionPracticeViewModel>(),
             new ViewMap<ConjugationPracticePage, ConjugationPracticeViewModel>(),
             new ViewMap<HelpPage, HelpViewModel>(),
-            new ViewMap<AboutPage, AboutViewModel>()
+            new ViewMap<AboutPage, AboutViewModel>(),
+            new ViewMap<SettingsPage, SettingsViewModel>(),
+            new ViewMap<ConjugationSettingsPage, ConjugationSettingsViewModel>(),
+            new ViewMap<DeclensionSettingsPage, DeclensionSettingsViewModel>(),
+            new DataViewMap<HistoryPage, HistoryViewModel, HistoryNavigationData>()
         );
 
         routes.Register(
@@ -115,6 +123,10 @@ public partial class App : Application
                     new("ConjugationPractice", View: views.FindByViewModel<ConjugationPracticeViewModel>()),
                     new("Help", View: views.FindByViewModel<HelpViewModel>()),
                     new("About", View: views.FindByViewModel<AboutViewModel>()),
+                    new("Settings", View: views.FindByViewModel<SettingsViewModel>()),
+                    new("ConjugationSettings", View: views.FindByViewModel<ConjugationSettingsViewModel>()),
+                    new("DeclensionSettings", View: views.FindByViewModel<DeclensionSettingsViewModel>()),
+                    new("History", View: views.FindByViewModel<HistoryViewModel>()),
                 ]
             )
         );

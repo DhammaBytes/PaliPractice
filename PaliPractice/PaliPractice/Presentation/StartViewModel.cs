@@ -11,6 +11,7 @@ public class StartViewModel : ObservableObject
 
         GoToDeclensionCommand = new AsyncRelayCommand(GoToDeclension);
         GoToConjugationCommand = new AsyncRelayCommand(GoToConjugation);
+        GoToSettingsCommand = new AsyncRelayCommand(GoToSettings);
         GoToHelpCommand = new AsyncRelayCommand(GoToHelp);
         GoToAboutCommand = new AsyncRelayCommand(GoToAbout);
     }
@@ -19,6 +20,7 @@ public class StartViewModel : ObservableObject
 
     public ICommand GoToDeclensionCommand { get; }
     public ICommand GoToConjugationCommand { get; }
+    public ICommand GoToSettingsCommand { get; }
     public ICommand GoToHelpCommand { get; }
     public ICommand GoToAboutCommand { get; }
 
@@ -30,6 +32,11 @@ public class StartViewModel : ObservableObject
     async Task GoToConjugation()
     {
         await _navigator.NavigateViewModelAsync<ConjugationPracticeViewModel>(this);
+    }
+
+    async Task GoToSettings()
+    {
+        await _navigator.NavigateViewModelAsync<SettingsViewModel>(this);
     }
 
     async Task GoToHelp()

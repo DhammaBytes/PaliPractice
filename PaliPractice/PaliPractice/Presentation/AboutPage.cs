@@ -59,27 +59,40 @@ public sealed partial class AboutPage : Page
                                         .HorizontalAlignment(HorizontalAlignment.Center)
                                         .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
 
-                                    // Data source
+                                    // License section
                                     new Border()
                                         .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
                                         .CornerRadius(8)
                                         .Padding(16)
                                         .Child(
-                                            new TextBlock()
-                                                .Text<AboutViewModel>(vm => vm.DataSource)
-                                                .FontSize(14)
-                                                .TextWrapping(TextWrapping.Wrap)
-                                                .TextAlignment(TextAlignment.Center)
-                                                .HorizontalAlignment(HorizontalAlignment.Center)
-                                                .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
+                                            new StackPanel()
+                                                .Spacing(8)
+                                                .Children(
+                                                    new TextBlock()
+                                                        .Text<AboutViewModel>(vm => vm.LicenseTitle)
+                                                        .FontSize(16)
+                                                        .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+                                                        .HorizontalAlignment(HorizontalAlignment.Center)
+                                                        .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush")),
+                                                    new TextBlock()
+                                                        .Text<AboutViewModel>(vm => vm.LicenseText)
+                                                        .FontSize(14)
+                                                        .TextWrapping(TextWrapping.Wrap)
+                                                        .TextAlignment(TextAlignment.Center)
+                                                        .HorizontalAlignment(HorizontalAlignment.Center)
+                                                        .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
+                                                )
                                         ),
 
-                                    // Copyright
+                                    // Blessing
                                     new TextBlock()
-                                        .Text("© 2024")
-                                        .FontSize(14)
+                                        .Text<AboutViewModel>(vm => vm.Blessing)
+                                        .FontSize(16)
+                                        .FontStyle(Windows.UI.Text.FontStyle.Italic)
+                                        .TextWrapping(TextWrapping.Wrap)
+                                        .TextAlignment(TextAlignment.Center)
                                         .HorizontalAlignment(HorizontalAlignment.Center)
-                                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                                        .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"))
                                 )
                         )
                 )

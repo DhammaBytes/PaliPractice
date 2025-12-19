@@ -16,7 +16,10 @@ public sealed partial class ConjugationPracticePage : Page
                 .RowDefinitions("Auto,*,Auto,Auto")
                 .Children(
                     // Row 0: Title bar
-                    AppTitleBar.Build<ConjugationPracticeViewModel>("Conjugation Practice", vm => vm.GoBackCommand),
+                    AppTitleBar.BuildWithHistory<ConjugationPracticeViewModel>(
+                        "Conjugation Practice",
+                        vm => vm.GoBackCommand,
+                        vm => vm.GoToHistoryCommand),
 
                     // Row 1: Scrollable content area
                     new ScrollViewer().Grid(row: 1).Content(

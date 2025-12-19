@@ -139,6 +139,15 @@ public static class BindExtensions
         icon.SetBinding(UIElement.VisibilityProperty, visBinding);
         return icon;
     }
+
+    /// <summary>
+    /// Binds ToggleSwitch.IsOn to a bool property path (TwoWay binding)
+    /// </summary>
+    public static ToggleSwitch IsOn<TDC>(this ToggleSwitch toggle, Expression<Func<TDC, bool>> path)
+    {
+        toggle.SetBinding(ToggleSwitch.IsOnProperty, Bind.TwoWayPath(path));
+        return toggle;
+    }
 }
 
 /// <summary>

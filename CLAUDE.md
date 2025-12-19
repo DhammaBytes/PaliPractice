@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-PaliPractice is a cross-platform language learning app for practicing Pali noun declensions and verb conjugations. Built with .NET 9 and Uno Platform for Windows, Mac, Linux, Android, and iOS.
+PaliPractice is a cross-platform language learning app for practicing Pali noun declensions and verb conjugations. Built with .NET 10 and Uno Platform for Windows, Mac, Linux, Android, and iOS.
 
 Uno Platform implements the entire WinUI and WinRT API (like Microsoft.UI) surface across platforms. So when developing in Uno, think as an experienced WinUI/WinRT developer.
 
@@ -13,14 +13,14 @@ Uno Platform implements the entire WinUI and WinRT API (like Microsoft.UI) surfa
 ### Build and Run
 ```bash
 # Build for desktop (Windows/Mac/Linux)
-dotnet build --framework net9.0-desktop
+dotnet build --framework net10.0-desktop
 
 # Run on desktop
-dotnet run --framework net9.0-desktop
+dotnet run --framework net10.0-desktop
 
 # Build for other platforms
-dotnet build --framework net9.0-ios
-dotnet build --framework net9.0-android
+dotnet build --framework net10.0-ios
+dotnet build --framework net10.0-android
 ```
 
 ### Database Generation
@@ -42,7 +42,7 @@ uv run python db/inflections/generate_inflection_tables.py
 ## Architecture Overview
 
 ### Technology Stack
-- **Framework**: Uno Platform 6 with .NET 9
+- **Framework**: Uno Platform 6 with .NET 10
 - **UI Pattern**: MVVM with C# Markup (fluent API)
 - **Database**: SQLite via sqlite-net-pcl
 - **Data Source**: Digital Pāḷi Dictionary (DPD) as git submodule

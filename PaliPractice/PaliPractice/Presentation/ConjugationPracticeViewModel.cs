@@ -10,6 +10,8 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
     readonly Random _random = new();
     Conjugation? _currentConjugation;
 
+    public override PracticeType CurrentPracticeType => PracticeType.Conjugation;
+
     // Badge display properties for Person
     [ObservableProperty] string _personLabel = string.Empty;
     [ObservableProperty] SolidColorBrush _personBrush = new(Colors.Transparent);

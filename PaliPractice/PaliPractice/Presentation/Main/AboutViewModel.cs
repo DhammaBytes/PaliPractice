@@ -14,13 +14,13 @@ public partial class AboutViewModel : ObservableObject
     string Version => "1.0.0";
 
     public string Description => """
-        An app for practicing Pali grammar using spaced repetition technique
+        An app for practicing Pāli grammar using spaced repetition, a method based on repeated review over time
 
-        Maintained by the Dhamma Bytes contributors (dhammabytes.org)
+        Maintained by the DhammaBytes contributors (https://dhammabytes.org)
         
-        Word and grammar data sourced from the Digital Pāḷi Dictionary (dpdict.net)
+        Word and grammar data are sourced from the Digital Pāḷi Dictionary (https://dpdict.net)
         
-        The app's icon is the quail from SN 47:6 Sakuṇagghi Sutta (The Hawk), hiding behind the rocks in its ancestral territory – a newly plowed field with clumps of earth all turned up.
+        The app’s icon shows the quail from SN 47:6, the Sakuṇagghi Sutta (“The Hawk”), hiding behind rocks in its ancestral territory – a newly plowed field with clumps of earth all turned up.
         
         “Wander, monks, in what is your proper range, your own ancestral territory. In one who wanders in what is his proper range, his own ancestral territory, Māra gains no opening, Māra gains no foothold. And what, for a monk, is his proper range, his own ancestral territory? The four establishings of mindfulness.”
         

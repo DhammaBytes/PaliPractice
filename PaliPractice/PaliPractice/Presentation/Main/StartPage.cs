@@ -22,6 +22,14 @@ public sealed partial class StartPage : Page
                                 .Spacing(32)
                                 .MaxWidth(400)
                                 .Children(
+                                    // App icon
+                                    new Image()
+                                        .Source("ms-appx:///Assets/Svg/icon.svg")
+                                        .Width(120)
+                                        .Height(120)
+                                        .Stretch(Stretch.Uniform)
+                                        .HorizontalAlignment(HorizontalAlignment.Center),
+
                                     // App title
                                     new TextBlock()
                                         .Text("Pali Practice")

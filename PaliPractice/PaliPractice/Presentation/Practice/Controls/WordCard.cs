@@ -6,12 +6,21 @@ namespace PaliPractice.Presentation.Practice.Controls;
 
 public static class WordCard
 {
+    /// <summary>
+    /// Builds a WordCard and provides references to elements for responsive sizing.
+    /// </summary>
+    /// <param name="cardBorder">Output: the card Border for padding adjustments</param>
+    /// <param name="wordTextBlock">Output: the main word TextBlock for font size adjustments</param>
     public static Border Build<TDC>(
         Expression<Func<TDC, WordCardViewModel>> cardPath,
         Expression<Func<TDC, ExampleCarouselViewModel>> carouselPath,
-        string rankPrefix)
+        string rankPrefix,
+        out Border cardBorder,
+        out TextBlock wordTextBlock)
     {
-        return new Border()
+        wordTextBlock = BuildMainWordRow<TDC>(cardPath);
+
+        cardBorder = new Border()
             .MaxWidth(LayoutConstants.ContentMaxWidth)
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
@@ -25,12 +34,26 @@ public static class WordCard
                         BuildHeaderRow<TDC>(cardPath, rankPrefix).Grid(row: 0),
 
                         // Row 1: Main word (lemma)
-                        BuildMainWordRow<TDC>(cardPath).Grid(row: 1),
+                        wordTextBlock.Grid(row: 1),
 
                         // Row 2: Example with arrows (always visible)
                         BuildExampleRow<TDC>(carouselPath).Grid(row: 2)
                     )
             );
+
+        return cardBorder;
+    }
+
+    /// <summary>
+    /// Builds a WordCard without providing element references.
+    /// Use the overload with out parameters for responsive layouts.
+    /// </summary>
+    public static Border Build<TDC>(
+        Expression<Func<TDC, WordCardViewModel>> cardPath,
+        Expression<Func<TDC, ExampleCarouselViewModel>> carouselPath,
+        string rankPrefix)
+    {
+        return Build(cardPath, carouselPath, rankPrefix, out _, out _);
     }
 
     static Grid BuildHeaderRow<TDC>(Expression<Func<TDC, WordCardViewModel>> cardPath, string rankPrefix)

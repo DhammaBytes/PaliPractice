@@ -26,14 +26,16 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
     // Badge display properties for Case
     [ObservableProperty] string _caseLabel = string.Empty;
     [ObservableProperty] SolidColorBrush _caseBrush = new(Colors.Transparent);
+    [ObservableProperty] string? _caseGlyph;
+    [ObservableProperty] string _caseHint = string.Empty;
 
     public DeclensionPracticeViewModel(
-        [FromKeyedServices("noun")] IWordProvider words,
+        [FromKeyedServices("noun")] ILemmaProvider lemmas,
         WordCardViewModel wordCard,
         INavigator navigator,
         ILogger<DeclensionPracticeViewModel> logger,
         IInflectionService inflectionService)
-        : base(words, wordCard, navigator, logger)
+        : base(lemmas, wordCard, navigator, logger)
     {
         _inflectionService = inflectionService;
         _ = InitializeAsync();
@@ -86,9 +88,9 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
         // Gender badge
         GenderLabel = d.Gender switch
         {
-            Gender.Masculine => "Masc",
-            Gender.Neuter => "Neut",
-            Gender.Feminine => "Fem",
+            Gender.Masculine => "Masculine",
+            Gender.Neuter => "Neuter",
+            Gender.Feminine => "Feminine",
             _ => d.Gender.ToString()
         };
         GenderBrush = OptionPresentation.GetChipBrush(d.Gender);
@@ -97,27 +99,29 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
         // Number badge
         NumberLabel = d.Number switch
         {
-            Models.Number.Singular => "Sing",
-            Models.Number.Plural => "Plur",
+            Models.Number.Singular => "Singular",
+            Models.Number.Plural => "Plural",
             _ => d.Number.ToString()
         };
         NumberBrush = OptionPresentation.GetChipBrush(d.Number);
         NumberGlyph = OptionPresentation.GetGlyph(d.Number);
 
         // Case badge
-        CaseLabel = d.CaseName switch
-        {
-            NounCase.Nominative => "Nom",
-            NounCase.Accusative => "Acc",
-            NounCase.Instrumental => "Ins",
-            NounCase.Dative => "Dat",
-            NounCase.Ablative => "Abl",
-            NounCase.Genitive => "Gen",
-            NounCase.Locative => "Loc",
-            NounCase.Vocative => "Voc",
-            _ => d.CaseName.ToString()
-        };
+        CaseLabel = d.CaseName.ToString();
         CaseBrush = OptionPresentation.GetChipBrush(d.CaseName);
+        CaseGlyph = "\uE8C8"; // Placeholder icon (Tag)
+        CaseHint = d.CaseName switch
+        {
+            NounCase.Nominative => "who? what? (subject)",
+            NounCase.Accusative => "whom? what? (object)",
+            NounCase.Instrumental => "with whom? with what? by what means?",
+            NounCase.Dative => "to whom? to what? for whom?",
+            NounCase.Ablative => "from whom? from what?",
+            NounCase.Genitive => "whose? of whom? of what?",
+            NounCase.Locative => "in/at/on whom? where?",
+            NounCase.Vocative => "O...! (direct address)",
+            _ => string.Empty
+        };
     }
 
     void SetBadgesFallback(Noun noun)
@@ -126,12 +130,14 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
         GenderBrush = OptionPresentation.GetChipBrush(noun.Gender);
         GenderGlyph = OptionPresentation.GetGlyph(noun.Gender);
 
-        NumberLabel = "Sing";
+        NumberLabel = "Singular";
         NumberBrush = OptionPresentation.GetChipBrush(Models.Number.Singular);
         NumberGlyph = OptionPresentation.GetGlyph(Models.Number.Singular);
 
-        CaseLabel = "Nom";
+        CaseLabel = "Nominative";
         CaseBrush = OptionPresentation.GetChipBrush(NounCase.Nominative);
+        CaseGlyph = "\uE8C8";
+        CaseHint = "who? what? (subject)";
     }
 
     protected override string GetInflectedForm()

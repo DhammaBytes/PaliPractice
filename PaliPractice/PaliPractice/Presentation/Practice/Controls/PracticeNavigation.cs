@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
+using PaliPractice.Presentation.Common;
 
 namespace PaliPractice.Presentation.Practice.Controls;
 
@@ -12,6 +13,7 @@ public static class PracticeNavigation
         Expression<Func<TDC, ICommand>> hardCommand,
         Expression<Func<TDC, ICommand>> easyCommand) =>
         new Grid()
+            .MaxWidth(LayoutConstants.ContentMaxWidth)
             .ColumnDefinitions("*,*")
             .Padding(20, 16)
             .ColumnSpacing(16)
@@ -38,6 +40,7 @@ public static class PracticeNavigation
         Expression<Func<TDC, bool>> isRevealedPath)
     {
         return new Grid()
+            .MaxWidth(LayoutConstants.ContentMaxWidth)
             .Padding(20, 16)
             .Children(
                 // Reveal button - visible when NOT revealed

@@ -205,4 +205,17 @@ public static class BindWithin
         button.SetBinding(ButtonBase.CommandProperty, BindExtensions.Relative(path));
         return button;
     }
+
+    /// <summary>
+    /// Binds UIElement.Opacity to a bool property within the current DataContext scope.
+    /// true → 1.0 (visible), false → 0.0 (invisible but keeps layout space)
+    /// </summary>
+    public static T OpacityWithin<T, TScope>(this T element, Expression<Func<TScope, bool>> path)
+        where T : UIElement
+    {
+        var binding = BindExtensions.Relative(path);
+        binding.Converter = BoolToOpacityConverter.Instance;
+        element.SetBinding(UIElement.OpacityProperty, binding);
+        return element;
+    }
 }

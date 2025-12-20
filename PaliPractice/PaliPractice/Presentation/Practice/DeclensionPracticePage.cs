@@ -50,12 +50,33 @@ public sealed partial class DeclensionPracticePage : Page
                                     carouselPath: vm => vm.ExampleCarousel,
                                     rankPrefix: "N"),
 
-                                // Badge row: [Gender] [Number] [Case]
+                                // Badge row: [Case] [Gender] [Number]
                                 new StackPanel()
                                     .Orientation(Orientation.Horizontal)
                                     .HorizontalAlignment(HorizontalAlignment.Center)
                                     .Spacing(12)
                                     .Children(
+                                        // Case badge (first)
+                                        new Border()
+                                            .CornerRadius(16)
+                                            .Padding(12, 6)
+                                            .Background<DeclensionPracticeViewModel>(vm => vm.CaseBrush)
+                                            .Child(
+                                                new StackPanel()
+                                                    .Orientation(Orientation.Horizontal)
+                                                    .Spacing(6)
+                                                    .Children(
+                                                        new FontIcon()
+                                                            .FontSize(14)
+                                                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+                                                            .GlyphWithVisibility<DeclensionPracticeViewModel>(vm => vm.CaseGlyph),
+                                                        new TextBlock()
+                                                            .FontSize(14)
+                                                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+                                                            .Text<DeclensionPracticeViewModel>(vm => vm.CaseLabel)
+                                                    )
+                                            ),
+
                                         // Gender badge
                                         new Border()
                                             .CornerRadius(16)
@@ -96,20 +117,17 @@ public sealed partial class DeclensionPracticePage : Page
                                                             .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
                                                             .Text<DeclensionPracticeViewModel>(vm => vm.NumberLabel)
                                                     )
-                                            ),
-
-                                        // Case badge (no glyph)
-                                        new Border()
-                                            .CornerRadius(16)
-                                            .Padding(12, 6)
-                                            .Background<DeclensionPracticeViewModel>(vm => vm.CaseBrush)
-                                            .Child(
-                                                new TextBlock()
-                                                    .FontSize(14)
-                                                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
-                                                    .Text<DeclensionPracticeViewModel>(vm => vm.CaseLabel)
                                             )
                                     ),
+
+                                // Case hint (e.g., "to whom? to what?")
+                                new TextBlock()
+                                    .Text<DeclensionPracticeViewModel>(vm => vm.CaseHint)
+                                    .FontSize(14)
+                                    .FontStyle(Windows.UI.Text.FontStyle.Italic)
+                                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                                    .HorizontalAlignment(HorizontalAlignment.Center)
+                                    .TextAlignment(TextAlignment.Center),
 
                                 // Answer display (visible only after reveal)
                                 new Border()

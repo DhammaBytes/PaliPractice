@@ -1,12 +1,12 @@
 namespace PaliPractice.Presentation.Practice.Providers;
 
-public sealed class NounWordProvider : IWordProvider
+public sealed class NounLemmaProvider : ILemmaProvider
 {
     readonly IDatabaseService _db;
     readonly List<ILemma> _lemmas = [];
     public IReadOnlyList<ILemma> Lemmas => _lemmas;
 
-    public NounWordProvider(IDatabaseService db) => _db = db;
+    public NounLemmaProvider(IDatabaseService db) => _db = db;
 
     public Task LoadAsync(CancellationToken ct = default)
     {

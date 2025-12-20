@@ -91,7 +91,7 @@ public static class WordCard
             .ColumnDefinitions("Auto,*,Auto")
             .Margin(0, 8, 0, 0)
             .Children(
-                // Left arrow button
+                // Left arrow button (opacity preserves layout space)
                 new Button()
                     .Grid(column: 0)
                     .Background(ThemeResource.Get<Brush>("SurfaceVariantBrush"))
@@ -102,7 +102,7 @@ public static class WordCard
                     .VerticalAlignment(VerticalAlignment.Center)
                     .Scope(carouselPath)
                     .CommandWithin<Button, ExampleCarouselViewModel>(c => c.PreviousCommand)
-                    .VisibilityWithin<Button, ExampleCarouselViewModel>(c => c.HasMultipleExamples)
+                    .OpacityWithin<Button, ExampleCarouselViewModel>(c => c.HasMultipleExamples)
                     .Content(new FontIcon()
                         .Glyph("\uE76B") // ChevronLeft
                         .FontSize(16)
@@ -130,7 +130,7 @@ public static class WordCard
                             .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                     ),
 
-                // Right arrow button
+                // Right arrow button (opacity preserves layout space)
                 new Button()
                     .Grid(column: 2)
                     .Background(ThemeResource.Get<Brush>("SurfaceVariantBrush"))
@@ -141,7 +141,7 @@ public static class WordCard
                     .VerticalAlignment(VerticalAlignment.Center)
                     .Scope(carouselPath)
                     .CommandWithin<Button, ExampleCarouselViewModel>(c => c.NextCommand)
-                    .VisibilityWithin<Button, ExampleCarouselViewModel>(c => c.HasMultipleExamples)
+                    .OpacityWithin<Button, ExampleCarouselViewModel>(c => c.HasMultipleExamples)
                     .Content(new FontIcon()
                         .Glyph("\uE76C") // ChevronRight
                         .FontSize(16)

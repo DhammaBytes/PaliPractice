@@ -25,13 +25,14 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
     // Badge display properties for Tense
     [ObservableProperty] string _tenseLabel = string.Empty;
     [ObservableProperty] SolidColorBrush _tenseBrush = new(Colors.Transparent);
+    [ObservableProperty] string? _tenseGlyph;
 
     public ConjugationPracticeViewModel(
-        [FromKeyedServices("verb")] IWordProvider words,
+        [FromKeyedServices("verb")] ILemmaProvider lemmas,
         WordCardViewModel wordCard,
         INavigator navigator,
         ILogger<ConjugationPracticeViewModel> logger)
-        : base(words, wordCard, navigator, logger)
+        : base(lemmas, wordCard, navigator, logger)
     {
         _ = InitializeAsync();
     }
@@ -103,24 +104,17 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
         // Number badge
         NumberLabel = number switch
         {
-            Models.Number.Singular => "Sing",
-            Models.Number.Plural => "Plur",
+            Models.Number.Singular => "Singular",
+            Models.Number.Plural => "Plural",
             _ => number.ToString()
         };
         NumberBrush = OptionPresentation.GetChipBrush(number);
         NumberGlyph = OptionPresentation.GetGlyph(number);
 
         // Tense badge
-        TenseLabel = tense switch
-        {
-            Tense.Present => "Pres",
-            Tense.Aorist => "Aor",
-            Tense.Future => "Fut",
-            Tense.Imperative => "Imp",
-            Tense.Optative => "Opt",
-            _ => tense.ToString()
-        };
+        TenseLabel = tense.ToString();
         TenseBrush = OptionPresentation.GetChipBrush(tense);
+        TenseGlyph = "\uE8C8"; // Placeholder icon (Tag)
     }
 
     protected override string GetInflectedForm()

@@ -2,7 +2,7 @@ namespace PaliPractice.Presentation.Practice.Controls;
 
 /// <summary>
 /// Displays the answer text after reveal.
-/// Shows empty placeholder until revealed, then shows the inflected form.
+/// Shows an empty placeholder until revealed, then shows the inflected form.
 /// </summary>
 public static class AnswerDisplay
 {

@@ -50,12 +50,33 @@ public sealed partial class ConjugationPracticePage : Page
                                     carouselPath: vm => vm.ExampleCarousel,
                                     rankPrefix: "V"),
 
-                                // Badge row: [Person] [Number] [Tense]
+                                // Badge row: [Tense] [Person] [Number]
                                 new StackPanel()
                                     .Orientation(Orientation.Horizontal)
                                     .HorizontalAlignment(HorizontalAlignment.Center)
                                     .Spacing(12)
                                     .Children(
+                                        // Tense badge (first)
+                                        new Border()
+                                            .CornerRadius(16)
+                                            .Padding(12, 6)
+                                            .Background<ConjugationPracticeViewModel>(vm => vm.TenseBrush)
+                                            .Child(
+                                                new StackPanel()
+                                                    .Orientation(Orientation.Horizontal)
+                                                    .Spacing(6)
+                                                    .Children(
+                                                        new FontIcon()
+                                                            .FontSize(14)
+                                                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+                                                            .GlyphWithVisibility<ConjugationPracticeViewModel>(vm => vm.TenseGlyph),
+                                                        new TextBlock()
+                                                            .FontSize(14)
+                                                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+                                                            .Text<ConjugationPracticeViewModel>(vm => vm.TenseLabel)
+                                                    )
+                                            ),
+
                                         // Person badge
                                         new Border()
                                             .CornerRadius(16)
@@ -96,18 +117,6 @@ public sealed partial class ConjugationPracticePage : Page
                                                             .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
                                                             .Text<ConjugationPracticeViewModel>(vm => vm.NumberLabel)
                                                     )
-                                            ),
-
-                                        // Tense badge (no glyph)
-                                        new Border()
-                                            .CornerRadius(16)
-                                            .Padding(12, 6)
-                                            .Background<ConjugationPracticeViewModel>(vm => vm.TenseBrush)
-                                            .Child(
-                                                new TextBlock()
-                                                    .FontSize(14)
-                                                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
-                                                    .Text<ConjugationPracticeViewModel>(vm => vm.TenseLabel)
                                             )
                                     ),
 

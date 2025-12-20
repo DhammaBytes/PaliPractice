@@ -93,8 +93,8 @@ public partial class App : Application
                     services.AddTransient<WordCardViewModel>();
 
                     // Word providers
-                    services.AddKeyedTransient<IWordProvider, NounWordProvider>("noun");
-                    services.AddKeyedTransient<IWordProvider, VerbWordProvider>("verb");
+                    services.AddKeyedTransient<ILemmaProvider, NounLemmaProvider>("noun");
+                    services.AddKeyedTransient<ILemmaProvider, VerbLemmaProvider>("verb");
 
                     // ViewModels
                     services.AddTransient<DeclensionPracticeViewModel>();

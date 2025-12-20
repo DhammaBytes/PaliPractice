@@ -1,12 +1,12 @@
 namespace PaliPractice.Presentation.Practice.Providers;
 
-public sealed class VerbWordProvider : IWordProvider
+public sealed class VerbLemmaProvider : ILemmaProvider
 {
     readonly IDatabaseService _db;
     readonly List<ILemma> _lemmas = [];
     public IReadOnlyList<ILemma> Lemmas => _lemmas;
 
-    public VerbWordProvider(IDatabaseService db) => _db = db;
+    public VerbLemmaProvider(IDatabaseService db) => _db = db;
 
     public Task LoadAsync(CancellationToken ct = default)
     {

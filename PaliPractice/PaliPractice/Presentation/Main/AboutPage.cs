@@ -28,27 +28,21 @@ public sealed partial class AboutPage : Page
                                 .HorizontalAlignment(HorizontalAlignment.Center)
                                 .VerticalAlignment(VerticalAlignment.Center)
                                 .Children(
-                                    // App icon placeholder
-                                    new FontIcon()
-                                        .Glyph("\uE82D")
-                                        .FontSize(80)
-                                        .HorizontalAlignment(HorizontalAlignment.Center)
-                                        .Foreground(ThemeResource.Get<Brush>("PrimaryBrush")),
+                                    // App icon
+                                    new Image()
+                                        .Source("ms-appx:///Assets/Svg/icon.svg")
+                                        .Width(100)
+                                        .Height(100)
+                                        .Stretch(Stretch.Uniform)
+                                        .HorizontalAlignment(HorizontalAlignment.Center),
 
-                                    // App name
+                                    // App name with version
                                     new TextBlock()
                                         .Text<AboutViewModel>(vm => vm.AppName)
                                         .FontSize(32)
                                         .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
                                         .HorizontalAlignment(HorizontalAlignment.Center)
                                         .Foreground(ThemeResource.Get<Brush>("PrimaryBrush")),
-
-                                    // Version
-                                    new TextBlock()
-                                        .Text<AboutViewModel>(vm => vm.Version)
-                                        .FontSize(16)
-                                        .HorizontalAlignment(HorizontalAlignment.Center)
-                                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush")),
 
                                     // Description
                                     new TextBlock()

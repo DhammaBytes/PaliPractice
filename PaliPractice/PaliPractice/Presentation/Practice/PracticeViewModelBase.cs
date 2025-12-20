@@ -11,7 +11,7 @@ namespace PaliPractice.Presentation.Practice;
 [Microsoft.UI.Xaml.Data.Bindable]
 public abstract partial class PracticeViewModelBase : ObservableObject
 {
-    protected readonly IWordProvider Words;
+    protected readonly ILemmaProvider Lemmas;
     protected readonly INavigator Navigator;
     protected readonly ILogger Logger;
 
@@ -45,12 +45,12 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     public abstract PracticeType CurrentPracticeType { get; }
 
     protected PracticeViewModelBase(
-        IWordProvider words,
+        ILemmaProvider lemmas,
         WordCardViewModel wordCard,
         INavigator navigator,
         ILogger logger)
     {
-        Words = words;
+        Lemmas = lemmas;
         WordCard = wordCard;
         Navigator = navigator;
         Logger = logger;
@@ -79,8 +79,8 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         {
             WordCard.IsLoading = true;
 
-            await Words.LoadAsync(ct);
-            if (Words.Lemmas.Count == 0)
+            await Lemmas.LoadAsync(ct);
+            if (Lemmas.Lemmas.Count == 0)
             {
                 WordCard.ErrorMessage = "No words found";
                 return;
@@ -106,7 +106,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     void DisplayCurrentCard()
     {
-        var lemma = Words.Lemmas[CurrentIndex];
+        var lemma = Lemmas.Lemmas[CurrentIndex];
         WordCard.DisplayCurrentCard(lemma);
         ExampleCarousel.Initialize(lemma);
         PrepareCardAnswer(lemma);
@@ -121,7 +121,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     void UpdateNavigationState()
     {
-        var hasNext = CurrentIndex < Words.Lemmas.Count - 1;
+        var hasNext = CurrentIndex < Lemmas.Lemmas.Count - 1;
         var isRevealed = Flashcard.IsRevealed;
         CanRateCard = hasNext && isRevealed;
 
@@ -160,7 +160,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     void MoveToNextCard()
     {
-        if (CurrentIndex >= Words.Lemmas.Count - 1) return;
+        if (CurrentIndex >= Lemmas.Lemmas.Count - 1) return;
 
         CurrentIndex++;
         Flashcard.Reset();

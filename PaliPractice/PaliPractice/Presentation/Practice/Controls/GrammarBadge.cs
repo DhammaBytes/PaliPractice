@@ -70,9 +70,9 @@ public static class GrammarBadge
             .HorizontalAlignment(HorizontalAlignment.Center)
             .Spacing(12)
             .Children(
+                Build<TDC>(bindCaseLabel, bindCaseBackground),
                 Build<TDC>(bindGenderLabel, bindGenderBackground, bindGenderGlyph),
-                Build<TDC>(bindNumberLabel, bindNumberBackground, bindNumberGlyph),
-                Build<TDC>(bindCaseLabel, bindCaseBackground) // Case has no glyph
+                Build<TDC>(bindNumberLabel, bindNumberBackground, bindNumberGlyph)
             );
     }
 
@@ -94,9 +94,9 @@ public static class GrammarBadge
             .HorizontalAlignment(HorizontalAlignment.Center)
             .Spacing(12)
             .Children(
+                Build<TDC>(bindTenseLabel, bindTenseBackground),
                 Build<TDC>(bindPersonLabel, bindPersonBackground, bindPersonGlyph),
-                Build<TDC>(bindNumberLabel, bindNumberBackground, bindNumberGlyph),
-                Build<TDC>(bindTenseLabel, bindTenseBackground) // Tense has no glyph
+                Build<TDC>(bindNumberLabel, bindNumberBackground, bindNumberGlyph)
             );
     }
 }

@@ -33,6 +33,7 @@
             ThemeService;
             SkiaRenderer;
             Storage;
+            Svg;
         </UnoFeatures>
     </PropertyGroup>
 

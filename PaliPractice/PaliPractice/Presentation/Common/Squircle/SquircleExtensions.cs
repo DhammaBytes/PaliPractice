@@ -26,31 +26,8 @@ public static class SquircleExtensions
     }
 
     /// <summary>
-    /// Sets the hover overlay opacity (0-1).
+    /// Sets the content of the squircle button (convenience wrapper for Button.Content).
     /// </summary>
-    public static SquircleButton HoverOverlayOpacity(this SquircleButton button, double opacity)
-    {
-        button.HoverOverlayOpacity = opacity;
-        return button;
-    }
-
-    /// <summary>
-    /// Sets the pressed overlay opacity (0-1).
-    /// </summary>
-    public static SquircleButton PressedOverlayOpacity(this SquircleButton button, double opacity)
-    {
-        button.PressedOverlayOpacity = opacity;
-        return button;
-    }
-
-    /// <summary>
-    /// Sets the content of the squircle button.
-    /// </summary>
-    /// <remarks>
-    /// Sets the standard Button.Content property, which is then displayed
-    /// via the ContentPresenter in the ControlTemplate.
-    /// Do NOT set Content directly on SquircleButton; use this extension instead.
-    /// </remarks>
     public static SquircleButton Child(this SquircleButton button, UIElement child)
     {
         button.Content = child;

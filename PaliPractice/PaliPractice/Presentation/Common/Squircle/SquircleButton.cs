@@ -23,11 +23,10 @@ namespace PaliPractice.Presentation.Common.Squircle;
 /// <list type="bullet">
 ///   <item><c>Fill</c> - Background color of the button</item>
 ///   <item><c>RadiusMode</c> - Corner radius calculation mode (see <see cref="SquircleRadiusMode"/>)</item>
-///   <item><c>HoverOverlayOpacity</c> - Darkness of hover effect (default 0.08)</item>
-///   <item><c>PressedOverlayOpacity</c> - Darkness of pressed effect (default 0.12)</item>
 /// </list>
 ///
 /// <para><b>To change overlay colors:</b> Modify the XAML template's PART_Hover and PART_Pressed Fill attributes.</para>
+/// <para><b>To change overlay opacity:</b> Modify the To="0.08"/To="0.12" values in the VisualState Storyboards.</para>
 /// <para><b>To change animation timing:</b> Modify the Duration values in the VisualState Storyboards.</para>
 /// </remarks>
 public class SquircleButton : Button
@@ -82,36 +81,6 @@ public class SquircleButton : Button
         set => SetValue(FillProperty, value);
     }
 
-    public static readonly DependencyProperty HoverOverlayOpacityProperty = DependencyProperty.Register(
-        nameof(HoverOverlayOpacity),
-        typeof(double),
-        typeof(SquircleButton),
-        new PropertyMetadata(0.08));
-
-    /// <summary>
-    /// Opacity of the hover overlay (0-1). Default is 0.08.
-    /// </summary>
-    public double HoverOverlayOpacity
-    {
-        get => (double)GetValue(HoverOverlayOpacityProperty);
-        set => SetValue(HoverOverlayOpacityProperty, value);
-    }
-
-    public static readonly DependencyProperty PressedOverlayOpacityProperty = DependencyProperty.Register(
-        nameof(PressedOverlayOpacity),
-        typeof(double),
-        typeof(SquircleButton),
-        new PropertyMetadata(0.12));
-
-    /// <summary>
-    /// Opacity of the pressed overlay (0-1). Default is 0.12.
-    /// </summary>
-    public double PressedOverlayOpacity
-    {
-        get => (double)GetValue(PressedOverlayOpacityProperty);
-        set => SetValue(PressedOverlayOpacityProperty, value);
-    }
-
     #endregion
 
     /// <summary>
@@ -133,10 +102,10 @@ public class SquircleButton : Button
     /// - Disabled: RootGrid at 0.4 opacity
     ///
     /// To customize:
-    /// - Change overlay colors: modify Fill="Black" on PART_Hover/PART_Pressed
-    /// - Change overlay intensity: modify To="0.08"/To="0.12" values
-    /// - Change animation speed: modify Duration="0:0:0.15" values
-    /// - Add focus states: add FocusStates VisualStateGroup
+    /// - Overlay colors: modify Fill="Black" on PART_Hover/PART_Pressed
+    /// - Overlay intensity: modify To="0.08" (hover) / To="0.12" (pressed) values
+    /// - Animation speed: modify Duration="0:0:0.15" values
+    /// - Focus states: add FocusStates VisualStateGroup if needed
     /// </remarks>
     static ControlTemplate CreateControlTemplate()
     {
@@ -252,9 +221,7 @@ public class SquircleButton : Button
     /// Updates the squircle geometry on all Path elements based on current size and RadiusMode.
     /// </summary>
     /// <remarks>
-    /// All three paths (background, hover, pressed) must have identical geometry
-    /// so overlays perfectly match the background shape.
-    ///
+    /// All three paths share the same geometry instance since they need identical shapes.
     /// The squircle is generated using iOS 7-style superellipse curves.
     /// See <see cref="SquircleGeometry"/> for the mathematical details.
     /// </remarks>
@@ -269,17 +236,17 @@ public class SquircleButton : Button
         // Calculate radius based on dimensions and RadiusMode preset
         var radius = SquircleGeometry.CalculateRadius(width, height, RadiusMode);
 
-        // Generate the squircle PathGeometry
+        // Generate the squircle PathGeometry (reused for all paths)
         var geometry = SquircleGeometry.Create(width, height, radius);
 
-        // Apply identical geometry to all three paths
+        // Apply same geometry to all three paths
         if (_backgroundPath != null)
             _backgroundPath.Data = geometry;
 
         if (_hoverPath != null)
-            _hoverPath.Data = SquircleGeometry.Create(width, height, radius);
+            _hoverPath.Data = geometry;
 
         if (_pressedPath != null)
-            _pressedPath.Data = SquircleGeometry.Create(width, height, radius);
+            _pressedPath.Data = geometry;
     }
 }

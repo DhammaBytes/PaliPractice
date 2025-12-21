@@ -1,43 +1,56 @@
 namespace PaliPractice.Models;
 
 /// <summary>
-/// Represents a generated noun declension form.
-/// This is a plain object created at runtime, not mapped to a database table.
+/// Represents a grouped noun declension for a specific case/number/gender combination.
+/// Contains 1-N possible form variants (usually 1-3).
 /// </summary>
 public class Declension
 {
     /// <summary>
-    /// The inflected form (stem + ending).
-    /// </summary>
-    public string Form { get; set; } = string.Empty;
-
-    /// <summary>
-    /// The ending only (for UI highlighting).
-    /// </summary>
-    public string Ending { get; set; } = string.Empty;
-
-    /// <summary>
     /// The grammatical case.
     /// </summary>
-    public NounCase CaseName { get; set; }
+    public NounCase CaseName { get; init; }
 
     /// <summary>
     /// Singular or Plural.
     /// </summary>
-    public Number Number { get; set; }
+    public Number Number { get; init; }
 
     /// <summary>
     /// Masculine, Neuter, or Feminine.
     /// </summary>
-    public Gender Gender { get; set; }
+    public Gender Gender { get; init; }
 
     /// <summary>
-    /// Which ending variant this is (0, 1, 2...) when multiple endings are valid.
+    /// All possible form variants for this declension (1-N forms).
     /// </summary>
-    public int EndingIndex { get; set; }
+    public IReadOnlyList<DeclensionForm> Forms { get; init; } = [];
 
     /// <summary>
-    /// Whether this specific form appears in the Pali Tipitaka corpus.
+    /// Returns the primary attested form:
+    /// - First, try EndingIndex=0 if InCorpus
+    /// - Otherwise, return first InCorpus form (any index)
+    /// - Null if no InCorpus forms exist
     /// </summary>
-    public bool InCorpus { get; set; }
+    public DeclensionForm? Primary
+    {
+        get
+        {
+            // Try EndingIndex=0 first
+            foreach (var form in Forms)
+            {
+                if (form.EndingIndex == 0 && form.InCorpus)
+                    return form;
+            }
+
+            // Fall back to first InCorpus form
+            foreach (var form in Forms)
+            {
+                if (form.InCorpus)
+                    return form;
+            }
+
+            return null;
+        }
+    }
 }

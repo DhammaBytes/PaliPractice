@@ -29,6 +29,9 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
     [ObservableProperty] string? _caseGlyph;
     [ObservableProperty] string _caseHint = string.Empty;
 
+    // Alternative forms (other InCorpus forms besides Primary)
+    [ObservableProperty] string _alternativeForms = string.Empty;
+
     public DeclensionPracticeViewModel(
         [FromKeyedServices("noun")] ILemmaProvider lemmas,
         WordCardViewModel wordCard,
@@ -46,38 +49,31 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
         // Use primary word for inflection generation
         var noun = (Noun)lemma.PrimaryWord;
 
-        // Generate all possible declensions for this noun
+        // Generate all grouped declensions for this noun (one per case+number combo)
         var allDeclensions = new List<Declension>();
         foreach (var nounCase in Enum.GetValues<NounCase>())
         {
             foreach (var number in Enum.GetValues<Models.Number>())
             {
-                var declensions = _inflectionService.GenerateNounForms(noun, nounCase, number);
-                allDeclensions.AddRange(declensions);
+                var declension = _inflectionService.GenerateNounForms(noun, nounCase, number);
+                // Only include if it has an attested primary form
+                if (declension.Primary.HasValue)
+                {
+                    allDeclensions.Add(declension);
+                }
             }
         }
 
-        // Filter to only InCorpus forms
-        var corpusForms = allDeclensions.Where(d => d.InCorpus).ToList();
-
-        if (corpusForms.Count == 0)
+        if (allDeclensions.Count == 0)
         {
-            Logger.LogWarning("No corpus forms found for noun {Lemma} (id={Id}), falling back to all forms",
-                noun.Lemma, noun.Id);
-            corpusForms = allDeclensions;
-        }
-
-        if (corpusForms.Count == 0)
-        {
-            Logger.LogError("No declensions generated for noun {Lemma} (id={Id})", noun.Lemma, noun.Id);
-            // Use a fallback
+            Logger.LogError("No attested declensions for noun {Lemma} (id={Id})", noun.Lemma, noun.Id);
             _currentDeclension = null;
             SetBadgesFallback(noun);
             return;
         }
 
-        // Pick a random corpus form for the user to produce
-        _currentDeclension = corpusForms[_random.Next(corpusForms.Count)];
+        // Pick a random declension (case+number combo) for the user to produce
+        _currentDeclension = allDeclensions[_random.Next(allDeclensions.Count)];
 
         // Set badge display properties
         UpdateBadges(_currentDeclension);
@@ -122,6 +118,14 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
             NounCase.Vocative => "O...! (direct address)",
             _ => string.Empty
         };
+
+        // Alternative forms (other InCorpus forms besides Primary)
+        var primary = d.Primary;
+        var alternatives = d.Forms
+            .Where(f => f.InCorpus && (!primary.HasValue || f.EndingIndex != primary.Value.EndingIndex))
+            .Select(f => f.Form)
+            .ToList();
+        AlternativeForms = alternatives.Count > 0 ? string.Join(", ", alternatives) : string.Empty;
     }
 
     void SetBadgesFallback(Noun noun)
@@ -138,10 +142,12 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
         CaseBrush = OptionPresentation.GetChipBrush(NounCase.Nominative);
         CaseGlyph = "\uE8C8";
         CaseHint = "who? what? (subject)";
+
+        AlternativeForms = string.Empty;
     }
 
     protected override string GetInflectedForm()
     {
-        return _currentDeclension?.Form ?? WordCard.CurrentWord;
+        return _currentDeclension?.Primary?.Form ?? WordCard.CurrentWord;
     }
 }

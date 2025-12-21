@@ -45,11 +45,25 @@ public sealed partial class DeclensionPracticePage : Page
             .Text<DeclensionPracticeViewModel>(vm => vm.Flashcard.Answer);
         elements.AnswerTextBlock = answerTextBlock;
 
+        // Alternative forms (smaller, medium weight) - shown when revealed and non-empty
+        var alternativeFormsTextBlock = new TextBlock()
+            .FontSize(20)
+            .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
+            .HorizontalAlignment(HorizontalAlignment.Center)
+            .TextAlignment(TextAlignment.Center)
+            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
+            .Text<DeclensionPracticeViewModel>(vm => vm.AlternativeForms)
+            .StringToVisibility<TextBlock, DeclensionPracticeViewModel>(vm => vm.AlternativeForms);
+
         var answerRevealed = new Border()
             .Padding(0, 8, 0, 0)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .BoolToVisibility<Border, DeclensionPracticeViewModel>(vm => vm.Flashcard.IsRevealed)
-            .Child(answerTextBlock);
+            .Child(
+                new StackPanel()
+                    .Spacing(4)
+                    .Children(answerTextBlock, alternativeFormsTextBlock)
+            );
 
         // Dotted line placeholder - shown when NOT revealed
         var answerPlaceholder = new Border()

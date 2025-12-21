@@ -5,19 +5,19 @@ namespace PaliPractice.Services;
 public interface IInflectionService
 {
     /// <summary>
-    /// Generate noun declension forms for a given noun and grammatical parameters.
-    /// Returns a list of possible forms (usually 1, but can be multiple when there are alternative endings).
+    /// Generate a grouped noun declension for a given noun and grammatical parameters.
+    /// Returns a single Declension containing 1-N possible form variants.
     /// </summary>
-    List<Declension> GenerateNounForms(
+    Declension GenerateNounForms(
         Noun noun,
         NounCase nounCase,
         Number number);
 
     /// <summary>
-    /// Generate verb conjugation forms for a given verb and grammatical parameters.
-    /// Returns a list of possible forms (usually 1, but can be multiple when there are alternative endings).
+    /// Generate a grouped verb conjugation for a given verb and grammatical parameters.
+    /// Returns a single Conjugation containing 1-N possible form variants.
     /// </summary>
-    List<Conjugation> GenerateVerbForms(
+    Conjugation GenerateVerbForms(
         Verb verb,
         Person person,
         Number number,
@@ -36,14 +36,20 @@ public class InflectionService : IInflectionService
         _databaseService = databaseService;
     }
 
-    public List<Declension> GenerateNounForms(
+    public Declension GenerateNounForms(
         Noun noun,
         NounCase nounCase,
         Number number)
     {
         if (string.IsNullOrEmpty(noun.Pattern) || string.IsNullOrEmpty(noun.Stem))
         {
-            return new List<Declension>();
+            return new Declension
+            {
+                CaseName = nounCase,
+                Number = number,
+                Gender = noun.Gender,
+                Forms = []
+            };
         }
 
         // Get all possible endings for this pattern and grammatical parameters
@@ -51,10 +57,16 @@ public class InflectionService : IInflectionService
 
         if (endings.Length == 0)
         {
-            return new List<Declension>();
+            return new Declension
+            {
+                CaseName = nounCase,
+                Number = number,
+                Gender = noun.Gender,
+                Forms = []
+            };
         }
 
-        var declensions = new List<Declension>();
+        var forms = new List<DeclensionForm>();
 
         // Generate a form for each possible ending
         for (int i = 0; i < endings.Length; i++)
@@ -71,22 +83,24 @@ public class InflectionService : IInflectionService
                 endingIndex: i
             );
 
-            declensions.Add(new Declension
-            {
-                Form = form,
-                Ending = ending,
-                CaseName = nounCase,
-                Number = number,
-                Gender = noun.Gender,
-                EndingIndex = i,
-                InCorpus = inCorpus
-            });
+            forms.Add(new DeclensionForm(
+                Form: form,
+                Ending: ending,
+                EndingIndex: i,
+                InCorpus: inCorpus
+            ));
         }
 
-        return declensions;
+        return new Declension
+        {
+            CaseName = nounCase,
+            Number = number,
+            Gender = noun.Gender,
+            Forms = forms
+        };
     }
 
-    public List<Conjugation> GenerateVerbForms(
+    public Conjugation GenerateVerbForms(
         Verb verb,
         Person person,
         Number number,
@@ -95,7 +109,14 @@ public class InflectionService : IInflectionService
     {
         if (string.IsNullOrEmpty(verb.Pattern) || string.IsNullOrEmpty(verb.Stem))
         {
-            return new List<Conjugation>();
+            return new Conjugation
+            {
+                Person = person,
+                Number = number,
+                Tense = tense,
+                Voice = voice,
+                Forms = []
+            };
         }
 
         // Get all possible endings for this pattern and grammatical parameters
@@ -109,10 +130,17 @@ public class InflectionService : IInflectionService
 
         if (endings.Length == 0)
         {
-            return new List<Conjugation>();
+            return new Conjugation
+            {
+                Person = person,
+                Number = number,
+                Tense = tense,
+                Voice = voice,
+                Forms = []
+            };
         }
 
-        var conjugations = new List<Conjugation>();
+        var forms = new List<ConjugationForm>();
 
         // Generate a form for each possible ending
         for (int i = 0; i < endings.Length; i++)
@@ -129,18 +157,21 @@ public class InflectionService : IInflectionService
                 endingIndex: i
             );
 
-            conjugations.Add(new Conjugation
-            {
-                Form = form,
-                Ending = ending,
-                Person = person,
-                Tense = tense,
-                Voice = voice,
-                EndingIndex = i,
-                InCorpus = inCorpus
-            });
+            forms.Add(new ConjugationForm(
+                Form: form,
+                Ending: ending,
+                EndingIndex: i,
+                InCorpus: inCorpus
+            ));
         }
 
-        return conjugations;
+        return new Conjugation
+        {
+            Person = person,
+            Number = number,
+            Tense = tense,
+            Voice = voice,
+            Forms = forms
+        };
     }
 }

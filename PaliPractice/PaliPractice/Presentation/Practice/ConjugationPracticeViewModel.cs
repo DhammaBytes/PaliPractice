@@ -7,6 +7,7 @@ namespace PaliPractice.Presentation.Practice;
 [Bindable]
 public partial class ConjugationPracticeViewModel : PracticeViewModelBase
 {
+    readonly IInflectionService _inflectionService;
     readonly Random _random = new();
     Conjugation? _currentConjugation;
 
@@ -27,13 +28,18 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
     [ObservableProperty] SolidColorBrush _tenseBrush = new(Colors.Transparent);
     [ObservableProperty] string? _tenseGlyph;
 
+    // Alternative forms (other InCorpus forms besides Primary)
+    [ObservableProperty] string _alternativeForms = string.Empty;
+
     public ConjugationPracticeViewModel(
         [FromKeyedServices("verb")] ILemmaProvider lemmas,
         WordCardViewModel wordCard,
         INavigator navigator,
-        ILogger<ConjugationPracticeViewModel> logger)
+        ILogger<ConjugationPracticeViewModel> logger,
+        IInflectionService inflectionService)
         : base(lemmas, wordCard, navigator, logger)
     {
+        _inflectionService = inflectionService;
         _ = InitializeAsync();
     }
 
@@ -42,83 +48,98 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
         // Use primary word for inflection generation
         var verb = (Verb)lemma.PrimaryWord;
 
-        // TODO: Implement real verb inflection service similar to noun declensions.
-        // For now, generate mock conjugation data based on word id.
-        var id = verb.Id;
-
-        var person = (Person)((id % 3) + 1);  // 1..3
-        var number = (id % 2 == 0) ? Models.Number.Singular : Models.Number.Plural;
-        var tense = new[] { Models.Tense.Present, Models.Tense.Aorist, Models.Tense.Future }[id % 3];
-        var voice = (id % 2 == 0) ? Models.Voice.Active : Models.Voice.Reflexive;
-
-        // Create mock conjugation
-        _currentConjugation = new Conjugation
+        // Generate all grouped conjugations for this verb (one per person+number+tense+voice combo)
+        var allConjugations = new List<Conjugation>();
+        foreach (var person in Enum.GetValues<Person>())
         {
-            Form = GenerateMockForm(verb, person, number, tense),
-            Person = person,
-            Number = number,
-            Tense = tense,
-            Voice = voice
-        };
-
-        // Update badge display properties
-        UpdateBadges(person, number, tense);
-    }
-
-    string GenerateMockForm(Verb verb, Person person, Models.Number number, Tense tense)
-    {
-        // Mock form generation - will be replaced with real inflection service
-        var stem = verb.Stem ?? verb.LemmaClean;
-        if (stem.EndsWith("ti") || stem.EndsWith("ati") || stem.EndsWith("eti"))
-        {
-            stem = stem[..^2]; // Remove -ti
+            foreach (var number in Enum.GetValues<Models.Number>())
+            {
+                foreach (var tense in Enum.GetValues<Tense>())
+                {
+                    foreach (var voice in Enum.GetValues<Voice>())
+                    {
+                        var conjugation = _inflectionService.GenerateVerbForms(verb, person, number, tense, voice);
+                        // Only include if it has an attested primary form
+                        if (conjugation.Primary.HasValue)
+                        {
+                            allConjugations.Add(conjugation);
+                        }
+                    }
+                }
+            }
         }
 
-        var ending = (person, number, tense) switch
+        if (allConjugations.Count == 0)
         {
-            (Person.First, Models.Number.Singular, Tense.Present) => "āmi",
-            (Person.Second, Models.Number.Singular, Tense.Present) => "asi",
-            (Person.Third, Models.Number.Singular, Tense.Present) => "ati",
-            (Person.First, Models.Number.Plural, Tense.Present) => "āma",
-            (Person.Second, Models.Number.Plural, Tense.Present) => "atha",
-            (Person.Third, Models.Number.Plural, Tense.Present) => "anti",
-            _ => "ati" // Default fallback
-        };
+            Logger.LogError("No attested conjugations for verb {Lemma} (id={Id})", verb.Lemma, verb.Id);
+            _currentConjugation = null;
+            SetBadgesFallback();
+            return;
+        }
 
-        return stem + ending;
+        // Pick a random conjugation (person+number+tense+voice combo) for the user to produce
+        _currentConjugation = allConjugations[_random.Next(allConjugations.Count)];
+
+        // Update badge display properties
+        UpdateBadges(_currentConjugation);
     }
 
-    void UpdateBadges(Person person, Models.Number number, Tense tense)
+    void UpdateBadges(Conjugation c)
     {
         // Person badge
-        PersonLabel = person switch
+        PersonLabel = c.Person switch
         {
             Person.First => "1st",
             Person.Second => "2nd",
             Person.Third => "3rd",
-            _ => person.ToString()
+            _ => c.Person.ToString()
         };
-        PersonBrush = OptionPresentation.GetChipBrush(person);
-        PersonGlyph = OptionPresentation.GetGlyph(person);
+        PersonBrush = OptionPresentation.GetChipBrush(c.Person);
+        PersonGlyph = OptionPresentation.GetGlyph(c.Person);
 
         // Number badge
-        NumberLabel = number switch
+        NumberLabel = c.Number switch
         {
             Models.Number.Singular => "Singular",
             Models.Number.Plural => "Plural",
-            _ => number.ToString()
+            _ => c.Number.ToString()
         };
-        NumberBrush = OptionPresentation.GetChipBrush(number);
-        NumberGlyph = OptionPresentation.GetGlyph(number);
+        NumberBrush = OptionPresentation.GetChipBrush(c.Number);
+        NumberGlyph = OptionPresentation.GetGlyph(c.Number);
 
         // Tense badge
-        TenseLabel = tense.ToString();
-        TenseBrush = OptionPresentation.GetChipBrush(tense);
+        TenseLabel = c.Tense.ToString();
+        TenseBrush = OptionPresentation.GetChipBrush(c.Tense);
         TenseGlyph = "\uE8C8"; // Placeholder icon (Tag)
+
+        // Alternative forms (other InCorpus forms besides Primary)
+        var primary = c.Primary;
+        var alternatives = c.Forms
+            .Where(f => f.InCorpus && (!primary.HasValue || f.EndingIndex != primary.Value.EndingIndex))
+            .Select(f => f.Form)
+            .ToList();
+        AlternativeForms = alternatives.Count > 0 ? string.Join(", ", alternatives) : string.Empty;
+    }
+
+    void SetBadgesFallback()
+    {
+        PersonLabel = "3rd";
+        PersonBrush = OptionPresentation.GetChipBrush(Person.Third);
+        PersonGlyph = OptionPresentation.GetGlyph(Person.Third);
+
+        NumberLabel = "Singular";
+        NumberBrush = OptionPresentation.GetChipBrush(Models.Number.Singular);
+        NumberGlyph = OptionPresentation.GetGlyph(Models.Number.Singular);
+
+        TenseLabel = "Present";
+        TenseBrush = OptionPresentation.GetChipBrush(Tense.Present);
+        TenseGlyph = "\uE8C8";
+
+        AlternativeForms = string.Empty;
     }
 
     protected override string GetInflectedForm()
     {
-        return _currentConjugation?.Form ?? WordCard.CurrentWord;
+        return _currentConjugation?.Primary?.Form ?? WordCard.CurrentWord;
     }
 }

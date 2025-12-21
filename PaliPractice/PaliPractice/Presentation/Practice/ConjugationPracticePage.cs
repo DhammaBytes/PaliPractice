@@ -45,11 +45,25 @@ public sealed partial class ConjugationPracticePage : Page
             .Text<ConjugationPracticeViewModel>(vm => vm.Flashcard.Answer);
         elements.AnswerTextBlock = answerTextBlock;
 
+        // Alternative forms (smaller, medium weight) - shown when revealed and non-empty
+        var alternativeFormsTextBlock = new TextBlock()
+            .FontSize(20)
+            .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
+            .HorizontalAlignment(HorizontalAlignment.Center)
+            .TextAlignment(TextAlignment.Center)
+            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
+            .Text<ConjugationPracticeViewModel>(vm => vm.AlternativeForms)
+            .StringToVisibility<TextBlock, ConjugationPracticeViewModel>(vm => vm.AlternativeForms);
+
         var answerRevealed = new Border()
             .Padding(0, 8, 0, 0)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .BoolToVisibility<Border, ConjugationPracticeViewModel>(vm => vm.Flashcard.IsRevealed)
-            .Child(answerTextBlock);
+            .Child(
+                new StackPanel()
+                    .Spacing(4)
+                    .Children(answerTextBlock, alternativeFormsTextBlock)
+            );
 
         // Dotted line placeholder - shown when NOT revealed
         var answerPlaceholder = new Border()

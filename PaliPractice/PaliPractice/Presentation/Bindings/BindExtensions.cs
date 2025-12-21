@@ -120,6 +120,16 @@ public static class BindExtensions
     }
 
     /// <summary>
+    /// Binds FormattedTextBehavior.HtmlText to a string property path.
+    /// Parses &lt;b&gt;...&lt;/b&gt; tags and creates bold Runs.
+    /// </summary>
+    public static TextBlock HtmlText<TDC>(this TextBlock textBlock, Expression<Func<TDC, string>> path)
+    {
+        textBlock.SetBinding(FormattedTextBehavior.HtmlTextProperty, Bind.Path(path));
+        return textBlock;
+    }
+
+    /// <summary>
     /// Binds FontIcon.Glyph to a string property path
     /// </summary>
     public static FontIcon Glyph<TDC>(this FontIcon icon, Expression<Func<TDC, string?>> path)
@@ -163,6 +173,16 @@ public static class BindWithin
     public static TextBlock TextWithin<TScope>(this TextBlock textBlock, Expression<Func<TScope, string>> path)
     {
         textBlock.SetBinding(TextBlock.TextProperty, BindExtensions.Relative(path));
+        return textBlock;
+    }
+
+    /// <summary>
+    /// Binds FormattedTextBehavior.HtmlText to a property within the current DataContext scope.
+    /// Parses &lt;b&gt;...&lt;/b&gt; tags and creates bold Runs.
+    /// </summary>
+    public static TextBlock HtmlTextWithin<TScope>(this TextBlock textBlock, Expression<Func<TScope, string>> path)
+    {
+        textBlock.SetBinding(FormattedTextBehavior.HtmlTextProperty, BindExtensions.Relative(path));
         return textBlock;
     }
 
@@ -214,6 +234,19 @@ public static class BindWithin
         where T : UIElement
     {
         var binding = BindExtensions.Relative(path);
+        binding.Converter = BoolToOpacityConverter.Instance;
+        element.SetBinding(UIElement.OpacityProperty, binding);
+        return element;
+    }
+
+    /// <summary>
+    /// Binds UIElement.Opacity to a bool property path.
+    /// true → 1.0 (visible), false → 0.0 (invisible but keeps layout space)
+    /// </summary>
+    public static T BoolToOpacity<T, TDC>(this T element, Expression<Func<TDC, bool>> path)
+        where T : UIElement
+    {
+        var binding = Bind.Path(path);
         binding.Converter = BoolToOpacityConverter.Instance;
         element.SetBinding(UIElement.OpacityProperty, binding);
         return element;

@@ -55,25 +55,45 @@ public sealed partial class ConjugationPracticePage : Page
             .Text<ConjugationPracticeViewModel>(vm => vm.AlternativeForms)
             .StringToVisibility<TextBlock, ConjugationPracticeViewModel>(vm => vm.AlternativeForms);
 
-        var answerRevealed = new Border()
-            .Padding(0, 8, 0, 0)
+        // Invisible spacer - always reserves height for 2 lines (prevents layout jump)
+        var answerSpacer = new StackPanel()
+            .Spacing(4)
+            .Opacity(0)
             .HorizontalAlignment(HorizontalAlignment.Center)
-            .BoolToVisibility<Border, ConjugationPracticeViewModel>(vm => vm.Flashcard.IsRevealed)
-            .Child(
-                new StackPanel()
-                    .Spacing(4)
-                    .Children(answerTextBlock, alternativeFormsTextBlock)
+            .Children(
+                new TextBlock()
+                    .FontSize(32)
+                    .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
+                    .Text("X"), // Single char to reserve line height
+                new TextBlock()
+                    .FontSize(20)
+                    .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
+                    .Text("X")  // Second line reservation
             );
 
-        // Dotted line placeholder - shown when NOT revealed
+        // Actual answer - centered in reserved space
+        var answerContent = new StackPanel()
+            .Spacing(4)
+            .HorizontalAlignment(HorizontalAlignment.Center)
+            .VerticalAlignment(VerticalAlignment.Center)
+            .BoolToVisibility<StackPanel, ConjugationPracticeViewModel>(vm => vm.Flashcard.IsRevealed)
+            .Children(answerTextBlock, alternativeFormsTextBlock);
+
+        // Dotted line placeholder - centered in reserved space
         var answerPlaceholder = new Border()
             .Height(2)
-            .Margin(40, 16, 40, 0)
+            .Margin(40, 0, 40, 0)
             .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .VerticalAlignment(VerticalAlignment.Center)
             .BorderBrush(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
             .BorderThickness(0, 0, 0, 2)
             .Opacity(0.5)
             .BoolToVisibility<Border, ConjugationPracticeViewModel>(vm => vm.Flashcard.IsRevealed, invert: true);
+
+        // Container that stacks spacer, content, and placeholder in same cell
+        var answerContainer = new Grid()
+            .Margin(0, 8, 0, 0)
+            .Children(answerSpacer, answerContent, answerPlaceholder);
 
         // Build card border containing everything (no hint for conjugation)
         var cardBorder = new Border()
@@ -91,8 +111,8 @@ public sealed partial class ConjugationPracticePage : Page
                         wordTextBlock,
                         // Badges
                         badgesPanel,
-                        // Answer (revealed) or placeholder line (hidden)
-                        new Grid().Children(answerRevealed, answerPlaceholder)
+                        // Answer area (fixed height via invisible spacer)
+                        answerContainer
                     )
             );
         elements.CardBorder = cardBorder;

@@ -13,8 +13,25 @@ public record ExampleEntry(IWord Word, int ExampleIndex)
 
     /// <summary>
     /// Gets the source reference for this entry.
+    /// Newlines are converted to parenthetical format: "line1\nline2" → "line1 (line2)"
     /// </summary>
-    public string Source => ExampleIndex == 0 ? Word.Source1 : Word.Source2;
+    public string Source
+    {
+        get
+        {
+            var raw = ExampleIndex == 0 ? Word.Source1 : Word.Source2;
+            if (string.IsNullOrEmpty(raw)) return raw;
+
+            var lines = raw.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+            if (lines.Length > 1)
+            {
+                var first = lines[0].Trim();
+                var rest = string.Join(", ", lines.Skip(1).Select(l => l.Trim()));
+                return $"{first} ({rest})";
+            }
+            return raw;
+        }
+    }
 
     /// <summary>
     /// Gets the sutta reference for this entry.

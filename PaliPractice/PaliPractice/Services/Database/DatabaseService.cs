@@ -27,7 +27,7 @@ public interface IDatabaseService
 public class DatabaseService : IDatabaseService
 {
     SQLiteConnection? _database;
-    readonly object _initLock = new();
+    readonly Lock _initLock = new();
     bool _isInitialized = false;
 
     public void Initialize()
@@ -125,18 +125,18 @@ public class DatabaseService : IDatabaseService
     {
         EnsureInitialized();
 
-        return _database!.Table<Noun>()
-            .Where(n => n.Id == id)
-            .FirstOrDefault();
+        return _database!
+            .Table<Noun>()
+            .FirstOrDefault(n => n.Id == id);
     }
 
     public Verb? GetVerbById(int id)
     {
         EnsureInitialized();
 
-        return _database!.Table<Verb>()
-            .Where(v => v.Id == id)
-            .FirstOrDefault();
+        return _database!
+            .Table<Verb>()
+            .FirstOrDefault(v => v.Id == id);
     }
 
     public int GetNounCount()
@@ -164,13 +164,13 @@ public class DatabaseService : IDatabaseService
     {
         EnsureInitialized();
 
-        var result = _database!.Table<CorpusDeclension>()
-            .Where(d => d.NounId == nounId
-                     && d.CaseName == (int)nounCase
-                     && d.Number == (int)number
-                     && d.Gender == (int)gender
-                     && d.EndingIndex == endingIndex)
-            .Count();
+        var result = _database!
+            .Table<CorpusDeclension>()
+            .Count(d => d.NounId == nounId
+                        && d.CaseName == (int)nounCase
+                        && d.Number == (int)number
+                        && d.Gender == (int)gender
+                        && d.EndingIndex == endingIndex);
 
         return result > 0;
     }
@@ -184,13 +184,13 @@ public class DatabaseService : IDatabaseService
     {
         EnsureInitialized();
 
-        var result = _database!.Table<CorpusConjugation>()
-            .Where(c => c.VerbId == verbId
-                     && c.Person == (int)person
-                     && c.Tense == (int)tense
-                     && c.Voice == (int)voice
-                     && c.EndingIndex == endingIndex)
-            .Count();
+        var result = _database!
+            .Table<CorpusConjugation>()
+            .Count(c => c.VerbId == verbId
+                        && c.Person == (int)person
+                        && c.Tense == (int)tense
+                        && c.Voice == (int)voice
+                        && c.EndingIndex == endingIndex);
 
         return result > 0;
     }

@@ -13,6 +13,8 @@ public static class TranslationDisplay
         Expression<Func<TDC, ExampleCarouselViewModel>> carouselPath,
         Expression<Func<TDC, bool>> isRevealedPath)
     {
+        // Border always visible to maintain layout height
+        // Text opacity controlled by isRevealed (0 when hidden, 1 when revealed)
         return new Border()
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
             .CornerRadius(8)
@@ -20,7 +22,6 @@ public static class TranslationDisplay
             .HorizontalAlignment(HorizontalAlignment.Center)
             .MinWidth(200)
             .MaxWidth(500)
-            .BoolToVisibility<Border, TDC>(isRevealedPath)
             .Child(
                 new TextBlock()
                     .Scope(carouselPath)
@@ -30,6 +31,7 @@ public static class TranslationDisplay
                     .TextWrapping(TextWrapping.Wrap)
                     .TextAlignment(TextAlignment.Center)
                     .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
+                    .BoolToOpacity<TextBlock, TDC>(isRevealedPath)
             );
     }
 }

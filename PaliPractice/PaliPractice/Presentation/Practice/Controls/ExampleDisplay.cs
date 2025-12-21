@@ -1,77 +1,11 @@
 using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
-using PaliPractice.Presentation.Common;
 
 namespace PaliPractice.Presentation.Practice.Controls;
 
 /// <summary>
-/// Builds just the header row (rank badge + anki state) for the practice card.
-/// </summary>
-public static class CardHeader
-{
-    public static Grid Build<TDC>(
-        Expression<Func<TDC, WordCardViewModel>> cardPath,
-        string rankPrefix)
-    {
-        return new Grid()
-            .ColumnDefinitions("Auto,*,Auto")
-            .Children(
-                new Border()
-                    .Background(ThemeResource.Get<Brush>("PrimaryBrush"))
-                    .CornerRadius(12)
-                    .Padding(8, 4)
-                    .Child(
-                        new StackPanel()
-                            .Orientation(Orientation.Horizontal)
-                            .Spacing(4)
-                            .Children(
-                                new TextBlock()
-                                    .Text(rankPrefix)
-                                    .FontSize(12)
-                                    .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
-                                    .Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush")),
-                                new TextBlock()
-                                    .Scope(cardPath)
-                                    .TextWithin<WordCardViewModel>(c => c.RankText)
-                                    .FontSize(12)
-                                    .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
-                                    .Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush"))
-                            )
-                    )
-                    .Grid(column: 0),
-                new TextBlock()
-                    .Scope(cardPath)
-                    .TextWithin<WordCardViewModel>(c => c.AnkiState)
-                    .FontSize(14)
-                    .HorizontalAlignment(HorizontalAlignment.Right)
-                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
-                    .Grid(column: 2)
-            );
-    }
-}
-
-/// <summary>
-/// Builds the main word TextBlock for practice cards.
-/// </summary>
-public static class CardWord
-{
-    public static TextBlock Build<TDC>(Expression<Func<TDC, WordCardViewModel>> cardPath)
-    {
-        return new TextBlock()
-            .Scope(cardPath)
-            .TextWithin<WordCardViewModel>(c => c.CurrentWord)
-            .FontSize(48)
-            .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
-            .HorizontalAlignment(HorizontalAlignment.Center)
-            .TextAlignment(TextAlignment.Center)
-            .TextWrapping(TextWrapping.Wrap)
-            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
-            .Margin(0, 16, 0, 8);
-    }
-}
-
-/// <summary>
-/// Builds the example + reference section (without pagination).
+/// Builds the example text + reference section.
+/// Displays the Pali example sentence with bold highlighting and source reference.
 /// </summary>
 public static class ExampleSection
 {
@@ -82,9 +16,9 @@ public static class ExampleSection
             .HorizontalAlignment(HorizontalAlignment.Center)
             .Scope(carouselPath)
             .Children(
-                // Example text
+                // Example text (with <b>bold</b> support)
                 new TextBlock()
-                    .TextWithin<ExampleCarouselViewModel>(c => c.CurrentExample)
+                    .HtmlTextWithin<ExampleCarouselViewModel>(c => c.CurrentExample)
                     .FontSize(14)
                     .TextWrapping(TextWrapping.Wrap)
                     .TextAlignment(TextAlignment.Center)
@@ -104,7 +38,8 @@ public static class ExampleSection
 }
 
 /// <summary>
-/// Builds the carousel pagination controls: &lt;| 1 of 5 |&gt;
+/// Builds the carousel pagination controls for navigating between examples.
+/// Displays: [&lt;] 1 of 5 [&gt;]
 /// </summary>
 public static class CarouselPaging
 {

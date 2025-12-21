@@ -53,6 +53,16 @@ public sealed partial class AboutPage : Page
                                         .HorizontalAlignment(HorizontalAlignment.Center)
                                         .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
 
+                                    // Icon description
+                                    new TextBlock()
+                                        .Text<AboutViewModel>(vm => vm.IconDescription)
+                                        .FontSize(14)
+                                        .TextWrapping(TextWrapping.Wrap)
+                                        .TextAlignment(TextAlignment.Center)
+                                        .HorizontalAlignment(HorizontalAlignment.Center)
+                                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+                                        .Opacity(0.8),
+
                                     // License section
                                     new Border()
                                         .Background(ThemeResource.Get<Brush>("SurfaceBrush"))

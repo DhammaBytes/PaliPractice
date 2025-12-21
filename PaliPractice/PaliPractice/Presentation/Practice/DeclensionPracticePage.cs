@@ -8,62 +8,34 @@ public sealed partial class DeclensionPracticePage : Page
 {
     public DeclensionPracticePage()
     {
-        // Build content with element references for responsive sizing
-        var elements = new PracticeContentLayout.ResponsiveElements();
-        var contentGrid = BuildPracticeContent(elements);
-        var containerGrid = PracticeContentLayout.BuildContainer(contentGrid);
+        // Element references for responsive sizing
+        var elements = new ResponsiveElements();
 
         DeclensionPracticePageMarkup.DataContext<DeclensionPracticeViewModel>(this, (page, _) => page
             .NavigationCacheMode<DeclensionPracticePage>(NavigationCacheMode.Required)
             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
-            .Content(new Grid()
-                .SafeArea(SafeArea.InsetMask.VisibleBounds)
-                .RowDefinitions("Auto,*,Auto,Auto")
-                .Children(
-                    // Row 0: Title bar
-                    AppTitleBar.BuildWithHistory<DeclensionPracticeViewModel>(
-                        "Declension Practice",
-                        vm => vm.GoBackCommand,
-                        vm => vm.GoToHistoryCommand),
-
-                    // Row 1: Fixed-height content area (no scrolling)
-                    containerGrid.Grid(row: 1),
-
-                    // Row 2: Navigation (Reveal button or Easy/Hard buttons)
-                    PracticeNavigation.BuildWithReveal<DeclensionPracticeViewModel>(
-                        revealCommand: vm => vm.RevealCommand,
-                        hardCommand: vm => vm.HardCommand,
-                        easyCommand: vm => vm.EasyCommand,
-                        isRevealedPath: vm => vm.Flashcard.IsRevealed)
-                        .Grid(row: 2),
-
-                    // Row 3: Daily goal bar
-                    DailyGoalBar.Build<DeclensionPracticeViewModel>(
-                            dailyGoalText: vm => vm.DailyGoal.DailyGoalText,
-                            dailyProgress: vm => vm.DailyGoal.DailyProgress)
-                        .Grid(row: 3)
-                )
-            )
+            .Content(BuildPageLayout(elements))
         );
 
-        // Attach height-responsive behavior after page is built
-        PracticeContentLayout.AttachHeightResponsive(containerGrid, elements);
+        // Attach height-responsive behavior
+        if (elements.ContentArea is not null)
+        {
+            HeightResponsiveHelper.AttachResponsiveHandler(elements.ContentArea, heightClass =>
+                ApplyResponsiveValues(elements, heightClass));
+        }
     }
 
-    static Grid BuildPracticeContent(PracticeContentLayout.ResponsiveElements elements)
+    static Grid BuildPageLayout(ResponsiveElements elements)
     {
-        // Build WordCard with element references
-        WordCard.Build<DeclensionPracticeViewModel>(
-            cardPath: vm => vm.WordCard,
-            carouselPath: vm => vm.ExampleCarousel,
-            rankPrefix: "N",
-            out var cardBorder,
-            out var wordTextBlock);
-
-        elements.CardBorder = cardBorder;
+        // Build the card elements
+        var (wordTextBlock, badgesPanel, badgeBorders, badgeTextBlocks, badgeIcons) = BuildCardElements();
         elements.WordTextBlock = wordTextBlock;
+        elements.BadgesPanel = badgesPanel;
+        elements.BadgeBorders.AddRange(badgeBorders);
+        elements.BadgeTextBlocks.AddRange(badgeTextBlocks);
+        elements.BadgeIcons.AddRange(badgeIcons);
 
-        // Build answer TextBlock with reference
+        // Build answer section - shown when revealed
         var answerTextBlock = new TextBlock()
             .FontSize(32)
             .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
@@ -73,159 +45,236 @@ public sealed partial class DeclensionPracticePage : Page
             .Text<DeclensionPracticeViewModel>(vm => vm.Flashcard.Answer);
         elements.AnswerTextBlock = answerTextBlock;
 
-        // Build answer border with reference
-        var answerBorder = new Border()
-            .MinHeight(60)
-            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .CornerRadius(8)
-            .Padding(16, 12)
+        var answerRevealed = new Border()
+            .Padding(0, 8, 0, 0)
             .HorizontalAlignment(HorizontalAlignment.Center)
-            .MinWidth(200)
             .BoolToVisibility<Border, DeclensionPracticeViewModel>(vm => vm.Flashcard.IsRevealed)
             .Child(answerTextBlock);
-        elements.AnswerBorder = answerBorder;
 
-        // Build badges with references
-        var (badgesPanel, caseBadge, caseText, caseIcon,
-             genderBadge, genderText, genderIcon,
-             numberBadge, numberText, numberIcon) = BuildBadgesRow();
+        // Dotted line placeholder - shown when NOT revealed
+        var answerPlaceholder = new Border()
+            .Height(2)
+            .Margin(40, 16, 40, 0)
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .BorderBrush(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
+            .BorderThickness(0, 0, 0, 2)
+            .Opacity(0.5)
+            .BoolToVisibility<Border, DeclensionPracticeViewModel>(vm => vm.Flashcard.IsRevealed, invert: true);
 
-        elements.BadgesPanel = badgesPanel;
-        elements.BadgeBorders.AddRange([caseBadge, genderBadge, numberBadge]);
-        elements.BadgeTextBlocks.AddRange([caseText, genderText, numberText]);
-        elements.BadgeIcons.AddRange([caseIcon, genderIcon, numberIcon]);
-
-        // Build the content Grid with flexible spacers
-        var contentGrid = new Grid()
-            .RowDefinitions("Auto,*,Auto,Auto,*,Auto")
-            .Padding(LayoutConstants.Spacing.ContentPaddingTall)
-            .Children(
-                // Row 0: Loading/Error indicators
+        // Build card border containing everything
+        var cardBorder = new Border()
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .CornerRadius(12)
+            .Padding(24)
+            .Child(
                 new StackPanel()
-                    .Spacing(8)
-                    .HorizontalAlignment(HorizontalAlignment.Center)
+                    .Spacing(12)
                     .Children(
-                        new ProgressRing()
-                            .IsActive<DeclensionPracticeViewModel>(vm => vm.WordCard.IsLoading)
-                            .BoolToVisibility<ProgressRing, DeclensionPracticeViewModel>(vm => vm.WordCard.IsLoading)
-                            .HorizontalAlignment(HorizontalAlignment.Center),
-                        new TextBlock()
-                            .Text<DeclensionPracticeViewModel>(vm => vm.WordCard.ErrorMessage)
-                            .StringToVisibility<TextBlock, DeclensionPracticeViewModel>(vm => vm.WordCard.ErrorMessage)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
-                            .TextAlignment(TextAlignment.Center)
-                            .HorizontalAlignment(HorizontalAlignment.Center)
-                    )
-                    .Grid(row: 0),
-
-                // Row 1: Flexible top spacer (compresses first)
-                new Border().Grid(row: 1),
-
-                // Row 2: WordCard
-                cardBorder.Grid(row: 2),
-
-                // Row 3: Badges + Case hint
-                new StackPanel()
-                    .Spacing(LayoutConstants.Spacing.SectionSpacingTall)
-                    .HorizontalAlignment(HorizontalAlignment.Center)
-                    .Children(
+                        // Header (rank + anki)
+                        CardHeader.Build<DeclensionPracticeViewModel>(vm => vm.WordCard, "N"),
+                        // Word
+                        wordTextBlock,
+                        // Badges
                         badgesPanel,
-                        // Case hint (e.g., "to whom? to what?")
+                        // Case hint
                         new TextBlock()
                             .Text<DeclensionPracticeViewModel>(vm => vm.CaseHint)
                             .FontSize(14)
                             .FontStyle(Windows.UI.Text.FontStyle.Italic)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
                             .HorizontalAlignment(HorizontalAlignment.Center)
-                            .TextAlignment(TextAlignment.Center)
+                            .TextAlignment(TextAlignment.Center),
+                        // Answer (revealed) or placeholder line (hidden)
+                        new Grid().Children(answerRevealed, answerPlaceholder)
                     )
+            );
+        elements.CardBorder = cardBorder;
+
+        // Build the content area (everything between AppBar and PracticeNav)
+        var contentArea = new Grid()
+            .RowDefinitions("*,Auto,*,Auto,Auto,Auto")
+            .MaxWidth(LayoutConstants.ContentMaxWidth)
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .Padding(LayoutConstants.Spacing.ContentPaddingTall, 0)
+            .Children(
+                // Row 0: Top spacer
+                new Border().Grid(row: 0),
+
+                // Row 1: Card
+                cardBorder.Grid(row: 1),
+
+                // Row 2: Bottom spacer
+                new Border().Grid(row: 2),
+
+                // Row 3: Translation
+                TranslationDisplay.Build<DeclensionPracticeViewModel>(
+                    carouselPath: vm => vm.ExampleCarousel,
+                    isRevealedPath: vm => vm.Flashcard.IsRevealed)
                     .Grid(row: 3),
 
-                // Row 4: Flexible bottom spacer (compresses)
-                new Border().Grid(row: 4),
+                // Row 4: Example + Reference
+                ExampleSection.Build<DeclensionPracticeViewModel>(
+                    vm => vm.ExampleCarousel)
+                    .Margin(0, 12, 0, 0)
+                    .Grid(row: 4),
 
-                // Row 5: Answer + Translation
-                new StackPanel()
-                    .Spacing(LayoutConstants.Spacing.SectionSpacingTall)
-                    .HorizontalAlignment(HorizontalAlignment.Center)
-                    .Children(
-                        answerBorder,
-                        TranslationDisplay.Build<DeclensionPracticeViewModel>(
-                            carouselPath: vm => vm.ExampleCarousel,
-                            isRevealedPath: vm => vm.Flashcard.IsRevealed)
-                    )
+                // Row 5: Carousel paging
+                CarouselPaging.Build<DeclensionPracticeViewModel>(
+                    vm => vm.ExampleCarousel)
+                    .Margin(0, 8, 0, 0)
                     .Grid(row: 5)
             );
+        elements.ContentArea = contentArea;
 
-        elements.ContentGrid = contentGrid;
-        return contentGrid;
+        // Main page grid
+        return new Grid()
+            .SafeArea(SafeArea.InsetMask.VisibleBounds)
+            .RowDefinitions("Auto,*,Auto,Auto")
+            .Children(
+                // Row 0: Title bar
+                AppTitleBar.BuildWithHistory<DeclensionPracticeViewModel>(
+                    "Declension Practice",
+                    vm => vm.GoBackCommand,
+                    vm => vm.GoToHistoryCommand)
+                    .Grid(row: 0),
+
+                // Row 1: Content area
+                contentArea.Grid(row: 1),
+
+                // Row 2: Practice navigation
+                PracticeNavigation.BuildWithReveal<DeclensionPracticeViewModel>(
+                    revealCommand: vm => vm.RevealCommand,
+                    hardCommand: vm => vm.HardCommand,
+                    easyCommand: vm => vm.EasyCommand,
+                    isRevealedPath: vm => vm.Flashcard.IsRevealed)
+                    .Grid(row: 2),
+
+                // Row 3: Daily goal
+                DailyGoalBar.Build<DeclensionPracticeViewModel>(
+                    dailyGoalText: vm => vm.DailyGoal.DailyGoalText,
+                    dailyProgress: vm => vm.DailyGoal.DailyProgress)
+                    .Grid(row: 3)
+            );
     }
 
-    static (StackPanel panel,
-            Border caseBadge, TextBlock caseText, FontIcon caseIcon,
-            Border genderBadge, TextBlock genderText, FontIcon genderIcon,
-            Border numberBadge, TextBlock numberText, FontIcon numberIcon) BuildBadgesRow()
+    static (TextBlock wordTextBlock, StackPanel badgesPanel,
+            Border[] badgeBorders, TextBlock[] badgeTexts, FontIcon[] badgeIcons) BuildCardElements()
     {
-        // Case badge
-        var caseIcon = new FontIcon()
-            .FontSize(14)
-            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
-            .GlyphWithVisibility<DeclensionPracticeViewModel>(vm => vm.CaseGlyph);
-        var caseText = new TextBlock()
-            .FontSize(14)
-            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
-            .Text<DeclensionPracticeViewModel>(vm => vm.CaseLabel);
-        var caseBadge = new Border()
-            .CornerRadius(16)
-            .Padding(12, 6)
-            .Background<DeclensionPracticeViewModel>(vm => vm.CaseBrush)
-            .Child(new StackPanel()
-                .Orientation(Orientation.Horizontal)
-                .Spacing(6)
-                .Children(caseIcon, caseText));
+        // Word TextBlock
+        var wordTextBlock = CardWord.Build<DeclensionPracticeViewModel>(vm => vm.WordCard);
 
-        // Gender badge
-        var genderIcon = new FontIcon()
-            .FontSize(14)
-            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
-            .GlyphWithVisibility<DeclensionPracticeViewModel>(vm => vm.GenderGlyph);
-        var genderText = new TextBlock()
-            .FontSize(14)
-            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
-            .Text<DeclensionPracticeViewModel>(vm => vm.GenderLabel);
-        var genderBadge = new Border()
-            .CornerRadius(16)
-            .Padding(12, 6)
-            .Background<DeclensionPracticeViewModel>(vm => vm.GenderBrush)
-            .Child(new StackPanel()
-                .Orientation(Orientation.Horizontal)
-                .Spacing(6)
-                .Children(genderIcon, genderText));
+        // Build badges
+        var (caseIcon, caseText, caseBadge) = BuildBadge<DeclensionPracticeViewModel>(
+            vm => vm.CaseGlyph, vm => vm.CaseLabel, vm => vm.CaseBrush);
+        var (genderIcon, genderText, genderBadge) = BuildBadge<DeclensionPracticeViewModel>(
+            vm => vm.GenderGlyph, vm => vm.GenderLabel, vm => vm.GenderBrush);
+        var (numberIcon, numberText, numberBadge) = BuildBadge<DeclensionPracticeViewModel>(
+            vm => vm.NumberGlyph, vm => vm.NumberLabel, vm => vm.NumberBrush);
 
-        // Number badge
-        var numberIcon = new FontIcon()
-            .FontSize(14)
-            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
-            .GlyphWithVisibility<DeclensionPracticeViewModel>(vm => vm.NumberGlyph);
-        var numberText = new TextBlock()
-            .FontSize(14)
-            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
-            .Text<DeclensionPracticeViewModel>(vm => vm.NumberLabel);
-        var numberBadge = new Border()
-            .CornerRadius(16)
-            .Padding(12, 6)
-            .Background<DeclensionPracticeViewModel>(vm => vm.NumberBrush)
-            .Child(new StackPanel()
-                .Orientation(Orientation.Horizontal)
-                .Spacing(6)
-                .Children(numberIcon, numberText));
-
-        var panel = new StackPanel()
+        var badgesPanel = new StackPanel()
             .Orientation(Orientation.Horizontal)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .Spacing(LayoutConstants.Spacing.BadgeSpacingTall)
             .Children(caseBadge, genderBadge, numberBadge);
 
-        return (panel, caseBadge, caseText, caseIcon, genderBadge, genderText, genderIcon, numberBadge, numberText, numberIcon);
+        return (wordTextBlock, badgesPanel,
+                [caseBadge, genderBadge, numberBadge],
+                [caseText, genderText, numberText],
+                [caseIcon, genderIcon, numberIcon]);
+    }
+
+    static (FontIcon icon, TextBlock text, Border badge) BuildBadge<TDC>(
+        System.Linq.Expressions.Expression<Func<TDC, string?>> glyphPath,
+        System.Linq.Expressions.Expression<Func<TDC, string>> labelPath,
+        System.Linq.Expressions.Expression<Func<TDC, Brush>> brushPath)
+    {
+        var icon = new FontIcon()
+            .FontSize(14)
+            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+            .GlyphWithVisibility<TDC>(glyphPath);
+        var text = new TextBlock()
+            .FontSize(14)
+            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+            .Text<TDC>(labelPath);
+        var badge = new Border()
+            .CornerRadius(16)
+            .Padding(12, 6)
+            .Background<TDC>(brushPath)
+            .Child(new StackPanel()
+                .Orientation(Orientation.Horizontal)
+                .Spacing(6)
+                .Children(icon, text));
+
+        return (icon, text, badge);
+    }
+
+    static void ApplyResponsiveValues(ResponsiveElements elements, HeightResponsiveHelper.HeightClass heightClass)
+    {
+        // Content padding
+        if (elements.ContentArea is not null)
+        {
+            var padding = HeightResponsiveHelper.GetContentPadding(heightClass);
+            elements.ContentArea.Padding(new Thickness(padding, 0, padding, 0));
+        }
+
+        // Badges panel spacing
+        if (elements.BadgesPanel is not null)
+        {
+            elements.BadgesPanel.Spacing = HeightResponsiveHelper.GetBadgeSpacing(heightClass);
+        }
+
+        // Main word font size
+        if (elements.WordTextBlock is not null)
+        {
+            elements.WordTextBlock.FontSize = HeightResponsiveHelper.GetWordFontSize(heightClass);
+        }
+
+        // Answer font size
+        if (elements.AnswerTextBlock is not null)
+        {
+            elements.AnswerTextBlock.FontSize = HeightResponsiveHelper.GetAnswerFontSize(heightClass);
+        }
+
+        // Card padding
+        if (elements.CardBorder is not null)
+        {
+            var cardPad = HeightResponsiveHelper.GetCardPadding(heightClass);
+            elements.CardBorder.Padding(new Thickness(cardPad));
+        }
+
+        // Badge styling
+        var badgePadding = HeightResponsiveHelper.GetBadgePadding(heightClass);
+        var badgeFontSize = HeightResponsiveHelper.GetBadgeFontSize(heightClass);
+
+        foreach (var border in elements.BadgeBorders)
+        {
+            border.Padding(badgePadding);
+        }
+
+        foreach (var textBlock in elements.BadgeTextBlocks)
+        {
+            textBlock.FontSize = badgeFontSize;
+        }
+
+        foreach (var icon in elements.BadgeIcons)
+        {
+            icon.FontSize = badgeFontSize;
+        }
+    }
+
+    /// <summary>
+    /// Holds references to elements for responsive sizing.
+    /// </summary>
+    class ResponsiveElements
+    {
+        public Grid? ContentArea { get; set; }
+        public Border? CardBorder { get; set; }
+        public StackPanel? BadgesPanel { get; set; }
+        public TextBlock? WordTextBlock { get; set; }
+        public TextBlock? AnswerTextBlock { get; set; }
+        public List<Border> BadgeBorders { get; } = [];
+        public List<TextBlock> BadgeTextBlocks { get; } = [];
+        public List<FontIcon> BadgeIcons { get; } = [];
     }
 }

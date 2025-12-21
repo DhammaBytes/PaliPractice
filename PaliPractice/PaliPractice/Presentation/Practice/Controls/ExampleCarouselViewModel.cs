@@ -15,6 +15,7 @@ public partial class ExampleCarouselViewModel : ObservableObject
     [ObservableProperty] string _currentReference = string.Empty;
     [ObservableProperty] string _currentMeaning = string.Empty;
     [ObservableProperty] bool _hasMultipleExamples;
+    [ObservableProperty] string _paginationText = string.Empty;
 
     /// <summary>
     /// Initialize carousel with all examples from all words under a lemma.
@@ -48,6 +49,7 @@ public partial class ExampleCarouselViewModel : ObservableObject
             CurrentExample = string.Empty;
             CurrentReference = string.Empty;
             CurrentMeaning = string.Empty;
+            PaginationText = string.Empty;
             return;
         }
 
@@ -55,6 +57,7 @@ public partial class ExampleCarouselViewModel : ObservableObject
         CurrentExample = entry.Example;
         CurrentReference = entry.Reference;
         CurrentMeaning = entry.Meaning ?? string.Empty;
+        PaginationText = $"{CurrentExampleIndex + 1} of {TotalExamples}";
     }
 
     [RelayCommand]

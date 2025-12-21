@@ -38,19 +38,25 @@ public sealed partial class StartPage : Page
                                         .HorizontalAlignment(HorizontalAlignment.Center)
                                         .TextAlignment(TextAlignment.Center)
                                         .Foreground(ThemeResource.Get<Brush>("PrimaryBrush")),
-                                    
+
                                     // Practice buttons
                                     new StackPanel()
                                         .Spacing(16)
                                         .Children(
                                             // Declension Practice Button
-                                            new Button()
-                                                .Content(new StackPanel()
+                                            new SquircleButton()
+                                                .HorizontalAlignment(HorizontalAlignment.Stretch)
+                                                .HorizontalContentAlignment(HorizontalAlignment.Left)
+                                                .Fill(ThemeResource.Get<Brush>("PrimaryBrush"))
+                                                .RadiusMode(SquircleRadiusMode.ButtonSmall)
+                                                .Padding(20, 16)
+                                                .Command(() => vm.GoToDeclensionCommand)
+                                                .Child(new StackPanel()
                                                     .Orientation(Orientation.Horizontal)
                                                     .Spacing(12)
                                                     .Children(
                                                         new FontIcon()
-                                                            .Glyph("\uE8D4") // Book icon
+                                                            .Glyph("\uE8D4")
                                                             .FontSize(24),
                                                         new StackPanel()
                                                             .Children(
@@ -63,22 +69,22 @@ public sealed partial class StartPage : Page
                                                                     .FontSize(14)
                                                                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                                                             )
-                                                    )
-                                                )
+                                                    )),
+
+                                            // Conjugation Practice Button
+                                            new SquircleButton()
                                                 .HorizontalAlignment(HorizontalAlignment.Stretch)
                                                 .HorizontalContentAlignment(HorizontalAlignment.Left)
+                                                .Fill(ThemeResource.Get<Brush>("PrimaryBrush"))
+                                                .RadiusMode(SquircleRadiusMode.ButtonSmall)
                                                 .Padding(20, 16)
-                                                .Command(() => vm.GoToDeclensionCommand)
-                                                .Background(ThemeResource.Get<Brush>("PrimaryBrush")),
-                                            
-                                            // Conjugation Practice Button
-                                            new Button()
-                                                .Content(new StackPanel()
+                                                .Command(() => vm.GoToConjugationCommand)
+                                                .Child(new StackPanel()
                                                     .Orientation(Orientation.Horizontal)
                                                     .Spacing(12)
                                                     .Children(
                                                         new FontIcon()
-                                                            .Glyph("\uE8F4") // List icon
+                                                            .Glyph("\uE8F4")
                                                             .FontSize(24),
                                                         new StackPanel()
                                                             .Children(
@@ -91,82 +97,74 @@ public sealed partial class StartPage : Page
                                                                     .FontSize(14)
                                                                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                                                             )
-                                                    )
-                                                )
+                                                    )),
+
+                                            // Settings Button
+                                            new SquircleButton()
                                                 .HorizontalAlignment(HorizontalAlignment.Stretch)
                                                 .HorizontalContentAlignment(HorizontalAlignment.Left)
+                                                .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
+                                                .RadiusMode(SquircleRadiusMode.ButtonSmall)
                                                 .Padding(20, 16)
-                                                .Command(() => vm.GoToConjugationCommand)
-                                                .Background(ThemeResource.Get<Brush>("PrimaryBrush")),
-                                            
-                                            // Settings Button
-                                            new Button()
-                                                .Content(new StackPanel()
+                                                .Command(() => vm.GoToSettingsCommand)
+                                                .Child(new StackPanel()
                                                     .Orientation(Orientation.Horizontal)
                                                     .Spacing(12)
                                                     .Children(
                                                         new FontIcon()
-                                                            .Glyph("\uE713") // Settings icon
+                                                            .Glyph("\uE713")
                                                             .FontSize(24),
                                                         new TextBlock()
                                                             .Text("Settings")
                                                             .FontSize(18)
                                                             .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                                                    )
-                                                )
-                                                .HorizontalAlignment(HorizontalAlignment.Stretch)
-                                                .HorizontalContentAlignment(HorizontalAlignment.Left)
-                                                .Padding(20, 16)
-                                                .Command(() => vm.GoToSettingsCommand)
-                                                .Background(ThemeResource.Get<Brush>("SurfaceBrush")),
+                                                    )),
 
                                             // Help and About buttons (50/50 split)
                                             new Grid()
                                                 .ColumnDefinitions("*,12,*")
                                                 .Children(
                                                     // Help Button
-                                                    new Button()
+                                                    new SquircleButton()
                                                         .Grid(column: 0)
-                                                        .Content(new StackPanel()
+                                                        .HorizontalAlignment(HorizontalAlignment.Stretch)
+                                                        .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
+                                                        .RadiusMode(SquircleRadiusMode.ButtonSmall)
+                                                        .Padding(16, 12)
+                                                        .Command(() => vm.GoToHelpCommand)
+                                                        .Child(new StackPanel()
                                                             .Orientation(Orientation.Horizontal)
                                                             .Spacing(8)
                                                             .Children(
                                                                 new FontIcon()
-                                                                    .Glyph("\uE897") // Help icon
+                                                                    .Glyph("\uE897")
                                                                     .FontSize(20),
                                                                 new TextBlock()
                                                                     .Text("Help")
                                                                     .FontSize(16)
                                                                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                                                            )
-                                                        )
-                                                        .HorizontalAlignment(HorizontalAlignment.Stretch)
-                                                        .HorizontalContentAlignment(HorizontalAlignment.Center)
-                                                        .Padding(16, 12)
-                                                        .Command(() => vm.GoToHelpCommand)
-                                                        .Background(ThemeResource.Get<Brush>("SurfaceBrush")),
+                                                            )),
 
                                                     // About Button
-                                                    new Button()
+                                                    new SquircleButton()
                                                         .Grid(column: 2)
-                                                        .Content(new StackPanel()
+                                                        .HorizontalAlignment(HorizontalAlignment.Stretch)
+                                                        .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
+                                                        .RadiusMode(SquircleRadiusMode.ButtonSmall)
+                                                        .Padding(16, 12)
+                                                        .Command(() => vm.GoToAboutCommand)
+                                                        .Child(new StackPanel()
                                                             .Orientation(Orientation.Horizontal)
                                                             .Spacing(8)
                                                             .Children(
                                                                 new FontIcon()
-                                                                    .Glyph("\uE946") // Info icon
+                                                                    .Glyph("\uE946")
                                                                     .FontSize(20),
                                                                 new TextBlock()
                                                                     .Text("About")
                                                                     .FontSize(16)
                                                                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                                                            )
-                                                        )
-                                                        .HorizontalAlignment(HorizontalAlignment.Stretch)
-                                                        .HorizontalContentAlignment(HorizontalAlignment.Center)
-                                                        .Padding(16, 12)
-                                                        .Command(() => vm.GoToAboutCommand)
-                                                        .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+                                                            ))
                                                 )
                                         )
                                 )

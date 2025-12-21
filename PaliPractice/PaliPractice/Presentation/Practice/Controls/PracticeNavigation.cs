@@ -18,10 +18,10 @@ public static class PracticeNavigation
             .Padding(20, 16)
             .ColumnSpacing(16)
             .Children(
-                CreateButton("Hard", "\uE711", hardCommand)
+                CreateSquircleButton("Hard", "\uE711", hardCommand, "SurfaceBrush")
                     .Grid(column: 0)
                     .HorizontalAlignment(HorizontalAlignment.Stretch),
-                CreateButton("Easy", "\uE73E", easyCommand)
+                CreateSquircleButton("Easy", "\uE73E", easyCommand, "SurfaceBrush")
                     .Grid(column: 1)
                     .HorizontalAlignment(HorizontalAlignment.Stretch)
             );
@@ -44,8 +44,8 @@ public static class PracticeNavigation
             .Padding(20, 16)
             .Children(
                 // Reveal button - visible when NOT revealed
-                CreateRevealButton(revealCommand)
-                    .BoolToVisibility<Button, TDC>(isRevealedPath, invert: true),
+                CreateRevealSquircleButton(revealCommand)
+                    .BoolToVisibility<SquircleButton, TDC>(isRevealedPath, invert: true),
 
                 // Hard/Easy buttons - visible when revealed
                 new Grid()
@@ -53,24 +53,26 @@ public static class PracticeNavigation
                     .ColumnSpacing(16)
                     .BoolToVisibility<Grid, TDC>(isRevealedPath)
                     .Children(
-                        CreateButton("Hard", "\uE711", hardCommand)
+                        CreateSquircleButton("Hard", "\uE711", hardCommand, "SurfaceBrush")
                             .Grid(column: 0)
                             .HorizontalAlignment(HorizontalAlignment.Stretch),
-                        CreateButton("Easy", "\uE73E", easyCommand)
+                        CreateSquircleButton("Easy", "\uE73E", easyCommand, "SurfaceBrush")
                             .Grid(column: 1)
                             .HorizontalAlignment(HorizontalAlignment.Stretch)
                     )
             );
     }
 
-    static Button CreateRevealButton<TDC>(Expression<Func<TDC, ICommand>> commandPath)
+    static SquircleButton CreateRevealSquircleButton<TDC>(Expression<Func<TDC, ICommand>> commandPath)
     {
-        return new Button()
+        var button = new SquircleButton()
             .HorizontalAlignment(HorizontalAlignment.Center)
-            .Padding(32, 16)
-            .Background(ThemeResource.Get<Brush>("PrimaryBrush"))
-            .Command(commandPath)
-            .Content(new StackPanel()
+            .Fill(ThemeResource.Get<Brush>("PrimaryBrush"))
+            .RadiusMode(SquircleRadiusMode.ButtonSmall)
+            .Padding(32, 16);
+        button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
+        return button
+            .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)
                 .Spacing(8)
                 .Children(
@@ -85,16 +87,19 @@ public static class PracticeNavigation
                 ));
     }
 
-    static Button CreateButton<TDC>(
+    static SquircleButton CreateSquircleButton<TDC>(
         string text,
         string glyph,
-        Expression<Func<TDC, ICommand>> commandPath)
+        Expression<Func<TDC, ICommand>> commandPath,
+        string brushKey)
     {
-        return new Button()
-            .Padding(16, 12)
-            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Command(commandPath)
-            .Content(new StackPanel()
+        var button = new SquircleButton()
+            .Fill(ThemeResource.Get<Brush>(brushKey))
+            .RadiusMode(SquircleRadiusMode.ButtonSmall)
+            .Padding(16, 12);
+        button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
+        return button
+            .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)
                 .HorizontalAlignment(HorizontalAlignment.Center)
                 .Spacing(8)

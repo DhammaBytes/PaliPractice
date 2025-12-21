@@ -10,8 +10,8 @@ namespace PaliPractice.Tests.Inflection;
 [TestFixture]
 public class NounPatternsTests
 {
-    private static DpdTestHelper? _dpdHelper;
-    private const string DpdDbPath = "/Users/ivm/Sources/PaliPractice/dpd-db/dpd.db";
+    static DpdTestHelper? _dpdHelper;
+    const string DpdDbPath = "/Users/ivm/Sources/PaliPractice/dpd-db/dpd.db";
 
     /// <summary>
     /// Test case data: pattern, word, case, number, expected endings.

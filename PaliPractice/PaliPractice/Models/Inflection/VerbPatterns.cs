@@ -32,7 +32,7 @@ public static class VerbPatterns
         };
     }
 
-    private static string[] GetAti_Pr(Person person, Number number, Tense tense, Voice voice)
+    static string[] GetAti_Pr(Person person, Number number, Tense tense, Voice voice)
     {
         // Present tense, active voice
         if (tense == Tense.Present && voice == Voice.Active)
@@ -157,7 +157,7 @@ public static class VerbPatterns
         return [];
     }
 
-    private static string[] GetEti_Pr(Person person, Number number, Tense tense, Voice voice)
+    static string[] GetEti_Pr(Person person, Number number, Tense tense, Voice voice)
     {
         // Present tense, active voice (no reflexive forms for present indicative)
         if (tense == Tense.Present && voice == Voice.Active)
@@ -267,7 +267,7 @@ public static class VerbPatterns
         return [];
     }
 
-    private static string[] GetOti_Pr(Person person, Number number, Tense tense, Voice voice)
+    static string[] GetOti_Pr(Person person, Number number, Tense tense, Voice voice)
     {
         // Present tense, active voice
         if (tense == Tense.Present && voice == Voice.Active)

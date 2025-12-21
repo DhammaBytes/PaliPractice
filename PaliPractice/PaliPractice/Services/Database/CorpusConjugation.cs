@@ -8,7 +8,7 @@ namespace PaliPractice.Services.Database;
 /// Internal to the database service layer.
 /// </summary>
 [Table("corpus_conjugations")]
-internal class CorpusConjugation
+class CorpusConjugation
 {
     [Column("verb_id")]
     public int VerbId { get; set; }

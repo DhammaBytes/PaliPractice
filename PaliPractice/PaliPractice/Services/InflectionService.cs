@@ -29,7 +29,7 @@ public interface IInflectionService
 
 public class InflectionService : IInflectionService
 {
-    private readonly IDatabaseService _databaseService;
+    readonly IDatabaseService _databaseService;
 
     public InflectionService(IDatabaseService databaseService)
     {

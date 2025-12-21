@@ -7,8 +7,8 @@ namespace PaliPractice.Tests.Inflection.Helpers;
 /// </summary>
 public class DpdTestHelper : IDisposable
 {
-    private readonly SqliteConnection _connection;
-    private bool _disposed;
+    readonly SqliteConnection _connection;
+    bool _disposed;
 
     public DpdTestHelper(string dpdDbPath)
     {

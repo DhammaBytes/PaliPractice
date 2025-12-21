@@ -34,7 +34,7 @@ public static class NounPatterns
         };
     }
 
-    private static string[] GetA_Masc(NounCase nounCase, Number number)
+    static string[] GetA_Masc(NounCase nounCase, Number number)
     {
         return (nounCase, number) switch
         {
@@ -58,7 +58,7 @@ public static class NounPatterns
         };
     }
 
-    private static string[] GetA_Nt(NounCase nounCase, Number number)
+    static string[] GetA_Nt(NounCase nounCase, Number number)
     {
         return (nounCase, number) switch
         {
@@ -82,7 +82,7 @@ public static class NounPatterns
         };
     }
 
-    private static string[] GetA_Fem(NounCase nounCase, Number number)
+    static string[] GetA_Fem(NounCase nounCase, Number number)
     {
         return (nounCase, number) switch
         {
@@ -106,7 +106,7 @@ public static class NounPatterns
         };
     }
 
-    private static string[] GetI_Masc(NounCase nounCase, Number number)
+    static string[] GetI_Masc(NounCase nounCase, Number number)
     {
         return (nounCase, number) switch
         {
@@ -130,7 +130,7 @@ public static class NounPatterns
         };
     }
 
-    private static string[] GetI_Fem(NounCase nounCase, Number number)
+    static string[] GetI_Fem(NounCase nounCase, Number number)
     {
         return (nounCase, number) switch
         {
@@ -154,7 +154,7 @@ public static class NounPatterns
         };
     }
 
-    private static string[] GetI_Long_Masc(NounCase nounCase, Number number)
+    static string[] GetI_Long_Masc(NounCase nounCase, Number number)
     {
         return (nounCase, number) switch
         {
@@ -178,7 +178,7 @@ public static class NounPatterns
         };
     }
 
-    private static string[] GetI_Long_Fem(NounCase nounCase, Number number)
+    static string[] GetI_Long_Fem(NounCase nounCase, Number number)
     {
         return (nounCase, number) switch
         {
@@ -202,7 +202,7 @@ public static class NounPatterns
         };
     }
 
-    private static string[] GetU_Masc(NounCase nounCase, Number number)
+    static string[] GetU_Masc(NounCase nounCase, Number number)
     {
         return (nounCase, number) switch
         {
@@ -226,7 +226,7 @@ public static class NounPatterns
         };
     }
 
-    private static string[] GetU_Nt(NounCase nounCase, Number number)
+    static string[] GetU_Nt(NounCase nounCase, Number number)
     {
         return (nounCase, number) switch
         {
@@ -250,7 +250,7 @@ public static class NounPatterns
         };
     }
 
-    private static string[] GetU_Fem(NounCase nounCase, Number number)
+    static string[] GetU_Fem(NounCase nounCase, Number number)
     {
         return (nounCase, number) switch
         {
@@ -274,7 +274,7 @@ public static class NounPatterns
         };
     }
 
-    private static string[] GetAs_Masc(NounCase nounCase, Number number)
+    static string[] GetAs_Masc(NounCase nounCase, Number number)
     {
         return (nounCase, number) switch
         {
@@ -298,7 +298,7 @@ public static class NounPatterns
         };
     }
 
-    private static string[] GetAr_Masc(NounCase nounCase, Number number)
+    static string[] GetAr_Masc(NounCase nounCase, Number number)
     {
         return (nounCase, number) switch
         {

@@ -23,7 +23,7 @@ public static partial class FormattedTextBehavior
     public static void SetHtmlText(DependencyObject obj, string value) =>
         obj.SetValue(HtmlTextProperty, value);
 
-    private static void OnHtmlTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    static void OnHtmlTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         if (d is not TextBlock textBlock) return;
 
@@ -49,7 +49,7 @@ public static partial class FormattedTextBehavior
     /// <summary>
     /// Parses text with &lt;b&gt;...&lt;/b&gt; tags into segments.
     /// </summary>
-    private static List<(string Text, bool IsBold)> ParseBoldTags(string input)
+    static List<(string Text, bool IsBold)> ParseBoldTags(string input)
     {
         var segments = new List<(string Text, bool IsBold)>();
         var regex = BoldTagRegex();

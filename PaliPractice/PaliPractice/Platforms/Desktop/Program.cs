@@ -2,7 +2,7 @@ using Uno.UI.Hosting;
 
 namespace PaliPractice;
 
-internal class Program
+class Program
 {
     [STAThread]
     public static void Main(string[] args)

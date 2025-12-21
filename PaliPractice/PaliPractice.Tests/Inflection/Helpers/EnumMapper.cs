@@ -65,7 +65,7 @@ public static class EnumMapper
         return (tense, person, number, voice);
     }
 
-    private static Gender ParseGender(string gender)
+    static Gender ParseGender(string gender)
     {
         return gender switch
         {
@@ -76,7 +76,7 @@ public static class EnumMapper
         };
     }
 
-    private static NounCase ParseCase(string caseStr)
+    static NounCase ParseCase(string caseStr)
     {
         return caseStr switch
         {
@@ -92,7 +92,7 @@ public static class EnumMapper
         };
     }
 
-    private static Number ParseNumber(string number)
+    static Number ParseNumber(string number)
     {
         return number switch
         {
@@ -102,7 +102,7 @@ public static class EnumMapper
         };
     }
 
-    private static Person ParsePerson(string person)
+    static Person ParsePerson(string person)
     {
         return person switch
         {
@@ -113,7 +113,7 @@ public static class EnumMapper
         };
     }
 
-    private static Tense ParseTense(string indicator)
+    static Tense ParseTense(string indicator)
     {
         return indicator switch
         {

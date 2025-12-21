@@ -2,6 +2,8 @@
 
 This directory contains all setup instructions and scripts to build the PaliPractice app from scratch, including extracting structured noun declension and verb conjugation training data from the Digital Pāḷi Dictionary.
 
+**Last verified**: December 2025
+
 ## Directory Structure
 
 ```
@@ -22,9 +24,9 @@ scripts/
 
 ### `extract_nouns_and_verbs.py`
 The primary extraction script that:
-- Extracts 1000 most frequent nouns and 1000 most frequent verbs
-- Creates separate `declensions` table for noun forms
-- Creates separate `conjugations` table for verb forms
+- Extracts 3000 most frequent nouns and 2000 most frequent verbs
+- Creates `corpus_declensions` table tracking which forms appear in Tipitaka
+- Creates `corpus_conjugations` table tracking which forms appear in Tipitaka
 - Uses EBT frequency counts for word selection
 - Outputs to `../PaliPractice/PaliPractice/Data/training.db` for the app's consumption
 
@@ -34,44 +36,123 @@ Validates the generated database:
 - Verifies data integrity
 - Provides statistics on extracted data
 
-## Complete Setup Instructions
+---
+
+## DPD Database Rebuild (Complete Instructions)
 
 ### Prerequisites
-- **Python 3.8+** with pip
+- **Python 3.12** (NOT 3.14 - pyarrow doesn't have wheels yet)
 - **Go 1.22.2+** (install via `brew install go` on Mac)
-- **UV** package manager for Python (install via `pip install uv`)
-- **.NET 9.0+** for building the app
+- **UV** package manager (install via `curl -LsSf https://astral.sh/uv/install.sh | sh`)
+- **Node.js** (install via `brew install node` on Mac)
+- **.NET 10.0+** for building the app
 - At least **20GB RAM** for DPD database generation
 
-### Step 1: Clone Repository with Submodules
+### Step 1: Update DPD Submodule
 ```bash
-git clone --recursive https://github.com/yourusername/PaliPractice.git
-cd PaliPractice
-```
+cd /Users/ivm/Sources/PaliPractice
 
-If you already cloned without `--recursive`, initialize all submodules:
-```bash
-# Initialize the main DPD submodule
-git submodule update --init dpd-db
-
-# Initialize DPD submodules (this includes corpus data for frequency analysis)
+# Pull latest dpd-db changes
 cd dpd-db
-git submodule update --init --recursive
+git pull origin main
+cd ..
 
-# In case the corpus data submodules did not fetch:
-cd resources
-git submodule update --init --recursive --force
-cd ../..
+# Commit the submodule update
+git add dpd-db
+git commit -m "Update dpd-db submodule"
 ```
 
-**Note**: The submodule initialization can take 10-20 minutes as it downloads several large corpus datasets (CST, BJT, SuttaCentral, etc.) needed for frequency analysis.
-
-### Step 2: Set Up Python Environment
+### Step 2: Fix Submodules (if corrupted)
+If `git submodule update` fails with "Unable to find current revision":
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-pip install -r scripts/requirements.txt
+cd dpd-db
+
+# Remove and reinitialize corrupted submodules
+rm -rf resources/sc-data
+git submodule update --init resources/sc-data
+
+rm -rf resources/tpr_downloads
+git submodule update --init resources/tpr_downloads
+
+# Then update all submodules
+git submodule update --init --recursive
 ```
+
+### Step 3: Install Python Dependencies
+```bash
+cd dpd-db
+
+# IMPORTANT: Force Python 3.12 (3.14 doesn't work with pyarrow)
+uv sync --python 3.12
+```
+
+If you get timeout errors, increase the timeout:
+```bash
+UV_HTTP_TIMEOUT=120 uv sync --python 3.12
+```
+
+### Step 4: Run Initial Setup (generates frequency files)
+**This must be run before `initial_build_db.py`!**
+```bash
+cd dpd-db
+uv run python scripts/bash/initial_setup_run_once.py
+```
+
+This generates:
+- `shared_data/frequency/cst_wordlist.json`
+- `shared_data/frequency/sc_wordlist.json`
+- `shared_data/frequency/bjt_wordlist.json`
+- `shared_data/frequency/sya_wordlist.json`
+
+### Step 5: Build DPD Database
+```bash
+cd dpd-db
+uv run python scripts/bash/initial_build_db.py
+```
+
+This takes **~1 hour** and creates `dpd.db` (~450MB).
+
+### Step 6: Extract Training Data
+```bash
+cd /Users/ivm/Sources/PaliPractice
+source .venv/bin/activate
+cd scripts
+python3 extract_nouns_and_verbs.py
+python3 validate_db.py
+```
+
+### Step 7: Build and Run the App
+```bash
+cd /Users/ivm/Sources/PaliPractice/PaliPractice/PaliPractice
+dotnet build --framework net10.0-desktop
+dotnet run --framework net10.0-desktop
+```
+
+---
+
+## Quick Reference Commands
+
+### Full Rebuild (after dpd-db update)
+```bash
+cd /Users/ivm/Sources/PaliPractice/dpd-db
+git submodule update --init --recursive
+UV_HTTP_TIMEOUT=120 uv sync --python 3.12
+uv run python scripts/bash/initial_setup_run_once.py
+uv run python scripts/bash/initial_build_db.py
+
+cd /Users/ivm/Sources/PaliPractice
+source .venv/bin/activate
+cd scripts && python3 extract_nouns_and_verbs.py
+```
+
+### Just Re-extract Training Data (no dpd-db rebuild)
+```bash
+cd /Users/ivm/Sources/PaliPractice
+source .venv/bin/activate
+cd scripts && python3 extract_nouns_and_verbs.py
+```
+
+---
 
 ## Database Schema
 
@@ -85,226 +166,136 @@ pip install -r scripts/requirements.txt
 - `pattern`: Inflection pattern
 - `family_root`: Root family classification (e.g., "√kar", "√gam")
 - `meaning`: Primary meaning (no _1 suffix)
-- `source_1`: Primary source text reference (e.g., "AN3.103")
-- `sutta_1`: Primary sutta name (e.g., "nimittasuttaṃ")
-- `example_1`: Primary usage example with bold markup
-- `source_2`: Secondary source text reference
-- `sutta_2`: Secondary sutta name
-- `example_2`: Secondary usage example
+- `source_1`, `sutta_1`, `example_1`: Primary usage example
+- `source_2`, `sutta_2`, `example_2`: Secondary usage example
 
 ### verbs
 - `id`: Primary key (original DPD headword ID)
 - `ebt_count`: Frequency in Early Buddhist Texts (sorted by this)
 - `lemma`: Dictionary form (no _1 suffix)
 - `lemma_clean`: Clean lemma
-- `pos`: Part of speech / verb type (kept for development)
+- `pos`: Part of speech / verb type
 - `stem`: Word stem for inflection
 - `pattern`: Inflection pattern
-- `family_root`: Root family classification (e.g., "√kar", "√gam")
-- `meaning`: Primary meaning (no _1 suffix)
-- `source_1`: Primary source text reference (e.g., "AN3.103")
-- `sutta_1`: Primary sutta name (e.g., "nimittasuttaṃ")
-- `example_1`: Primary usage example with bold markup
-- `source_2`: Secondary source text reference
-- `sutta_2`: Secondary sutta name
-- `example_2`: Secondary usage example
+- `family_root`: Root family classification
+- `meaning`: Primary meaning
+- `source_1`, `sutta_1`, `example_1`: Primary usage example
+- `source_2`, `sutta_2`, `example_2`: Secondary usage example
 
-### declensions (for nouns)
+### corpus_declensions (for nouns)
 - `noun_id`: Foreign key to nouns table
-- `form`: Inflected form (TEXT)
 - `case_name`: INTEGER - NounCase enum (0=None, 1=Nominative, 2=Accusative, 3=Instrumental, 4=Dative, 5=Ablative, 6=Genitive, 7=Locative, 8=Vocative)
 - `number`: INTEGER - Number enum (0=None, 1=Singular, 2=Plural)
 - `gender`: INTEGER - Gender enum (0=None, 1=Masculine, 2=Neuter, 3=Feminine)
+- `ending_index`: INTEGER - For multiple endings (0, 1, 2...)
 
-### conjugations (for verbs)
+### corpus_conjugations (for verbs)
 - `verb_id`: Foreign key to verbs table
-- `form`: Conjugated form (TEXT)
 - `person`: INTEGER - Person enum (0=None, 1=First, 2=Second, 3=Third)
-- `tense`: INTEGER - Tense enum (0=None, 1=Present, 2=Future, 3=Aorist, 4=Imperfect, 5=Perfect)
-- `mood`: INTEGER - Mood enum (0=None, 1=Indicative, 2=Optative, 3=Imperative, 4=Conditional)
+- `tense`: INTEGER - Tense enum (0=None, 1=Present, 2=Imperative, 3=Optative, 4=Future, 5=Aorist)
 - `voice`: INTEGER - Voice enum (0=None, 1=Active, 2=Reflexive, 3=Passive, 4=Causative)
+- `ending_index`: INTEGER - For multiple endings (0, 1, 2...)
 
-**Note**: All grammatical attributes are stored as INTEGER values that map to C# enums defined in `PaliPractice/Models/Enums.cs`. This provides type safety and better performance in the .NET application.
+**Note**: All grammatical attributes are stored as INTEGER values that map to C# enums defined in `PaliPractice/Models/Enums.cs`.
 
-## DPD Database Rebuild Instructions
-
-If you need to rebuild the DPD database from scratch:
-
-### Prerequisites
-- Ensure `uv` is installed
-- **Go 1.22.2+** is required for frequency analysis (install via `brew install go`)
-- Have at least 20GB RAM available
-- Clone the repository with submodules
-
-### Step 1: Initial Setup (one-time only)
-```bash
-cd /Users/ivm/Sources/PaliPractice/dpd-db
-
-# Initialize ALL git submodules recursively (includes corpus data)
-git submodule update --init --recursive
-
-# Run initial setup to prepare source files
-uv run bash scripts/bash/initial_setup_run_once.sh
-```
-
-**Note**: The submodule initialization can take 10-20 minutes as it downloads large corpus datasets (CST, BJT, SYA, etc.)
-
-### Step 2: Build Complete DPD Database
-```bash
-# Create empty bold_definitions.tsv to skip that step (optional)
-echo "word	pos	source	book	chapter	example	example_english	nikaya	sutta_number	tag_number" > db/bold_definitions/bold_definitions.tsv
-
-# Build base database from TSV files
-uv run scripts/build/db_rebuild_from_tsv.py
-
-# Generate inflections (most important step)
-uv run python db/inflections/create_inflection_templates.py
-uv run python db/inflections/generate_inflection_tables.py
-
-# Optional: Run full component generation (takes longer)
-# uv run bash scripts/bash/generate_components.sh
-```
-
-### Step 3: Convert XML Corpus Files to Text
-```bash
-# Convert CST XML files to text (required for frequency analysis)
-uv run python scripts/build/cst4_xml_to_txt.py
-```
-
-### Step 4: Generate Frequency Data (Required for EBT Count)
-```bash
-# Copy our custom Go files to DPD setup directory
-cp /Users/ivm/Sources/PaliPractice/scripts/frequency/main_available.go go_modules/frequency/setup/
-cp /Users/ivm/Sources/PaliPractice/scripts/frequency/main_limited.go go_modules/frequency/setup/
-
-# Generate frequency maps from available corpuses (CST, SYA)
-# Note: Use the modified version that skips missing SuttaCentral data
-go run go_modules/frequency/setup/main_available.go go_modules/frequency/setup/1CST.go go_modules/frequency/setup/3BJT.go go_modules/frequency/setup/4SYA.go
-
-# Alternative: If the above fails, run individual corpus processing:
-# go run go_modules/frequency/setup/main_limited.go go_modules/frequency/setup/1CST.go go_modules/frequency/setup/4SYA.go
-
-# Populate EBT frequency counts in database
-uv run python scripts/build/ebt_counter.py
-```
-
-### Step 5: Extract Training Data
-```bash
-cd scripts
-
-# Extract structured noun and verb data
-python3 extract_nouns_and_verbs.py
-
-# Validate the extraction
-python3 validate_db.py
-```
-
-### Step 6: Build and Run the App
-```bash
-cd PaliPractice/PaliPractice
-dotnet build
-dotnet run --framework net9.0-desktop
-```
-
-## Platform-Specific Builds
-
-```bash
-# iOS
-dotnet build --framework net9.0-ios
-
-# Android
-dotnet build --framework net9.0-android
-
-# Desktop (Windows/Mac/Linux)
-dotnet build --framework net9.0-desktop
-```
-
-## Development Workflow
-
-### Building from Scratch
-If you need to rebuild everything:
-
-```bash
-# Clean previous builds
-rm -f PaliPractice/PaliPractice/Data/training.db
-rm -f dpd-db/dpd.db
-
-# Rebuild DPD database from scratch (Steps 3-4 above)
-cd dpd-db
-uv run scripts/build/db_rebuild_from_tsv.py
-uv run python db/inflections/create_inflection_templates.py
-uv run python db/inflections/generate_inflection_tables.py
-uv run python scripts/build/cst4_xml_to_txt.py
-cp ../scripts/frequency/main_available.go go_modules/frequency/setup/
-go run go_modules/frequency/setup/main_available.go go_modules/frequency/setup/1CST.go go_modules/frequency/setup/3BJT.go go_modules/frequency/setup/4SYA.go
-uv run python scripts/build/ebt_counter.py
-cd ..
-
-# Generate new training database (Step 5)
-source .venv/bin/activate
-cd scripts && python3 extract_nouns_and_verbs.py && cd ..
-
-# Build app (Step 6)
-cd PaliPractice/PaliPractice && dotnet build
-```
-
-### Quick Script Usage (after initial setup)
-
-Extract training data:
-```bash
-cd scripts
-python3 extract_nouns_and_verbs.py
-```
-
-Validate extraction:
-```bash
-python3 validate_db.py
-```
-
-Run tests:
-```bash
-python3 tests/test_app_database.py
-python3 tests/test_frequency_setup.py
-```
-
-## Expected Results
-
-After successful completion, you should have about:
-- **DPD Database**: `dpd-db/dpd.db` (~450MB) with 82,922 words
-- **Frequency Data**: 53,041+ words with EBT frequency counts > 0
-- **Training Database**: `PaliPractice/PaliPractice/Data/training.db` (~13MB) with:
-  - 1,000 most frequent nouns (frequency range: ~37,600 to ~210)
-  - 1,000 most frequent verbs (frequency range: ~18,961 to ~115)
-  - 30,280 noun declensions with grammatical categorization
-  - 62,509 verb conjugations with grammatical categorization
+---
 
 ## Troubleshooting
 
-### If Go frequency generation fails:
+### "Unable to find current revision in submodule path"
+Remove the corrupted submodule directory and reinitialize:
+```bash
+rm -rf resources/<submodule-name>
+git submodule update --init resources/<submodule-name>
+```
+
+### "Failed to build pyarrow" / "cmake not found"
+You're using Python 3.14 which doesn't have pre-built wheels. Force Python 3.12:
+```bash
+uv sync --python 3.12
+```
+
+### "sc_wordlist.json: no such file or directory"
+You need to run `initial_setup_run_once.py` before `initial_build_db.py`:
+```bash
+uv run python scripts/bash/initial_setup_run_once.py
+```
+
+### "all_tipitaka_words: no such file"
+The pickle file was removed in late 2025. Update `extract_nouns_and_verbs.py` to use:
+```python
+from tools.all_tipitaka_words import make_all_tipitaka_word_set
+all_words = make_all_tipitaka_word_set()
+```
+
+### Network timeouts during uv sync
+Increase the HTTP timeout:
+```bash
+UV_HTTP_TIMEOUT=120 uv sync --python 3.12
+```
+
+### If Go frequency generation fails
 The custom Go files (located in `scripts/frequency/`) handle missing corpus data:
 - `main_available.go`: Processes CST, BJT, and SYA
 - `main_limited.go`: Processes only CST and SYA if BJT is unavailable
 
-These files are automatically copied to the DPD setup directory during the build process.
-
-### If corpus data is missing:
+### If corpus data is missing
 Ensure all submodules are initialized:
 ```bash
 cd dpd-db/resources
 git submodule update --init --recursive --force
 ```
 
-### If frequency data shows all zeros:
+### If frequency data shows all zeros
 Verify corpus text files exist:
 ```bash
 find dpd-db/resources/dpd_submodules/cst -name "*.txt" | head -3
 find dpd-db/resources/syāmaraṭṭha_1927 -name "*.txt" | head -3
 ```
 
+---
+
+## Platform-Specific Builds
+
+```bash
+# iOS
+dotnet build --framework net10.0-ios
+
+# Android
+dotnet build --framework net10.0-android
+
+# Desktop (Windows/Mac/Linux)
+dotnet build --framework net10.0-desktop
+```
+
+---
+
+## Legacy Setup (PaliPractice Python Environment)
+
+For the extraction scripts only (not dpd-db):
+```bash
+cd /Users/ivm/Sources/PaliPractice
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r scripts/requirements.txt
+```
+
+---
+
+## Expected Results
+
+After successful completion, you should have:
+- **DPD Database**: `dpd-db/dpd.db` (~450MB) with 82,922+ words
+- **Frequency Data**: 53,041+ words with EBT frequency counts > 0
+- **Training Database**: `PaliPractice/PaliPractice/Data/training.db` with:
+  - 3,000 most frequent nouns
+  - 2,000 most frequent verbs
+  - Corpus-attested declension forms
+  - Corpus-attested conjugation forms
+
 ## Notes
-- Test scripts are now in `tests/` subdirectory
+
 - The full DPD build can take 30-60 minutes first time
-- **Go installation is required** for frequency analysis and EBT count population
-- **Frequency generation** (Step 4) is essential for frequency-based word selection
-- Without frequency data, extraction will fall back to alphabetical sorting
+- **Go installation is required** for frequency analysis
+- **Frequency generation** is essential for frequency-based word selection
 - The process requires converting XML corpus files to text before frequency analysis

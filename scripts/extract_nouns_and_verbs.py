@@ -8,7 +8,6 @@ import re
 import json
 import sqlite3
 import os
-import pickle
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple, Set
 import sys
@@ -124,11 +123,33 @@ class NounVerbExtractor:
 
         # Load all words found in the Pali Tipitaka corpus
         # This is used to filter out inflections that don't appear in actual texts
-        tipitaka_words_path = Path("../dpd-db/shared_data/all_tipitaka_words")
-        print(f"Loading Tipitaka word corpus from {tipitaka_words_path}")
-        with open(tipitaka_words_path, "rb") as f:
-            self.all_tipitaka_words: Set[str] = pickle.load(f)
+        print("Loading Tipitaka word corpus from JSON wordlists...")
+        self.all_tipitaka_words: Set[str] = self._load_tipitaka_words()
         print(f"Loaded {len(self.all_tipitaka_words)} words from Tipitaka corpus")
+
+    def _load_tipitaka_words(self) -> Set[str]:
+        """Load all words from the Tipitaka corpus JSON wordlists."""
+        freq_dir = Path("../dpd-db/shared_data/frequency")
+        all_words: Set[str] = set()
+
+        wordlist_files = [
+            "cst_wordlist.json",
+            "bjt_wordlist.json",
+            "sya_wordlist.json",
+            "sc_wordlist.json",
+        ]
+
+        for filename in wordlist_files:
+            filepath = freq_dir / filename
+            if filepath.exists():
+                with open(filepath) as f:
+                    words = json.load(f)
+                    all_words.update(words)
+                    print(f"  Loaded {len(words)} words from {filename}")
+            else:
+                print(f"  Warning: {filename} not found, skipping")
+
+        return all_words
         
     def create_schema(self):
         """Create a normalized database schema for nouns and verbs."""

@@ -45,8 +45,8 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
 
     protected override void PrepareCardAnswer(ILemma lemma)
     {
-        // Use primary word for inflection generation
-        var verb = (Verb)lemma.PrimaryWord;
+        // Use first word (all share the same dominant pattern)
+        var verb = (Verb)lemma.Words.First();
 
         // Generate all grouped conjugations for this verb (one per person+number+tense+voice combo)
         var allConjugations = new List<Conjugation>();

@@ -46,8 +46,8 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
 
     protected override void PrepareCardAnswer(ILemma lemma)
     {
-        // Use primary word for inflection generation
-        var noun = (Noun)lemma.PrimaryWord;
+        // Use the first word (all share the same dominant pattern)
+        var noun = (Noun)lemma.Words.First();
 
         // Generate all grouped declensions for this noun (one per case+number combo)
         var allDeclensions = new List<Declension>();

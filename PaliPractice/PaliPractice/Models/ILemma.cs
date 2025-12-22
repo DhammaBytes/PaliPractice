@@ -12,18 +12,20 @@ public interface ILemma
     string LemmaClean { get; }
 
     /// <summary>
-    /// All words (noun/verb entries) sharing this lemma_clean.
-    /// Multiple entries may exist for different meanings or variants.
+    /// Words sharing this lemma_clean with the dominant inflection pattern.
+    /// Multiple entries may exist for different meanings.
     /// </summary>
     IReadOnlyList<IWord> Words { get; }
 
     /// <summary>
-    /// The primary word (highest EbtCount) used for ranking display.
+    /// Words with minority inflection patterns, excluded from the main practice.
+    /// These have the same lemma_clean but different Pattern values.
     /// </summary>
-    IWord PrimaryWord { get; }
+    IReadOnlyList<IWord> Variants { get; }
 
     /// <summary>
-    /// EbtCount of the primary word, used for ranking/ordering.
+    /// EbtCount from the first word, used for ranking/ordering.
+    /// All words in a lemma share the same frequency count.
     /// </summary>
     int EbtCount { get; }
 }

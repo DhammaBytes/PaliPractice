@@ -2,20 +2,49 @@ namespace PaliPractice.Models;
 
 /// <summary>
 /// Implementation of ILemma that groups words by lemma_clean.
+/// Filters out words with minority inflection patterns into Variants.
 /// </summary>
 public class Lemma : ILemma
 {
     readonly List<IWord> _words;
+    readonly List<IWord> _variants;
 
     public string LemmaClean { get; }
     public IReadOnlyList<IWord> Words => _words;
-    public IWord PrimaryWord { get; }
-    public int EbtCount => PrimaryWord.EbtCount;
+    public IReadOnlyList<IWord> Variants => _variants;
+    public int EbtCount => _words.First().EbtCount;
 
     public Lemma(string lemmaClean, IEnumerable<IWord> words)
     {
         LemmaClean = lemmaClean;
-        _words = words.OrderByDescending(w => w.EbtCount).ToList();
-        PrimaryWord = _words.First();
+
+        var allWords = words.ToList();
+
+        // Group by pattern and find the dominant one
+        var byPattern = allWords
+            .GroupBy(w => w.Pattern ?? "")
+            .Select(g => new
+            {
+                Pattern = g.Key,
+                Words = g.ToList(),
+                Count = g.Count(),
+                MinId = g.Min(w => w.Id)
+            })
+            .OrderByDescending(g => g.Count)
+            .ThenBy(g => g.MinId)  // Tie-breaker: lowest ID wins
+            .ToList();
+
+        var dominantPattern = byPattern.First().Pattern;
+
+        // Separate words into main list and variants
+        _words = allWords
+            .Where(w => (w.Pattern ?? "") == dominantPattern)
+            .OrderBy(w => w.Id)
+            .ToList();
+
+        _variants = allWords
+            .Where(w => (w.Pattern ?? "") != dominantPattern)
+            .OrderBy(w => w.Id)
+            .ToList();
     }
 }

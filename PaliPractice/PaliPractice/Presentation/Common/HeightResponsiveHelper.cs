@@ -125,7 +125,9 @@ public static class HeightResponsiveHelper
     /// </summary>
     public static double GetBadgeFontSize(HeightClass heightClass) => heightClass switch
     {
-        HeightClass.Tall or HeightClass.Medium => LayoutConstants.Fonts.BadgeSizeTall,
+        HeightClass.Tall => LayoutConstants.Fonts.BadgeSizeTall,
+        HeightClass.Medium => LayoutConstants.Fonts.BadgeSizeMedium,
+        HeightClass.Short => LayoutConstants.Fonts.BadgeSizeShort,
         _ => LayoutConstants.Fonts.BadgeSizeMinimum
     };
 
@@ -134,11 +136,21 @@ public static class HeightResponsiveHelper
     /// </summary>
     public static Thickness GetBadgePadding(HeightClass heightClass) => heightClass switch
     {
-        HeightClass.Tall or HeightClass.Medium => new Thickness(
+        HeightClass.Tall => new Thickness(
             LayoutConstants.Paddings.BadgeHorizontalTall,
             LayoutConstants.Paddings.BadgeVerticalTall,
             LayoutConstants.Paddings.BadgeHorizontalTall,
             LayoutConstants.Paddings.BadgeVerticalTall),
+        HeightClass.Medium => new Thickness(
+            LayoutConstants.Paddings.BadgeHorizontalMedium,
+            LayoutConstants.Paddings.BadgeVerticalMedium,
+            LayoutConstants.Paddings.BadgeHorizontalMedium,
+            LayoutConstants.Paddings.BadgeVerticalMedium),
+        HeightClass.Short => new Thickness(
+            LayoutConstants.Paddings.BadgeHorizontalShort,
+            LayoutConstants.Paddings.BadgeVerticalShort,
+            LayoutConstants.Paddings.BadgeHorizontalShort,
+            LayoutConstants.Paddings.BadgeVerticalShort),
         _ => new Thickness(
             LayoutConstants.Paddings.BadgeHorizontalMinimum,
             LayoutConstants.Paddings.BadgeVerticalMinimum,

@@ -120,6 +120,16 @@ public static class BindExtensions
     }
 
     /// <summary>
+    /// Binds SquircleBorder.Fill to a Brush property path
+    /// </summary>
+    public static SquircleBorder Fill<TDC>(this SquircleBorder border, Expression<Func<TDC, Brush>> path)
+    {
+        border.SetBinding(SquircleBorder.FillProperty, Bind.Path(path));
+        return border;
+    }
+
+
+    /// <summary>
     /// Binds FormattedTextBehavior.HtmlText to a string property path.
     /// Parses &lt;b&gt;...&lt;/b&gt; tags and creates bold Runs.
     /// </summary>

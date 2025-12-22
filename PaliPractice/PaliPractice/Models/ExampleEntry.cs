@@ -12,42 +12,29 @@ public record ExampleEntry(IWord Word, int ExampleIndex)
     public string Example => ExampleIndex == 0 ? Word.Example1 : Word.Example2;
 
     /// <summary>
-    /// Gets the source reference for this entry.
-    /// Newlines are converted to parenthetical format: "line1\nline2" → "line1 (line2)"
-    /// </summary>
-    public string Source
-    {
-        get
-        {
-            var raw = ExampleIndex == 0 ? Word.Source1 : Word.Source2;
-            if (string.IsNullOrEmpty(raw)) return raw;
-
-            var lines = raw.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-            if (lines.Length > 1)
-            {
-                var first = lines[0].Trim();
-                var rest = string.Join(", ", lines.Skip(1).Select(l => l.Trim()));
-                return $"{first} ({rest})";
-            }
-            return raw;
-        }
-    }
-
-    /// <summary>
-    /// Gets the sutta reference for this entry.
-    /// </summary>
-    public string Sutta => ExampleIndex == 0 ? Word.Sutta1 : Word.Sutta2;
-
-    /// <summary>
-    /// Gets the combined reference (sutta or source+sutta).
+    /// Gets the combined reference (source + sutta).
+    /// Sutta newlines are converted to parenthetical format: "line1\nline2" → "line1 (line2)"
     /// </summary>
     public string Reference
     {
         get
         {
-            var source = Source;
-            var sutta = Sutta;
-            if (string.IsNullOrEmpty(source)) return sutta;
+            var source = ExampleIndex == 0 ? Word.Source1 : Word.Source2;
+            var sutta = ExampleIndex == 0 ? Word.Sutta1 : Word.Sutta2;
+
+            // Format sutta: convert newlines to parenthetical format
+            if (!string.IsNullOrEmpty(sutta))
+            {
+                var lines = sutta.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                if (lines.Length > 1)
+                {
+                    var first = lines[0].Trim();
+                    var rest = string.Join(", ", lines.Skip(1).Select(l => l.Trim()));
+                    sutta = $"{first} ({rest})";
+                }
+            }
+
+            if (string.IsNullOrEmpty(source)) return sutta ?? string.Empty;
             if (string.IsNullOrEmpty(sutta)) return source;
             return $"{source} {sutta}";
         }

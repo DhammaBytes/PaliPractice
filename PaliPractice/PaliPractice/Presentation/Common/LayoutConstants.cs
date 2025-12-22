@@ -58,8 +58,10 @@ public static class LayoutConstants
         public const double AnswerSizeShort = 26;
         public const double AnswerSizeMinimum = 24;
 
-        // Badge text
-        public const double BadgeSizeTall = 14;
+        // Badge text (improved for better visibility)
+        public const double BadgeSizeTall = 18;
+        public const double BadgeSizeMedium = 16;
+        public const double BadgeSizeShort = 14;
         public const double BadgeSizeMinimum = 12;
     }
 
@@ -68,11 +70,15 @@ public static class LayoutConstants
     /// </summary>
     public static class Paddings
     {
-        // Badge internal padding (horizontal, vertical)
-        public const double BadgeHorizontalTall = 12;
-        public const double BadgeHorizontalMinimum = 8;
-        public const double BadgeVerticalTall = 6;
-        public const double BadgeVerticalMinimum = 4;
+        // Badge internal padding (horizontal, vertical) - improved for better appearance
+        public const double BadgeHorizontalTall = 16;
+        public const double BadgeHorizontalMedium = 14;
+        public const double BadgeHorizontalShort = 12;
+        public const double BadgeHorizontalMinimum = 10;
+        public const double BadgeVerticalTall = 8;
+        public const double BadgeVerticalMedium = 7;
+        public const double BadgeVerticalShort = 6;
+        public const double BadgeVerticalMinimum = 5;
 
         // Answer border padding
         public const double AnswerPaddingTall = 16;

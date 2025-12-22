@@ -1,15 +1,15 @@
-namespace PaliPractice.Models;
+namespace PaliPractice.Models.Inflection;
 
 /// <summary>
-/// Represents a grouped verb conjugation for a specific person/number/tense/voice combination.
+/// Represents a grouped noun declension for a specific case/number/gender combination.
 /// Contains 1-N possible form variants (usually 1-3).
 /// </summary>
-public class Conjugation
+public class Declension
 {
     /// <summary>
-    /// First, Second, or Third person.
+    /// The grammatical case.
     /// </summary>
-    public Person Person { get; init; }
+    public NounCase CaseName { get; init; }
 
     /// <summary>
     /// Singular or Plural.
@@ -17,19 +17,14 @@ public class Conjugation
     public Number Number { get; init; }
 
     /// <summary>
-    /// Tense (includes traditional moods): Present, Imperative, Optative, Future, Aorist.
+    /// Masculine, Neuter, or Feminine.
     /// </summary>
-    public Tense Tense { get; init; }
+    public Gender Gender { get; init; }
 
     /// <summary>
-    /// Active, Reflexive, Passive, Causative.
+    /// All possible form variants for this declension (1-N forms).
     /// </summary>
-    public Voice Voice { get; init; }
-
-    /// <summary>
-    /// All possible form variants for this conjugation (1-N forms).
-    /// </summary>
-    public IReadOnlyList<ConjugationForm> Forms { get; init; } = [];
+    public IReadOnlyList<DeclensionForm> Forms { get; init; } = [];
 
     /// <summary>
     /// Returns the primary attested form:
@@ -37,7 +32,7 @@ public class Conjugation
     /// - Otherwise, return first InCorpus form (any index)
     /// - Null if no InCorpus forms exist
     /// </summary>
-    public ConjugationForm? Primary
+    public DeclensionForm? Primary
     {
         get
         {

@@ -1,4 +1,4 @@
-namespace PaliPractice.Models;
+namespace PaliPractice.Models.Words;
 
 /// <summary>
 /// Represents a practice unit grouping all IWord instances that share the same lemma_clean.

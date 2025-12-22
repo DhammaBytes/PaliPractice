@@ -1,4 +1,6 @@
-namespace PaliPractice.Models;
+using PaliPractice.Models.Words;
+
+namespace PaliPractice.Presentation.Practice.Controls.ViewModels;
 
 /// <summary>
 /// Represents a single example entry in the carousel.

@@ -1,14 +1,18 @@
-using PaliPractice.Presentation.Practice.Controls;
+using PaliPractice.Models.Words;
 using PaliPractice.Presentation.Practice.Providers;
+using DailyGoalViewModel = PaliPractice.Presentation.Practice.Controls.ViewModels.DailyGoalViewModel;
+using ExampleCarouselViewModel = PaliPractice.Presentation.Practice.Controls.ViewModels.ExampleCarouselViewModel;
+using FlashcardStateViewModel = PaliPractice.Presentation.Practice.Controls.ViewModels.FlashcardStateViewModel;
+using WordCardViewModel = PaliPractice.Presentation.Practice.Controls.ViewModels.WordCardViewModel;
 
-namespace PaliPractice.Presentation.Practice;
+namespace PaliPractice.Presentation.Practice.ViewModels;
 
 /// <summary>
 /// Base class for practice ViewModels (Conjugation and Declension).
 /// Implements flashcard reveal mechanics: user sees dictionary form, guesses inflected form,
 /// reveals answer, then rates Easy/Hard.
 /// </summary>
-[Microsoft.UI.Xaml.Data.Bindable]
+[Bindable]
 public abstract partial class PracticeViewModelBase : ObservableObject
 {
     protected readonly ILemmaProvider Lemmas;

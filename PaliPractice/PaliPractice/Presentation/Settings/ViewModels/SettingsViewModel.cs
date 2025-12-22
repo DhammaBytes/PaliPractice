@@ -1,4 +1,4 @@
-namespace PaliPractice.Presentation.Settings;
+namespace PaliPractice.Presentation.Settings.ViewModels;
 
 [Bindable]
 public partial class SettingsViewModel : ObservableObject

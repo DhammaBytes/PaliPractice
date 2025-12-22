@@ -39,7 +39,7 @@ public class SquircleButton : Button
     public SquircleButton()
     {
         // Remove default button chrome (background/border) so our squircle is the only visual
-        Background = new SolidColorBrush(Microsoft.UI.Colors.Transparent);
+        Background = new SolidColorBrush(Colors.Transparent);
         BorderThickness = new Thickness(0);
 
         // Apply our custom ControlTemplate (created via XamlReader - see CreateControlTemplate)

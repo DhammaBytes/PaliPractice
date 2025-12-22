@@ -1,4 +1,4 @@
-namespace PaliPractice.Presentation.Settings;
+namespace PaliPractice.Presentation.Settings.ViewModels;
 
 [Bindable]
 public partial class DeclensionSettingsViewModel : ObservableObject

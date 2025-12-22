@@ -10,7 +10,7 @@ namespace PaliPractice.Presentation.Practice.Controls;
 /// </summary>
 public static class ExampleSection
 {
-    public static StackPanel Build<TDC>(Expression<Func<TDC, ExampleCarouselViewModel>> carouselPath)
+    public static StackPanel Build<TDC>(Expression<Func<TDC, ViewModels.ExampleCarouselViewModel>> carouselPath)
     {
         return new StackPanel()
             .Spacing(4)
@@ -20,7 +20,7 @@ public static class ExampleSection
             .Children(
                 // Example text (with <b>bold</b> support)
                 new TextBlock()
-                    .HtmlTextWithin<ExampleCarouselViewModel>(c => c.CurrentExample)
+                    .HtmlTextWithin<ViewModels.ExampleCarouselViewModel>(c => c.CurrentExample)
                     .FontSize(14)
                     .TextWrapping(TextWrapping.Wrap)
                     .TextAlignment(TextAlignment.Center)
@@ -29,7 +29,7 @@ public static class ExampleSection
 
                 // Reference text (always visible)
                 new TextBlock()
-                    .TextWithin<ExampleCarouselViewModel>(c => c.CurrentReference)
+                    .TextWithin<ViewModels.ExampleCarouselViewModel>(c => c.CurrentReference)
                     .FontSize(12)
                     .TextWrapping(TextWrapping.Wrap)
                     .TextAlignment(TextAlignment.Center)

@@ -1,8 +1,10 @@
-using PaliPractice.Presentation.Practice.Controls;
+using PaliPractice.Models.Inflection;
+using PaliPractice.Models.Words;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Themes;
+using WordCardViewModel = PaliPractice.Presentation.Practice.Controls.ViewModels.WordCardViewModel;
 
-namespace PaliPractice.Presentation.Practice;
+namespace PaliPractice.Presentation.Practice.ViewModels;
 
 [Bindable]
 public partial class ConjugationPracticeViewModel : PracticeViewModelBase
@@ -52,7 +54,7 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
         var allConjugations = new List<Conjugation>();
         foreach (var person in Enum.GetValues<Person>())
         {
-            foreach (var number in Enum.GetValues<Models.Number>())
+            foreach (var number in Enum.GetValues<Number>())
             {
                 foreach (var tense in Enum.GetValues<Tense>())
                 {
@@ -100,8 +102,8 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
         // Number badge
         NumberLabel = c.Number switch
         {
-            Models.Number.Singular => "Singular",
-            Models.Number.Plural => "Plural",
+            Number.Singular => "Singular",
+            Number.Plural => "Plural",
             _ => c.Number.ToString()
         };
         NumberBrush = OptionPresentation.GetChipBrush(c.Number);
@@ -128,8 +130,8 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
         PersonGlyph = OptionPresentation.GetGlyph(Person.Third);
 
         NumberLabel = "Singular";
-        NumberBrush = OptionPresentation.GetChipBrush(Models.Number.Singular);
-        NumberGlyph = OptionPresentation.GetGlyph(Models.Number.Singular);
+        NumberBrush = OptionPresentation.GetChipBrush(Number.Singular);
+        NumberGlyph = OptionPresentation.GetGlyph(Number.Singular);
 
         TenseLabel = "Present";
         TenseBrush = OptionPresentation.GetChipBrush(Tense.Present);

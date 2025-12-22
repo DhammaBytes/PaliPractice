@@ -16,8 +16,8 @@ EXCLUDED_COLUMNS = {
     'source_1', 'sutta_1', 'example_1',
     'source_2', 'sutta_2', 'example_2',
     'plus_case', 'family_root', 'stem', 'derived_from',
-    'trans', 'type',
-    'gender', 'pattern'
+    'trans', 'type'
+    # ,'gender', 'pattern'
 }
 
 

@@ -1,22 +1,26 @@
 using PaliPractice.Presentation.Main;
+using PaliPractice.Presentation.Main.ViewModels;
 using PaliPractice.Presentation.Practice;
 using PaliPractice.Presentation.Practice.Controls;
 using PaliPractice.Presentation.Practice.Providers;
+using PaliPractice.Presentation.Practice.ViewModels;
 using PaliPractice.Presentation.Settings;
+using PaliPractice.Presentation.Settings.ViewModels;
 using AboutPage = PaliPractice.Presentation.Main.AboutPage;
 using ConjugationPracticePage = PaliPractice.Presentation.Practice.ConjugationPracticePage;
-using ConjugationPracticeViewModel = PaliPractice.Presentation.Practice.ConjugationPracticeViewModel;
+using ConjugationPracticeViewModel = PaliPractice.Presentation.Practice.ViewModels.ConjugationPracticeViewModel;
 using ConjugationSettingsPage = PaliPractice.Presentation.Settings.ConjugationSettingsPage;
-using ConjugationSettingsViewModel = PaliPractice.Presentation.Settings.ConjugationSettingsViewModel;
+using ConjugationSettingsViewModel = PaliPractice.Presentation.Settings.ViewModels.ConjugationSettingsViewModel;
 using DeclensionPracticePage = PaliPractice.Presentation.Practice.DeclensionPracticePage;
-using DeclensionPracticeViewModel = PaliPractice.Presentation.Practice.DeclensionPracticeViewModel;
+using DeclensionPracticeViewModel = PaliPractice.Presentation.Practice.ViewModels.DeclensionPracticeViewModel;
 using DeclensionSettingsPage = PaliPractice.Presentation.Settings.DeclensionSettingsPage;
-using DeclensionSettingsViewModel = PaliPractice.Presentation.Settings.DeclensionSettingsViewModel;
+using DeclensionSettingsViewModel = PaliPractice.Presentation.Settings.ViewModels.DeclensionSettingsViewModel;
 using HelpPage = PaliPractice.Presentation.Main.HelpPage;
 using HistoryPage = PaliPractice.Presentation.Practice.HistoryPage;
 using SettingsPage = PaliPractice.Presentation.Settings.SettingsPage;
 using Shell = PaliPractice.Presentation.Main.Shell;
 using StartPage = PaliPractice.Presentation.Main.StartPage;
+using WordCardViewModel = PaliPractice.Presentation.Practice.Controls.ViewModels.WordCardViewModel;
 
 namespace PaliPractice;
 

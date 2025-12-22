@@ -1,4 +1,4 @@
-namespace PaliPractice.Presentation.Main;
+namespace PaliPractice.Presentation.Main.ViewModels;
 
 [Bindable]
 public partial class HelpViewModel : ObservableObject

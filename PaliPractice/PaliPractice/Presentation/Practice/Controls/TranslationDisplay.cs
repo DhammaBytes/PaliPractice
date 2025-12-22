@@ -12,7 +12,7 @@ namespace PaliPractice.Presentation.Practice.Controls;
 public static class TranslationDisplay
 {
     public static StackPanel Build<TDC>(
-        Expression<Func<TDC, ExampleCarouselViewModel>> carouselPath,
+        Expression<Func<TDC, ViewModels.ExampleCarouselViewModel>> carouselPath,
         Expression<Func<TDC, bool>> isRevealedPath)
     {
         return new StackPanel()
@@ -28,9 +28,9 @@ public static class TranslationDisplay
                     .MinHeight(0)
                     .VerticalAlignment(VerticalAlignment.Center)
                     .Scope(carouselPath)
-                    .CommandWithin<Button, ExampleCarouselViewModel>(c => c.PreviousCommand)
-                    .VisibilityWithin<Button, ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
-                    .OpacityWithin<Button, ExampleCarouselViewModel>(c => c.IsRevealed)
+                    .CommandWithin<Button, ViewModels.ExampleCarouselViewModel>(c => c.PreviousCommand)
+                    .VisibilityWithin<Button, ViewModels.ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
+                    .OpacityWithin<Button, ViewModels.ExampleCarouselViewModel>(c => c.IsRevealed)
                     .Content(new FontIcon()
                         .Glyph("\uE76B") // ChevronLeft
                         .FontSize(14)
@@ -55,18 +55,18 @@ public static class TranslationDisplay
                                             .HorizontalAlignment(HorizontalAlignment.Center)
                                             .VerticalAlignment(VerticalAlignment.Center)
                                             .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
-                                            .VisibilityWithin<TextBlock, ExampleCarouselViewModel>(c => c.IsRevealed, invert: true),
+                                            .VisibilityWithin<TextBlock, ViewModels.ExampleCarouselViewModel>(c => c.IsRevealed, invert: true),
 
                                         // Translation content - shown when revealed
                                         new StackPanel()
                                             .Spacing(8)
                                             .HorizontalAlignment(HorizontalAlignment.Center)
                                             .VerticalAlignment(VerticalAlignment.Center)
-                                            .VisibilityWithin<StackPanel, ExampleCarouselViewModel>(c => c.IsRevealed)
+                                            .VisibilityWithin<StackPanel, ViewModels.ExampleCarouselViewModel>(c => c.IsRevealed)
                                             .Children(
                                                 // Translation text
                                                 new TextBlock()
-                                                    .TextWithin<ExampleCarouselViewModel>(c => c.CurrentMeaning)
+                                                    .TextWithin<ViewModels.ExampleCarouselViewModel>(c => c.CurrentMeaning)
                                                     .FontSize(16)
                                                     .FontStyle(Windows.UI.Text.FontStyle.Italic)
                                                     .TextWrapping(TextWrapping.Wrap)
@@ -77,12 +77,12 @@ public static class TranslationDisplay
 
                                                 // Pagination below translation
                                                 new TextBlock()
-                                                    .TextWithin<ExampleCarouselViewModel>(c => c.PaginationText)
+                                                    .TextWithin<ViewModels.ExampleCarouselViewModel>(c => c.PaginationText)
                                                     .FontSize(11)
                                                     .TextAlignment(TextAlignment.Center)
                                                     .HorizontalAlignment(HorizontalAlignment.Center)
                                                     .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
-                                                    .VisibilityWithin<TextBlock, ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
+                                                    .VisibilityWithin<TextBlock, ViewModels.ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
                                             )
                                     )
                             )
@@ -96,9 +96,9 @@ public static class TranslationDisplay
                     .MinHeight(0)
                     .VerticalAlignment(VerticalAlignment.Center)
                     .Scope(carouselPath)
-                    .CommandWithin<Button, ExampleCarouselViewModel>(c => c.NextCommand)
-                    .VisibilityWithin<Button, ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
-                    .OpacityWithin<Button, ExampleCarouselViewModel>(c => c.IsRevealed)
+                    .CommandWithin<Button, ViewModels.ExampleCarouselViewModel>(c => c.NextCommand)
+                    .VisibilityWithin<Button, ViewModels.ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
+                    .OpacityWithin<Button, ViewModels.ExampleCarouselViewModel>(c => c.IsRevealed)
                     .Content(new FontIcon()
                         .Glyph("\uE76C") // ChevronRight
                         .FontSize(14)

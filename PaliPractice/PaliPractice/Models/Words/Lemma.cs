@@ -1,4 +1,4 @@
-namespace PaliPractice.Models;
+namespace PaliPractice.Models.Words;
 
 /// <summary>
 /// Implementation of ILemma that groups words by lemma_clean.

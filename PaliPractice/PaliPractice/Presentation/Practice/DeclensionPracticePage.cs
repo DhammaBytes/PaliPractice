@@ -10,7 +10,7 @@ public sealed partial class DeclensionPracticePage : Page
     {
         var elements = new ResponsiveElements();
 
-        DeclensionPracticePageMarkup.DataContext<DeclensionPracticeViewModel>(this, (page, _) => page
+        DeclensionPracticePageMarkup.DataContext<ViewModels.DeclensionPracticeViewModel>(this, (page, _) => page
             .NavigationCacheMode<DeclensionPracticePage>(NavigationCacheMode.Required)
             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
             .Content(BuildPageLayout(elements))
@@ -25,7 +25,7 @@ public sealed partial class DeclensionPracticePage : Page
 
     static Grid BuildPageLayout(ResponsiveElements elements)
     {
-        var config = new PracticePageConfig<DeclensionPracticeViewModel>(
+        var config = new PracticePageConfig<ViewModels.DeclensionPracticeViewModel>(
             Title: "Declension Practice",
             RankPrefix: "N",
             WordCardPath: vm => vm.WordCard,
@@ -43,16 +43,16 @@ public sealed partial class DeclensionPracticePage : Page
         );
 
         var badges = PracticeLayoutHelper.CreateBadgeSet(
-            PracticeLayoutHelper.BuildBadge<DeclensionPracticeViewModel>(
+            PracticeLayoutHelper.BuildBadge<ViewModels.DeclensionPracticeViewModel>(
                 vm => vm.CaseGlyph, vm => vm.CaseLabel, vm => vm.CaseBrush),
-            PracticeLayoutHelper.BuildBadge<DeclensionPracticeViewModel>(
+            PracticeLayoutHelper.BuildBadge<ViewModels.DeclensionPracticeViewModel>(
                 vm => vm.GenderGlyph, vm => vm.GenderLabel, vm => vm.GenderBrush),
-            PracticeLayoutHelper.BuildBadge<DeclensionPracticeViewModel>(
+            PracticeLayoutHelper.BuildBadge<ViewModels.DeclensionPracticeViewModel>(
                 vm => vm.NumberGlyph, vm => vm.NumberLabel, vm => vm.NumberBrush)
         );
 
         var hint = new TextBlock()
-            .Text<DeclensionPracticeViewModel>(vm => vm.CaseHint)
+            .Text<ViewModels.DeclensionPracticeViewModel>(vm => vm.CaseHint)
             .FontSize(14)
             .FontStyle(Windows.UI.Text.FontStyle.Italic)
             .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))

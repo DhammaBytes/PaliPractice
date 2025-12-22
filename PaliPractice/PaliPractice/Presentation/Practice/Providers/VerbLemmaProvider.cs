@@ -1,3 +1,5 @@
+using PaliPractice.Models.Words;
+
 namespace PaliPractice.Presentation.Practice.Providers;
 
 public sealed class VerbLemmaProvider : ILemmaProvider

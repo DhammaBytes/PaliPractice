@@ -1,6 +1,6 @@
 using SQLite;
 
-namespace PaliPractice.Models;
+namespace PaliPractice.Models.Words;
 
 [Table("nouns")]
 public class Noun : IWord

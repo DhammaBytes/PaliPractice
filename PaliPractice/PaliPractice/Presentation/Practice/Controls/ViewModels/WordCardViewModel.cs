@@ -1,4 +1,6 @@
-namespace PaliPractice.Presentation.Practice.Controls;
+using PaliPractice.Models.Words;
+
+namespace PaliPractice.Presentation.Practice.Controls.ViewModels;
 
 [Bindable]
 public partial class WordCardViewModel : ObservableObject

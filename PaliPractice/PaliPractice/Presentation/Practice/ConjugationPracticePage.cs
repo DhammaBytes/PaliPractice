@@ -9,7 +9,7 @@ public sealed partial class ConjugationPracticePage : Page
     {
         var elements = new ResponsiveElements();
 
-        ConjugationPracticePageMarkup.DataContext<ConjugationPracticeViewModel>(this, (page, _) => page
+        ConjugationPracticePageMarkup.DataContext<ViewModels.ConjugationPracticeViewModel>(this, (page, _) => page
             .NavigationCacheMode<ConjugationPracticePage>(NavigationCacheMode.Required)
             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
             .Content(BuildPageLayout(elements))
@@ -24,7 +24,7 @@ public sealed partial class ConjugationPracticePage : Page
 
     static Grid BuildPageLayout(ResponsiveElements elements)
     {
-        var config = new PracticePageConfig<ConjugationPracticeViewModel>(
+        var config = new PracticePageConfig<ViewModels.ConjugationPracticeViewModel>(
             Title: "Conjugation Practice",
             RankPrefix: "V",
             WordCardPath: vm => vm.WordCard,
@@ -42,11 +42,11 @@ public sealed partial class ConjugationPracticePage : Page
         );
 
         var badges = PracticeLayoutHelper.CreateBadgeSet(
-            PracticeLayoutHelper.BuildBadge<ConjugationPracticeViewModel>(
+            PracticeLayoutHelper.BuildBadge<ViewModels.ConjugationPracticeViewModel>(
                 vm => vm.TenseGlyph, vm => vm.TenseLabel, vm => vm.TenseBrush),
-            PracticeLayoutHelper.BuildBadge<ConjugationPracticeViewModel>(
+            PracticeLayoutHelper.BuildBadge<ViewModels.ConjugationPracticeViewModel>(
                 vm => vm.PersonGlyph, vm => vm.PersonLabel, vm => vm.PersonBrush),
-            PracticeLayoutHelper.BuildBadge<ConjugationPracticeViewModel>(
+            PracticeLayoutHelper.BuildBadge<ViewModels.ConjugationPracticeViewModel>(
                 vm => vm.NumberGlyph, vm => vm.NumberLabel, vm => vm.NumberBrush)
         );
 

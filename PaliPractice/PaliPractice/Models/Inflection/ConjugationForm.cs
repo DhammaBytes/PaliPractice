@@ -1,4 +1,4 @@
-namespace PaliPractice.Models;
+namespace PaliPractice.Models.Inflection;
 
 /// <summary>
 /// Represents a single inflected form variant within a conjugation group.

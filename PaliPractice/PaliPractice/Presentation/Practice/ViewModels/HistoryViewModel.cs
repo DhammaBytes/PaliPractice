@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 
-namespace PaliPractice.Presentation.Practice;
+namespace PaliPractice.Presentation.Practice.ViewModels;
 
 /// <summary>
 /// Navigation data wrapper for PracticeType (needed because DataViewMap requires reference types).

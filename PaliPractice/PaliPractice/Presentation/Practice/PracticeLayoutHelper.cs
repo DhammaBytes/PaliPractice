@@ -2,6 +2,8 @@ using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Practice.Controls;
+using ExampleCarouselViewModel = PaliPractice.Presentation.Practice.Controls.ViewModels.ExampleCarouselViewModel;
+using WordCardViewModel = PaliPractice.Presentation.Practice.Controls.ViewModels.WordCardViewModel;
 
 namespace PaliPractice.Presentation.Practice;
 

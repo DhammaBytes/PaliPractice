@@ -1,4 +1,4 @@
-namespace PaliPractice.Models;
+namespace PaliPractice.Models.Words;
 
 /// <summary>
 /// Common interface for both Noun and Verb entities.

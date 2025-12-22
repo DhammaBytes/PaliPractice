@@ -1,6 +1,7 @@
-using PaliPractice.Presentation.Settings;
+using PaliPractice.Presentation.Practice.ViewModels;
+using PaliPractice.Presentation.Settings.ViewModels;
 
-namespace PaliPractice.Presentation.Main;
+namespace PaliPractice.Presentation.Main.ViewModels;
 
 [Bindable]
 public class StartViewModel : ObservableObject
@@ -28,12 +29,12 @@ public class StartViewModel : ObservableObject
 
     async Task GoToDeclension()
     {
-        await _navigator.NavigateViewModelAsync<Practice.DeclensionPracticeViewModel>(this);
+        await _navigator.NavigateViewModelAsync<DeclensionPracticeViewModel>(this);
     }
 
     async Task GoToConjugation()
     {
-        await _navigator.NavigateViewModelAsync<Practice.ConjugationPracticeViewModel>(this);
+        await _navigator.NavigateViewModelAsync<ConjugationPracticeViewModel>(this);
     }
 
     async Task GoToSettings()

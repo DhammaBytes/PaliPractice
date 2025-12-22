@@ -1,4 +1,4 @@
-namespace PaliPractice.Presentation.Practice.Controls;
+namespace PaliPractice.Presentation.Practice.Controls.ViewModels;
 
 /// <summary>
 /// Manages flashcard reveal state for practice screens.

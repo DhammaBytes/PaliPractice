@@ -1,4 +1,4 @@
-namespace PaliPractice.Presentation.Practice.Controls;
+namespace PaliPractice.Presentation.Practice.Controls.ViewModels;
 
 /// <summary>
 /// Tracks daily practice goal progress.

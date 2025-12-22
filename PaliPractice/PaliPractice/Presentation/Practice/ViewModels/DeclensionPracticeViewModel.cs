@@ -1,8 +1,10 @@
-using PaliPractice.Presentation.Practice.Controls;
+using PaliPractice.Models.Inflection;
+using PaliPractice.Models.Words;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Themes;
+using WordCardViewModel = PaliPractice.Presentation.Practice.Controls.ViewModels.WordCardViewModel;
 
-namespace PaliPractice.Presentation.Practice;
+namespace PaliPractice.Presentation.Practice.ViewModels;
 
 [Bindable]
 public partial class DeclensionPracticeViewModel : PracticeViewModelBase
@@ -53,7 +55,7 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
         var allDeclensions = new List<Declension>();
         foreach (var nounCase in Enum.GetValues<NounCase>())
         {
-            foreach (var number in Enum.GetValues<Models.Number>())
+            foreach (var number in Enum.GetValues<Number>())
             {
                 var declension = _inflectionService.GenerateNounForms(noun, nounCase, number);
                 // Only include if it has an attested primary form
@@ -95,8 +97,8 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
         // Number badge
         NumberLabel = d.Number switch
         {
-            Models.Number.Singular => "Singular",
-            Models.Number.Plural => "Plural",
+            Number.Singular => "Singular",
+            Number.Plural => "Plural",
             _ => d.Number.ToString()
         };
         NumberBrush = OptionPresentation.GetChipBrush(d.Number);
@@ -135,8 +137,8 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
         GenderGlyph = OptionPresentation.GetGlyph(noun.Gender);
 
         NumberLabel = "Singular";
-        NumberBrush = OptionPresentation.GetChipBrush(Models.Number.Singular);
-        NumberGlyph = OptionPresentation.GetGlyph(Models.Number.Singular);
+        NumberBrush = OptionPresentation.GetChipBrush(Number.Singular);
+        NumberGlyph = OptionPresentation.GetGlyph(Number.Singular);
 
         CaseLabel = "Nominative";
         CaseBrush = OptionPresentation.GetChipBrush(NounCase.Nominative);

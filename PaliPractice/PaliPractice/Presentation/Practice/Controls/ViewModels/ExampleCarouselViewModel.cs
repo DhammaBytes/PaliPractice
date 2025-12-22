@@ -1,4 +1,6 @@
-namespace PaliPractice.Presentation.Practice.Controls;
+using PaliPractice.Models.Words;
+
+namespace PaliPractice.Presentation.Practice.Controls.ViewModels;
 
 /// <summary>
 /// Manages carousel navigation through unique translations for a lemma.

@@ -10,7 +10,7 @@ public partial class AboutViewModel : ObservableObject
         _navigator = navigator;
     }
 
-    public string AppName => $"Pali Practice v{Version}";
+    public string AppName => $"Pāli Practice v{Version}";
     string Version => "1.0";
 
     public string Description => """
@@ -41,7 +41,7 @@ public partial class AboutViewModel : ObservableObject
         Source code: github.com/DhammaBytes/PaliPractice
         """;
 
-    // Pali blessing - display in italic
+    // Pāli blessing - display in italic
     public string Blessing => """
                               Sabbe sattā sukhitā hontu
                               May all beings be happy

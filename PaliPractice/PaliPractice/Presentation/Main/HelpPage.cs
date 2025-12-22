@@ -37,7 +37,7 @@ public sealed partial class HelpPage : Page
                                                 .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
                                                 .Foreground(ThemeResource.Get<Brush>("PrimaryBrush")),
                                             new TextBlock()
-                                                .Text("Pali Practice helps you learn Pali noun declensions and verb conjugations through flashcard-style exercises.")
+                                                .Text("Pāli Practice helps you learn Pāli noun declensions and verb conjugations through flashcard-style exercises.")
                                                 .TextWrapping(TextWrapping.Wrap)
                                                 .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
                                         ),

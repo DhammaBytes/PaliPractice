@@ -19,7 +19,7 @@ public class StartViewModel : ObservableObject
         GoToAboutCommand = new AsyncRelayCommand(GoToAbout);
     }
 
-    public string Title => "Pali Practice";
+    public string Title => "Pāli Practice";
 
     public ICommand GoToDeclensionCommand { get; }
     public ICommand GoToConjugationCommand { get; }

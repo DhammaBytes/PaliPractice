@@ -6,7 +6,7 @@
         <UnoSingleProject>true</UnoSingleProject>
 
         <!-- Display name -->
-        <ApplicationTitle>PaliPractice</ApplicationTitle>
+        <ApplicationTitle>PāliPractice</ApplicationTitle>
         <!-- App Identifier -->
         <ApplicationId>org.dhammabytes.palipractice</ApplicationId>
         <!-- Versions -->
@@ -15,7 +15,7 @@
         <!-- Package Publisher -->
         <ApplicationPublisher>O=DhammaBytes</ApplicationPublisher>
         <!-- Package Description -->
-        <Description>Pali Practice - Learn noun declensions and verb conjugations</Description>
+        <Description>Pāli Practice - Learn noun declensions and verb conjugations</Description>
 
         <!--
           UnoFeatures let's you quickly add and manage implicit package references based on the features you want to use.

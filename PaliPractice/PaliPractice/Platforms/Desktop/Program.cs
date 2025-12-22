@@ -1,6 +1,6 @@
 using Uno.UI.Hosting;
 
-namespace PaliPractice;
+namespace PaliPractice.Desktop;
 
 class Program
 {

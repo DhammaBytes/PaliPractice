@@ -34,7 +34,7 @@ public sealed partial class StartPage : Page
 
                                     // App title
                                     new TextBlock()
-                                        .Text("Pali Practice")
+                                        .Text("Pāli Practice")
                                         .FontSize(36)
                                         .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
                                         .HorizontalAlignment(HorizontalAlignment.Center)

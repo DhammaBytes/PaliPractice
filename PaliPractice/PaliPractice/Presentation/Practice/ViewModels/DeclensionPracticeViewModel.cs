@@ -13,7 +13,7 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
     readonly Random _random = new();
     Declension? _currentDeclension;
 
-    public override PracticeType CurrentPracticeType => PracticeType.Declension;
+    protected override PracticeType CurrentPracticeType => PracticeType.Declension;
 
     // Badge display properties for Gender
     [ObservableProperty] string _genderLabel = string.Empty;

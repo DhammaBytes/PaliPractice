@@ -9,28 +9,30 @@ namespace PaliPractice.Presentation.Practice.ViewModels;
 
 /// <summary>
 /// Base class for practice ViewModels (Conjugation and Declension).
-/// Implements flashcard reveal mechanics: user sees dictionary form, guesses inflected form,
-/// reveals answer, then rates Easy/Hard.
+/// Implements flashcard reveal mechanics: user sees a dictionary form,
+/// guesses the inflected form, reveals the answer, then rates Easy/Hard.
 /// </summary>
 [Bindable]
 public abstract partial class PracticeViewModelBase : ObservableObject
 {
-    protected readonly ILemmaProvider Lemmas;
-    protected readonly INavigator Navigator;
     protected readonly ILogger Logger;
 
-    protected int CurrentIndex;
     [ObservableProperty] bool _canRateCard;
 
     public WordCardViewModel WordCard { get; }
     public FlashcardStateViewModel Flashcard { get; }
     public DailyGoalViewModel DailyGoal { get; }
     public ExampleCarouselViewModel ExampleCarousel { get; }
-
+    
+    readonly ILemmaProvider _lemmas;
+    readonly INavigator _navigator;
+    
     // Commands - stored as fields to maintain reference for NotifyCanExecuteChanged
     readonly RelayCommand _hardCommand;
     readonly RelayCommand _easyCommand;
     readonly RelayCommand _revealCommand;
+    
+    int _currentIndex;
 
     /// <summary>
     /// Called when a new card is displayed. Subclasses should generate the inflected form
@@ -46,7 +48,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     /// <summary>
     /// Returns the practice type (Declension or Conjugation) for history navigation.
     /// </summary>
-    public abstract PracticeType CurrentPracticeType { get; }
+    protected abstract PracticeType CurrentPracticeType { get; }
 
     protected PracticeViewModelBase(
         ILemmaProvider lemmas,
@@ -54,9 +56,9 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         INavigator navigator,
         ILogger logger)
     {
-        Lemmas = lemmas;
+        _lemmas = lemmas;
         WordCard = wordCard;
-        Navigator = navigator;
+        _navigator = navigator;
         Logger = logger;
         Flashcard = new FlashcardStateViewModel();
         DailyGoal = new DailyGoalViewModel();
@@ -77,14 +79,14 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         };
     }
 
-    public async Task InitializeAsync(CancellationToken ct = default)
+    protected async Task InitializeAsync(CancellationToken ct = default)
     {
         try
         {
             WordCard.IsLoading = true;
 
-            await Lemmas.LoadAsync(ct);
-            if (Lemmas.Lemmas.Count == 0)
+            await _lemmas.LoadAsync(ct);
+            if (_lemmas.Lemmas.Count == 0)
             {
                 WordCard.ErrorMessage = "No words found";
                 return;
@@ -110,7 +112,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     void DisplayCurrentCard()
     {
-        var lemma = Lemmas.Lemmas[CurrentIndex];
+        var lemma = _lemmas.Lemmas[_currentIndex];
         WordCard.DisplayCurrentCard(lemma);
         ExampleCarousel.Initialize(lemma);
         PrepareCardAnswer(lemma);
@@ -126,7 +128,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     void UpdateNavigationState()
     {
-        var hasNext = CurrentIndex < Lemmas.Lemmas.Count - 1;
+        var hasNext = _currentIndex < _lemmas.Lemmas.Count - 1;
         var isRevealed = Flashcard.IsRevealed;
         CanRateCard = hasNext && isRevealed;
 
@@ -140,9 +142,9 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     }
 
     // Commands
-    public ICommand GoBackCommand => new AsyncRelayCommand(() => Navigator.NavigateBackAsync(this));
+    public ICommand GoBackCommand => new AsyncRelayCommand(() => _navigator.NavigateBackAsync(this));
     public ICommand GoToHistoryCommand => new AsyncRelayCommand(() =>
-        Navigator.NavigateViewModelAsync<HistoryViewModel>(this, data: new HistoryNavigationData(CurrentPracticeType)));
+        _navigator.NavigateViewModelAsync<HistoryViewModel>(this, data: new HistoryNavigationData(CurrentPracticeType)));
     public ICommand HardCommand => _hardCommand;
     public ICommand EasyCommand => _easyCommand;
     public ICommand RevealCommand => _revealCommand;
@@ -165,9 +167,9 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     void MoveToNextCard()
     {
-        if (CurrentIndex >= Lemmas.Lemmas.Count - 1) return;
+        if (_currentIndex >= _lemmas.Lemmas.Count - 1) return;
 
-        CurrentIndex++;
+        _currentIndex++;
         Flashcard.Reset();
         ExampleCarousel.Reset();
         DisplayCurrentCard();

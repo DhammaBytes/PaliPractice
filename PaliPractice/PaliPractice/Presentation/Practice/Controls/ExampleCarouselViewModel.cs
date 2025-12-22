@@ -1,70 +1,68 @@
 namespace PaliPractice.Presentation.Practice.Controls;
 
 /// <summary>
-/// Manages carousel navigation through all examples from all words under a lemma.
-/// Updates translation display when carousel index changes.
+/// Manages carousel navigation through unique translations for a lemma.
+/// Arrows cycle through translations (not examples).
+/// Reference is always visible; translation+arrows hidden until revealed.
 /// </summary>
 [Bindable]
 public partial class ExampleCarouselViewModel : ObservableObject
 {
-    List<ExampleEntry> _entries = [];
+    static readonly Random _random = new();
 
-    [ObservableProperty] int _currentExampleIndex;
-    [ObservableProperty] int _totalExamples;
-    [ObservableProperty] string _currentExample = string.Empty;
-    [ObservableProperty] string _currentReference = string.Empty;
+    IReadOnlyList<TranslationEntry> _entries = [];
+
+    [ObservableProperty] int _currentIndex;
+    [ObservableProperty] int _totalTranslations;
     [ObservableProperty] string _currentMeaning = string.Empty;
-    [ObservableProperty] bool _hasMultipleExamples;
+    [ObservableProperty] string _currentReference = string.Empty;
+    [ObservableProperty] string _currentExample = string.Empty;
+    [ObservableProperty] bool _hasMultipleTranslations;
     [ObservableProperty] string _paginationText = string.Empty;
+    [ObservableProperty] bool _isRevealed;
 
     /// <summary>
-    /// Initialize carousel with all examples from all words under a lemma.
+    /// Initialize carousel with translations from all words under a lemma.
+    /// Picks a random starting translation.
     /// </summary>
     public void Initialize(ILemma lemma)
     {
-        _entries = BuildExampleEntries(lemma.Words).ToList();
+        _entries = TranslationEntry.BuildFromLemma(lemma);
 
-        TotalExamples = _entries.Count;
-        HasMultipleExamples = TotalExamples > 1;
-        CurrentExampleIndex = 0;
+        TotalTranslations = _entries.Count;
+        HasMultipleTranslations = TotalTranslations > 1;
+
+        // Pick random starting translation
+        CurrentIndex = TotalTranslations > 1 ? _random.Next(TotalTranslations) : 0;
 
         UpdateCurrentDisplay();
-    }
-
-    static IEnumerable<ExampleEntry> BuildExampleEntries(IReadOnlyList<IWord> words)
-    {
-        foreach (var word in words)
-        {
-            if (!string.IsNullOrEmpty(word.Example1))
-                yield return new ExampleEntry(word, 0);
-            if (!string.IsNullOrEmpty(word.Example2))
-                yield return new ExampleEntry(word, 1);
-        }
     }
 
     void UpdateCurrentDisplay()
     {
         if (_entries.Count == 0)
         {
-            CurrentExample = string.Empty;
-            CurrentReference = string.Empty;
             CurrentMeaning = string.Empty;
+            CurrentReference = string.Empty;
+            CurrentExample = string.Empty;
             PaginationText = string.Empty;
             return;
         }
 
-        var entry = _entries[CurrentExampleIndex];
-        CurrentExample = entry.Example;
-        CurrentReference = entry.Reference;
-        CurrentMeaning = entry.Meaning ?? string.Empty;
-        PaginationText = $"{CurrentExampleIndex + 1} of {TotalExamples}";
+        var entry = _entries[CurrentIndex];
+        CurrentMeaning = entry.Meaning;
+        CurrentReference = entry.CurrentExample.Reference;
+        CurrentExample = entry.CurrentExample.Example;
+        PaginationText = $"{CurrentIndex + 1} of {TotalTranslations}";
     }
 
     [RelayCommand]
     void Previous()
     {
         if (_entries.Count == 0) return;
-        CurrentExampleIndex = (CurrentExampleIndex - 1 + _entries.Count) % _entries.Count;
+        CurrentIndex = (CurrentIndex - 1 + _entries.Count) % _entries.Count;
+        // Shuffle reference for the new translation
+        _entries[CurrentIndex].ShuffleReference();
         UpdateCurrentDisplay();
     }
 
@@ -72,22 +70,30 @@ public partial class ExampleCarouselViewModel : ObservableObject
     void Next()
     {
         if (_entries.Count == 0) return;
-        CurrentExampleIndex = (CurrentExampleIndex + 1) % _entries.Count;
+        CurrentIndex = (CurrentIndex + 1) % _entries.Count;
+        // Shuffle reference for the new translation
+        _entries[CurrentIndex].ShuffleReference();
         UpdateCurrentDisplay();
     }
 
     /// <summary>
     /// Gets the current word (for inflection generation).
     /// </summary>
-    public IWord? CurrentWord => _entries.Count > 0 ? _entries[CurrentExampleIndex].Word : null;
+    public IWord? CurrentWord => _entries.Count > 0 ? _entries[CurrentIndex].CurrentExample.Word : null;
 
     /// <summary>
-    /// Reset to first example.
+    /// Reset with a new random translation and hide the answer.
     /// </summary>
     public void Reset()
     {
-        CurrentExampleIndex = 0;
-        if (_entries.Count > 0)
-            UpdateCurrentDisplay();
+        IsRevealed = false;
+
+        if (_entries.Count == 0) return;
+
+        // Pick new random translation
+        CurrentIndex = _entries.Count > 1 ? _random.Next(_entries.Count) : 0;
+        // Shuffle reference for the selected translation
+        _entries[CurrentIndex].ShuffleReference();
+        UpdateCurrentDisplay();
     }
 }

@@ -8,7 +8,7 @@ A cross-platform Pali language learning app designed to train noun declensions a
 - macOS 10.15+ (Catalina)
 - Linux ([.NET-supported distros](https://github.com/dotnet/core/blob/main/release-notes/10.0/supported-os.md#linux))
 - Android 7+ (Nougat)
-- iOS 12.2+ (iPhone & iPad)
+- iOS 15+ (iPhone & iPad)
 
 This is work in progress, with the aim to be published on all the platforms.
 

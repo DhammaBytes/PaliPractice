@@ -116,6 +116,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     void RevealAnswer()
     {
         Flashcard.Reveal();
+        ExampleCarousel.IsRevealed = true;
         Logger.LogDebug("Answer revealed: {Form}", Flashcard.Answer);
     }
 

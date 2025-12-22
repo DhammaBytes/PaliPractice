@@ -98,18 +98,18 @@ public static class PracticeLayoutHelper
         elements.CardBorder = cardBorder;
 
         // Build content area
+        // Layout: fixed top spacing, card, translation, example, dynamic bottom spacing
         var contentArea = new Grid()
-            .RowDefinitions("*,Auto,*,Auto,Auto,Auto")
+            .RowDefinitions("16,Auto,Auto,Auto,*")
             .MaxWidth(LayoutConstants.ContentMaxWidth)
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Padding(LayoutConstants.Spacing.ContentPaddingTall, 0)
             .Children(
-                new Border().Grid(row: 0),
+                new Border().Grid(row: 0), // Fixed top spacing
                 cardBorder.Grid(row: 1),
-                new Border().Grid(row: 2),
-                TranslationDisplay.Build(config.CarouselPath, config.IsRevealedPath).Grid(row: 3),
-                ExampleSection.Build(config.CarouselPath).Margin(0, 12, 0, 0).Grid(row: 4),
-                CarouselPaging.Build(config.CarouselPath).Margin(0, 8, 0, 0).Grid(row: 5)
+                TranslationDisplay.Build(config.CarouselPath, config.IsRevealedPath).Margin(0, 12, 0, 0).Grid(row: 2),
+                ExampleSection.Build(config.CarouselPath).Margin(0, 8, 0, 0).Grid(row: 3),
+                new Border().Grid(row: 4) // Dynamic bottom spacing
             );
         elements.ContentArea = contentArea;
 
@@ -281,7 +281,7 @@ public static class PracticeLayoutHelper
         }
 
         var badgePadding = HeightResponsiveHelper.GetBadgePadding(heightClass);
-        var badgeFontSize = HeightResponsiveHelper.GetBadgeFontSize(heightClass);
+        var badgeFontSize = HeightResponsiveHelper.GetBadgeFontSize(heightClass); 
 
         foreach (var border in elements.BadgeBorders)
         {

@@ -41,8 +41,8 @@
         <!-- Android 7 (API 24) covers 99% of devices in 2026 according to Google -->
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24</SupportedOSPlatformVersion>
 
-        <!-- iOS 12 is the max version for iPhone 5s/6, old iPads, 12.2 is the minimum for .NET 10 -->
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">12.2</SupportedOSPlatformVersion>
+        <!-- iOS 15 is the max version for iPhone 6s/SE, old iPads -->
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
     </PropertyGroup>
 
     <ItemGroup>

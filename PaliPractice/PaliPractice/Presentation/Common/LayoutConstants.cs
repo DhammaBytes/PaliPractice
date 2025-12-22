@@ -4,6 +4,7 @@ public static class LayoutConstants
 {
     // Width constraints
     public const double ContentMaxWidth = 450;
+    public const double ReferenceMaxWidth = ContentMaxWidth * 0.8;
 
     // Height constraints
     public const double ContentMaxHeight = 900;

@@ -66,23 +66,24 @@ public static class PracticeNavigation
     static SquircleButton CreateRevealSquircleButton<TDC>(Expression<Func<TDC, ICommand>> commandPath)
     {
         var button = new SquircleButton()
-            .HorizontalAlignment(HorizontalAlignment.Center)
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Fill(ThemeResource.Get<Brush>("PrimaryBrush"))
             .RadiusMode(SquircleRadiusMode.ButtonSmall)
-            .Padding(32, 16);
+            .Padding(16, 12);
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
         return button
             .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)
+                .HorizontalAlignment(HorizontalAlignment.Center)
                 .Spacing(8)
                 .Children(
                     new FontIcon()
                         .Glyph("\uE7B3") // Eye icon
-                        .FontSize(20)
+                        .FontSize(16)
                         .Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush")),
                     new TextBlock()
                         .Text("Reveal Answer")
-                        .FontSize(18)
+                        .FontSize(16)
                         .Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush"))
                 ));
     }

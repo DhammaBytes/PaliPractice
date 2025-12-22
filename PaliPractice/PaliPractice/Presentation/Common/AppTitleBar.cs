@@ -17,22 +17,7 @@ public static class AppTitleBar
                 .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
                 .Padding(16, 8)
                 .Children(
-                    new Button()
-                        .Content(
-                            new StackPanel()
-                                .Orientation(Orientation.Horizontal)
-                                .Spacing(6)
-                                .Children(
-                                    new FontIcon()
-                                        .Glyph("\uE72B") // Back arrow
-                                        .FontSize(16),
-                                    new TextBlock()
-                                        .Text("Back")
-                                        .VerticalAlignment(VerticalAlignment.Center)
-                                )
-                        )
-                        .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-                        .Command(goBackCommand)
+                    CreateBackButton(goBackCommand)
                         .Grid(column: 0),
                     new TextBlock()
                         .Text(title)
@@ -59,22 +44,7 @@ public static class AppTitleBar
                 .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
                 .Padding(16, 8)
                 .Children(
-                    new Button()
-                        .Content(
-                            new StackPanel()
-                                .Orientation(Orientation.Horizontal)
-                                .Spacing(6)
-                                .Children(
-                                    new FontIcon()
-                                        .Glyph("\uE72B") // Back arrow
-                                        .FontSize(16),
-                                    new TextBlock()
-                                        .Text("Back")
-                                        .VerticalAlignment(VerticalAlignment.Center)
-                                )
-                        )
-                        .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-                        .Command(goBackCommand)
+                    CreateBackButton(goBackCommand)
                         .Grid(column: 0),
                     new TextBlock()
                         .Text(title)
@@ -83,23 +53,50 @@ public static class AppTitleBar
                         .HorizontalAlignment(HorizontalAlignment.Center)
                         .VerticalAlignment(VerticalAlignment.Center)
                         .Grid(column: 1),
-                    new Button()
-                        .Content(
-                            new StackPanel()
-                                .Orientation(Orientation.Horizontal)
-                                .Spacing(6)
-                                .Children(
-                                    new FontIcon()
-                                        .Glyph("\uE81C") // History/Clock icon
-                                        .FontSize(16),
-                                    new TextBlock()
-                                        .Text("History")
-                                        .VerticalAlignment(VerticalAlignment.Center)
-                                )
-                        )
-                        .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-                        .Command(goToHistoryCommand)
+                    CreateHistoryButton(goToHistoryCommand)
                         .Grid(column: 2)
                 );
+    }
+
+    static SquircleButton CreateBackButton<TDC>(Expression<Func<TDC, ICommand>> commandPath)
+    {
+        var button = new SquircleButton()
+            .Fill(ThemeResource.Get<Brush>("BackgroundBrush"))
+            .RadiusMode(SquircleRadiusMode.ButtonSmall)
+            .Padding(12, 8);
+        button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
+        return button
+            .Child(new StackPanel()
+                .Orientation(Orientation.Horizontal)
+                .Spacing(6)
+                .Children(
+                    new FontIcon()
+                        .Glyph("\uE72B") // Back arrow
+                        .FontSize(16),
+                    new TextBlock()
+                        .Text("Back")
+                        .VerticalAlignment(VerticalAlignment.Center)
+                ));
+    }
+
+    static SquircleButton CreateHistoryButton<TDC>(Expression<Func<TDC, ICommand>> commandPath)
+    {
+        var button = new SquircleButton()
+            .Fill(ThemeResource.Get<Brush>("BackgroundBrush"))
+            .RadiusMode(SquircleRadiusMode.ButtonSmall)
+            .Padding(12, 8);
+        button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
+        return button
+            .Child(new StackPanel()
+                .Orientation(Orientation.Horizontal)
+                .Spacing(6)
+                .Children(
+                    new FontIcon()
+                        .Glyph("\uE81C") // History/Clock icon
+                        .FontSize(16),
+                    new TextBlock()
+                        .Text("History")
+                        .VerticalAlignment(VerticalAlignment.Center)
+                ));
     }
 }

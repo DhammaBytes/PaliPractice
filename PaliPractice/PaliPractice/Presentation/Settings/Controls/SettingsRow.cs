@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
+using static PaliPractice.Presentation.Common.TextHelpers;
 
 namespace PaliPractice.Presentation.Settings.Controls;
 
@@ -24,7 +25,7 @@ public static class SettingsRow
             .Padding(16, 12)
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
             .Children(
-                new TextBlock()
+                RegularText()
                     .Text(label)
                     .FontSize(16)
                     .VerticalAlignment(VerticalAlignment.Center)
@@ -45,7 +46,7 @@ public static class SettingsRow
                 new Grid()
                     .ColumnDefinitions("*,Auto")
                     .Children(
-                        new TextBlock()
+                        RegularText()
                             .Text(label)
                             .FontSize(16)
                             .VerticalAlignment(VerticalAlignment.Center)
@@ -72,7 +73,7 @@ public static class SettingsRow
             .Padding(16, 12)
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
             .Children(
-                new TextBlock()
+                RegularText()
                     .Text(label)
                     .FontSize(16)
                     .VerticalAlignment(VerticalAlignment.Center)

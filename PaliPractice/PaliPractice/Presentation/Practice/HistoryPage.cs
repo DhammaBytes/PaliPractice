@@ -1,5 +1,6 @@
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Practice.ViewModels;
+using static PaliPractice.Presentation.Common.TextHelpers;
 
 namespace PaliPractice.Presentation.Practice;
 
@@ -29,8 +30,8 @@ public sealed partial class HistoryPage : Page
                                 .Padding(16, 12)
                                 .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
                                 .Children(
-                                    // Column 0: Form text
-                                    new TextBlock()
+                                    // Column 0: Form text (Pāli word)
+                                    PaliText()
                                         .Text(() => record.Form)
                                         .FontSize(16)
                                         .VerticalAlignment(VerticalAlignment.Center)

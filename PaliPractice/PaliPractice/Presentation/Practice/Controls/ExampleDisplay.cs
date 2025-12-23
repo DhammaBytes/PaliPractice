@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
-using PaliPractice.Themes;
+using static PaliPractice.Presentation.Common.TextHelpers;
 
 namespace PaliPractice.Presentation.Practice.Controls;
 
@@ -20,20 +20,18 @@ public static class ExampleSection
             .Scope(carouselPath)
             .Children(
                 // Example text (with <b>bold</b> support)
-                new TextBlock()
+                PaliText()
                     .HtmlTextWithin<ViewModels.ExampleCarouselViewModel>(c => c.CurrentExample)
                     .FontSize(14)
-                    .FontFamily(FontPaths.LibertinusSans)
                     .TextWrapping(TextWrapping.Wrap)
                     .TextAlignment(TextAlignment.Center)
                     .HorizontalAlignment(HorizontalAlignment.Center)
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
 
                 // Reference text (always visible)
-                new TextBlock()
+                PaliText()
                     .TextWithin<ViewModels.ExampleCarouselViewModel>(c => c.CurrentReference)
                     .FontSize(12)
-                    .FontFamily(FontPaths.LibertinusSans)
                     .TextWrapping(TextWrapping.Wrap)
                     .TextAlignment(TextAlignment.Center)
                     .HorizontalAlignment(HorizontalAlignment.Center)

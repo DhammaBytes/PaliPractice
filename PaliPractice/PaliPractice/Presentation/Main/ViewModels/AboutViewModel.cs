@@ -11,7 +11,17 @@ public partial class AboutViewModel : ObservableObject
     }
 
     public string AppName => $"Pāli Practice v{Version}";
-    string Version => "1.0";
+
+    static string Version
+    {
+        get
+        {
+            var v = Package.Current.Id.Version;
+            return v.Build > 0
+                ? $"{v.Major}.{v.Minor}.{v.Build}"
+                : $"{v.Major}.{v.Minor}";
+        }
+    }
 
     public string Description => """
         An app for practicing Pāli grammar using spaced repetition, a method based on repeated review over time
@@ -22,12 +32,15 @@ public partial class AboutViewModel : ObservableObject
         Word and grammar data are sourced from the Digital Pāli Dictionary (https://dpdict.net)
         """;
 
+    public string IconTitle => "App Icon";
     public string IconDescription => """
-        The app's icon shows the quail from SN 47:6, the Sakuṇagghi Sutta ("The Hawk"), hiding behind rocks in its ancestral territory – a newly plowed field with clumps of earth all turned up.
+        The icon shows the quail from SN 47:6, the Sakuṇagghi Sutta ("The Hawk"), hiding behind rocks in its ancestral territory – a newly plowed field with clumps of earth all turned up.
 
         "Wander, monks, in what is your proper range, your own ancestral territory. In one who wanders in what is his proper range, his own ancestral territory, Māra gains no opening, Māra gains no foothold. And what, for a monk, is his proper range, his own ancestral territory? The four establishings of mindfulness."
 
         You can read the full sutta here: https://www.dhammatalks.org/suttas/SN/SN47_6.html
+
+        Illustration by Irina Mir (@irmirx)
         """;
 
     public string LicenseTitle => "License";
@@ -43,9 +56,7 @@ public partial class AboutViewModel : ObservableObject
 
     public string FontsTitle => "Fonts";
     public string FontsText => """
-        Libertinus Sans is used for Pāli because its serif-like pronounced rhythm and differentiated lowercase characters help with letter-by-letter decoding of unfamiliar words.
-
-        Source Sans 3 is used for UI elements.
+        Libertinus Sans is used for Pāli because its serif-like pronounced rhythm and differentiated lowercase characters help with letter-by-letter decoding of unfamiliar words. Source Sans 3 is used for the rest of the texts and UI elements.
 
         Both fonts are licensed under the SIL Open Font License (OFL 1.1).
         """;

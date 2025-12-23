@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
+using static PaliPractice.Presentation.Common.TextHelpers;
 
 namespace PaliPractice.Presentation.Common;
 
@@ -19,7 +20,7 @@ public static class AppTitleBar
                 .Children(
                     CreateBackButton(goBackCommand)
                         .Grid(column: 0),
-                    new TextBlock()
+                    RegularText()
                         .Text(title)
                         .FontSize(20)
                         .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
@@ -46,7 +47,7 @@ public static class AppTitleBar
                 .Children(
                     CreateBackButton(goBackCommand)
                         .Grid(column: 0),
-                    new TextBlock()
+                    RegularText()
                         .Text(title)
                         .FontSize(20)
                         .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
@@ -73,7 +74,7 @@ public static class AppTitleBar
                     new FontIcon()
                         .Glyph("\uE72B") // Back arrow
                         .FontSize(16),
-                    new TextBlock()
+                    RegularText()
                         .Text("Back")
                         .VerticalAlignment(VerticalAlignment.Center)
                 ));
@@ -94,7 +95,7 @@ public static class AppTitleBar
                     new FontIcon()
                         .Glyph("\uE81C") // History/Clock icon
                         .FontSize(16),
-                    new TextBlock()
+                    RegularText()
                         .Text("History")
                         .VerticalAlignment(VerticalAlignment.Center)
                 ));

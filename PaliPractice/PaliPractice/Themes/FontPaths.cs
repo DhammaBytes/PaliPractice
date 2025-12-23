@@ -17,5 +17,5 @@ public static class FontPaths
     /// Source Sans 3 - used for UI elements.
     /// Weights: Regular (400), Italic (400i), Medium (500), SemiBold (600), Bold (700)
     /// </summary>
-    public const string SourceSans3 = "ms-appx:///Assets/Fonts/SourceSans3.ttf";
+    public const string SourceSans = "ms-appx:///Assets/Fonts/SourceSans3.ttf";
 }

@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
+using static PaliPractice.Presentation.Common.TextHelpers;
 
 namespace PaliPractice.Presentation.Practice.Controls;
 
@@ -48,7 +49,7 @@ public static class TranslationDisplay
                                     .Scope(carouselPath)
                                     .Children(
                                         // Placeholder "…" shown when not revealed
-                                        new TextBlock()
+                                        RegularText()
                                             .Text("…")
                                             .FontSize(24)
                                             .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
@@ -65,7 +66,7 @@ public static class TranslationDisplay
                                             .VisibilityWithin<StackPanel, ViewModels.ExampleCarouselViewModel>(c => c.IsRevealed)
                                             .Children(
                                                 // Translation text
-                                                new TextBlock()
+                                                RegularText()
                                                     .TextWithin<ViewModels.ExampleCarouselViewModel>(c => c.CurrentMeaning)
                                                     .FontSize(16)
                                                     .FontStyle(Windows.UI.Text.FontStyle.Italic)
@@ -76,7 +77,7 @@ public static class TranslationDisplay
                                                     .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush")),
 
                                                 // Pagination below translation
-                                                new TextBlock()
+                                                RegularText()
                                                     .TextWithin<ViewModels.ExampleCarouselViewModel>(c => c.PaginationText)
                                                     .FontSize(11)
                                                     .TextAlignment(TextAlignment.Center)

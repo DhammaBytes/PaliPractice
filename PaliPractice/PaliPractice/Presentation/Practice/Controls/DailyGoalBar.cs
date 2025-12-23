@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
+using static PaliPractice.Presentation.Common.TextHelpers;
 
 namespace PaliPractice.Presentation.Practice.Controls;
 
@@ -15,12 +16,12 @@ public static class DailyGoalBar
             .Child(
                 new StackPanel().Spacing(8).Children(
                     new Grid().ColumnDefinitions("*,Auto").Children(
-                        new TextBlock()
+                        RegularText()
                             .Text("Daily goal")
                             .FontSize(14)
                             .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                             .Grid(column: 0),
-                        new TextBlock()
+                        RegularText()
                             .Text(dailyGoalText)
                             .FontSize(14)
                             .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))

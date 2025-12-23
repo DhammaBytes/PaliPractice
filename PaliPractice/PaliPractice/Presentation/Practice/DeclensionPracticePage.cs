@@ -1,6 +1,7 @@
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Practice.Controls;
+using static PaliPractice.Presentation.Common.TextHelpers;
 
 namespace PaliPractice.Presentation.Practice;
 
@@ -51,7 +52,7 @@ public sealed partial class DeclensionPracticePage : Page
                 vm => vm.NumberGlyph, vm => vm.NumberLabel, vm => vm.NumberBrush)
         );
 
-        var hint = new TextBlock()
+        var hint = RegularText()
             .Text<ViewModels.DeclensionPracticeViewModel>(vm => vm.CaseHint)
             .FontSize(14)
             .FontStyle(Windows.UI.Text.FontStyle.Italic)

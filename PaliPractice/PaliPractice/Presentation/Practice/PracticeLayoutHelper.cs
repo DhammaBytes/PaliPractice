@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Practice.Controls;
-using PaliPractice.Themes;
+using static PaliPractice.Presentation.Common.TextHelpers;
 using ExampleCarouselViewModel = PaliPractice.Presentation.Practice.Controls.ViewModels.ExampleCarouselViewModel;
 using WordCardViewModel = PaliPractice.Presentation.Practice.Controls.ViewModels.WordCardViewModel;
 
@@ -150,7 +150,7 @@ public static class PracticeLayoutHelper
             .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
             .GlyphWithVisibility<TVM>(glyphPath);
 
-        var text = new TextBlock()
+        var text = RegularText()
             .FontSize(LayoutConstants.Fonts.BadgeSizeTall)
             .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
             .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
@@ -195,18 +195,16 @@ public static class PracticeLayoutHelper
         Expression<Func<TVM, string>> alternativeFormsPath,
         Expression<Func<TVM, bool>> isRevealedPath)
     {
-        var answerTextBlock = new TextBlock()
+        var answerTextBlock = PaliText()
             .FontSize(LayoutConstants.Fonts.AnswerSizeTall)
-            .FontFamily(FontPaths.LibertinusSans)
             .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .TextAlignment(TextAlignment.Center)
             .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
             .Text<TVM>(answerPath);
 
-        var alternativeFormsTextBlock = new TextBlock()
+        var alternativeFormsTextBlock = PaliText()
             .FontSize(20)
-            .FontFamily(FontPaths.LibertinusSans)
             .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .TextAlignment(TextAlignment.Center)

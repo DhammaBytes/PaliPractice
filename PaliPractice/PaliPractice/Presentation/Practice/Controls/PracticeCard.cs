@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
-using PaliPractice.Themes;
+using static PaliPractice.Presentation.Common.TextHelpers;
 
 namespace PaliPractice.Presentation.Practice.Controls;
 
@@ -26,12 +26,12 @@ public static class CardHeader
                             .Orientation(Orientation.Horizontal)
                             .Spacing(4)
                             .Children(
-                                new TextBlock()
+                                RegularText()
                                     .Text(rankPrefix)
                                     .FontSize(12)
                                     .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
                                     .Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush")),
-                                new TextBlock()
+                                RegularText()
                                     .Scope(cardPath)
                                     .TextWithin<ViewModels.WordCardViewModel>(c => c.RankText)
                                     .FontSize(12)
@@ -40,7 +40,7 @@ public static class CardHeader
                             )
                     )
                     .Grid(column: 0),
-                new TextBlock()
+                RegularText()
                     .Scope(cardPath)
                     .TextWithin<ViewModels.WordCardViewModel>(c => c.AnkiState)
                     .FontSize(14)
@@ -58,11 +58,10 @@ public static class CardWord
 {
     public static TextBlock Build<TDC>(Expression<Func<TDC, ViewModels.WordCardViewModel>> cardPath)
     {
-        return new TextBlock()
+        return PaliText()
             .Scope(cardPath)
             .TextWithin<ViewModels.WordCardViewModel>(c => c.CurrentWord)
             .FontSize(48)
-            .FontFamily(FontPaths.LibertinusSans)
             .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .TextAlignment(TextAlignment.Center)

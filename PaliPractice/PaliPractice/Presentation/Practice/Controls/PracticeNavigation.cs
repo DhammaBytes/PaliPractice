@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
+using static PaliPractice.Presentation.Common.TextHelpers;
 
 namespace PaliPractice.Presentation.Practice.Controls;
 
@@ -81,7 +82,7 @@ public static class PracticeNavigation
                         .Glyph("\uE7B3") // Eye icon
                         .FontSize(16)
                         .Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush")),
-                    new TextBlock()
+                    RegularText()
                         .Text("Reveal Answer")
                         .FontSize(16)
                         .Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush"))
@@ -106,7 +107,7 @@ public static class PracticeNavigation
                 .Spacing(8)
                 .Children(
                     new FontIcon().Glyph(glyph).FontSize(16),
-                    new TextBlock().Text(text).FontSize(16)
+                    RegularText().Text(text).FontSize(16)
                 ));
     }
 }

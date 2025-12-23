@@ -1,5 +1,6 @@
+using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Main.ViewModels;
-using PaliPractice.Themes;
+using static PaliPractice.Presentation.Common.TextHelpers;
 
 namespace PaliPractice.Presentation.Main;
 
@@ -34,9 +35,8 @@ public sealed partial class StartPage : Page
                                         .HorizontalAlignment(HorizontalAlignment.Center),
 
                                     // App title
-                                    new TextBlock()
+                                    PaliText()
                                         .Text("Pāli Practice")
-                                        .FontFamily(FontPaths.LibertinusSans)
                                         .FontSize(36)
                                         .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
                                         .HorizontalAlignment(HorizontalAlignment.Center)
@@ -64,11 +64,11 @@ public sealed partial class StartPage : Page
                                                             .FontSize(24),
                                                         new StackPanel()
                                                             .Children(
-                                                                new TextBlock()
+                                                                RegularText()
                                                                     .Text("Declension Practice")
                                                                     .FontSize(18)
                                                                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold),
-                                                                new TextBlock()
+                                                                RegularText()
                                                                     .Text("Nouns and cases")
                                                                     .FontSize(14)
                                                                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
@@ -92,11 +92,11 @@ public sealed partial class StartPage : Page
                                                             .FontSize(24),
                                                         new StackPanel()
                                                             .Children(
-                                                                new TextBlock()
+                                                                RegularText()
                                                                     .Text("Conjugation Practice")
                                                                     .FontSize(18)
                                                                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold),
-                                                                new TextBlock()
+                                                                RegularText()
                                                                     .Text("Verbs and tenses")
                                                                     .FontSize(14)
                                                                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
@@ -118,7 +118,7 @@ public sealed partial class StartPage : Page
                                                         new FontIcon()
                                                             .Glyph("\uE713")
                                                             .FontSize(24),
-                                                        new TextBlock()
+                                                        RegularText()
                                                             .Text("Settings")
                                                             .FontSize(18)
                                                             .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
@@ -143,7 +143,7 @@ public sealed partial class StartPage : Page
                                                                 new FontIcon()
                                                                     .Glyph("\uE897")
                                                                     .FontSize(20),
-                                                                new TextBlock()
+                                                                RegularText()
                                                                     .Text("Help")
                                                                     .FontSize(16)
                                                                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
@@ -164,7 +164,7 @@ public sealed partial class StartPage : Page
                                                                 new FontIcon()
                                                                     .Glyph("\uE946")
                                                                     .FontSize(20),
-                                                                new TextBlock()
+                                                                RegularText()
                                                                     .Text("About")
                                                                     .FontSize(16)
                                                                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)

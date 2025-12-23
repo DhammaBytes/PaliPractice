@@ -1,6 +1,8 @@
+using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Main.ViewModels;
+using static PaliPractice.Presentation.Common.TextHelpers;
 
 namespace PaliPractice.Presentation.Main;
 
@@ -38,84 +40,27 @@ public sealed partial class AboutPage : Page
                                         .HorizontalAlignment(HorizontalAlignment.Center),
 
                                     // App name with version
-                                    new TextBlock()
+                                    PaliText()
                                         .Text<AboutViewModel>(vm => vm.AppName)
                                         .FontSize(32)
                                         .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
                                         .HorizontalAlignment(HorizontalAlignment.Center)
                                         .Foreground(ThemeResource.Get<Brush>("PrimaryBrush")),
 
-                                    // Description
-                                    new TextBlock()
-                                        .Text<AboutViewModel>(vm => vm.Description)
-                                        .FontSize(16)
-                                        .TextWrapping(TextWrapping.Wrap)
-                                        .TextAlignment(TextAlignment.Center)
-                                        .HorizontalAlignment(HorizontalAlignment.Center)
-                                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
+                                    // Description section (title-less)
+                                    BuildSection<AboutViewModel>(null, vm => vm.Description),
 
-                                    // Icon description
-                                    new TextBlock()
-                                        .Text<AboutViewModel>(vm => vm.IconDescription)
-                                        .FontSize(14)
-                                        .TextWrapping(TextWrapping.Wrap)
-                                        .TextAlignment(TextAlignment.Center)
-                                        .HorizontalAlignment(HorizontalAlignment.Center)
-                                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
-                                        .Opacity(0.8),
+                                    // App Icon section
+                                    BuildSection<AboutViewModel>(vm => vm.IconTitle, vm => vm.IconDescription),
 
                                     // License section
-                                    new Border()
-                                        .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-                                        .CornerRadius(8)
-                                        .Padding(16)
-                                        .Child(
-                                            new StackPanel()
-                                                .Spacing(8)
-                                                .Children(
-                                                    new TextBlock()
-                                                        .Text<AboutViewModel>(vm => vm.LicenseTitle)
-                                                        .FontSize(16)
-                                                        .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                                                        .HorizontalAlignment(HorizontalAlignment.Center)
-                                                        .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush")),
-                                                    new TextBlock()
-                                                        .Text<AboutViewModel>(vm => vm.LicenseText)
-                                                        .FontSize(14)
-                                                        .TextWrapping(TextWrapping.Wrap)
-                                                        .TextAlignment(TextAlignment.Center)
-                                                        .HorizontalAlignment(HorizontalAlignment.Center)
-                                                        .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
-                                                )
-                                        ),
+                                    BuildSection<AboutViewModel>(vm => vm.LicenseTitle, vm => vm.LicenseText),
 
                                     // Fonts section
-                                    new Border()
-                                        .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-                                        .CornerRadius(8)
-                                        .Padding(16)
-                                        .Child(
-                                            new StackPanel()
-                                                .Spacing(8)
-                                                .Children(
-                                                    new TextBlock()
-                                                        .Text<AboutViewModel>(vm => vm.FontsTitle)
-                                                        .FontSize(16)
-                                                        .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                                                        .HorizontalAlignment(HorizontalAlignment.Center)
-                                                        .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush")),
-                                                    new TextBlock()
-                                                        .Text<AboutViewModel>(vm => vm.FontsText)
-                                                        .FontSize(14)
-                                                        .TextWrapping(TextWrapping.Wrap)
-                                                        .TextAlignment(TextAlignment.Center)
-                                                        .HorizontalAlignment(HorizontalAlignment.Center)
-                                                        .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
-                                                )
-                                        ),
+                                    BuildSection<AboutViewModel>(vm => vm.FontsTitle, vm => vm.FontsText),
 
                                     // Blessing
-                                    new TextBlock()
+                                    PaliText()
                                         .Text<AboutViewModel>(vm => vm.Blessing)
                                         .FontSize(16)
                                         .FontStyle(Windows.UI.Text.FontStyle.Italic)
@@ -128,5 +73,47 @@ public sealed partial class AboutPage : Page
                 )
             )
         );
+    }
+
+    /// <summary>
+    /// Builds a section with optional title and content text.
+    /// </summary>
+    static Border BuildSection<TVM>(
+        Expression<Func<TVM, string>>? titlePath,
+        Expression<Func<TVM, string>> contentPath)
+    {
+        var children = new List<UIElement>();
+
+        if (titlePath is not null)
+        {
+            children.Add(
+                RegularText()
+                    .Text(titlePath)
+                    .FontSize(16)
+                    .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+                    .HorizontalAlignment(HorizontalAlignment.Center)
+                    .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
+            );
+        }
+
+        children.Add(
+            RegularText()
+                .Text(contentPath)
+                .FontSize(14)
+                .TextWrapping(TextWrapping.Wrap)
+                .TextAlignment(TextAlignment.Center)
+                .HorizontalAlignment(HorizontalAlignment.Center)
+                .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
+        );
+
+        return new Border()
+            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .CornerRadius(8)
+            .Padding(16)
+            .Child(
+                new StackPanel()
+                    .Spacing(8)
+                    .Children(children.ToArray())
+            );
     }
 }

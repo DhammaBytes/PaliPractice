@@ -1,3 +1,5 @@
+using static PaliPractice.Presentation.Common.TextHelpers;
+
 namespace PaliPractice.Presentation.Settings.Controls;
 
 /// <summary>
@@ -14,7 +16,7 @@ public static class SettingsSection
 
         // Add header
         section.Children.Add(
-            new TextBlock()
+            RegularText()
                 .Text(header)
                 .FontSize(14)
                 .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)

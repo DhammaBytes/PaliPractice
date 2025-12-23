@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Practice.Controls;
+using PaliPractice.Themes;
 using ExampleCarouselViewModel = PaliPractice.Presentation.Practice.Controls.ViewModels.ExampleCarouselViewModel;
 using WordCardViewModel = PaliPractice.Presentation.Practice.Controls.ViewModels.WordCardViewModel;
 
@@ -196,6 +197,7 @@ public static class PracticeLayoutHelper
     {
         var answerTextBlock = new TextBlock()
             .FontSize(LayoutConstants.Fonts.AnswerSizeTall)
+            .FontFamily(FontPaths.LibertinusSans)
             .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .TextAlignment(TextAlignment.Center)
@@ -204,6 +206,7 @@ public static class PracticeLayoutHelper
 
         var alternativeFormsTextBlock = new TextBlock()
             .FontSize(20)
+            .FontFamily(FontPaths.LibertinusSans)
             .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .TextAlignment(TextAlignment.Center)

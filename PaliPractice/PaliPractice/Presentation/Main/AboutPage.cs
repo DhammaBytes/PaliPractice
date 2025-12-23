@@ -89,6 +89,31 @@ public sealed partial class AboutPage : Page
                                                 )
                                         ),
 
+                                    // Fonts section
+                                    new Border()
+                                        .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+                                        .CornerRadius(8)
+                                        .Padding(16)
+                                        .Child(
+                                            new StackPanel()
+                                                .Spacing(8)
+                                                .Children(
+                                                    new TextBlock()
+                                                        .Text<AboutViewModel>(vm => vm.FontsTitle)
+                                                        .FontSize(16)
+                                                        .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+                                                        .HorizontalAlignment(HorizontalAlignment.Center)
+                                                        .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush")),
+                                                    new TextBlock()
+                                                        .Text<AboutViewModel>(vm => vm.FontsText)
+                                                        .FontSize(14)
+                                                        .TextWrapping(TextWrapping.Wrap)
+                                                        .TextAlignment(TextAlignment.Center)
+                                                        .HorizontalAlignment(HorizontalAlignment.Center)
+                                                        .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
+                                                )
+                                        ),
+
                                     // Blessing
                                     new TextBlock()
                                         .Text<AboutViewModel>(vm => vm.Blessing)

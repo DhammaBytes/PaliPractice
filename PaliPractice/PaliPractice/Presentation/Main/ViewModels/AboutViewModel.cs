@@ -41,6 +41,15 @@ public partial class AboutViewModel : ObservableObject
         Source code: github.com/DhammaBytes/PaliPractice
         """;
 
+    public string FontsTitle => "Fonts";
+    public string FontsText => """
+        Libertinus Sans is used for Pāli because its serif-like pronounced rhythm and differentiated lowercase characters help with letter-by-letter decoding of unfamiliar words.
+
+        Source Sans 3 is used for UI elements.
+
+        Both fonts are licensed under the SIL Open Font License (OFL 1.1).
+        """;
+
     // Pāli blessing - display in italic
     public string Blessing => """
                               Sabbe sattā sukhitā hontu

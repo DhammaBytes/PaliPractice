@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
+using PaliPractice.Themes;
 
 namespace PaliPractice.Presentation.Practice.Controls;
 
@@ -22,6 +23,7 @@ public static class ExampleSection
                 new TextBlock()
                     .HtmlTextWithin<ViewModels.ExampleCarouselViewModel>(c => c.CurrentExample)
                     .FontSize(14)
+                    .FontFamily(FontPaths.LibertinusSans)
                     .TextWrapping(TextWrapping.Wrap)
                     .TextAlignment(TextAlignment.Center)
                     .HorizontalAlignment(HorizontalAlignment.Center)
@@ -31,6 +33,7 @@ public static class ExampleSection
                 new TextBlock()
                     .TextWithin<ViewModels.ExampleCarouselViewModel>(c => c.CurrentReference)
                     .FontSize(12)
+                    .FontFamily(FontPaths.LibertinusSans)
                     .TextWrapping(TextWrapping.Wrap)
                     .TextAlignment(TextAlignment.Center)
                     .HorizontalAlignment(HorizontalAlignment.Center)

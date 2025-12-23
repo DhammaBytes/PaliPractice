@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
+using PaliPractice.Themes;
 
 namespace PaliPractice.Presentation.Practice.Controls;
 
@@ -61,6 +62,7 @@ public static class CardWord
             .Scope(cardPath)
             .TextWithin<ViewModels.WordCardViewModel>(c => c.CurrentWord)
             .FontSize(48)
+            .FontFamily(FontPaths.LibertinusSans)
             .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .TextAlignment(TextAlignment.Center)

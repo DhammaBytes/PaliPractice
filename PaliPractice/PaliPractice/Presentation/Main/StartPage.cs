@@ -1,4 +1,5 @@
 using PaliPractice.Presentation.Main.ViewModels;
+using PaliPractice.Themes;
 
 namespace PaliPractice.Presentation.Main;
 
@@ -35,6 +36,7 @@ public sealed partial class StartPage : Page
                                     // App title
                                     new TextBlock()
                                         .Text("Pāli Practice")
+                                        .FontFamily(FontPaths.LibertinusSans)
                                         .FontSize(36)
                                         .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
                                         .HorizontalAlignment(HorizontalAlignment.Center)

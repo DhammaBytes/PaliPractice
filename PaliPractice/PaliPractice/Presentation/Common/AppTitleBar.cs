@@ -12,22 +12,10 @@ public static class AppTitleBar
     /// </summary>
     public static Grid Build<TDC>(string title, Expression<Func<TDC, ICommand>> goBackCommand)
     {
-        return
-            new Grid()
-                .ColumnDefinitions("Auto,*,Auto")
-                .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-                .Padding(16, 8)
-                .Children(
-                    CreateBackButton(goBackCommand)
-                        .Grid(column: 0),
-                    RegularText()
-                        .Text(title)
-                        .FontSize(20)
-                        .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                        .HorizontalAlignment(HorizontalAlignment.Center)
-                        .VerticalAlignment(VerticalAlignment.Center)
-                        .Grid(column: 1)
-                );
+        return BuildCore(
+            title,
+            CreateBackButton(goBackCommand),
+            rightButton: null);
     }
 
     /// <summary>
@@ -39,24 +27,40 @@ public static class AppTitleBar
         Expression<Func<TDC, ICommand>> goBackCommand,
         Expression<Func<TDC, ICommand>> goToHistoryCommand)
     {
-        return
-            new Grid()
-                .ColumnDefinitions("Auto,*,Auto")
-                .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-                .Padding(16, 8)
-                .Children(
-                    CreateBackButton(goBackCommand)
-                        .Grid(column: 0),
-                    RegularText()
-                        .Text(title)
-                        .FontSize(20)
-                        .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                        .HorizontalAlignment(HorizontalAlignment.Center)
-                        .VerticalAlignment(VerticalAlignment.Center)
-                        .Grid(column: 1),
-                    CreateHistoryButton(goToHistoryCommand)
-                        .Grid(column: 2)
-                );
+        return BuildCore(
+            title,
+            CreateBackButton(goBackCommand),
+            CreateHistoryButton(goToHistoryCommand));
+    }
+
+    /// <summary>
+    /// Core builder: uses layered Grid to truly center title regardless of button widths.
+    /// </summary>
+    static Grid BuildCore(string title, SquircleButton leftButton, SquircleButton? rightButton)
+    {
+        // Title layer: spans full width, centered
+        var titleLayer = RegularText()
+            .Text(title)
+            .FontSize(19)
+            .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
+            .HorizontalAlignment(HorizontalAlignment.Center)
+            .VerticalAlignment(VerticalAlignment.Center);
+
+        // Buttons layer: left and right edges
+        var buttonsLayer = new Grid()
+            .ColumnDefinitions("Auto,*,Auto")
+            .Children(
+                leftButton.Grid(column: 0)
+            );
+
+        if (rightButton is not null)
+            buttonsLayer.Children(rightButton.Grid(column: 2));
+
+        // Stack layers: title behind, buttons on top
+        return new Grid()
+            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .Padding(16, 8)
+            .Children(titleLayer, buttonsLayer);
     }
 
     static SquircleButton CreateBackButton<TDC>(Expression<Func<TDC, ICommand>> commandPath)

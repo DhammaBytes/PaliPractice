@@ -53,11 +53,15 @@ public sealed partial class DeclensionPracticePage : Page
 
         var hint = RegularText()
             .Text<ViewModels.DeclensionPracticeViewModel>(vm => vm.CaseHint)
-            .FontSize(14)
+            .FontSize(LayoutConstants.PracticeFontSizes.Tall.BadgeHint)
             .FontStyle(Windows.UI.Text.FontStyle.Italic)
             .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
             .HorizontalAlignment(HorizontalAlignment.Center)
-            .TextAlignment(TextAlignment.Center);
+            .TextAlignment(TextAlignment.Center)
+            .Margin(0, -4, 0, 0); // Reduce top spacing by ~30%
+
+        // Track hint for responsive sizing
+        elements.BadgeHintTextBlock = hint;
 
         return PracticePageBuilder.BuildPage(config, badges, hint, elements);
     }

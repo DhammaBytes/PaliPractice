@@ -1,4 +1,5 @@
 using PaliPractice.Models.Words;
+using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Practice.ViewModels.Common.Entries;
 
 namespace PaliPractice.Presentation.Practice.ViewModels.Common;
@@ -53,7 +54,7 @@ public partial class ExampleCarouselViewModel : ObservableObject
         }
 
         var entry = _entries[CurrentIndex];
-        CurrentMeaning = entry.Meaning;
+        CurrentMeaning = TextBalancer.Balance(entry.Meaning);
         CurrentReference = entry.CurrentExample.Reference;
         CurrentExample = entry.CurrentExample.Example;
         PaginationText = $"{CurrentIndex + 1} of {TotalTranslations}";

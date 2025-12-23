@@ -99,36 +99,14 @@ public static class HeightResponsiveHelper
     };
 
     /// <summary>
-    /// Gets the main word font size for the given height class.
+    /// Gets the complete font size configuration for the given height class.
     /// </summary>
-    public static double GetWordFontSize(HeightClass heightClass) => heightClass switch
+    public static LayoutConstants.PracticeFontSizes GetFontSizes(HeightClass heightClass) => heightClass switch
     {
-        HeightClass.Tall => LayoutConstants.Fonts.WordSizeTall,
-        HeightClass.Medium => LayoutConstants.Fonts.WordSizeMedium,
-        HeightClass.Short => LayoutConstants.Fonts.WordSizeShort,
-        _ => LayoutConstants.Fonts.WordSizeMinimum
-    };
-
-    /// <summary>
-    /// Gets the answer font size for the given height class.
-    /// </summary>
-    public static double GetAnswerFontSize(HeightClass heightClass) => heightClass switch
-    {
-        HeightClass.Tall => LayoutConstants.Fonts.AnswerSizeTall,
-        HeightClass.Medium => LayoutConstants.Fonts.AnswerSizeMedium,
-        HeightClass.Short => LayoutConstants.Fonts.AnswerSizeShort,
-        _ => LayoutConstants.Fonts.AnswerSizeMinimum
-    };
-
-    /// <summary>
-    /// Gets the badge font size for the given height class.
-    /// </summary>
-    public static double GetBadgeFontSize(HeightClass heightClass) => heightClass switch
-    {
-        HeightClass.Tall => LayoutConstants.Fonts.BadgeSizeTall,
-        HeightClass.Medium => LayoutConstants.Fonts.BadgeSizeMedium,
-        HeightClass.Short => LayoutConstants.Fonts.BadgeSizeShort,
-        _ => LayoutConstants.Fonts.BadgeSizeMinimum
+        HeightClass.Tall => LayoutConstants.PracticeFontSizes.Tall,
+        HeightClass.Medium => LayoutConstants.PracticeFontSizes.Medium,
+        HeightClass.Short => LayoutConstants.PracticeFontSizes.Short,
+        _ => LayoutConstants.PracticeFontSizes.Minimum
     };
 
     /// <summary>

@@ -19,6 +19,75 @@ public static class LayoutConstants
     public const double HeightShort = 600;
 
     /// <summary>
+    /// Centralized font size configuration for practice pages.
+    /// All sizes are precisely defined for each screen bracket.
+    /// </summary>
+    public readonly record struct PracticeFontSizes(
+        double Word,            // Main word (lemma)
+        double Answer,          // Primary answer
+        double AnswerSecondary, // Alternative forms
+        double Badge,           // Badge text and icon
+        double BadgeHint,       // Declension case hint (1pt less than badge)
+        double Translation,     // Translation text
+        double SuttaExample,    // Sutta example sentence
+        double SuttaReference,  // Sutta reference
+        double Button           // Action button text
+    )
+    {
+        /// <summary>800pt+ - Comfortable layout</summary>
+        public static readonly PracticeFontSizes Tall = new(
+            Word: 44,
+            Answer: 30,
+            AnswerSecondary: 22,
+            Badge: 18,
+            BadgeHint: 17,
+            Translation: 18,
+            SuttaExample: 17,
+            SuttaReference: 15,
+            Button: 18
+        );
+
+        /// <summary>720-800pt - Slightly reduced</summary>
+        public static readonly PracticeFontSizes Medium = new(
+            Word: 42,
+            Answer: 28,
+            AnswerSecondary: 21,
+            Badge: 17,
+            BadgeHint: 16,
+            Translation: 17,
+            SuttaExample: 16,
+            SuttaReference: 14,
+            Button: 17
+        );
+
+        /// <summary>600-720pt - Further reduced</summary>
+        public static readonly PracticeFontSizes Short = new(
+            Word: 40,
+            Answer: 26,
+            AnswerSecondary: 20,
+            Badge: 16,
+            BadgeHint: 15,
+            Translation: 16,
+            SuttaExample: 15,
+            SuttaReference: 13,
+            Button: 16
+        );
+
+        /// <summary>&lt;600pt - Minimum sizes</summary>
+        public static readonly PracticeFontSizes Minimum = new(
+            Word: 36,
+            Answer: 24,
+            AnswerSecondary: 18,
+            Badge: 15,
+            BadgeHint: 14,
+            Translation: 15,
+            SuttaExample: 14,
+            SuttaReference: 12,
+            Button: 15
+        );
+    }
+
+    /// <summary>
     /// Spacing values for each height breakpoint.
     /// </summary>
     public static class Spacing
@@ -43,27 +112,14 @@ public static class LayoutConstants
     }
 
     /// <summary>
-    /// Font sizes for each height breakpoint.
+    /// Legacy font sizes - use PracticeFontSizes for new code.
     /// </summary>
     public static class Fonts
     {
-        // Main word (lemma)
-        public const double WordSizeTall = 48;
-        public const double WordSizeMedium = 44;
-        public const double WordSizeShort = 40;
-        public const double WordSizeMinimum = 36;
-
-        // Answer display
-        public const double AnswerSizeTall = 32;
-        public const double AnswerSizeMedium = 28;
-        public const double AnswerSizeShort = 26;
-        public const double AnswerSizeMinimum = 24;
-
-        // Badge text (improved for better visibility)
+        // Used for initial layout before responsive handler kicks in
+        public const double WordSizeTall = 44;
+        public const double AnswerSizeTall = 30;
         public const double BadgeSizeTall = 18;
-        public const double BadgeSizeMedium = 16;
-        public const double BadgeSizeShort = 14;
-        public const double BadgeSizeMinimum = 12;
     }
 
     /// <summary>

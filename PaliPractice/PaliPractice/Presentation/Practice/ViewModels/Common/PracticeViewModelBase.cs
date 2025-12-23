@@ -1,11 +1,7 @@
 using PaliPractice.Models.Words;
 using PaliPractice.Presentation.Practice.Providers;
-using DailyGoalViewModel = PaliPractice.Presentation.Practice.Controls.ViewModels.DailyGoalViewModel;
-using ExampleCarouselViewModel = PaliPractice.Presentation.Practice.Controls.ViewModels.ExampleCarouselViewModel;
-using FlashcardStateViewModel = PaliPractice.Presentation.Practice.Controls.ViewModels.FlashcardStateViewModel;
-using WordCardViewModel = PaliPractice.Presentation.Practice.Controls.ViewModels.WordCardViewModel;
 
-namespace PaliPractice.Presentation.Practice.ViewModels;
+namespace PaliPractice.Presentation.Practice.ViewModels.Common;
 
 /// <summary>
 /// Base class for practice ViewModels (Conjugation and Declension).
@@ -19,10 +15,10 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     [ObservableProperty] bool _canRateCard;
 
-    public WordCardViewModel WordCard { get; }
-    public FlashcardStateViewModel Flashcard { get; }
-    public DailyGoalViewModel DailyGoal { get; }
-    public ExampleCarouselViewModel ExampleCarousel { get; }
+    public Common.WordCardViewModel WordCard { get; }
+    public Common.FlashcardStateViewModel Flashcard { get; }
+    public Common.DailyGoalViewModel DailyGoal { get; }
+    public Common.ExampleCarouselViewModel ExampleCarousel { get; }
     
     readonly ILemmaProvider _lemmas;
     readonly INavigator _navigator;
@@ -52,7 +48,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     protected PracticeViewModelBase(
         ILemmaProvider lemmas,
-        WordCardViewModel wordCard,
+        Common.WordCardViewModel wordCard,
         INavigator navigator,
         ILogger logger)
     {
@@ -60,9 +56,9 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         WordCard = wordCard;
         _navigator = navigator;
         Logger = logger;
-        Flashcard = new FlashcardStateViewModel();
-        DailyGoal = new DailyGoalViewModel();
-        ExampleCarousel = new ExampleCarouselViewModel();
+        Flashcard = new Common.FlashcardStateViewModel();
+        DailyGoal = new Common.DailyGoalViewModel();
+        ExampleCarousel = new Common.ExampleCarouselViewModel();
 
         // Initialize commands with CanExecute predicates
         _hardCommand = new RelayCommand(MarkAsHard, () => CanRateCard);
@@ -72,7 +68,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         // Subscribe to flashcard state changes to update navigation
         Flashcard.PropertyChanged += (_, e) =>
         {
-            if (e.PropertyName == nameof(FlashcardStateViewModel.IsRevealed))
+            if (e.PropertyName == nameof(Common.FlashcardStateViewModel.IsRevealed))
             {
                 UpdateNavigationState();
             }

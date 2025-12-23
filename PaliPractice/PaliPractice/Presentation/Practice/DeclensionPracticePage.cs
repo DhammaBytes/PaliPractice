@@ -1,6 +1,5 @@
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
-using PaliPractice.Presentation.Practice.Controls;
 using static PaliPractice.Presentation.Common.TextHelpers;
 
 namespace PaliPractice.Presentation.Practice;
@@ -20,7 +19,7 @@ public sealed partial class DeclensionPracticePage : Page
         if (elements.ContentArea is not null)
         {
             HeightResponsiveHelper.AttachResponsiveHandler(elements.ContentArea, heightClass =>
-                PracticeLayoutHelper.ApplyResponsiveValues(elements, heightClass));
+                PracticePageBuilder.ApplyResponsiveValues(elements, heightClass));
         }
     }
 
@@ -43,12 +42,12 @@ public sealed partial class DeclensionPracticePage : Page
             DailyProgressPath: vm => vm.DailyGoal.DailyProgress
         );
 
-        var badges = PracticeLayoutHelper.CreateBadgeSet(
-            PracticeLayoutHelper.BuildBadge<ViewModels.DeclensionPracticeViewModel>(
+        var badges = PracticePageBuilder.CreateBadgeSet(
+            PracticePageBuilder.BuildBadge<ViewModels.DeclensionPracticeViewModel>(
                 vm => vm.CaseGlyph, vm => vm.CaseLabel, vm => vm.CaseBrush),
-            PracticeLayoutHelper.BuildBadge<ViewModels.DeclensionPracticeViewModel>(
+            PracticePageBuilder.BuildBadge<ViewModels.DeclensionPracticeViewModel>(
                 vm => vm.GenderGlyph, vm => vm.GenderLabel, vm => vm.GenderBrush),
-            PracticeLayoutHelper.BuildBadge<ViewModels.DeclensionPracticeViewModel>(
+            PracticePageBuilder.BuildBadge<ViewModels.DeclensionPracticeViewModel>(
                 vm => vm.NumberGlyph, vm => vm.NumberLabel, vm => vm.NumberBrush)
         );
 
@@ -60,6 +59,6 @@ public sealed partial class DeclensionPracticePage : Page
             .HorizontalAlignment(HorizontalAlignment.Center)
             .TextAlignment(TextAlignment.Center);
 
-        return PracticeLayoutHelper.BuildPageLayout(config, badges, hint, elements);
+        return PracticePageBuilder.BuildPage(config, badges, hint, elements);
     }
 }

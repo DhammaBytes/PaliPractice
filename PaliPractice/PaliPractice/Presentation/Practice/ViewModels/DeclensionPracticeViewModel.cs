@@ -2,12 +2,11 @@ using PaliPractice.Models.Inflection;
 using PaliPractice.Models.Words;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Themes;
-using WordCardViewModel = PaliPractice.Presentation.Practice.Controls.ViewModels.WordCardViewModel;
 
 namespace PaliPractice.Presentation.Practice.ViewModels;
 
 [Bindable]
-public partial class DeclensionPracticeViewModel : PracticeViewModelBase
+public partial class DeclensionPracticeViewModel : Common.PracticeViewModelBase
 {
     readonly IInflectionService _inflectionService;
     readonly Random _random = new();
@@ -36,7 +35,7 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
 
     public DeclensionPracticeViewModel(
         [FromKeyedServices("noun")] ILemmaProvider lemmas,
-        WordCardViewModel wordCard,
+        Common.WordCardViewModel wordCard,
         INavigator navigator,
         ILogger<DeclensionPracticeViewModel> logger,
         IInflectionService inflectionService)

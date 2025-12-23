@@ -2,12 +2,11 @@ using PaliPractice.Models.Inflection;
 using PaliPractice.Models.Words;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Themes;
-using WordCardViewModel = PaliPractice.Presentation.Practice.Controls.ViewModels.WordCardViewModel;
 
 namespace PaliPractice.Presentation.Practice.ViewModels;
 
 [Bindable]
-public partial class ConjugationPracticeViewModel : PracticeViewModelBase
+public partial class ConjugationPracticeViewModel : Common.PracticeViewModelBase
 {
     readonly IInflectionService _inflectionService;
     readonly Random _random = new();
@@ -35,7 +34,7 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
 
     public ConjugationPracticeViewModel(
         [FromKeyedServices("verb")] ILemmaProvider lemmas,
-        WordCardViewModel wordCard,
+        Common.WordCardViewModel wordCard,
         INavigator navigator,
         ILogger<ConjugationPracticeViewModel> logger,
         IInflectionService inflectionService)

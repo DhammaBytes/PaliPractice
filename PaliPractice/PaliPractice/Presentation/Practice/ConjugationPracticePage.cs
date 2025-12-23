@@ -1,5 +1,4 @@
 using PaliPractice.Presentation.Common;
-using PaliPractice.Presentation.Practice.Controls;
 
 namespace PaliPractice.Presentation.Practice;
 
@@ -18,7 +17,7 @@ public sealed partial class ConjugationPracticePage : Page
         if (elements.ContentArea is not null)
         {
             HeightResponsiveHelper.AttachResponsiveHandler(elements.ContentArea, heightClass =>
-                PracticeLayoutHelper.ApplyResponsiveValues(elements, heightClass));
+                PracticePageBuilder.ApplyResponsiveValues(elements, heightClass));
         }
     }
 
@@ -41,16 +40,16 @@ public sealed partial class ConjugationPracticePage : Page
             DailyProgressPath: vm => vm.DailyGoal.DailyProgress
         );
 
-        var badges = PracticeLayoutHelper.CreateBadgeSet(
-            PracticeLayoutHelper.BuildBadge<ViewModels.ConjugationPracticeViewModel>(
+        var badges = PracticePageBuilder.CreateBadgeSet(
+            PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(
                 vm => vm.TenseGlyph, vm => vm.TenseLabel, vm => vm.TenseBrush),
-            PracticeLayoutHelper.BuildBadge<ViewModels.ConjugationPracticeViewModel>(
+            PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(
                 vm => vm.PersonGlyph, vm => vm.PersonLabel, vm => vm.PersonBrush),
-            PracticeLayoutHelper.BuildBadge<ViewModels.ConjugationPracticeViewModel>(
+            PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(
                 vm => vm.NumberGlyph, vm => vm.NumberLabel, vm => vm.NumberBrush)
         );
 
         // No hint for conjugation
-        return PracticeLayoutHelper.BuildPageLayout(config, badges, hintElement: null, elements);
+        return PracticePageBuilder.BuildPage(config, badges, hintElement: null, elements);
     }
 }

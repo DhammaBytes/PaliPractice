@@ -1,7 +1,6 @@
 using PaliPractice.Presentation.Main;
 using PaliPractice.Presentation.Main.ViewModels;
 using PaliPractice.Presentation.Practice;
-using PaliPractice.Presentation.Practice.Controls;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Presentation.Practice.ViewModels;
 using PaliPractice.Presentation.Settings;
@@ -20,7 +19,7 @@ using HistoryPage = PaliPractice.Presentation.Practice.HistoryPage;
 using SettingsPage = PaliPractice.Presentation.Settings.SettingsPage;
 using Shell = PaliPractice.Presentation.Main.Shell;
 using StartPage = PaliPractice.Presentation.Main.StartPage;
-using WordCardViewModel = PaliPractice.Presentation.Practice.Controls.ViewModels.WordCardViewModel;
+using WordCardViewModel = PaliPractice.Presentation.Practice.ViewModels.Common.WordCardViewModel;
 
 namespace PaliPractice;
 

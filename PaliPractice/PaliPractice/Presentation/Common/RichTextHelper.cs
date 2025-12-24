@@ -7,8 +7,8 @@ using PaliPractice.Themes;
 namespace PaliPractice.Presentation.Common;
 
 /// <summary>
-/// Helper for creating TextBlocks with clickable links using markdown syntax.
-/// Uses Markdig for proper markdown parsing.
+/// Helper for creating TextBlocks with clickable links using Markdown syntax.
+/// Uses Markdig for proper Markdown parsing.
 /// Supports: [link text](url), **bold**, *italic*
 /// </summary>
 public static class RichTextHelper
@@ -17,7 +17,7 @@ public static class RichTextHelper
 
     /// <summary>
     /// Creates a TextBlock with regular font that has clickable links.
-    /// Use markdown syntax: [link text](url)
+    /// Use Markdown syntax: [link text](url)
     /// </summary>
     public static TextBlock CreateRichText(string text)
     {
@@ -31,7 +31,7 @@ public static class RichTextHelper
     }
 
     /// <summary>
-    /// Populates the Inlines collection of a TextBlock from markdown text.
+    /// Populates the Inlines collection of a TextBlock from Markdown text.
     /// </summary>
     static void PopulateInlines(TextBlock textBlock, string text, FontFamily font)
     {

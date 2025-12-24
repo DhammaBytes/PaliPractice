@@ -34,6 +34,11 @@ namespace PaliPractice.Presentation.Common.Squircle;
 /// <summary>
 /// A border control with squircle (superellipse) corners.
 /// Use instead of Border when you want iOS-style smooth corners.
+///
+/// Layout strategy: Paths are wrapped in a Canvas which returns DesiredSize = (0,0)
+/// regardless of children. This prevents path geometry from affecting layout,
+/// allowing the control to shrink/grow purely based on content (like a normal Border).
+/// Without this, stale path geometry would keep the control at its maximum size.
 /// </summary>
 public class SquircleBorder : ContentControl
 {
@@ -133,18 +138,28 @@ public class SquircleBorder : ContentControl
 
     void BuildVisualTree()
     {
-        _backgroundPath = new ShapePath();
-        _borderPath = new ShapePath();
+        _backgroundPath = new ShapePath { IsHitTestVisible = false };
+        _borderPath = new ShapePath { IsHitTestVisible = false };
+
         _contentPresenter = new ContentPresenter
         {
             HorizontalContentAlignment = HorizontalAlignment.Stretch,
             VerticalContentAlignment = VerticalAlignment.Stretch
         };
 
+        // Key trick: Canvas doesn't contribute to DesiredSize.
+        // This makes paths not affect layout - control sizes purely by content.
+        var visualLayer = new Canvas { IsHitTestVisible = false };
+        Canvas.SetLeft(_backgroundPath, 0);
+        Canvas.SetTop(_backgroundPath, 0);
+        Canvas.SetLeft(_borderPath, 0);
+        Canvas.SetTop(_borderPath, 0);
+        visualLayer.Children.Add(_backgroundPath);
+        visualLayer.Children.Add(_borderPath);
+
         _rootGrid = new Grid();
-        _rootGrid.Children.Add(_backgroundPath);
-        _rootGrid.Children.Add(_contentPresenter);
-        _rootGrid.Children.Add(_borderPath);
+        _rootGrid.Children.Add(visualLayer);       // background/border (no measure impact)
+        _rootGrid.Children.Add(_contentPresenter); // content drives size
 
         base.Content = _rootGrid;
 
@@ -169,7 +184,7 @@ public class SquircleBorder : ContentControl
     {
         if (d is SquircleBorder border)
         {
-            border.UpdateGeometry();
+            border.UpdateGeometry(border.ActualWidth, border.ActualHeight);
         }
     }
 
@@ -191,7 +206,7 @@ public class SquircleBorder : ContentControl
 
     void OnSizeChanged(object sender, SizeChangedEventArgs e)
     {
-        UpdateGeometry();
+        UpdateGeometry(e.NewSize.Width, e.NewSize.Height);
     }
 
     void UpdateFill()
@@ -212,13 +227,23 @@ public class SquircleBorder : ContentControl
         }
     }
 
-    void UpdateGeometry()
+    void UpdateGeometry(double width, double height)
     {
-        var width = ActualWidth;
-        var height = ActualHeight;
-
         if (width <= 0 || height <= 0)
             return;
+
+        // Set explicit size on paths (helps some Uno targets)
+        if (_backgroundPath != null)
+        {
+            _backgroundPath.Width = width;
+            _backgroundPath.Height = height;
+        }
+
+        if (_borderPath != null)
+        {
+            _borderPath.Width = width;
+            _borderPath.Height = height;
+        }
 
         var radius = RadiusMode.HasValue
             ? SquircleGeometry.CalculateRadius(width, height, RadiusMode.Value)
@@ -236,8 +261,8 @@ public class SquircleBorder : ContentControl
             // For border, create slightly inset geometry to account for stroke thickness
             var inset = StrokeThickness / 2;
             var borderGeometry = SquircleGeometry.Create(
-                width - StrokeThickness,
-                height - StrokeThickness,
+                Math.Max(0, width - StrokeThickness),
+                Math.Max(0, height - StrokeThickness),
                 Math.Max(0, radius - inset),
                 Corners);
 
@@ -245,6 +270,10 @@ public class SquircleBorder : ContentControl
             var transform = new TranslateTransform { X = inset, Y = inset };
             borderGeometry.Transform = transform;
             _borderPath.Data = borderGeometry;
+        }
+        else if (_borderPath != null)
+        {
+            _borderPath.Data = null;
         }
     }
 }

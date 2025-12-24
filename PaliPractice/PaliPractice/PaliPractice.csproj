@@ -46,6 +46,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Markdig" />
       <PackageReference Include="sqlite-net-pcl" />
     </ItemGroup>
 

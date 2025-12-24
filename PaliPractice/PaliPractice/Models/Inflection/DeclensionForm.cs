@@ -5,23 +5,15 @@ namespace PaliPractice.Models.Inflection;
 /// Immutable value type for efficient storage and comparison.
 /// </summary>
 public readonly record struct DeclensionForm(
-    /// <summary>
-    /// The inflected form (stem + ending).
-    /// </summary>
+    // The inflected form (stem + ending).
     string Form,
 
-    /// <summary>
-    /// The ending only (for UI highlighting).
-    /// </summary>
+    // The ending only (for UI highlighting).
     string Ending,
 
-    /// <summary>
-    /// Which ending variant this is (0, 1, 2...) when multiple endings are valid.
-    /// </summary>
+    // Which ending variant this is (0, 1, 2...) when multiple endings are valid.
     int EndingIndex,
 
-    /// <summary>
-    /// Whether this specific form appears in the Pali Tipitaka corpus.
-    /// </summary>
+    // Whether this specific form appears in the Pali Tipitaka corpus.
     bool InCorpus
 );

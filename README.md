@@ -12,14 +12,6 @@ A cross-platform Pāli language learning app designed to train noun declensions 
 
 This is work in progress, with the aim to be published on all the platforms.
 
-## Icon
-
-The app's icon shows the quail from SN 47:6, the Sakuṇagghi Sutta ("The Hawk"), hiding behind rocks in its ancestral territory – a newly plowed field with clumps of earth all turned up.
-
-> "Wander, monks, in what is your proper range, your own ancestral territory. In one who wanders in what is his proper range, his own ancestral territory, Māra gains no opening, Māra gains no foothold. And what, for a monk, is his proper range, his own ancestral territory? The four establishings of mindfulness."
-
-You can read the full sutta here: https://www.dhammatalks.org/suttas/SN/SN47_6.html
-
 ## Setup
 
 For initial and training database generation see:
@@ -32,6 +24,16 @@ The setup involves:
 3. Generating frequency data from text corpuses
 4. Extracting training data for the app's database
 5. Building and running the app
+
+## Icon
+
+The app's icon shows the quail from SN 47:6, the Sakuṇagghi Sutta ("The Hawk"), hiding behind rocks in its ancestral territory – a newly plowed field with clumps of earth all turned up.
+
+> "Wander, monks, in what is your proper range, your own ancestral territory. In one who wanders in what is his proper range, his own ancestral territory, Māra gains no opening, Māra gains no foothold. And what, for a monk, is his proper range, his own ancestral territory? The four establishings of mindfulness."
+
+You can read the full sutta here: https://www.dhammatalks.org/suttas/SN/SN47_6.html
+
+Illustration by [Irina Mir](https://www.instagram.com/irmirx/)
 
 ## License
 

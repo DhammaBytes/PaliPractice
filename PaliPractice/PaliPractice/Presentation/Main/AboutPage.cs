@@ -1,8 +1,8 @@
-using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Main.ViewModels;
 using static PaliPractice.Presentation.Common.TextHelpers;
+using static PaliPractice.Presentation.Common.RichTextHelper;
 
 namespace PaliPractice.Presentation.Main;
 
@@ -47,21 +47,21 @@ public sealed partial class AboutPage : Page
                                         .HorizontalAlignment(HorizontalAlignment.Center)
                                         .Foreground(ThemeResource.Get<Brush>("PrimaryBrush")),
 
-                                    // Description section (title-less)
-                                    BuildSection<AboutViewModel>(null, vm => vm.Description),
+                                    // Description section (title-less, with clickable links)
+                                    BuildRichSection(null, AboutViewModel.Description),
 
-                                    // App Icon section
-                                    BuildSection<AboutViewModel>(vm => vm.IconTitle, vm => vm.IconDescription),
+                                    // App Icon section (with clickable links)
+                                    BuildRichSection(AboutViewModel.IconTitle, AboutViewModel.IconDescription),
 
-                                    // License section
-                                    BuildSection<AboutViewModel>(vm => vm.LicenseTitle, vm => vm.LicenseText),
+                                    // License section (with clickable links)
+                                    BuildRichSection(AboutViewModel.LicenseTitle, AboutViewModel.LicenseText),
 
-                                    // Fonts section
-                                    BuildSection<AboutViewModel>(vm => vm.FontsTitle, vm => vm.FontsText),
+                                    // Fonts section (plain text)
+                                    BuildRichSection(AboutViewModel.FontsTitle, AboutViewModel.FontsText),
 
                                     // Blessing
                                     PaliText()
-                                        .Text<AboutViewModel>(vm => vm.Blessing)
+                                        .Text(AboutViewModel.Blessing)
                                         .FontSize(16)
                                         .FontStyle(Windows.UI.Text.FontStyle.Italic)
                                         .TextWrapping(TextWrapping.Wrap)
@@ -76,19 +76,17 @@ public sealed partial class AboutPage : Page
     }
 
     /// <summary>
-    /// Builds a section with optional title and content text.
+    /// Builds a section with optional title and rich content with clickable links.
     /// </summary>
-    static Border BuildSection<TVM>(
-        Expression<Func<TVM, string>>? titlePath,
-        Expression<Func<TVM, string>> contentPath)
+    static Border BuildRichSection(string? title, string content)
     {
         var children = new List<UIElement>();
 
-        if (titlePath is not null)
+        if (title is not null)
         {
             children.Add(
                 RegularText()
-                    .Text(titlePath)
+                    .Text(title)
                     .FontSize(16)
                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
                     .HorizontalAlignment(HorizontalAlignment.Center)
@@ -97,10 +95,8 @@ public sealed partial class AboutPage : Page
         }
 
         children.Add(
-            RegularText()
-                .Text(contentPath)
+            CreateRichText(content)
                 .FontSize(14)
-                .TextWrapping(TextWrapping.Wrap)
                 .TextAlignment(TextAlignment.Center)
                 .HorizontalAlignment(HorizontalAlignment.Center)
                 .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))

@@ -80,7 +80,7 @@ public static class PracticePageBuilder
         elements.AnswerPlaceholder = placeholder;
 
         // Build translation carousel
-        var (translationText, translationContainer) = BuildTranslationCarousel(
+        var (translationText, translationBorder, translationContainer) = BuildTranslationCarousel(
             config.CarouselPath, config.IsRevealedPath);
         elements.TranslationTextBlock = translationText;
 
@@ -118,22 +118,27 @@ public static class PracticePageBuilder
             .Padding(LayoutConstants.Paddings.CardPaddingTall)
             .Child(
                 new StackPanel()
-                    .Spacing(12)
+                    .Spacing(LayoutConstants.Spacing.CardInternal)
                     .Children(cardChildren.ToArray())
             );
         elements.CardBorder = cardBorder;
 
-        // Set up dynamic placeholder width (50% of card)
+        // Set up dynamic widths based on card size
         cardBorder.SizeChanged += (s, e) =>
         {
+            var translationWidth = e.NewSize.Width * LayoutConstants.TranslationWidthRatio;
+
             if (elements.AnswerPlaceholder is not null)
-                elements.AnswerPlaceholder.Width = e.NewSize.Width * 0.5;
+                elements.AnswerPlaceholder.Width = e.NewSize.Width * LayoutConstants.AnswerPlaceholderWidthRatio;
+
+            translationBorder.Width = translationWidth;
+            exampleContainer.MaxWidth = translationWidth;
         };
 
         // Debug text for size bracket
         var debugText = new TextBlock()
             .Text("Size: --")
-            .FontSize(10)
+            .FontSize(LayoutConstants.FixedFonts.DebugText)
             .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
             .HorizontalAlignment(HorizontalAlignment.Center)
             .Opacity(0.6);
@@ -141,16 +146,16 @@ public static class PracticePageBuilder
 
         // Build content area
         var contentArea = new Grid()
-            .RowDefinitions("16,Auto,Auto,Auto,Auto,*")
+            .RowDefinitions($"{LayoutConstants.Margins.TopSpacing},Auto,Auto,Auto,Auto,*")
             .MaxWidth(LayoutConstants.ContentMaxWidth)
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Padding(LayoutConstants.Spacing.ContentPaddingTall, 0)
             .Children(
                 new Border().Grid(row: 0), // Fixed top spacing
                 cardBorder.Grid(row: 1),
-                translationContainer.Margin(0, 12, 0, 0).Grid(row: 2),
-                exampleContainer.Margin(0, 8, 0, 0).Grid(row: 3),
-                debugText.Margin(0, 12, 0, 0).Grid(row: 4),
+                translationContainer.Margin(0, LayoutConstants.Margins.TranslationContainerTop, 0, 0).Grid(row: 2),
+                exampleContainer.Margin(0, LayoutConstants.Margins.ExampleContainerTop, 0, 0).Grid(row: 3),
+                debugText.Margin(0, LayoutConstants.Margins.DebugTextTop, 0, 0).Grid(row: 4),
                 new Border().Grid(row: 5) // Dynamic bottom spacing
             );
         elements.ContentArea = contentArea;
@@ -185,22 +190,22 @@ public static class PracticePageBuilder
             .Children(
                 new Border()
                     .Background(ThemeResource.Get<Brush>("PrimaryBrush"))
-                    .CornerRadius(12)
-                    .Padding(8, 4)
+                    .CornerRadius(LayoutConstants.Sizes.RankBadgeCornerRadius)
+                    .Padding(LayoutConstants.Paddings.RankBadgeHorizontal, LayoutConstants.Paddings.RankBadgeVertical)
                     .Child(
                         new StackPanel()
                             .Orientation(Orientation.Horizontal)
-                            .Spacing(4)
+                            .Spacing(LayoutConstants.Spacing.RankBadge)
                             .Children(
                                 RegularText()
                                     .Text(rankPrefix)
-                                    .FontSize(12)
+                                    .FontSize(LayoutConstants.FixedFonts.RankText)
                                     .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
                                     .Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush")),
                                 RegularText()
                                     .Scope(cardPath)
                                     .TextWithin<WordCardViewModel>(c => c.RankText)
-                                    .FontSize(12)
+                                    .FontSize(LayoutConstants.FixedFonts.RankText)
                                     .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
                                     .Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush"))
                             )
@@ -209,7 +214,7 @@ public static class PracticePageBuilder
                 RegularText()
                     .Scope(cardPath)
                     .TextWithin<WordCardViewModel>(c => c.AnkiState)
-                    .FontSize(14)
+                    .FontSize(LayoutConstants.FixedFonts.AnkiState)
                     .HorizontalAlignment(HorizontalAlignment.Right)
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                     .Grid(column: 2)
@@ -224,13 +229,13 @@ public static class PracticePageBuilder
         return PaliText()
             .Scope(cardPath)
             .TextWithin<WordCardViewModel>(c => c.CurrentWord)
-            .FontSize(46)
+            .FontSize(LayoutConstants.Fonts.WordSizeTall)
             .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .TextAlignment(TextAlignment.Center)
             .TextWrapping(TextWrapping.Wrap)
             .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
-            .Margin(0, 16, 0, 8);
+            .Margin(0, LayoutConstants.Margins.WordTop, 0, LayoutConstants.Margins.WordBottom);
     }
 
     /// <summary>
@@ -247,7 +252,7 @@ public static class PracticePageBuilder
         var answerTextBlock = CreateColorEndingAnswer(answerStemPath, answerEndingPath);
 
         var alternativeFormsTextBlock = PaliText()
-            .FontSize(20)
+            .FontSize(LayoutConstants.PracticeFontSizes.Tall.AnswerSecondary)
             .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .TextAlignment(TextAlignment.Center)
@@ -256,7 +261,7 @@ public static class PracticePageBuilder
             .StringToVisibility<TextBlock, TVM>(alternativeFormsPath);
 
         var answerSpacer = new StackPanel()
-            .Spacing(4)
+            .Spacing(LayoutConstants.Spacing.AnswerSpacer)
             .Opacity(0)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .Children(
@@ -264,13 +269,13 @@ public static class PracticePageBuilder
                     .FontSize(LayoutConstants.Fonts.AnswerSizeTall)
                     .Text("X"),
                 new TextBlock()
-                    .FontSize(20)
+                    .FontSize(LayoutConstants.PracticeFontSizes.Tall.AnswerSecondary)
                     .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
                     .Text("X")
             );
 
         var answerContent = new StackPanel()
-            .Spacing(4)
+            .Spacing(LayoutConstants.Spacing.AnswerContent)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .VerticalAlignment(VerticalAlignment.Center)
             .BoolToVisibility<StackPanel, TVM>(isRevealedPath)
@@ -278,16 +283,16 @@ public static class PracticePageBuilder
 
         // Placeholder uses relative width via binding or we track width changes
         var answerPlaceholder = new Border()
-            .Height(2)
+            .Height(LayoutConstants.Sizes.PlaceholderHeight)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .VerticalAlignment(VerticalAlignment.Center)
             .BorderBrush(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
-            .BorderThickness(0, 0, 0, 2)
+            .BorderThickness(0, 0, 0, LayoutConstants.Sizes.PlaceholderBorderThickness)
             .Opacity(0.5)
             .BoolToVisibility<Border, TVM>(isRevealedPath, invert: true);
 
         var answerContainer = new Grid()
-            .Margin(0, 8, 0, 0)
+            .Margin(0, LayoutConstants.Margins.AnswerContainerTop, 0, 0)
             .Children(answerSpacer, answerContent, answerPlaceholder);
 
         return (answerTextBlock, alternativeFormsTextBlock, answerPlaceholder, answerContainer);
@@ -389,7 +394,7 @@ public static class PracticePageBuilder
             .Fill<TVM>(brushPath)
             .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)
-                .Spacing(6)
+                .Spacing(LayoutConstants.Spacing.BadgeInternal)
                 .VerticalAlignment(VerticalAlignment.Center)
                 .Children(icon, text));
 
@@ -422,7 +427,7 @@ public static class PracticePageBuilder
     /// <summary>
     /// Builds the translation display with navigation arrows.
     /// </summary>
-    static (TextBlock translationText, StackPanel container) BuildTranslationCarousel<TVM>(
+    static (TextBlock translationText, SquircleBorder translationBorder, StackPanel container) BuildTranslationCarousel<TVM>(
         Expression<Func<TVM, ExampleCarouselViewModel>> carouselPath,
         Expression<Func<TVM, bool>> isRevealedPath)
     {
@@ -432,18 +437,77 @@ public static class PracticePageBuilder
             .TextWrapping(TextWrapping.Wrap)
             .TextAlignment(TextAlignment.Center)
             .HorizontalAlignment(HorizontalAlignment.Center)
-            .MaxWidth(280)
             .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"));
 
-        var container = new StackPanel()
-            .Orientation(Orientation.Horizontal)
-            .HorizontalAlignment(HorizontalAlignment.Center)
-            .Spacing(8)
+        // Shadow reference for measuring single-line height (used to position arrows)
+        // This has the same structure as real content but with single-line text
+        var singleLineReference = new StackPanel()
+            .Spacing(LayoutConstants.Spacing.TranslationContent)
+            .Opacity(0)
+            .IsHitTestVisible(false)
             .Children(
-                // Previous button
+                RegularText()
+                    .Text("M") // Single character to get one-line height
+                    .FontSize(LayoutConstants.PracticeFontSizes.Tall.Translation)
+                    .TextAlignment(TextAlignment.Center),
+                RegularText()
+                    .Text("1 / 1")
+                    .FontSize(LayoutConstants.FixedFonts.TranslationPagination)
+                    .TextAlignment(TextAlignment.Center)
+            );
+
+        // Translation border - width set dynamically based on card width
+        var translationBorder = new SquircleBorder()
+            .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .RadiusMode(SquircleRadiusMode.ButtonSmall)
+            .Child(
+                new Border()
+                    .Padding(LayoutConstants.Paddings.TranslationBorderHorizontal, LayoutConstants.Paddings.TranslationBorderVertical)
+                    .Child(
+                        new Grid()
+                            .Scope(carouselPath)
+                            .Children(
+                                // Shadow reference - same structure, single line, invisible
+                                // Used to measure height for arrow positioning
+                                singleLineReference,
+
+                                // Placeholder "…" - centered decoration, doesn't affect layout
+                                // Uses Visibility since it overlays in Grid (translation determines size)
+                                RegularText()
+                                    .Text("…")
+                                    .FontSize(LayoutConstants.FixedFonts.TranslationPlaceholder)
+                                    .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
+                                    .HorizontalAlignment(HorizontalAlignment.Center)
+                                    .VerticalAlignment(VerticalAlignment.Center)
+                                    .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
+                                    .VisibilityWithin<TextBlock, ExampleCarouselViewModel>(c => c.IsRevealed, invert: true),
+
+                                // Translation content - always participates in layout (uses Opacity)
+                                new StackPanel()
+                                    .Spacing(LayoutConstants.Spacing.TranslationContent)
+                                    .HorizontalAlignment(HorizontalAlignment.Center)
+                                    .VerticalAlignment(VerticalAlignment.Center)
+                                    .OpacityWithin<StackPanel, ExampleCarouselViewModel>(c => c.IsRevealed)
+                                    .Children(
+                                        translationTextBlock,
+                                        RegularText()
+                                            .TextWithin<ExampleCarouselViewModel>(c => c.PaginationText)
+                                            .FontSize(LayoutConstants.FixedFonts.TranslationPagination)
+                                            .TextAlignment(TextAlignment.Center)
+                                            .HorizontalAlignment(HorizontalAlignment.Center)
+                                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
+                                    )
+                            )
+                    )
+            );
+
+        // Arrow containers - height set to match single-line block, arrows centered within
+        var prevArrowContainer = new Border()
+            .VerticalAlignment(VerticalAlignment.Top)
+            .Child(
                 new Button()
                     .Background(new SolidColorBrush(Colors.Transparent))
-                    .Padding(8, 6)
+                    .Padding(LayoutConstants.Paddings.TranslationArrowButtonHorizontal, LayoutConstants.Paddings.TranslationArrowButtonVertical)
                     .MinWidth(0)
                     .MinHeight(0)
                     .VerticalAlignment(VerticalAlignment.Center)
@@ -453,53 +517,16 @@ public static class PracticePageBuilder
                     .OpacityWithin<Button, ExampleCarouselViewModel>(c => c.IsRevealed)
                     .Content(new FontIcon()
                         .Glyph("\uE76B") // ChevronLeft
-                        .FontSize(14)
-                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))),
+                        .FontSize(LayoutConstants.FixedFonts.TranslationArrowIcon)
+                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush")))
+            );
 
-                // Translation in squircle
-                new SquircleBorder()
-                    .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
-                    .RadiusMode(SquircleRadiusMode.ButtonSmall)
-                    .Child(
-                        new Border()
-                            .Padding(24, 16)
-                            .Child(
-                                new Grid()
-                                    .Scope(carouselPath)
-                                    .Children(
-                                        // Placeholder "…" shown when not revealed
-                                        RegularText()
-                                            .Text("…")
-                                            .FontSize(24)
-                                            .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
-                                            .HorizontalAlignment(HorizontalAlignment.Center)
-                                            .VerticalAlignment(VerticalAlignment.Center)
-                                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
-                                            .VisibilityWithin<TextBlock, ExampleCarouselViewModel>(c => c.IsRevealed, invert: true),
-
-                                        // Translation content
-                                        new StackPanel()
-                                            .Spacing(8)
-                                            .HorizontalAlignment(HorizontalAlignment.Center)
-                                            .VerticalAlignment(VerticalAlignment.Center)
-                                            .VisibilityWithin<StackPanel, ExampleCarouselViewModel>(c => c.IsRevealed)
-                                            .Children(
-                                                translationTextBlock,
-                                                RegularText()
-                                                    .TextWithin<ExampleCarouselViewModel>(c => c.PaginationText)
-                                                    .FontSize(11)
-                                                    .TextAlignment(TextAlignment.Center)
-                                                    .HorizontalAlignment(HorizontalAlignment.Center)
-                                                    .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
-                                            )
-                                    )
-                            )
-                    ),
-
-                // Next button
+        var nextArrowContainer = new Border()
+            .VerticalAlignment(VerticalAlignment.Top)
+            .Child(
                 new Button()
                     .Background(new SolidColorBrush(Colors.Transparent))
-                    .Padding(8, 6)
+                    .Padding(LayoutConstants.Paddings.TranslationArrowButtonHorizontal, LayoutConstants.Paddings.TranslationArrowButtonVertical)
                     .MinWidth(0)
                     .MinHeight(0)
                     .VerticalAlignment(VerticalAlignment.Center)
@@ -509,11 +536,29 @@ public static class PracticePageBuilder
                     .OpacityWithin<Button, ExampleCarouselViewModel>(c => c.IsRevealed)
                     .Content(new FontIcon()
                         .Glyph("\uE76C") // ChevronRight
-                        .FontSize(14)
+                        .FontSize(LayoutConstants.FixedFonts.TranslationArrowIcon)
                         .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush")))
             );
 
-        return (translationTextBlock, container);
+        // Update arrow container height when reference is measured
+        // Height = reference content + border padding (top + bottom)
+        singleLineReference.SizeChanged += (s, e) =>
+        {
+            var singleLineBlockHeight = e.NewSize.Height + (LayoutConstants.Paddings.TranslationBorderVertical * 2);
+            prevArrowContainer.Height = singleLineBlockHeight;
+            nextArrowContainer.Height = singleLineBlockHeight;
+        };
+
+        var container = new StackPanel()
+            .Orientation(Orientation.Horizontal)
+            .HorizontalAlignment(HorizontalAlignment.Center)
+            .Children(
+                prevArrowContainer,
+                translationBorder,
+                nextArrowContainer
+            );
+
+        return (translationTextBlock, translationBorder, container);
     }
 
     #endregion
@@ -543,9 +588,8 @@ public static class PracticePageBuilder
             .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"));
 
         var container = new StackPanel()
-            .Spacing(4)
+            .Spacing(LayoutConstants.Spacing.ExampleSection)
             .HorizontalAlignment(HorizontalAlignment.Center)
-            .MaxWidth(LayoutConstants.ReferenceMaxWidth)
             .Scope(carouselPath)
             .Children(exampleTextBlock, referenceTextBlock);
 
@@ -570,7 +614,7 @@ public static class PracticePageBuilder
 
         var container = new Grid()
             .MaxWidth(LayoutConstants.ContentMaxWidth)
-            .Padding(20, 16)
+            .Padding(LayoutConstants.Paddings.NavigationContainerHorizontal, LayoutConstants.Paddings.NavigationContainerVertical)
             .Children(
                 // Reveal button - visible when NOT revealed
                 BuildRevealButton(revealCommand)
@@ -579,7 +623,7 @@ public static class PracticePageBuilder
                 // Hard/Easy buttons - visible when revealed
                 new Grid()
                     .ColumnDefinitions("*,*")
-                    .ColumnSpacing(16)
+                    .ColumnSpacing(LayoutConstants.Spacing.ButtonColumns)
                     .BoolToVisibility<Grid, TVM>(isRevealedPath)
                     .Children(
                         hardButton
@@ -600,21 +644,21 @@ public static class PracticePageBuilder
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Fill(ThemeResource.Get<Brush>("PrimaryBrush"))
             .RadiusMode(SquircleRadiusMode.ButtonSmall)
-            .Padding(16, 12);
+            .Padding(LayoutConstants.Paddings.ActionButtonHorizontal, LayoutConstants.Paddings.ActionButtonVertical);
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
         return button
             .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)
                 .HorizontalAlignment(HorizontalAlignment.Center)
-                .Spacing(8)
+                .Spacing(LayoutConstants.Spacing.ButtonContent)
                 .Children(
                     new FontIcon()
                         .Glyph("\uE7B3") // Eye icon
-                        .FontSize(16)
+                        .FontSize(LayoutConstants.FixedFonts.RevealButton)
                         .Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush")),
                     RegularText()
                         .Text("Reveal Answer")
-                        .FontSize(16)
+                        .FontSize(LayoutConstants.FixedFonts.RevealButton)
                         .Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush"))
                 ));
     }
@@ -638,12 +682,12 @@ public static class PracticePageBuilder
         var button = new SquircleButton()
             .Fill(ThemeResource.Get<Brush>(brushKey))
             .RadiusMode(SquircleRadiusMode.ButtonSmall)
-            .Padding(16, 12);
+            .Padding(LayoutConstants.Paddings.ActionButtonHorizontal, LayoutConstants.Paddings.ActionButtonVertical);
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
         button.Child(new StackPanel()
             .Orientation(Orientation.Horizontal)
             .HorizontalAlignment(HorizontalAlignment.Center)
-            .Spacing(8)
+            .Spacing(LayoutConstants.Spacing.ButtonContent)
             .Children(iconElement, textElement));
 
         return (iconElement, textElement, button);
@@ -662,25 +706,25 @@ public static class PracticePageBuilder
     {
         return new Border()
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Padding(20, 12)
+            .Padding(LayoutConstants.Paddings.DailyGoalHorizontal, LayoutConstants.Paddings.DailyGoalVertical)
             .Child(
-                new StackPanel().Spacing(8).Children(
+                new StackPanel().Spacing(LayoutConstants.Spacing.DailyGoal).Children(
                     new Grid().ColumnDefinitions("*,Auto").Children(
                         RegularText()
                             .Text("Daily goal")
-                            .FontSize(14)
+                            .FontSize(LayoutConstants.FixedFonts.DailyGoalText)
                             .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                             .Grid(column: 0),
                         RegularText()
                             .Text(dailyGoalText)
-                            .FontSize(14)
+                            .FontSize(LayoutConstants.FixedFonts.DailyGoalText)
                             .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                             .Grid(column: 1)
                     ),
                     new ProgressBar()
                         .Maximum(100)
-                        .Height(6)
-                        .CornerRadius(3)
+                        .Height(LayoutConstants.Sizes.ProgressBarHeight)
+                        .CornerRadius(LayoutConstants.Sizes.ProgressBarCornerRadius)
                         .Value(dailyProgress)
                 )
             );

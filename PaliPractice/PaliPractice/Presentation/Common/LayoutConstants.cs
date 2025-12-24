@@ -2,14 +2,19 @@ namespace PaliPractice.Presentation.Common;
 
 public static class LayoutConstants
 {
-    // Width constraints
-    public const double ContentMaxWidth = 450;
-    public const double ReferenceMaxWidth = ContentMaxWidth * 0.8;
+    #region Width/Height Constraints
 
-    // Height constraints
+    public const double ContentMaxWidth = 450;
     public const double ContentMaxHeight = 900;
 
-    // Height breakpoints (for responsive sizing)
+    // Translation block width as percentage of card width
+    public const double TranslationWidthRatio = 0.76;
+    public const double AnswerPlaceholderWidthRatio = 0.5;
+
+    #endregion
+
+    #region Height Breakpoints
+
     // Tall: 800pt+ - Normal/comfortable layout
     // Medium: 720-800pt - Slightly reduced spacing
     // Short: 600-720pt - Further reduced spacing
@@ -17,6 +22,10 @@ public static class LayoutConstants
     public const double HeightTall = 800;
     public const double HeightMedium = 720;
     public const double HeightShort = 600;
+
+    #endregion
+
+    #region Font Sizes
 
     /// <summary>
     /// Centralized font size configuration for practice pages.
@@ -88,6 +97,36 @@ public static class LayoutConstants
     }
 
     /// <summary>
+    /// Legacy font sizes - use PracticeFontSizes for new code.
+    /// </summary>
+    public static class Fonts
+    {
+        // Used for initial layout before responsive handler kicks in
+        public const double WordSizeTall = 44;
+        public const double AnswerSizeTall = 30;
+        public const double BadgeSizeTall = 18;
+    }
+
+    /// <summary>
+    /// Fixed font sizes (not responsive).
+    /// </summary>
+    public static class FixedFonts
+    {
+        public const double RankText = 12;
+        public const double AnkiState = 14;
+        public const double DebugText = 10;
+        public const double TranslationPagination = 11;
+        public const double TranslationPlaceholder = 24;
+        public const double TranslationArrowIcon = 14;
+        public const double DailyGoalText = 14;
+        public const double RevealButton = 16;
+    }
+
+    #endregion
+
+    #region Spacing
+
+    /// <summary>
     /// Spacing values for each height breakpoint.
     /// </summary>
     public static class Spacing
@@ -109,25 +148,42 @@ public static class LayoutConstants
         public const double BadgeSpacingMedium = 10;
         public const double BadgeSpacingShort = 8;
         public const double BadgeSpacingMinimum = 6;
+
+        // Card internal spacing
+        public const double CardInternal = 12;
+        public const double BadgeInternal = 6;
+
+        // Translation block
+        public const double TranslationContent = 8;
+
+        // Answer section
+        public const double AnswerSpacer = 4;
+        public const double AnswerContent = 4;
+
+        // Example section
+        public const double ExampleSection = 4;
+
+        // Navigation
+        public const double ButtonColumns = 16;
+        public const double ButtonContent = 8;
+
+        // Daily goal bar
+        public const double DailyGoal = 8;
+
+        // Header
+        public const double RankBadge = 4;
     }
 
-    /// <summary>
-    /// Legacy font sizes - use PracticeFontSizes for new code.
-    /// </summary>
-    public static class Fonts
-    {
-        // Used for initial layout before responsive handler kicks in
-        public const double WordSizeTall = 44;
-        public const double AnswerSizeTall = 30;
-        public const double BadgeSizeTall = 18;
-    }
+    #endregion
+
+    #region Paddings
 
     /// <summary>
     /// Padding values for each height breakpoint.
     /// </summary>
     public static class Paddings
     {
-        // Badge internal padding (horizontal, vertical) - improved for better appearance
+        // Badge internal padding (horizontal, vertical)
         public const double BadgeHorizontalTall = 16;
         public const double BadgeHorizontalMedium = 14;
         public const double BadgeHorizontalShort = 12;
@@ -146,5 +202,61 @@ public static class LayoutConstants
         public const double CardPaddingTall = 24;
         public const double CardPaddingShort = 20;
         public const double CardPaddingMinimum = 16;
+
+        // Translation block
+        public const double TranslationBorderHorizontal = 24;
+        public const double TranslationBorderVertical = 16;
+        public const double TranslationArrowButtonHorizontal = 8;
+        public const double TranslationArrowButtonVertical = 6;
+
+        // Rank badge
+        public const double RankBadgeHorizontal = 8;
+        public const double RankBadgeVertical = 4;
+
+        // Navigation buttons
+        public const double NavigationContainerHorizontal = 20;
+        public const double NavigationContainerVertical = 16;
+        public const double ActionButtonHorizontal = 16;
+        public const double ActionButtonVertical = 12;
+
+        // Daily goal bar
+        public const double DailyGoalHorizontal = 20;
+        public const double DailyGoalVertical = 12;
     }
+
+    #endregion
+
+    #region Margins
+
+    /// <summary>
+    /// Margin values for layout elements.
+    /// </summary>
+    public static class Margins
+    {
+        public const double TopSpacing = 16;
+        public const double TranslationContainerTop = 12;
+        public const double ExampleContainerTop = 8;
+        public const double DebugTextTop = 12;
+        public const double AnswerContainerTop = 8;
+        public const double WordTop = 16;
+        public const double WordBottom = 8;
+    }
+
+    #endregion
+
+    #region Sizes
+
+    /// <summary>
+    /// Fixed sizes for UI elements.
+    /// </summary>
+    public static class Sizes
+    {
+        public const double RankBadgeCornerRadius = 12;
+        public const double PlaceholderHeight = 2;
+        public const double PlaceholderBorderThickness = 2;
+        public const double ProgressBarHeight = 6;
+        public const double ProgressBarCornerRadius = 3;
+    }
+
+    #endregion
 }

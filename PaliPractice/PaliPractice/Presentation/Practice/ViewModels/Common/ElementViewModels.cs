@@ -45,15 +45,19 @@ public partial class FlashcardStateViewModel : ObservableObject
 {
     [ObservableProperty] bool _isRevealed;
     [ObservableProperty] string _answer = string.Empty;
+    [ObservableProperty] string _answerStem = string.Empty;
+    [ObservableProperty] string _answerEnding = string.Empty;
 
     string _inflectedForm = string.Empty;
+    string _inflectedEnding = string.Empty;
 
     /// <summary>
-    /// Sets the inflected form that will be shown when revealed.
+    /// Sets the inflected form and ending that will be shown when revealed.
     /// </summary>
-    public void SetAnswer(string inflectedForm)
+    public void SetAnswer(string inflectedForm, string ending)
     {
         _inflectedForm = inflectedForm;
+        _inflectedEnding = ending;
     }
 
     /// <summary>
@@ -62,6 +66,11 @@ public partial class FlashcardStateViewModel : ObservableObject
     public void Reveal()
     {
         Answer = _inflectedForm;
+        AnswerEnding = _inflectedEnding;
+        // Stem is the form minus the ending
+        AnswerStem = _inflectedEnding.Length > 0 && _inflectedForm.EndsWith(_inflectedEnding)
+            ? _inflectedForm[..^_inflectedEnding.Length]
+            : _inflectedForm;
         IsRevealed = true;
     }
 
@@ -72,7 +81,10 @@ public partial class FlashcardStateViewModel : ObservableObject
     {
         IsRevealed = false;
         Answer = string.Empty;
+        AnswerStem = string.Empty;
+        AnswerEnding = string.Empty;
         _inflectedForm = string.Empty;
+        _inflectedEnding = string.Empty;
     }
 }
 

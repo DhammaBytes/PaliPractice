@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Practice.ViewModels;
+using PaliPractice.Themes;
 using static PaliPractice.Presentation.Common.TextHelpers;
 using ExampleCarouselViewModel = PaliPractice.Presentation.Practice.ViewModels.Common.ExampleCarouselViewModel;
 using WordCardViewModel = PaliPractice.Presentation.Practice.ViewModels.Common.WordCardViewModel;
@@ -17,7 +18,8 @@ public record PracticePageConfig<TVM>(
     string Title,
     string RankPrefix,
     Expression<Func<TVM, WordCardViewModel>> WordCardPath,
-    Expression<Func<TVM, string>> AnswerPath,
+    Expression<Func<TVM, string>> AnswerStemPath,
+    Expression<Func<TVM, string>> AnswerEndingPath,
     Expression<Func<TVM, string>> AlternativeFormsPath,
     Expression<Func<TVM, bool>> IsRevealedPath,
     Expression<Func<TVM, ExampleCarouselViewModel>> CarouselPath,
@@ -69,7 +71,8 @@ public static class PracticePageBuilder
 
         // Build answer section
         var (answerTextBlock, secondaryTextBlock, placeholder, answerContainer) = BuildAnswerSection(
-            config.AnswerPath,
+            config.AnswerStemPath,
+            config.AnswerEndingPath,
             config.AlternativeFormsPath,
             config.IsRevealedPath);
         elements.AnswerTextBlock = answerTextBlock;
@@ -127,9 +130,18 @@ public static class PracticePageBuilder
                 elements.AnswerPlaceholder.Width = e.NewSize.Width * 0.5;
         };
 
+        // Debug text for size bracket
+        var debugText = new TextBlock()
+            .Text("Size: --")
+            .FontSize(10)
+            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+            .HorizontalAlignment(HorizontalAlignment.Center)
+            .Opacity(0.6);
+        elements.DebugTextBlock = debugText;
+
         // Build content area
         var contentArea = new Grid()
-            .RowDefinitions("16,Auto,Auto,Auto,*")
+            .RowDefinitions("16,Auto,Auto,Auto,Auto,*")
             .MaxWidth(LayoutConstants.ContentMaxWidth)
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Padding(LayoutConstants.Spacing.ContentPaddingTall, 0)
@@ -138,7 +150,8 @@ public static class PracticePageBuilder
                 cardBorder.Grid(row: 1),
                 translationContainer.Margin(0, 12, 0, 0).Grid(row: 2),
                 exampleContainer.Margin(0, 8, 0, 0).Grid(row: 3),
-                new Border().Grid(row: 4) // Dynamic bottom spacing
+                debugText.Margin(0, 12, 0, 0).Grid(row: 4),
+                new Border().Grid(row: 5) // Dynamic bottom spacing
             );
         elements.ContentArea = contentArea;
 
@@ -224,17 +237,14 @@ public static class PracticePageBuilder
     /// Builds the answer section with spacer, content, and placeholder.
     /// </summary>
     static (TextBlock answerTextBlock, TextBlock secondaryTextBlock, Border placeholder, Grid answerContainer) BuildAnswerSection<TVM>(
-        Expression<Func<TVM, string>> answerPath,
+        Expression<Func<TVM, string>> answerStemPath,
+        Expression<Func<TVM, string>> answerEndingPath,
         Expression<Func<TVM, string>> alternativeFormsPath,
         Expression<Func<TVM, bool>> isRevealedPath)
     {
-        var answerTextBlock = PaliText()
-            .FontSize(LayoutConstants.Fonts.AnswerSizeTall)
-            .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
-            .HorizontalAlignment(HorizontalAlignment.Center)
-            .TextAlignment(TextAlignment.Center)
-            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
-            .Text<TVM>(answerPath);
+        // Choose answer display style: toggle between these two lines to test
+        // var answerTextBlock = CreateBoldEndingAnswer(answerStemPath, answerEndingPath);
+        var answerTextBlock = CreateColorEndingAnswer(answerStemPath, answerEndingPath);
 
         var alternativeFormsTextBlock = PaliText()
             .FontSize(20)
@@ -252,7 +262,6 @@ public static class PracticePageBuilder
             .Children(
                 new TextBlock()
                     .FontSize(LayoutConstants.Fonts.AnswerSizeTall)
-                    .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
                     .Text("X"),
                 new TextBlock()
                     .FontSize(20)
@@ -284,6 +293,70 @@ public static class PracticePageBuilder
         return (answerTextBlock, alternativeFormsTextBlock, answerPlaceholder, answerContainer);
     }
 
+    /// <summary>
+    /// Option A: Stem in regular weight + ending in bold.
+    /// </summary>
+    static TextBlock CreateBoldEndingAnswer<TVM>(
+        Expression<Func<TVM, string>> answerStemPath,
+        Expression<Func<TVM, string>> answerEndingPath)
+    {
+        var paliFont = new FontFamily(FontPaths.LibertinusSans);
+
+        var stemRun = new Run()
+            .FontFamily(paliFont)
+            .FontWeight(Microsoft.UI.Text.FontWeights.Normal);
+        stemRun.SetBinding(Run.TextProperty, Bind.Path(answerStemPath));
+
+        var endingRun = new Run()
+            .FontFamily(paliFont)
+            .FontWeight(Microsoft.UI.Text.FontWeights.Bold);
+        endingRun.SetBinding(Run.TextProperty, Bind.Path(answerEndingPath));
+
+        var textBlock = PaliText()
+            .FontSize(LayoutConstants.Fonts.AnswerSizeTall)
+            .HorizontalAlignment(HorizontalAlignment.Center)
+            .TextAlignment(TextAlignment.Center)
+            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"));
+        textBlock.Inlines.Add(stemRun);
+        textBlock.Inlines.Add(endingRun);
+
+        return textBlock;
+    }
+
+    /// <summary>
+    /// Option B: All bold, stem in gray + ending in default (black in light mode).
+    /// </summary>
+    static TextBlock CreateColorEndingAnswer<TVM>(
+        Expression<Func<TVM, string>> answerStemPath,
+        Expression<Func<TVM, string>> answerEndingPath)
+    {
+        var paliFont = new FontFamily(FontPaths.LibertinusSans);
+
+        var stemRun = new Run()
+            .FontFamily(paliFont)
+            .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
+            .Foreground(new SolidColorBrush(Color.FromArgb(255, 80,80,80)));
+        stemRun.SetBinding(Run.TextProperty, Bind.Path(answerStemPath));
+
+        var endingRun = new Run()
+            .FontFamily(paliFont)
+            .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
+            // Try different colors: Colors.Blue, Colors.DarkBlue, or custom RGB
+            // 11,83,148
+            // .Foreground(new SolidColorBrush(Color.FromArgb(255, 53,28,117)));
+            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"));
+        endingRun.SetBinding(Run.TextProperty, Bind.Path(answerEndingPath));
+
+        var textBlock = PaliText()
+            .FontSize(LayoutConstants.Fonts.AnswerSizeTall)
+            .HorizontalAlignment(HorizontalAlignment.Center)
+            .TextAlignment(TextAlignment.Center);
+        textBlock.Inlines.Add(stemRun);
+        textBlock.Inlines.Add(endingRun);
+
+        return textBlock;
+    }
+
     #endregion
 
     #region Badges
@@ -300,7 +373,6 @@ public static class PracticePageBuilder
             .FontSize(LayoutConstants.Fonts.BadgeSizeTall)
             .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
             .VerticalAlignment(VerticalAlignment.Center)
-            .Margin(4, 0, 0, 0) // Left padding for icon
             .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
             .GlyphWithVisibility<TVM>(glyphPath);
 
@@ -308,7 +380,6 @@ public static class PracticePageBuilder
             .FontSize(LayoutConstants.Fonts.BadgeSizeTall)
             .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
             .VerticalAlignment(VerticalAlignment.Center)
-            .Margin(0, 0, 4, 0) // Right padding for text
             .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
             .Text<TVM>(labelPath);
 
@@ -420,7 +491,6 @@ public static class PracticePageBuilder
                                                     .TextAlignment(TextAlignment.Center)
                                                     .HorizontalAlignment(HorizontalAlignment.Center)
                                                     .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
-                                                    .VisibilityWithin<TextBlock, ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
                                             )
                                     )
                             )
@@ -688,6 +758,13 @@ public static class PracticePageBuilder
             icon.FontSize = fonts.Button;
             text.FontSize = fonts.Button;
         }
+
+        // Debug text
+        if (elements.DebugTextBlock is not null)
+        {
+            var height = elements.ContentArea?.ActualHeight ?? 0;
+            elements.DebugTextBlock.Text = $"Size: {heightClass} ({height:F0}pt)";
+        }
     }
 
     #endregion
@@ -709,6 +786,7 @@ public class ResponsiveElements
     public TextBlock? TranslationTextBlock { get; set; }
     public TextBlock? SuttaExampleTextBlock { get; set; }
     public TextBlock? SuttaReferenceTextBlock { get; set; }
+    public TextBlock? DebugTextBlock { get; set; }
     public List<SquircleBorder> BadgeBorders { get; } = [];
     public List<TextBlock> BadgeTextBlocks { get; } = [];
     public List<FontIcon> BadgeIcons { get; } = [];

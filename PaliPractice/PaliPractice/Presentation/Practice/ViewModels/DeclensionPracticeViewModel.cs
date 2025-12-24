@@ -151,4 +151,9 @@ public partial class DeclensionPracticeViewModel : Common.PracticeViewModelBase
     {
         return _currentDeclension?.Primary?.Form ?? WordCard.CurrentWord;
     }
+
+    protected override string GetInflectedEnding()
+    {
+        return _currentDeclension?.Primary?.Ending ?? string.Empty;
+    }
 }

@@ -143,4 +143,9 @@ public partial class ConjugationPracticeViewModel : Common.PracticeViewModelBase
     {
         return _currentConjugation?.Primary?.Form ?? WordCard.CurrentWord;
     }
+
+    protected override string GetInflectedEnding()
+    {
+        return _currentConjugation?.Primary?.Ending ?? string.Empty;
+    }
 }

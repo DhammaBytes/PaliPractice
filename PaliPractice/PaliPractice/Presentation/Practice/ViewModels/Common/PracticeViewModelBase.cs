@@ -42,6 +42,11 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     protected abstract string GetInflectedForm();
 
     /// <summary>
+    /// Returns the ending portion of the inflected form (for highlighting).
+    /// </summary>
+    protected abstract string GetInflectedEnding();
+
+    /// <summary>
     /// Returns the practice type (Declension or Conjugation) for history navigation.
     /// </summary>
     protected abstract PracticeType CurrentPracticeType { get; }
@@ -112,7 +117,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         WordCard.DisplayCurrentCard(lemma);
         ExampleCarousel.Initialize(lemma);
         PrepareCardAnswer(lemma);
-        Flashcard.SetAnswer(GetInflectedForm());
+        Flashcard.SetAnswer(GetInflectedForm(), GetInflectedEnding());
     }
 
     void RevealAnswer()

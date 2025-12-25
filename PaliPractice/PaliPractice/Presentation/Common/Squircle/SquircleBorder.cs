@@ -35,6 +35,9 @@ namespace PaliPractice.Presentation.Common.Squircle;
 /// A border control with squircle (superellipse) corners.
 /// Use instead of Border when you want iOS-style smooth corners.
 ///
+/// Note: Padding must be applied to the Child element, not to SquircleBorder itself.
+/// The inherited Padding property is not propagated to the internal ContentPresenter.
+///
 /// Layout strategy: Paths are wrapped in a Canvas which returns DesiredSize = (0,0)
 /// regardless of children. This prevents path geometry from affecting layout,
 /// allowing the control to shrink/grow purely based on content (like a normal Border).

@@ -115,9 +115,9 @@ public static class PracticePageBuilder
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
             .RadiusMode(SquircleRadiusMode.CardSmall)
-            .Padding(LayoutConstants.Paddings.CardPaddingTall)
             .Child(
                 new StackPanel()
+                    .Padding(LayoutConstants.Paddings.CardPaddingTall)
                     .Spacing(LayoutConstants.Spacing.CardInternal)
                     .Children(cardChildren.ToArray())
             );
@@ -128,8 +128,7 @@ public static class PracticePageBuilder
         {
             var translationWidth = e.NewSize.Width * LayoutConstants.TranslationWidthRatio;
 
-            if (elements.AnswerPlaceholder is not null)
-                elements.AnswerPlaceholder.Width = e.NewSize.Width * LayoutConstants.AnswerPlaceholderWidthRatio;
+            elements.AnswerPlaceholder?.Width = e.NewSize.Width * LayoutConstants.AnswerPlaceholderWidthRatio;
 
             translationBorder.Width = translationWidth;
             exampleContainer.MaxWidth = translationWidth;
@@ -148,7 +147,8 @@ public static class PracticePageBuilder
         var contentArea = new Grid()
             .RowDefinitions($"{LayoutConstants.Margins.TopSpacing},Auto,Auto,Auto,Auto,*")
             .MaxWidth(LayoutConstants.ContentMaxWidth)
-            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .HorizontalAlignment(HorizontalAlignment.Center)
+            .VerticalAlignment(VerticalAlignment.Stretch)
             .Padding(LayoutConstants.Spacing.ContentPaddingTall, 0)
             .Children(
                 new Border().Grid(row: 0), // Fixed top spacing
@@ -160,17 +160,21 @@ public static class PracticePageBuilder
             );
         elements.ContentArea = contentArea;
 
+        // Build title bar and daily goal bar (capture references for measurement)
+        var titleBar = AppTitleBar.BuildWithHistory(config.Title, config.GoBackCommandPath, config.GoToHistoryCommandPath);
+        var dailyGoalBar = BuildDailyGoalBar(config.DailyGoalTextPath, config.DailyProgressPath);
+        elements.TitleBar = titleBar;
+        elements.DailyGoalBar = dailyGoalBar;
+
         // Main page grid
         return new Grid()
             .SafeArea(SafeArea.InsetMask.VisibleBounds)
             .RowDefinitions("Auto,*,Auto,Auto")
             .Children(
-                AppTitleBar.BuildWithHistory(config.Title, config.GoBackCommandPath, config.GoToHistoryCommandPath)
-                    .Grid(row: 0),
+                titleBar.Grid(row: 0),
                 contentArea.Grid(row: 1),
                 navContainer.Grid(row: 2),
-                BuildDailyGoalBar(config.DailyGoalTextPath, config.DailyProgressPath)
-                    .Grid(row: 3)
+                dailyGoalBar.Grid(row: 3)
             );
     }
 
@@ -298,39 +302,6 @@ public static class PracticePageBuilder
         return (answerTextBlock, alternativeFormsTextBlock, answerPlaceholder, answerContainer);
     }
 
-    /// <summary>
-    /// Option A: Stem in regular weight + ending in bold.
-    /// </summary>
-    static TextBlock CreateBoldEndingAnswer<TVM>(
-        Expression<Func<TVM, string>> answerStemPath,
-        Expression<Func<TVM, string>> answerEndingPath)
-    {
-        var paliFont = new FontFamily(FontPaths.LibertinusSans);
-
-        var stemRun = new Run()
-            .FontFamily(paliFont)
-            .FontWeight(Microsoft.UI.Text.FontWeights.Normal);
-        stemRun.SetBinding(Run.TextProperty, Bind.Path(answerStemPath));
-
-        var endingRun = new Run()
-            .FontFamily(paliFont)
-            .FontWeight(Microsoft.UI.Text.FontWeights.Bold);
-        endingRun.SetBinding(Run.TextProperty, Bind.Path(answerEndingPath));
-
-        var textBlock = PaliText()
-            .FontSize(LayoutConstants.Fonts.AnswerSizeTall)
-            .HorizontalAlignment(HorizontalAlignment.Center)
-            .TextAlignment(TextAlignment.Center)
-            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"));
-        textBlock.Inlines.Add(stemRun);
-        textBlock.Inlines.Add(endingRun);
-
-        return textBlock;
-    }
-
-    /// <summary>
-    /// Option B: All bold, stem in gray + ending in default (black in light mode).
-    /// </summary>
     static TextBlock CreateColorEndingAnswer<TVM>(
         Expression<Func<TVM, string>> answerStemPath,
         Expression<Func<TVM, string>> answerEndingPath)
@@ -340,16 +311,14 @@ public static class PracticePageBuilder
         var stemRun = new Run()
             .FontFamily(paliFont)
             .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
-            .Foreground(new SolidColorBrush(Color.FromArgb(255, 80,80,80)));
+            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"));
         stemRun.SetBinding(Run.TextProperty, Bind.Path(answerStemPath));
 
         var endingRun = new Run()
             .FontFamily(paliFont)
             .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
             // Try different colors: Colors.Blue, Colors.DarkBlue, or custom RGB
-            // 11,83,148
-            // .Foreground(new SolidColorBrush(Color.FromArgb(255, 53,28,117)));
-            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"));
+            .Foreground(new SolidColorBrush(Color.FromArgb(255, 11,83,148)));
         endingRun.SetBinding(Run.TextProperty, Bind.Path(answerEndingPath));
 
         var textBlock = PaliText()
@@ -390,11 +359,11 @@ public static class PracticePageBuilder
 
         var badge = new SquircleBorder()
             .RadiusMode(SquircleRadiusMode.Pill)
-            .Padding(LayoutConstants.Paddings.BadgeHorizontalTall, LayoutConstants.Paddings.BadgeVerticalTall)
             .Fill<TVM>(brushPath)
             .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)
                 .Spacing(LayoutConstants.Spacing.BadgeInternal)
+                .Padding(LayoutConstants.Paddings.BadgeHorizontalTall, LayoutConstants.Paddings.BadgeVerticalTall)
                 .VerticalAlignment(VerticalAlignment.Center)
                 .Children(icon, text));
 
@@ -756,19 +725,14 @@ public static class PracticePageBuilder
         }
 
         // Badge spacing
-        if (elements.BadgesPanel is not null)
-            elements.BadgesPanel.Spacing = HeightResponsiveHelper.GetBadgeSpacing(heightClass);
+        elements.BadgesPanel?.Spacing = HeightResponsiveHelper.GetBadgeSpacing(heightClass);
 
         // Word font
-        if (elements.WordTextBlock is not null)
-            elements.WordTextBlock.FontSize = fonts.Word;
+        elements.WordTextBlock?.FontSize = fonts.Word;
 
         // Answer fonts
-        if (elements.AnswerTextBlock is not null)
-            elements.AnswerTextBlock.FontSize = fonts.Answer;
-
-        if (elements.AnswerSecondaryTextBlock is not null)
-            elements.AnswerSecondaryTextBlock.FontSize = fonts.AnswerSecondary;
+        elements.AnswerTextBlock?.FontSize = fonts.Answer;
+        elements.AnswerSecondaryTextBlock?.FontSize = fonts.AnswerSecondary;
 
         // Badge fonts
         var badgePadding = HeightResponsiveHelper.GetBadgePadding(heightClass);
@@ -782,19 +746,15 @@ public static class PracticePageBuilder
             icon.FontSize = fonts.Badge;
 
         // Badge hint
-        if (elements.BadgeHintTextBlock is not null)
-            elements.BadgeHintTextBlock.FontSize = fonts.BadgeHint;
+        elements.BadgeHintTextBlock?.FontSize = fonts.BadgeHint;
 
         // Translation
-        if (elements.TranslationTextBlock is not null)
-            elements.TranslationTextBlock.FontSize = fonts.Translation;
+        elements.TranslationTextBlock?.FontSize = fonts.Translation;
 
         // Sutta example and reference
-        if (elements.SuttaExampleTextBlock is not null)
-            elements.SuttaExampleTextBlock.FontSize = fonts.SuttaExample;
+        elements.SuttaExampleTextBlock?.FontSize = fonts.SuttaExample;
 
-        if (elements.SuttaReferenceTextBlock is not null)
-            elements.SuttaReferenceTextBlock.FontSize = fonts.SuttaReference;
+        elements.SuttaReferenceTextBlock?.FontSize = fonts.SuttaReference;
 
         // Buttons
         foreach (var (icon, text) in elements.ButtonElements)
@@ -806,8 +766,8 @@ public static class PracticePageBuilder
         // Debug text
         if (elements.DebugTextBlock is not null)
         {
-            var height = elements.ContentArea?.ActualHeight ?? 0;
-            elements.DebugTextBlock.Text = $"Size: {heightClass} ({height:F0}pt)";
+            var availableHeight = HeightResponsiveHelper.MeasureAvailableHeight(elements);
+            elements.DebugTextBlock.Text = $"{heightClass} ({availableHeight:F0}pt)";
         }
     }
 
@@ -819,6 +779,8 @@ public static class PracticePageBuilder
 /// </summary>
 public class ResponsiveElements
 {
+    public FrameworkElement? TitleBar { get; set; }
+    public FrameworkElement? DailyGoalBar { get; set; }
     public Grid? ContentArea { get; set; }
     public SquircleBorder? CardBorder { get; set; }
     public StackPanel? BadgesPanel { get; set; }

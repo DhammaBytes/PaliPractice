@@ -16,11 +16,8 @@ public sealed partial class DeclensionPracticePage : Page
             .Content(BuildPageLayout(elements))
         );
 
-        if (elements.ContentArea is not null)
-        {
-            HeightResponsiveHelper.AttachResponsiveHandler(elements.ContentArea, heightClass =>
-                PracticePageBuilder.ApplyResponsiveValues(elements, heightClass));
-        }
+        HeightResponsiveHelper.AttachResponsiveHandler(elements,
+            heightClass => PracticePageBuilder.ApplyResponsiveValues(elements, heightClass));
     }
 
     static Grid BuildPageLayout(ResponsiveElements elements)

@@ -1,8 +1,10 @@
+using PaliPractice.Presentation.Practice;
+
 namespace PaliPractice.Presentation.Common;
 
 /// <summary>
-/// Helper for height-responsive layouts. Uses SizeChanged events to detect
-/// height class and apply appropriate sizing values.
+/// Helper for height-responsive layouts. Measures available height between
+/// title bar and daily goal bar using screen coordinates.
 /// </summary>
 public static class HeightResponsiveHelper
 {
@@ -33,35 +35,59 @@ public static class HeightResponsiveHelper
     };
 
     /// <summary>
-    /// Attaches a SizeChanged handler that calls the callback when height class changes.
+    /// Attaches responsive handler that measures available height between title bar and daily goal bar.
     /// </summary>
-    /// <param name="element">The element to monitor for size changes</param>
-    /// <param name="onHeightClassChanged">Callback invoked when height class changes</param>
-    /// <param name="invokeImmediately">Whether to invoke the callback immediately with current size</param>
     public static void AttachResponsiveHandler(
-        FrameworkElement element,
-        Action<HeightClass> onHeightClassChanged,
-        bool invokeImmediately = true)
+        ResponsiveElements elements,
+        Action<HeightClass> onHeightClassChanged)
     {
+        if (elements.DailyGoalBar is null)
+            return;
+
         HeightClass? lastClass = null;
+
+        // Attach to daily goal bar since it's laid out last
+        elements.DailyGoalBar.SizeChanged += HandleSizeChanged;
 
         void HandleSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            var newClass = GetHeightClass(e.NewSize.Height);
+            var availableHeight = MeasureAvailableHeight(elements);
+            if (availableHeight <= 0) return;
+
+            var newClass = GetHeightClass(availableHeight);
             if (newClass != lastClass)
             {
                 lastClass = newClass;
                 onHeightClassChanged(newClass);
             }
         }
+    }
 
-        element.SizeChanged += HandleSizeChanged;
+    /// <summary>
+    /// Measures available height between title bar bottom and daily goal bar top.
+    /// </summary>
+    public static double MeasureAvailableHeight(ResponsiveElements elements)
+    {
+        if (elements.TitleBar is null || elements.DailyGoalBar is null)
+            return 0;
 
-        if (invokeImmediately && element.ActualHeight > 0)
+        try
         {
-            var currentClass = GetHeightClass(element.ActualHeight);
-            lastClass = currentClass;
-            onHeightClassChanged(currentClass);
+            // Get title bar's bottom Y in screen coordinates
+            var titleBarTransform = elements.TitleBar.TransformToVisual(null);
+            var titleBarBottom = titleBarTransform.TransformPoint(
+                new Windows.Foundation.Point(0, elements.TitleBar.ActualHeight));
+
+            // Get daily goal bar's top Y in screen coordinates
+            var dailyGoalTransform = elements.DailyGoalBar.TransformToVisual(null);
+            var dailyGoalTop = dailyGoalTransform.TransformPoint(
+                new Windows.Foundation.Point(0, 0));
+
+            return dailyGoalTop.Y - titleBarBottom.Y;
+        }
+        catch
+        {
+            return 0;
         }
     }
 

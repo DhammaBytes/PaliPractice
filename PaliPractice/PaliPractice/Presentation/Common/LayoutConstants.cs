@@ -45,53 +45,53 @@ public static class LayoutConstants
     {
         /// <summary>800pt+ - Comfortable layout</summary>
         public static readonly PracticeFontSizes Tall = new(
-            Word: 44,
-            Answer: 30,
-            AnswerSecondary: 22,
+            Word: 35,
+            Answer: 29, // 0.83 word
+            AnswerSecondary: 26, // 0.9 answer
             Badge: 18,
-            BadgeHint: 17,
-            Translation: 18,
-            SuttaExample: 17,
-            SuttaReference: 15,
+            BadgeHint: 18, // gets too big at 18
+            Translation: 19,
+            SuttaExample: 18,
+            SuttaReference: 17, // gets too big at 17
             Button: 18
         );
 
         /// <summary>720-800pt - Slightly reduced</summary>
         public static readonly PracticeFontSizes Medium = new(
-            Word: 42,
-            Answer: 28,
-            AnswerSecondary: 21,
+            Word: 34,
+            Answer: 28, // feels like ideal size
+            AnswerSecondary: 25,
             Badge: 17,
-            BadgeHint: 16,
-            Translation: 17,
-            SuttaExample: 16,
-            SuttaReference: 14,
+            BadgeHint: 17,
+            Translation: 18,
+            SuttaExample: 17,
+            SuttaReference: 16,
             Button: 17
         );
 
         /// <summary>600-720pt - Further reduced</summary>
         public static readonly PracticeFontSizes Short = new(
-            Word: 40,
+            Word: 32,
             Answer: 26,
-            AnswerSecondary: 20,
+            AnswerSecondary: 23,
             Badge: 16,
-            BadgeHint: 15,
-            Translation: 16,
-            SuttaExample: 15,
-            SuttaReference: 13,
+            BadgeHint: 16,
+            Translation: 17,
+            SuttaExample: 16,
+            SuttaReference: 15,
             Button: 16
         );
 
-        /// <summary>&lt;600pt - Minimum sizes</summary>
+        /// <summary>600pt+ - Minimum sizes</summary>
         public static readonly PracticeFontSizes Minimum = new(
-            Word: 36,
+            Word: 29,
             Answer: 24,
-            AnswerSecondary: 18,
+            AnswerSecondary: 22,
             Badge: 15,
-            BadgeHint: 14,
-            Translation: 15,
-            SuttaExample: 14,
-            SuttaReference: 12,
+            BadgeHint: 15,
+            Translation: 16,
+            SuttaExample: 15,
+            SuttaReference: 14,
             Button: 15
         );
     }
@@ -183,11 +183,13 @@ public static class LayoutConstants
     /// </summary>
     public static class Paddings
     {
-        // Badge internal padding (horizontal, vertical)
+        // Badge internal horizontal padding
         public const double BadgeHorizontalTall = 16;
         public const double BadgeHorizontalMedium = 14;
         public const double BadgeHorizontalShort = 12;
         public const double BadgeHorizontalMinimum = 10;
+        
+        // Badge internal vertical padding
         public const double BadgeVerticalTall = 8;
         public const double BadgeVerticalMedium = 7;
         public const double BadgeVerticalShort = 6;

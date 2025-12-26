@@ -1,3 +1,6 @@
+using Windows.Graphics;
+using Microsoft.Graphics.Display;
+using Microsoft.UI.Windowing;
 using PaliPractice.Presentation.Main;
 using PaliPractice.Presentation.Main.ViewModels;
 using PaliPractice.Presentation.Practice;
@@ -34,7 +37,7 @@ public partial class App : Application
         InitializeComponent();
     }
 
-    protected Window? MainWindow { get; private set; }
+    public static Window? MainWindow { get; private set; }
     protected IHost? Host { get; private set; }
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
@@ -109,7 +112,22 @@ public partial class App : Application
                 })
                 .UseNavigation(RegisterRoutes)
             );
+        
         MainWindow = builder.Window;
+        
+        // if (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() || OperatingSystem.IsLinux())
+        // {
+        //     var displayInfo = DisplayInformation.CreateForWindowId(MainWindow.AppWindow.Id);
+        //     
+        //     var logicalWidth = 800;
+        //     var logicalHeight = 600;
+        //     
+        //     MainWindow.AppWindow.Resize(new SizeInt32
+        //     {
+        //         Width = (int)(logicalWidth * scale),
+        //         Height = (int)(logicalHeight * scale)
+        //     });
+        // }
 
 #if DEBUG
         MainWindow.UseStudio();

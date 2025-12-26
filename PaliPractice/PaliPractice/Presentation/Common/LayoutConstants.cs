@@ -78,9 +78,9 @@ public static class LayoutConstants
             AnswerSecondary: 20,
             Badge: 15,
             BadgeHint: 15,
-            Translation: 19,
-            SuttaExample: 18,
-            SuttaReference: 17,
+            Translation: 18,
+            SuttaExample: 17,
+            SuttaReference: 15,
             Button: 18
         );
 
@@ -90,9 +90,9 @@ public static class LayoutConstants
             AnswerSecondary: 18,
             Badge: 15,
             BadgeHint: 15,
-            Translation: 18,
-            SuttaExample: 17,
-            SuttaReference: 16,
+            Translation: 17,
+            SuttaExample: 16,
+            SuttaReference: 14,
             Button: 17
         );
 
@@ -102,9 +102,9 @@ public static class LayoutConstants
             AnswerSecondary: 17,
             Badge: 15,
             BadgeHint: 15,
-            Translation: 17,
-            SuttaExample: 16,
-            SuttaReference: 15,
+            Translation: 16,
+            SuttaExample: 15,
+            SuttaReference: 13,
             Button: 16
         );
 
@@ -114,9 +114,9 @@ public static class LayoutConstants
             AnswerSecondary: 16,
             Badge: 15,
             BadgeHint: 15,
-            Translation: 16,
-            SuttaExample: 15,
-            SuttaReference: 14,
+            Translation: 15,
+            SuttaExample: 14,
+            SuttaReference: 12,
             Button: 15
         );
 
@@ -147,95 +147,92 @@ public static class LayoutConstants
 
     #endregion
 
-    #region Spacing
+    #region Gaps
 
     /// <summary>
-    /// Spacing values for StackPanel.Spacing and Grid row/column spacing.
+    /// Unified gap values for padding, margins, and spacing throughout the layout.
     /// </summary>
-    public static class Spacing
+    public static class Gaps
     {
-        public static double BadgeSpacing(HeightClass h) => 8; // Currently uniform
+        #region Responsive gaps
 
-        // Fixed spacing (not responsive)
-        public const double CardInternal = 12;
-        public const double BadgeInternal = 6;
-        public const double TranslationContent = 8;
-        public const double AnswerSpacer = 4;
-        public const double AnswerContent = 4;
-        public const double ExampleSection = 4;
-        public const double ButtonColumns = 16;
-        public const double ButtonContent = 8;
-        public const double DailyGoal = 8;
-        public const double RankBadge = 4;
-    }
-
-    #endregion
-
-    #region Paddings
-
-    /// <summary>
-    /// Padding values for element internal spacing.
-    /// </summary>
-    public static class Paddings
-    {
-        public static double ContentHorizontal(HeightClass h) => h switch
-        {
-            HeightClass.Tall => 16,
-            HeightClass.Medium => 16,
-            _ => 12
-        };
-
-        public static Thickness BadgePadding(HeightClass h) => h switch
-        {
-            _ => new Thickness(6, 3, 6, 3)
-        };
-
-        public static double AnswerPadding(HeightClass h) => h switch
+        /// <summary>
+        /// Primary gap - used for content padding, section margins, button columns.
+        /// Controls: content area sides, card-to-translation, translation-to-example, nav-to-dailygoal, easy/hard spacing.
+        /// </summary>
+        public static double Primary(HeightClass h) => h switch
         {
             HeightClass.Tall or HeightClass.Medium => 16,
-            HeightClass.Short => 14,
-            _ => 12
+            HeightClass.Short => 12,
+            _ => 10
         };
 
-        public static double CardPadding(HeightClass h) => h switch
+        /// <summary>
+        /// Card internal padding.
+        /// </summary>
+        public static double Card(HeightClass h) => h switch
         {
             HeightClass.Tall or HeightClass.Medium => 24,
             HeightClass.Short => 20,
             _ => 16
         };
 
-        // Fixed paddings (not responsive)
-        public const double TranslationBorderHorizontal = 24;
-        public const double TranslationBorderVertical = 16;
-        public const double TranslationArrowButtonHorizontal = 8;
-        public const double TranslationArrowButtonVertical = 6;
-        public const double RankBadgeHorizontal = 8;
-        public const double RankBadgeVertical = 4;
-        public const double NavigationContainerHorizontal = 20;
-        public const double NavigationContainerVertical = 16;
-        public const double ActionButtonHorizontal = 16;
-        public const double ActionButtonVertical = 12;
-        public const double DailyGoalHorizontal = 20;
-        public const double DailyGoalVertical = 12;
-    }
+        /// <summary>
+        /// Badge internal padding (horizontal, vertical).
+        /// </summary>
+        public static Thickness Badge(HeightClass h) => new(6, 3, 6, 3);
 
-    #endregion
+        /// <summary>
+        /// Spacing between badges.
+        /// </summary>
+        public static double BadgeSpacing(HeightClass h) => h switch
+        {
+            HeightClass.Tall or HeightClass.Medium => 8,
+            _ => 6
+        };
 
-    #region Margins
+        #endregion
 
-    /// <summary>
-    /// Margin values for layout elements (fixed, not responsive).
-    /// </summary>
-    public static class Margins
-    {
-        public const double CardTop = 16;
-        public const double TranslationTop = 16;
-        
-        public const double ExampleContainerTop = 8;
-        public const double AnswerContainerTop = 8;
-        
+        #region Fixed gaps
+
+        // Card internal
+        public const double CardInternal = 12;
+
+        // Word section
         public const double WordTop = 16;
         public const double WordBottom = 8;
+
+        // Answer section
+        public const double AnswerTop = 8;
+        public const double AnswerLines = 4;
+
+        // Badge
+        public const double BadgeInternal = 6;
+
+        // Translation block
+        public const double TranslationHorizontal = 24;
+        public const double TranslationVertical = 16;
+        public const double TranslationContent = 8;
+        public const double TranslationArrowHorizontal = 8;
+        public const double TranslationArrowVertical = 6;
+
+        // Example section
+        public const double ExampleSection = 4;
+
+        // Buttons
+        public const double ButtonContent = 8;
+        public const double ActionButtonHorizontal = 16;
+        public const double ActionButtonVertical = 12;
+
+        // Rank badge
+        public const double RankBadgeHorizontal = 8;
+        public const double RankBadgeVertical = 4;
+        public const double RankBadge = 4;
+
+        // Daily goal
+        public const double DailyGoal = 8;
+
+        #endregion
     }
 
     #endregion

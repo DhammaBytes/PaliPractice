@@ -1,48 +1,6 @@
 namespace PaliPractice.Models;
 
-public enum Number
-{
-    None,
-    Singular = 1,
-    Plural = 2
-}
-
-public enum Person
-{
-    None,
-    First = 1,
-    Second = 2,
-    Third = 3
-}
-
-public enum Voice
-{
-    None,
-    Active = 1,
-    Reflexive = 2,
-    Passive = 3,
-    Causative = 4
-}
-
-public enum Tense
-{
-    None,
-    Present = 1,
-    Imperative = 2,
-    Optative = 3,
-    Future = 4,
-    Aorist = 5
-}
-
-public enum Gender
-{
-    None,
-    Masculine = 1,
-    Neuter = 2,
-    Feminine = 3
-}
-
-public enum NounCase
+public enum Case
 {
     None,
     Nominative = 1,
@@ -55,6 +13,51 @@ public enum NounCase
     Vocative = 8
 }
 
+public enum Tense
+{
+    None,
+    Present = 1,
+    Imperative = 2,
+    Optative = 3,
+    Future = 4,
+    Aorist = 5
+}
+
+
+public enum Gender
+{
+    None,
+    Masculine = 1,
+    Neuter = 2,
+    Feminine = 3
+}
+
+public enum Person
+{
+    None,
+    First = 1,
+    Second = 2,
+    Third = 3
+}
+
+public enum Number
+{
+    None,
+    Singular = 1,
+    Plural = 2
+}
+
+
+#region Verb-specific, not used seriously
+public enum Voice
+{
+    None,
+    Active = 1,
+    Reflexive = 2,
+    Passive = 3,
+    Causative = 4
+}
+
 public enum Transitivity
 {
     None,
@@ -62,3 +65,4 @@ public enum Transitivity
     Intransitive = 2,
     Ditransitive = 3
 }
+#endregion

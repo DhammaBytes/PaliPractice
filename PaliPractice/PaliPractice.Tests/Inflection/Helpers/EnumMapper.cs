@@ -8,7 +8,7 @@ public static class EnumMapper
     /// <summary>
     /// Parse a noun title like "masc nom sg" into enum values.
     /// </summary>
-    public static (Gender gender, NounCase nounCase, Number number) ParseNounTitle(string title)
+    public static (Gender gender, Case nounCase, Number number) ParseNounTitle(string title)
     {
         var parts = title.ToLower().Split(' ');
 
@@ -76,18 +76,18 @@ public static class EnumMapper
         };
     }
 
-    static NounCase ParseCase(string caseStr)
+    static Case ParseCase(string caseStr)
     {
         return caseStr switch
         {
-            "nom" => NounCase.Nominative,
-            "acc" => NounCase.Accusative,
-            "instr" => NounCase.Instrumental,
-            "dat" => NounCase.Dative,
-            "abl" => NounCase.Ablative,
-            "gen" => NounCase.Genitive,
-            "loc" => NounCase.Locative,
-            "voc" => NounCase.Vocative,
+            "nom" => Case.Nominative,
+            "acc" => Case.Accusative,
+            "instr" => Case.Instrumental,
+            "dat" => Case.Dative,
+            "abl" => Case.Ablative,
+            "gen" => Case.Genitive,
+            "loc" => Case.Locative,
+            "voc" => Case.Vocative,
             _ => throw new ArgumentException($"Unknown case: {caseStr}")
         };
     }

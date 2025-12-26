@@ -8,6 +8,7 @@ namespace PaliPractice.Models.Words;
 public interface IWord
 {
     int Id { get; set; }
+    int LemmaId { get; set; }
     int EbtCount { get; set; }
     string Lemma { get; set; }
     string LemmaClean { get; set; }

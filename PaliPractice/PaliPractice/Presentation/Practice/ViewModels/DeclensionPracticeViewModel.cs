@@ -53,7 +53,7 @@ public partial class DeclensionPracticeViewModel : Common.PracticeViewModelBase
 
         // Generate all grouped declensions for this noun (one per case+number combo)
         var allDeclensions = new List<Declension>();
-        foreach (var nounCase in Enum.GetValues<NounCase>())
+        foreach (var nounCase in Enum.GetValues<Case>())
         {
             foreach (var number in Enum.GetValues<Number>())
             {
@@ -105,26 +105,26 @@ public partial class DeclensionPracticeViewModel : Common.PracticeViewModelBase
         NumberGlyph = OptionPresentation.GetGlyph(d.Number);
 
         // Case badge
-        CaseLabel = d.CaseName.ToString();
-        CaseBrush = OptionPresentation.GetChipBrush(d.CaseName);
+        CaseLabel = d.Case.ToString();
+        CaseBrush = OptionPresentation.GetChipBrush(d.Case);
         CaseGlyph = "\uE8C8"; // Placeholder icon (Tag)
-        CaseHint = d.CaseName switch
+        CaseHint = d.Case switch
         {
-            NounCase.Nominative => "who? what? (subject)",
-            NounCase.Accusative => "whom? what? (object)",
-            NounCase.Instrumental => "with whom? with what? by what means?",
-            NounCase.Dative => "to whom? to what? for whom?",
-            NounCase.Ablative => "from whom? from what?",
-            NounCase.Genitive => "whose? of whom? of what?",
-            NounCase.Locative => "in/at/on whom? where?",
-            NounCase.Vocative => "O...! (direct address)",
+            Case.Nominative => "who? what? (subject)",
+            Case.Accusative => "whom? what? (object)",
+            Case.Instrumental => "with whom? with what? by what means?",
+            Case.Dative => "to whom? to what? for whom?",
+            Case.Ablative => "from whom? from what?",
+            Case.Genitive => "whose? of whom? of what?",
+            Case.Locative => "in/at/on whom? where?",
+            Case.Vocative => "O...! (direct address)",
             _ => string.Empty
         };
 
         // Alternative forms (other InCorpus forms besides Primary)
         var primary = d.Primary;
         var alternatives = d.Forms
-            .Where(f => f.InCorpus && (!primary.HasValue || f.EndingIndex != primary.Value.EndingIndex))
+            .Where(f => f.InCorpus && (!primary.HasValue || f.EndingId != primary.Value.EndingId))
             .Select(f => f.Form)
             .ToList();
         AlternativeForms = alternatives.Count > 0 ? string.Join(", ", alternatives) : string.Empty;
@@ -141,7 +141,7 @@ public partial class DeclensionPracticeViewModel : Common.PracticeViewModelBase
         NumberGlyph = OptionPresentation.GetGlyph(Number.Singular);
 
         CaseLabel = "Nominative";
-        CaseBrush = OptionPresentation.GetChipBrush(NounCase.Nominative);
+        CaseBrush = OptionPresentation.GetChipBrush(Case.Nominative);
         CaseGlyph = "\uE8C8";
         CaseHint = "who? what? (subject)";
 

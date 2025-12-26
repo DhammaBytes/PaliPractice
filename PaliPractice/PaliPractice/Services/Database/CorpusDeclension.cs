@@ -10,18 +10,10 @@ namespace PaliPractice.Services.Database;
 [Table("corpus_declensions")]
 class CorpusDeclension
 {
-    [Column("noun_id")]
-    public int NounId { get; set; }
-
-    [Column("case_name")]
-    public int CaseName { get; set; }
-
-    [Column("number")]
-    public int Number { get; set; }
-
-    [Column("gender")]
-    public int Gender { get; set; }
-
-    [Column("ending_index")]
-    public int EndingIndex { get; set; }
+    /// <summary>
+    /// Encoded form ID: lemma_id(5) + case(1) + gender(1) + number(1) + ending_index(1)
+    /// </summary>
+    [PrimaryKey]
+    [Column("form_id")]
+    public int FormId { get; set; }
 }

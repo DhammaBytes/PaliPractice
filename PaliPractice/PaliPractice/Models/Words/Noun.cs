@@ -8,6 +8,9 @@ public class Noun : IWord
     [PrimaryKey]
     public int Id { get; set; }
 
+    [Column("lemma_id")]
+    public int LemmaId { get; set; }
+
     [Column("ebt_count")]
     public int EbtCount { get; set; }
 

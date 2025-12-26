@@ -1,5 +1,6 @@
 using SQLite;
 using System.Reflection;
+using PaliPractice.Models.Inflection;
 using PaliPractice.Models.Words;
 
 namespace PaliPractice.Services.Database;
@@ -16,13 +17,15 @@ public interface IDatabaseService
 
     /// <summary>
     /// Check if a specific noun form appears in the Pali Tipitaka corpus.
+    /// Uses form_id lookup for efficient querying.
     /// </summary>
-    bool IsNounFormInCorpus(int nounId, NounCase nounCase, Number number, Gender gender, int endingIndex = 0);
+    bool IsNounFormInCorpus(int lemmaId, Case @case, Gender gender, Number number, int endingIndex);
 
     /// <summary>
     /// Check if a specific verb form appears in the Pali Tipitaka corpus.
+    /// Uses form_id lookup for efficient querying.
     /// </summary>
-    bool IsVerbFormInCorpus(int verbId, Person person, Tense tense, Voice voice, int endingIndex = 0);
+    bool IsVerbFormInCorpus(int lemmaId, Tense tense, Person person, Number number, Voice voice, int endingIndex);
 }
 
 public class DatabaseService : IDatabaseService
@@ -157,43 +160,34 @@ public class DatabaseService : IDatabaseService
     }
 
     public bool IsNounFormInCorpus(
-        int nounId,
-        NounCase nounCase,
-        Number number,
+        int lemmaId,
+        Case @case,
         Gender gender,
-        int endingIndex = 0)
+        Number number,
+        int endingIndex)
     {
         EnsureInitialized();
 
-        var result = _database!
+        var formId = Declension.ResolveId(lemmaId, @case, gender, number, endingIndex);
+        return _database!
             .Table<CorpusDeclension>()
-            .Count(d => d.NounId == nounId
-                        && d.CaseName == (int)nounCase
-                        && d.Number == (int)number
-                        && d.Gender == (int)gender
-                        && d.EndingIndex == endingIndex);
-
-        return result > 0;
+            .Any(d => d.FormId == formId);
     }
 
     public bool IsVerbFormInCorpus(
-        int verbId,
-        Person person,
+        int lemmaId,
         Tense tense,
+        Person person,
+        Number number,
         Voice voice,
-        int endingIndex = 0)
+        int endingIndex)
     {
         EnsureInitialized();
 
-        var result = _database!
+        var formId = Conjugation.ResolveId(lemmaId, tense, person, number, voice, endingIndex);
+        return _database!
             .Table<CorpusConjugation>()
-            .Count(c => c.VerbId == verbId
-                        && c.Person == (int)person
-                        && c.Tense == (int)tense
-                        && c.Voice == (int)voice
-                        && c.EndingIndex == endingIndex);
-
-        return result > 0;
+            .Any(c => c.FormId == formId);
     }
 
     public void Dispose()

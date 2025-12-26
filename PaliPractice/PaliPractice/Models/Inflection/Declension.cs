@@ -7,14 +7,14 @@ namespace PaliPractice.Models.Inflection;
 public class Declension
 {
     /// <summary>
-    /// The grammatical case.
+    /// Stable ID for the lemma group (10001-69999 for nouns).
     /// </summary>
-    public NounCase CaseName { get; init; }
+    public int LemmaId { get; init; }
 
     /// <summary>
-    /// Singular or Plural.
+    /// The grammatical case.
     /// </summary>
-    public Number Number { get; init; }
+    public Case Case { get; init; }
 
     /// <summary>
     /// Masculine, Neuter, or Feminine.
@@ -22,28 +22,68 @@ public class Declension
     public Gender Gender { get; init; }
 
     /// <summary>
+    /// Singular or Plural.
+    /// </summary>
+    public Number Number { get; init; }
+
+    /// <summary>
+    /// Unique ID for this declension combination (EndingId=0).
+    /// Format: lemmaId(5) + case(1) + gender(1) + number(1) + 0
+    /// Example: 10789_3_1_2_0 → 107893120
+    /// </summary>
+    public int FormId => ResolveId(LemmaId, Case, Gender, Number, 0);
+
+    /// <summary>
     /// All possible form variants for this declension (1-N forms).
     /// </summary>
     public IReadOnlyList<DeclensionForm> Forms { get; init; } = [];
 
     /// <summary>
+    /// Computes a unique FormId from declension components.
+    /// </summary>
+    /// <param name="endingId">1-based ending ID. Use 0 for combination reference.</param>
+    public static int ResolveId(int lemmaId, Case @case, Gender gender, Number number, int endingId)
+    {
+        return
+            lemmaId * 10_000 +
+            (int)@case * 1_000 +
+            (int)gender * 100 +
+            (int)number * 10 +
+            endingId;
+    }
+
+    /// <summary>
+    /// Parses a FormId back into its component parts.
+    /// </summary>
+    public static (int LemmaId, Case Case, Gender Gender, Number Number, int EndingId) ParseId(int formId)
+    {
+        return (
+            formId / 10_000,
+            (Case)(formId % 10_000 / 1_000),
+            (Gender)(formId % 1_000 / 100),
+            (Number)(formId % 100 / 10),
+            formId % 10
+        );
+    }
+
+    /// <summary>
     /// Returns the primary attested form:
-    /// - First, try EndingIndex=0 if InCorpus
-    /// - Otherwise, return first InCorpus form (any index)
+    /// - First, try EndingId=1 (first/default ending) if InCorpus
+    /// - Otherwise, return first InCorpus form (any EndingId)
     /// - Null if no InCorpus forms exist
     /// </summary>
     public DeclensionForm? Primary
     {
         get
         {
-            // Try EndingIndex=0 first
+            // Try EndingId=1 first (the default ending)
             foreach (var form in Forms)
             {
-                if (form.EndingIndex == 0 && form.InCorpus)
+                if (form is { EndingId: 1, InCorpus: true })
                     return form;
             }
 
-            // Fall back to first InCorpus form
+            // Fall back to the first InCorpus form
             foreach (var form in Forms)
             {
                 if (form.InCorpus)

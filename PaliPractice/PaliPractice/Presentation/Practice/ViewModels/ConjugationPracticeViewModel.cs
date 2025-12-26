@@ -117,7 +117,7 @@ public partial class ConjugationPracticeViewModel : Common.PracticeViewModelBase
         // Alternative forms (other InCorpus forms besides Primary)
         var primary = c.Primary;
         var alternatives = c.Forms
-            .Where(f => f.InCorpus && (!primary.HasValue || f.EndingIndex != primary.Value.EndingIndex))
+            .Where(f => f.InCorpus && (!primary.HasValue || f.EndingId != primary.Value.EndingId))
             .Select(f => f.Form)
             .ToList();
         AlternativeForms = alternatives.Count > 0 ? string.Join(", ", alternatives) : string.Empty;

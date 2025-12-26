@@ -11,7 +11,7 @@ public interface IInflectionService
     /// </summary>
     Declension GenerateNounForms(
         Noun noun,
-        NounCase nounCase,
+        Case nounCase,
         Number number);
 
     /// <summary>
@@ -26,8 +26,6 @@ public interface IInflectionService
         Voice voice);
 }
 
-// TODO: clean or reject stems with symbols
-
 public class InflectionService : IInflectionService
 {
     readonly IDatabaseService _databaseService;
@@ -37,16 +35,23 @@ public class InflectionService : IInflectionService
         _databaseService = databaseService;
     }
 
+    /// <summary>
+    /// Convert 0-based array index to 1-based EndingId.
+    /// EndingId=0 is reserved for combination references.
+    /// </summary>
+    static int EndingIdFromIndex(int index) => index + 1;
+
     public Declension GenerateNounForms(
         Noun noun,
-        NounCase nounCase,
+        Case nounCase,
         Number number)
     {
         if (string.IsNullOrEmpty(noun.Pattern) || string.IsNullOrEmpty(noun.Stem))
         {
             return new Declension
             {
-                CaseName = nounCase,
+                LemmaId = noun.LemmaId,
+                Case = nounCase,
                 Number = number,
                 Gender = noun.Gender,
                 Forms = []
@@ -60,7 +65,8 @@ public class InflectionService : IInflectionService
         {
             return new Declension
             {
-                CaseName = nounCase,
+                LemmaId = noun.LemmaId,
+                Case = nounCase,
                 Number = number,
                 Gender = noun.Gender,
                 Forms = []
@@ -75,26 +81,32 @@ public class InflectionService : IInflectionService
             var ending = endings[i];
             var form = noun.Stem + ending;
 
+            // Convert array index to 1-based EndingId
+            var endingId = EndingIdFromIndex(i);
+            var formId = Declension.ResolveId(noun.LemmaId, nounCase, noun.Gender, number, endingId);
+
             // Check if this specific form appears in the corpus
             var inCorpus = _databaseService.IsNounFormInCorpus(
-                noun.Id,
+                noun.LemmaId,
                 nounCase,
-                number,
                 noun.Gender,
-                endingIndex: i
+                number,
+                endingId
             );
 
             forms.Add(new DeclensionForm(
+                FormId: formId,
                 Form: form,
                 Ending: ending,
-                EndingIndex: i,
+                EndingId: endingId,
                 InCorpus: inCorpus
             ));
         }
 
         return new Declension
         {
-            CaseName = nounCase,
+            LemmaId = noun.LemmaId,
+            Case = nounCase,
             Number = number,
             Gender = noun.Gender,
             Forms = forms
@@ -112,6 +124,7 @@ public class InflectionService : IInflectionService
         {
             return new Conjugation
             {
+                LemmaId = verb.LemmaId,
                 Person = person,
                 Number = number,
                 Tense = tense,
@@ -133,6 +146,7 @@ public class InflectionService : IInflectionService
         {
             return new Conjugation
             {
+                LemmaId = verb.LemmaId,
                 Person = person,
                 Number = number,
                 Tense = tense,
@@ -149,25 +163,32 @@ public class InflectionService : IInflectionService
             var ending = endings[i];
             var form = verb.Stem + ending;
 
+            // Convert array index to 1-based EndingId
+            var endingId = EndingIdFromIndex(i);
+            var formId = Conjugation.ResolveId(verb.LemmaId, tense, person, number, voice, endingId);
+
             // Check if this specific form appears in the corpus
             var inCorpus = _databaseService.IsVerbFormInCorpus(
-                verb.Id,
-                person,
+                verb.LemmaId,
                 tense,
+                person,
+                number,
                 voice,
-                endingIndex: i
+                endingId
             );
 
             forms.Add(new ConjugationForm(
+                FormId: formId,
                 Form: form,
                 Ending: ending,
-                EndingIndex: i,
+                EndingId: endingId,
                 InCorpus: inCorpus
             ));
         }
 
         return new Conjugation
         {
+            LemmaId = verb.LemmaId,
             Person = person,
             Number = number,
             Tense = tense,

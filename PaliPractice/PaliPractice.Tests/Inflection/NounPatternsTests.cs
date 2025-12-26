@@ -19,7 +19,7 @@ public class NounPatternsTests
     public record NounTestCase(
         string Pattern,
         string Word,
-        NounCase Case,
+        Case Case,
         Number Number,
         string[] ExpectedEndings)
     {
@@ -64,9 +64,9 @@ public class NounPatternsTests
             foreach (var word in words)
             {
                 // Test all 16 combinations (8 cases × 2 numbers)
-                foreach (NounCase nounCase in Enum.GetValues<NounCase>())
+                foreach (Case nounCase in Enum.GetValues<Case>())
                 {
-                    if (nounCase == NounCase.None) continue;
+                    if (nounCase == Case.None) continue;
 
                     foreach (Number number in Enum.GetValues<Number>())
                     {
@@ -78,14 +78,14 @@ public class NounPatternsTests
 
                         var caseStr = nounCase switch
                         {
-                            NounCase.Nominative => "nom",
-                            NounCase.Accusative => "acc",
-                            NounCase.Instrumental => "instr",
-                            NounCase.Dative => "dat",
-                            NounCase.Ablative => "abl",
-                            NounCase.Genitive => "gen",
-                            NounCase.Locative => "loc",
-                            NounCase.Vocative => "voc",
+                            Case.Nominative => "nom",
+                            Case.Accusative => "acc",
+                            Case.Instrumental => "instr",
+                            Case.Dative => "dat",
+                            Case.Ablative => "abl",
+                            Case.Genitive => "gen",
+                            Case.Locative => "loc",
+                            Case.Vocative => "voc",
                             _ => throw new ArgumentException($"Unknown case: {nounCase}")
                         };
 
@@ -163,7 +163,7 @@ public class NounPatternsTests
         var (gender, nounCase, number) = EnumMapper.ParseNounTitle("masc nom sg");
 
         gender.Should().Be(Gender.Masculine);
-        nounCase.Should().Be(NounCase.Nominative);
+        nounCase.Should().Be(Case.Nominative);
         number.Should().Be(Number.Singular);
     }
 }

@@ -9,6 +9,7 @@ public class Lemma : ILemma
     readonly List<IWord> _words;
     readonly List<IWord> _variants;
 
+    public int LemmaId { get; }
     public string LemmaClean { get; }
     public IReadOnlyList<IWord> Words => _words;
     public IReadOnlyList<IWord> Variants => _variants;
@@ -17,6 +18,9 @@ public class Lemma : ILemma
     public Lemma(string lemmaClean, IEnumerable<IWord> words)
     {
         LemmaClean = lemmaClean;
+
+        // All words with same lemma_clean share the same LemmaId
+        LemmaId = words.First().LemmaId;
 
         var allWords = words.ToList();
 

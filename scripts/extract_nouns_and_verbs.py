@@ -12,11 +12,279 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple, Set
 import sys
 
+# Lemma registry for stable IDs across rebuilds
+REGISTRY_PATH = Path(__file__).parent / "lemma_registry.json"
+REGISTRY_BACKUP_PATH = Path(__file__).parent / "lemma_registry.backup.json"
+NOUN_ID_START = 10001
+NOUN_ID_MAX = 69999
+VERB_ID_START = 70001
+VERB_ID_MAX = 99999
+
+
+class RegistryError(Exception):
+    """Raised when registry validation fails."""
+    pass
+
+
+def validate_registry(registry: Dict[str, Any]) -> None:
+    """Validate registry structure and ID ranges. Raises RegistryError on failure."""
+    required_keys = {"version", "next_noun_id", "next_verb_id", "nouns", "verbs"}
+    if not required_keys.issubset(registry.keys()):
+        raise RegistryError(f"Registry missing required keys: {required_keys - registry.keys()}")
+
+    # Validate noun IDs are in valid range
+    for lemma, lid in registry["nouns"].items():
+        if not isinstance(lid, int) or lid < NOUN_ID_START or lid > NOUN_ID_MAX:
+            raise RegistryError(f"Invalid noun ID {lid} for '{lemma}' (must be {NOUN_ID_START}-{NOUN_ID_MAX})")
+
+    # Validate verb IDs are in valid range
+    for lemma, lid in registry["verbs"].items():
+        if not isinstance(lid, int) or lid < VERB_ID_START or lid > VERB_ID_MAX:
+            raise RegistryError(f"Invalid verb ID {lid} for '{lemma}' (must be {VERB_ID_START}-{VERB_ID_MAX})")
+
+    # Validate next_*_id is greater than all existing IDs
+    if registry["nouns"]:
+        max_noun_id = max(registry["nouns"].values())
+        if registry["next_noun_id"] <= max_noun_id:
+            raise RegistryError(f"next_noun_id ({registry['next_noun_id']}) must be > max existing ({max_noun_id})")
+
+    if registry["verbs"]:
+        max_verb_id = max(registry["verbs"].values())
+        if registry["next_verb_id"] <= max_verb_id:
+            raise RegistryError(f"next_verb_id ({registry['next_verb_id']}) must be > max existing ({max_verb_id})")
+
+    # Check for ID collisions (same ID assigned to different lemmas)
+    noun_ids = list(registry["nouns"].values())
+    if len(noun_ids) != len(set(noun_ids)):
+        raise RegistryError("Duplicate noun IDs detected!")
+
+    verb_ids = list(registry["verbs"].values())
+    if len(verb_ids) != len(set(verb_ids)):
+        raise RegistryError("Duplicate verb IDs detected!")
+
+
+def load_registry() -> Dict[str, Any]:
+    """Load and validate lemma registry from JSON file."""
+    if REGISTRY_PATH.exists():
+        try:
+            registry = json.loads(REGISTRY_PATH.read_text(encoding='utf-8'))
+            validate_registry(registry)
+            return registry
+        except json.JSONDecodeError as e:
+            raise RegistryError(f"Failed to parse registry JSON: {e}")
+    return {
+        "version": 1,
+        "next_noun_id": NOUN_ID_START,
+        "next_verb_id": VERB_ID_START,
+        "nouns": {},
+        "verbs": {}
+    }
+
+
+def save_registry(registry: Dict[str, Any], original_registry: Dict[str, Any]) -> None:
+    """
+    Save lemma registry with safety checks.
+    - Validates registry before saving
+    - Creates backup of existing file
+    - Ensures no existing IDs were modified or removed
+    - Uses atomic write (temp file + rename)
+    """
+    # Validate before saving
+    validate_registry(registry)
+
+    # Check that no existing IDs were modified or removed
+    for lemma, original_id in original_registry["nouns"].items():
+        if lemma not in registry["nouns"]:
+            raise RegistryError(f"Noun '{lemma}' was removed from registry!")
+        if registry["nouns"][lemma] != original_id:
+            raise RegistryError(f"Noun '{lemma}' ID changed from {original_id} to {registry['nouns'][lemma]}!")
+
+    for lemma, original_id in original_registry["verbs"].items():
+        if lemma not in registry["verbs"]:
+            raise RegistryError(f"Verb '{lemma}' was removed from registry!")
+        if registry["verbs"][lemma] != original_id:
+            raise RegistryError(f"Verb '{lemma}' ID changed from {original_id} to {registry['verbs'][lemma]}!")
+
+    # Create backup of existing file
+    if REGISTRY_PATH.exists():
+        import shutil
+        shutil.copy2(REGISTRY_PATH, REGISTRY_BACKUP_PATH)
+        print(f"Created registry backup: {REGISTRY_BACKUP_PATH}")
+
+    # Atomic write: write to temp file, then rename
+    temp_path = REGISTRY_PATH.with_suffix('.tmp')
+    temp_path.write_text(json.dumps(registry, indent=2, ensure_ascii=False), encoding='utf-8')
+    temp_path.rename(REGISTRY_PATH)
+
+
+def get_noun_lemma_id(registry: Dict[str, Any], lemma_clean: str) -> int:
+    """Get or assign stable lemma_id for a noun's lemma_clean. Never modifies existing IDs."""
+    if lemma_clean in registry["nouns"]:
+        return registry["nouns"][lemma_clean]
+
+    # Assign new ID
+    new_id = registry["next_noun_id"]
+    if new_id > NOUN_ID_MAX:
+        raise RegistryError(f"Noun ID overflow! Max is {NOUN_ID_MAX}, tried to assign {new_id}")
+
+    registry["nouns"][lemma_clean] = new_id
+    registry["next_noun_id"] = new_id + 1
+    return new_id
+
+
+def get_verb_lemma_id(registry: Dict[str, Any], lemma_clean: str) -> int:
+    """Get or assign stable lemma_id for a verb's lemma_clean. Never modifies existing IDs."""
+    if lemma_clean in registry["verbs"]:
+        return registry["verbs"][lemma_clean]
+
+    # Assign new ID
+    new_id = registry["next_verb_id"]
+    if new_id > VERB_ID_MAX:
+        raise RegistryError(f"Verb ID overflow! Max is {VERB_ID_MAX}, tried to assign {new_id}")
+
+    registry["verbs"][lemma_clean] = new_id
+    registry["next_verb_id"] = new_id + 1
+    return new_id
+
+
+def deep_copy_registry(registry: Dict[str, Any]) -> Dict[str, Any]:
+    """Create a deep copy of registry for comparison."""
+    return {
+        "version": registry["version"],
+        "next_noun_id": registry["next_noun_id"],
+        "next_verb_id": registry["next_verb_id"],
+        "nouns": dict(registry["nouns"]),
+        "verbs": dict(registry["verbs"])
+    }
+
+
+def compute_declension_form_id(lemma_id: int, case: int, gender: int, number: int, ending_index: int) -> int:
+    """
+    Compute declension form_id matching C# Declension.ResolveId().
+    Format: lemma_id(5) + case(1) + gender(1) + number(1) + ending_index(1)
+    Example: 10789_3_1_2_2 → 107893122
+    """
+    return lemma_id * 10_000 + case * 1_000 + gender * 100 + number * 10 + ending_index
+
+
+def compute_conjugation_form_id(lemma_id: int, tense: int, person: int, number: int, voice: int, ending_index: int) -> int:
+    """
+    Compute conjugation form_id matching C# Conjugation.ResolveId().
+    Format: lemma_id(5) + tense(1) + person(1) + number(1) + voice(1) + ending_index(1)
+    Example: 70683_2_3_1_2_3 → 7068323123
+    """
+    return lemma_id * 100_000 + tense * 10_000 + person * 1_000 + number * 100 + voice * 10 + ending_index
+
+
 sys.path.append('../dpd-db')
 
 from db.db_helpers import get_db_session
 from db.models import DpdHeadword, InflectionTemplates
 from tools.pos import CONJUGATIONS, DECLENSIONS
+
+
+def populate_all_lemmas_to_registry():
+    """
+    One-time operation: Populate registry with ALL lemmas from DPD.
+
+    This ensures all lemma IDs are assigned upfront, ordered by ebt_count.
+    After this, the registry should only ever have NEW lemmas appended.
+
+    Run this once, then commit lemma_registry.json to version control.
+    """
+    print("=" * 60)
+    print("POPULATING REGISTRY WITH ALL DPD LEMMAS")
+    print("=" * 60)
+
+    # Check if registry already has data
+    if REGISTRY_PATH.exists():
+        existing = json.loads(REGISTRY_PATH.read_text(encoding='utf-8'))
+        if existing.get("nouns") or existing.get("verbs"):
+            print(f"WARNING: Registry already contains {len(existing.get('nouns', {}))} nouns and {len(existing.get('verbs', {}))} verbs.")
+            response = input("This will ADD new lemmas only. Continue? (yes/no): ")
+            if response.lower() != 'yes':
+                print("Aborted.")
+                return
+
+    registry = load_registry()
+    original_registry = deep_copy_registry(registry)
+
+    db_session = get_db_session(Path("../dpd-db/dpd.db"))
+
+    # Noun POS types
+    noun_pos = ['noun', 'masc', 'fem', 'neut', 'nt', 'abstr', 'act', 'agent', 'dimin']
+
+    # Verb POS types (excluding participles)
+    verb_pos = ['vb', 'pr', 'aor', 'fut', 'opt', 'imp', 'cond',
+                'caus', 'pass', 'reflx', 'deno', 'desid', 'intens', 'trans',
+                'intrans', 'ditrans', 'impers', 'inf', 'abs', 'ger', 'comp vb']
+
+    # lemma_clean is a Python @property, not a DB column
+    # We need to fetch all rows and group in Python
+
+    print("\nQuerying all nouns...")
+    all_nouns = db_session.query(DpdHeadword).filter(
+        DpdHeadword.pos.in_(noun_pos),
+        DpdHeadword.pattern.isnot(None),
+        DpdHeadword.pattern != '',
+        DpdHeadword.stem.isnot(None),
+        DpdHeadword.stem != '-',
+    ).all()
+
+    # Group by lemma_clean and get max ebt_count for ordering
+    noun_by_lemma: Dict[str, int] = {}
+    for word in all_nouns:
+        lc = word.lemma_clean
+        ebt = word.ebt_count or 0
+        if lc not in noun_by_lemma or ebt > noun_by_lemma[lc]:
+            noun_by_lemma[lc] = ebt
+
+    # Sort by max ebt_count descending
+    noun_lemmas = sorted(noun_by_lemma.items(), key=lambda x: -x[1])
+    print(f"Found {len(noun_lemmas)} unique noun lemmas")
+
+    print("Querying all verbs...")
+    all_verbs = db_session.query(DpdHeadword).filter(
+        DpdHeadword.pos.in_(verb_pos),
+        DpdHeadword.pattern.isnot(None),
+        DpdHeadword.pattern != '',
+        DpdHeadword.stem.isnot(None),
+        DpdHeadword.stem != '-',
+    ).all()
+
+    # Group by lemma_clean and get max ebt_count for ordering
+    verb_by_lemma: Dict[str, int] = {}
+    for word in all_verbs:
+        lc = word.lemma_clean
+        ebt = word.ebt_count or 0
+        if lc not in verb_by_lemma or ebt > verb_by_lemma[lc]:
+            verb_by_lemma[lc] = ebt
+
+    # Sort by max ebt_count descending
+    verb_lemmas = sorted(verb_by_lemma.items(), key=lambda x: -x[1])
+    print(f"Found {len(verb_lemmas)} unique verb lemmas")
+
+    # Assign IDs to all noun lemmas (in ebt_count order)
+    new_nouns = 0
+    for lemma_clean, max_ebt in noun_lemmas:
+        if lemma_clean not in registry["nouns"]:
+            get_noun_lemma_id(registry, lemma_clean)
+            new_nouns += 1
+
+    # Assign IDs to all verb lemmas (in ebt_count order)
+    new_verbs = 0
+    for lemma_clean, max_ebt in verb_lemmas:
+        if lemma_clean not in registry["verbs"]:
+            get_verb_lemma_id(registry, lemma_clean)
+            new_verbs += 1
+
+    print(f"\nAdded {new_nouns} new noun lemmas (total: {len(registry['nouns'])})")
+    print(f"Added {new_verbs} new verb lemmas (total: {len(registry['verbs'])})")
+
+    # Save with safety checks
+    save_registry(registry, original_registry)
+    print(f"\nRegistry saved to {REGISTRY_PATH}")
+    print("=" * 60)
 
 
 # Enum mappings matching C# Enums.cs
@@ -165,6 +433,7 @@ class NounVerbExtractor:
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS nouns (
                 id INTEGER PRIMARY KEY,
+                lemma_id INTEGER NOT NULL,
                 ebt_count INTEGER DEFAULT 0,
                 lemma TEXT NOT NULL UNIQUE,
                 lemma_clean TEXT NOT NULL,
@@ -188,6 +457,7 @@ class NounVerbExtractor:
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS verbs (
                 id INTEGER PRIMARY KEY,
+                lemma_id INTEGER NOT NULL,
                 ebt_count INTEGER DEFAULT 0,
                 lemma TEXT NOT NULL UNIQUE,
                 lemma_clean TEXT NOT NULL,
@@ -210,36 +480,24 @@ class NounVerbExtractor:
         """)
         
         # Corpus attestation for noun declensions (only stores corpus-attested forms)
+        # form_id encodes: lemma_id(5) + case(1) + gender(1) + number(1) + ending_index(1)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS corpus_declensions (
-                noun_id INTEGER NOT NULL,
-                case_name INTEGER NOT NULL,  -- NounCase enum: 0=None, 1=Nominative, 2=Accusative, etc.
-                number INTEGER NOT NULL,     -- Number enum: 0=None, 1=Singular, 2=Plural
-                gender INTEGER NOT NULL,     -- Gender enum: 0=None, 1=Masculine, 2=Neuter, 3=Feminine
-                ending_index INTEGER NOT NULL DEFAULT 0,  -- For multiple endings (0, 1, 2...)
-                PRIMARY KEY (noun_id, case_name, number, gender, ending_index),
-                FOREIGN KEY (noun_id) REFERENCES nouns(id)
+                form_id INTEGER PRIMARY KEY
             )
         """)
 
         # Corpus attestation for verb conjugations (only stores corpus-attested forms)
+        # form_id encodes: lemma_id(5) + tense(1) + person(1) + number(1) + voice(1) + ending_index(1)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS corpus_conjugations (
-                verb_id INTEGER NOT NULL,
-                person INTEGER NOT NULL,     -- Person enum: 0=None, 1=First, 2=Second, 3=Third
-                tense INTEGER NOT NULL,      -- Tense enum (includes moods): 0=None, 1=Present, 2=Imperative, 3=Optative, 4=Future, 5=Aorist
-                voice INTEGER NOT NULL,      -- Voice enum: 0=None, 1=Active, 2=Reflexive, 3=Passive, 4=Causative
-                ending_index INTEGER NOT NULL DEFAULT 0,  -- For multiple endings (0, 1, 2...)
-                PRIMARY KEY (verb_id, person, tense, voice, ending_index),
-                FOREIGN KEY (verb_id) REFERENCES verbs(id)
+                form_id INTEGER PRIMARY KEY
             )
         """)
-        
-        # Create indexes after tables are created
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_corpus_decl_noun ON corpus_declensions(noun_id)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_corpus_conj_verb ON corpus_conjugations(verb_id)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_nouns_gender ON nouns(gender)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_nouns_lemma_id ON nouns(lemma_id)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_verbs_pos ON verbs(pos)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_verbs_lemma_id ON verbs(lemma_id)")
         
         conn.commit()
         conn.close()
@@ -257,83 +515,115 @@ class NounVerbExtractor:
                 'prp', 'app', 'ptp', 'comp vb']
     
     def get_training_nouns(self) -> List[DpdHeadword]:
-        """Get most frequent nouns suitable for training, with filtering rules applied."""
+        """Get most frequent nouns suitable for training, limited by unique lemma_clean count."""
         noun_pos = self.get_noun_pos_list()
 
-        # Apply filters BEFORE limiting to top N
-        words = self.db_session.query(DpdHeadword).filter(
+        # lemma_clean is a Python @property, so we fetch all and filter in Python
+        all_words = self.db_session.query(DpdHeadword).filter(
             DpdHeadword.pos.in_(noun_pos),
             DpdHeadword.pattern.isnot(None),
             DpdHeadword.pattern != '',
             DpdHeadword.stem.isnot(None),
             DpdHeadword.stem != '-',
             DpdHeadword.ebt_count > 0,
-            # Filter: must have meaning_1
             DpdHeadword.meaning_1.isnot(None),
             DpdHeadword.meaning_1 != '',
-            # Filter: must have sutta_1 (skip words not attested in suttas)
             DpdHeadword.sutta_1.isnot(None),
             DpdHeadword.sutta_1 != '',
-            # Filter: meaning must not contain "(gram)", "(abhi)", "(comm)", "in reference to", "name of", or "family name"
             ~DpdHeadword.meaning_1.contains('(gram)'),
             ~DpdHeadword.meaning_1.contains('(abhi)'),
             ~DpdHeadword.meaning_1.contains('(comm)'),
             ~DpdHeadword.meaning_1.contains('in reference to'),
             ~DpdHeadword.meaning_1.contains('name of'),
             ~DpdHeadword.meaning_1.contains('family name')
-        ).order_by(
-            DpdHeadword.ebt_count.desc()
-        ).limit(self.noun_limit).all()
+        ).all()
 
-        # Filter to only words with inflection templates
-        words_with_templates = [w for w in words if w.it is not None]
+        # Filter to words with inflection templates
+        words_with_templates = [w for w in all_words if w.it is not None]
 
-        print(f"Found {len(words_with_templates)} nouns with inflection templates")
-        if words_with_templates:
-            print(f"Noun frequency range: {words_with_templates[0].ebt_count} (highest) to {words_with_templates[-1].ebt_count} (lowest)")
-        return words_with_templates
+        # Group by lemma_clean and get max ebt_count for ordering
+        lemma_max_ebt: Dict[str, int] = {}
+        lemma_words: Dict[str, List[DpdHeadword]] = {}
+        for word in words_with_templates:
+            lc = word.lemma_clean
+            ebt = word.ebt_count or 0
+            if lc not in lemma_max_ebt or ebt > lemma_max_ebt[lc]:
+                lemma_max_ebt[lc] = ebt
+            if lc not in lemma_words:
+                lemma_words[lc] = []
+            lemma_words[lc].append(word)
+
+        # Get top N lemmas by max ebt_count
+        top_lemmas = sorted(lemma_max_ebt.keys(), key=lambda lc: -lemma_max_ebt[lc])[:self.noun_limit]
+        top_lemmas_set = set(top_lemmas)
+        print(f"Selected {len(top_lemmas)} unique noun lemmas")
+
+        # Collect all words from selected lemmas, ordered by ebt_count
+        result = []
+        for lc in top_lemmas:
+            result.extend(lemma_words[lc])
+        result.sort(key=lambda w: -(w.ebt_count or 0))
+
+        print(f"Found {len(result)} noun rows ({len(top_lemmas)} unique lemmas) with inflection templates")
+        if result:
+            print(f"Noun frequency range: {result[0].ebt_count} (highest) to {result[-1].ebt_count} (lowest)")
+        return result
     
     def get_training_verbs(self) -> List[DpdHeadword]:
-        """Get most frequent verbs suitable for training, with filtering rules applied."""
+        """Get most frequent verbs suitable for training, limited by unique lemma_clean count."""
         verb_pos = self.get_verb_pos_list()
-
-        # Excluded verb POS types
         excluded_verb_pos = ['pp', 'prp', 'ptp', 'imperf', 'perf']
 
-        # Apply filters BEFORE limiting to top N
-        words = self.db_session.query(DpdHeadword).filter(
+        # lemma_clean is a Python @property, so we fetch all and filter in Python
+        all_words = self.db_session.query(DpdHeadword).filter(
             DpdHeadword.pos.in_(verb_pos),
-            # Filter: exclude specific POS types
             ~DpdHeadword.pos.in_(excluded_verb_pos),
             DpdHeadword.pattern.isnot(None),
             DpdHeadword.pattern != '',
             DpdHeadword.stem.isnot(None),
             DpdHeadword.stem != '-',
             DpdHeadword.ebt_count > 0,
-            # Filter: must have meaning_1
             DpdHeadword.meaning_1.isnot(None),
             DpdHeadword.meaning_1 != '',
-            # Filter: must have sutta_1 (skip words not attested in suttas)
             DpdHeadword.sutta_1.isnot(None),
             DpdHeadword.sutta_1 != '',
-            # Filter: meaning must not contain "(gram)", "(abhi)", "(comm)", "in reference to", "name of", or "family name"
             ~DpdHeadword.meaning_1.contains('(gram)'),
             ~DpdHeadword.meaning_1.contains('(abhi)'),
             ~DpdHeadword.meaning_1.contains('(comm)'),
             ~DpdHeadword.meaning_1.contains('in reference to'),
             ~DpdHeadword.meaning_1.contains('name of'),
             ~DpdHeadword.meaning_1.contains('family name')
-        ).order_by(
-            DpdHeadword.ebt_count.desc()
-        ).limit(self.verb_limit).all()
+        ).all()
 
-        # Filter to only words with inflection templates
-        words_with_templates = [w for w in words if w.it is not None]
+        # Filter to words with inflection templates
+        words_with_templates = [w for w in all_words if w.it is not None]
 
-        print(f"Found {len(words_with_templates)} verbs with inflection templates")
-        if words_with_templates:
-            print(f"Verb frequency range: {words_with_templates[0].ebt_count} (highest) to {words_with_templates[-1].ebt_count} (lowest)")
-        return words_with_templates
+        # Group by lemma_clean and get max ebt_count for ordering
+        lemma_max_ebt: Dict[str, int] = {}
+        lemma_words: Dict[str, List[DpdHeadword]] = {}
+        for word in words_with_templates:
+            lc = word.lemma_clean
+            ebt = word.ebt_count or 0
+            if lc not in lemma_max_ebt or ebt > lemma_max_ebt[lc]:
+                lemma_max_ebt[lc] = ebt
+            if lc not in lemma_words:
+                lemma_words[lc] = []
+            lemma_words[lc].append(word)
+
+        # Get top N lemmas by max ebt_count
+        top_lemmas = sorted(lemma_max_ebt.keys(), key=lambda lc: -lemma_max_ebt[lc])[:self.verb_limit]
+        print(f"Selected {len(top_lemmas)} unique verb lemmas")
+
+        # Collect all words from selected lemmas, ordered by ebt_count
+        result = []
+        for lc in top_lemmas:
+            result.extend(lemma_words[lc])
+        result.sort(key=lambda w: -(w.ebt_count or 0))
+
+        print(f"Found {len(result)} verb rows ({len(top_lemmas)} unique lemmas) with inflection templates")
+        if result:
+            print(f"Verb frequency range: {result[0].ebt_count} (highest) to {result[-1].ebt_count} (lowest)")
+        return result
     
     def parse_inflection_template(self, word: DpdHeadword, word_type: str) -> Tuple[List[Dict[str, Any]], int, int]:
         """Parse inflection/conjugation template to extract individual forms with grammar info.
@@ -480,9 +770,12 @@ class NounVerbExtractor:
         Note: Tense enum now includes traditional moods (imperative, optative)."""
         result = {
             'person': GrammarEnums.PERSON_NONE,
+            'number': GrammarEnums.NUMBER_NONE,
             'tense': GrammarEnums.TENSE_NONE,
             'voice': GrammarEnums.VOICE_NONE
         }
+
+        parts = grammar_str.lower().split()
 
         # Person - return enum integer
         if '1st' in grammar_str or 'first' in grammar_str:
@@ -491,6 +784,12 @@ class NounVerbExtractor:
             result['person'] = GrammarEnums.PERSON_SECOND
         elif '3rd' in grammar_str or 'third' in grammar_str:
             result['person'] = GrammarEnums.PERSON_THIRD
+
+        # Number - return enum integer
+        if 'sg' in parts or 'singular' in grammar_str:
+            result['number'] = GrammarEnums.NUMBER_SINGULAR
+        elif 'pl' in parts or 'plural' in grammar_str:
+            result['number'] = GrammarEnums.NUMBER_PLURAL
 
         # Tense - includes traditional moods (imperative, optative)
         # Priority order: opt > imp > fut > aor > pr
@@ -520,14 +819,19 @@ class NounVerbExtractor:
     def extract_and_save(self):
         """Main extraction process."""
         print("Starting noun and verb extraction...")
-        
+
+        # Load lemma registry for stable IDs
+        registry = load_registry()
+        original_registry = deep_copy_registry(registry)  # Keep copy for safety checks
+        print(f"Loaded lemma registry: {len(registry['nouns'])} nouns, {len(registry['verbs'])} verbs")
+
         # Create schema
         self.create_schema()
-        
+
         # Get words
         nouns = self.get_training_nouns()
         verbs = self.get_training_verbs()
-        
+
         conn = sqlite3.connect(self.output_db_path)
         cursor = conn.cursor()
         
@@ -544,13 +848,14 @@ class NounVerbExtractor:
 
             # Insert noun
             gender = self.pos_to_gender(word.pos)
+            lemma_id = get_noun_lemma_id(registry, word.lemma_clean)
             cursor.execute("""
                 INSERT INTO nouns (
-                    id, ebt_count, lemma, lemma_clean, gender, pattern, derived_from, family_root,
+                    id, lemma_id, ebt_count, lemma, lemma_clean, gender, pattern, derived_from, family_root,
                     stem, plus_case, meaning, source_1, sutta_1, example_1, source_2, sutta_2, example_2
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
-                word.id, word.ebt_count or 0, word.lemma_1, word.lemma_clean, gender,
+                word.id, lemma_id, word.ebt_count or 0, word.lemma_1, word.lemma_clean, gender,
                 word.pattern, word.derived_from or '', word.family_root or '',
                 word.stem, word.plus_case or '', word.meaning_1,
                 word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
@@ -576,18 +881,19 @@ class NounVerbExtractor:
                     for form in forms:
                         # Only insert forms that appear in the corpus
                         if form.get('in_corpus', 0) == 1:
+                            # Compute form_id: ending_index is 1-based for actual forms
+                            form_id = compute_declension_form_id(
+                                lemma_id=lemma_id,
+                                case=form.get('case_name', GrammarEnums.CASE_NONE),
+                                gender=gender,  # Use noun's gender, not form's
+                                number=form.get('number', GrammarEnums.NUMBER_NONE),
+                                ending_index=form.get('ending_index', 0) + 1  # Convert to 1-based
+                            )
                             try:
-                                cursor.execute("""
-                                    INSERT INTO corpus_declensions (
-                                        noun_id, case_name, number, gender, ending_index
-                                    ) VALUES (?, ?, ?, ?, ?)
-                                """, (
-                                    word.id,
-                                    form.get('case_name', GrammarEnums.CASE_NONE),
-                                    form.get('number', GrammarEnums.NUMBER_NONE),
-                                    form.get('gender', GrammarEnums.GENDER_NONE),
-                                    form.get('ending_index', 0)
-                                ))
+                                cursor.execute(
+                                    "INSERT INTO corpus_declensions (form_id) VALUES (?)",
+                                    (form_id,)
+                                )
                                 total_declensions += 1
                             except sqlite3.IntegrityError:
                                 # Skip duplicates
@@ -605,13 +911,14 @@ class NounVerbExtractor:
                 print(f"Processing verb {i}/{len(verbs)}: {word.lemma_1}")
 
             # Insert verb
+            lemma_id = get_verb_lemma_id(registry, word.lemma_clean)
             cursor.execute("""
                 INSERT INTO verbs (
-                    id, ebt_count, lemma, lemma_clean, pos, type, trans, pattern, derived_from, family_root,
+                    id, lemma_id, ebt_count, lemma, lemma_clean, pos, type, trans, pattern, derived_from, family_root,
                     stem, plus_case, meaning, source_1, sutta_1, example_1, source_2, sutta_2, example_2
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
-                word.id, word.ebt_count or 0, word.lemma_1, word.lemma_clean, word.pos,
+                word.id, lemma_id, word.ebt_count or 0, word.lemma_1, word.lemma_clean, word.pos,
                 word.verb or '', word.trans or '', word.pattern, word.derived_from or '', word.family_root or '',
                 word.stem, word.plus_case or '', word.meaning_1,
                 word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
@@ -630,18 +937,20 @@ class NounVerbExtractor:
                 for form in forms:
                     # Only insert forms that appear in the corpus
                     if form.get('in_corpus', 0) == 1:
+                        # Compute form_id: ending_index is 1-based for actual forms
+                        form_id = compute_conjugation_form_id(
+                            lemma_id=lemma_id,
+                            tense=form.get('tense', GrammarEnums.TENSE_NONE),
+                            person=form.get('person', GrammarEnums.PERSON_NONE),
+                            number=form.get('number', GrammarEnums.NUMBER_NONE),
+                            voice=form.get('voice', GrammarEnums.VOICE_NONE),
+                            ending_index=form.get('ending_index', 0) + 1  # Convert to 1-based
+                        )
                         try:
-                            cursor.execute("""
-                                INSERT INTO corpus_conjugations (
-                                    verb_id, person, tense, voice, ending_index
-                                ) VALUES (?, ?, ?, ?, ?)
-                            """, (
-                                word.id,
-                                form.get('person', GrammarEnums.PERSON_NONE),
-                                form.get('tense', GrammarEnums.TENSE_NONE),
-                                form.get('voice', GrammarEnums.VOICE_NONE),
-                                form.get('ending_index', 0)
-                            ))
+                            cursor.execute(
+                                "INSERT INTO corpus_conjugations (form_id) VALUES (?)",
+                                (form_id,)
+                            )
                             total_conjugations += 1
                         except sqlite3.IntegrityError:
                             # Skip duplicates
@@ -649,6 +958,15 @@ class NounVerbExtractor:
         
         conn.commit()
         conn.close()
+
+        # Save updated lemma registry (with safety checks against original)
+        new_nouns = len(registry['nouns']) - len(original_registry['nouns'])
+        new_verbs = len(registry['verbs']) - len(original_registry['verbs'])
+        if new_nouns > 0 or new_verbs > 0:
+            save_registry(registry, original_registry)
+            print(f"\nSaved lemma registry: {len(registry['nouns'])} nouns (+{new_nouns}), {len(registry['verbs'])} verbs (+{new_verbs})")
+        else:
+            print(f"\nNo new lemmas added to registry (unchanged)")
 
         print(f"\n=== EXTRACTION COMPLETE ===")
         print(f"Database: {self.output_db_path}")
@@ -716,5 +1034,42 @@ class NounVerbExtractor:
 
 
 if __name__ == "__main__":
-    extractor = NounVerbExtractor(noun_limit=3000, verb_limit=2000)
-    extractor.extract_and_save()
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Extract nouns and verbs from DPD database",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # First time: populate registry with ALL lemmas (run once, commit result)
+  python extract_nouns_and_verbs.py --populate-registry
+
+  # Normal extraction: create training.db with top N lemmas
+  python extract_nouns_and_verbs.py --nouns 3000 --verbs 2000
+        """
+    )
+    parser.add_argument(
+        "--populate-registry",
+        action="store_true",
+        help="Populate lemma_registry.json with ALL lemmas from DPD (one-time operation)"
+    )
+    parser.add_argument(
+        "--nouns",
+        type=int,
+        default=3000,
+        help="Number of unique noun lemmas to extract (default: 3000)"
+    )
+    parser.add_argument(
+        "--verbs",
+        type=int,
+        default=2000,
+        help="Number of unique verb lemmas to extract (default: 2000)"
+    )
+
+    args = parser.parse_args()
+
+    if args.populate_registry:
+        populate_all_lemmas_to_registry()
+    else:
+        extractor = NounVerbExtractor(noun_limit=args.nouns, verb_limit=args.verbs)
+        extractor.extract_and_save()

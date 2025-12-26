@@ -10,18 +10,10 @@ namespace PaliPractice.Services.Database;
 [Table("corpus_conjugations")]
 class CorpusConjugation
 {
-    [Column("verb_id")]
-    public int VerbId { get; set; }
-
-    [Column("person")]
-    public int Person { get; set; }
-
-    [Column("tense")]
-    public int Tense { get; set; }
-
-    [Column("voice")]
-    public int Voice { get; set; }
-
-    [Column("ending_index")]
-    public int EndingIndex { get; set; }
+    /// <summary>
+    /// Encoded form ID: lemma_id(5) + tense(1) + person(1) + number(1) + voice(1) + ending_index(1)
+    /// </summary>
+    [PrimaryKey]
+    [Column("form_id")]
+    public long FormId { get; set; }
 }

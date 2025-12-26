@@ -59,14 +59,14 @@ public static class OptionPresentation
         Gender.Neuter => GenderColor,
         Gender.Feminine => GenderColor,
 
-        NounCase.Nominative => CaseColor,
-        NounCase.Accusative => CaseColor,
-        NounCase.Instrumental => CaseColor,
-        NounCase.Dative => CaseColor,
-        NounCase.Ablative => CaseColor,
-        NounCase.Genitive => CaseColor,
-        NounCase.Locative => CaseColor,
-        NounCase.Vocative => CaseColor,
+        Case.Nominative => CaseColor,
+        Case.Accusative => CaseColor,
+        Case.Instrumental => CaseColor,
+        Case.Dative => CaseColor,
+        Case.Ablative => CaseColor,
+        Case.Genitive => CaseColor,
+        Case.Locative => CaseColor,
+        Case.Vocative => CaseColor,
 
         _ => DefaultColor
     };

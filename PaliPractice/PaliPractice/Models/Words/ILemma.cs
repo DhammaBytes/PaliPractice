@@ -7,6 +7,11 @@ namespace PaliPractice.Models.Words;
 public interface ILemma
 {
     /// <summary>
+    /// Stable ID for this lemma group (10001-69999 for nouns, 70001-99999 for verbs).
+    /// </summary>
+    int LemmaId { get; }
+
+    /// <summary>
     /// The clean lemma form used as practice unit identifier.
     /// </summary>
     string LemmaClean { get; }

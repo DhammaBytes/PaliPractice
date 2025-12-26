@@ -379,6 +379,18 @@ class GrammarEnums:
     }
 
 
+def clean_stem(stem: Optional[str]) -> str:
+    """Remove DPD marker characters from stem for consistent form generation.
+
+    DPD uses markers like ! and * in stems, but these shouldn't appear in
+    actual inflected forms. We clean them here so both Python (for corpus matching)
+    and C# (for form display) use the same cleaned stem.
+    """
+    if not stem:
+        return ""
+    return re.sub(r"[!*]", "", stem)
+
+
 class NounVerbExtractor:
     """Extract nouns and verbs with grammatical categorization."""
 
@@ -640,7 +652,7 @@ class NounVerbExtractor:
         forms = []
         total_generated = 0
         not_in_corpus = 0
-        stem = re.sub(r"[!*]", "", word.stem or "")
+        stem = clean_stem(word.stem)
         
         # Template structure:
         # Row 0: Headers
@@ -722,20 +734,22 @@ class NounVerbExtractor:
             'number': GrammarEnums.NUMBER_NONE,
             'gender': GrammarEnums.GENDER_NONE
         }
-        parts = grammar_str.lower().split()
+        # Normalize once for consistent matching
+        grammar_lower = grammar_str.lower()
+        parts = grammar_lower.split()
 
         # Gender - return enum integer
-        if 'masc' in grammar_str:
+        if 'masc' in grammar_lower:
             result['gender'] = GrammarEnums.GENDER_MASCULINE
-        elif 'fem' in grammar_str:
+        elif 'fem' in grammar_lower:
             result['gender'] = GrammarEnums.GENDER_FEMININE
-        elif 'nt' in grammar_str:
+        elif 'nt' in grammar_lower:
             result['gender'] = GrammarEnums.GENDER_NEUTER
 
         # Number - return enum integer
-        if 'sg' in parts or 'singular' in grammar_str:
+        if 'sg' in parts or 'singular' in grammar_lower:
             result['number'] = GrammarEnums.NUMBER_SINGULAR
-        elif 'pl' in parts or 'plural' in grammar_str:
+        elif 'pl' in parts or 'plural' in grammar_lower:
             result['number'] = GrammarEnums.NUMBER_PLURAL
 
         # Case - map abbreviation to enum integer
@@ -775,41 +789,45 @@ class NounVerbExtractor:
             'voice': GrammarEnums.VOICE_NONE
         }
 
-        parts = grammar_str.lower().split()
+        # Normalize once for consistent matching
+        grammar_lower = grammar_str.lower()
+        parts = grammar_lower.split()
+        pos_lower = pos.lower()
 
         # Person - return enum integer
-        if '1st' in grammar_str or 'first' in grammar_str:
+        if '1st' in grammar_lower or 'first' in grammar_lower:
             result['person'] = GrammarEnums.PERSON_FIRST
-        elif '2nd' in grammar_str or 'second' in grammar_str:
+        elif '2nd' in grammar_lower or 'second' in grammar_lower:
             result['person'] = GrammarEnums.PERSON_SECOND
-        elif '3rd' in grammar_str or 'third' in grammar_str:
+        elif '3rd' in grammar_lower or 'third' in grammar_lower:
             result['person'] = GrammarEnums.PERSON_THIRD
 
         # Number - return enum integer
-        if 'sg' in parts or 'singular' in grammar_str:
+        if 'sg' in parts or 'singular' in grammar_lower:
             result['number'] = GrammarEnums.NUMBER_SINGULAR
-        elif 'pl' in parts or 'plural' in grammar_str:
+        elif 'pl' in parts or 'plural' in grammar_lower:
             result['number'] = GrammarEnums.NUMBER_PLURAL
 
         # Tense - includes traditional moods (imperative, optative)
         # Priority order: opt > imp > fut > aor > pr
-        if pos == 'opt' or 'opt' in grammar_str:
+        if pos_lower == 'opt' or 'opt' in grammar_lower:
             result['tense'] = GrammarEnums.TENSE_OPTATIVE
-        elif pos == 'imp' or 'imp' in grammar_str:
+        elif pos_lower == 'imp' or 'imp' in grammar_lower:
             result['tense'] = GrammarEnums.TENSE_IMPERATIVE
-        elif pos == 'fut' or 'fut' in grammar_str:
+        elif pos_lower == 'fut' or 'fut' in grammar_lower:
             result['tense'] = GrammarEnums.TENSE_FUTURE
-        elif pos == 'aor' or 'aor' in grammar_str:
+        elif pos_lower == 'aor' or 'aor' in grammar_lower:
             result['tense'] = GrammarEnums.TENSE_AORIST
-        elif pos == 'pr' or 'pres' in grammar_str:
+        elif pos_lower == 'pr' or 'pres' in grammar_lower:
             result['tense'] = GrammarEnums.TENSE_PRESENT
 
-        # Voice - return enum integer (default to Active if not specified)
-        if 'caus' in grammar_str:
+        # Voice - check pos first (DPD uses pos like 'pass', 'caus', 'reflx'),
+        # then grammar_str as fallback, default to Active
+        if pos_lower == 'caus' or 'caus' in grammar_lower:
             result['voice'] = GrammarEnums.VOICE_CAUSATIVE
-        elif 'pass' in grammar_str:
+        elif pos_lower == 'pass' or 'pass' in grammar_lower:
             result['voice'] = GrammarEnums.VOICE_PASSIVE
-        elif 'reflx' in grammar_str:
+        elif pos_lower == 'reflx' or 'reflx' in grammar_lower:
             result['voice'] = GrammarEnums.VOICE_REFLEXIVE
         else:
             result['voice'] = GrammarEnums.VOICE_ACTIVE
@@ -857,7 +875,7 @@ class NounVerbExtractor:
             """, (
                 word.id, lemma_id, word.ebt_count or 0, word.lemma_1, word.lemma_clean, gender,
                 word.pattern, word.derived_from or '', word.family_root or '',
-                word.stem, word.plus_case or '', word.meaning_1,
+                clean_stem(word.stem), word.plus_case or '', word.meaning_1,
                 word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
                 word.source_2 or '', word.sutta_2 or '', word.example_2 or ''
             ))
@@ -920,7 +938,7 @@ class NounVerbExtractor:
             """, (
                 word.id, lemma_id, word.ebt_count or 0, word.lemma_1, word.lemma_clean, word.pos,
                 word.verb or '', word.trans or '', word.pattern, word.derived_from or '', word.family_root or '',
-                word.stem, word.plus_case or '', word.meaning_1,
+                clean_stem(word.stem), word.plus_case or '', word.meaning_1,
                 word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
                 word.source_2 or '', word.sutta_2 or '', word.example_2 or ''
             ))

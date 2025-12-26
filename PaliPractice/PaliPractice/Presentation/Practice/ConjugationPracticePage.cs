@@ -7,18 +7,19 @@ public sealed partial class ConjugationPracticePage : Page
     public ConjugationPracticePage()
     {
         var elements = new ResponsiveElements();
+        var heightClass = LayoutConstants.GetCurrentHeightClass();
 
         ConjugationPracticePageMarkup.DataContext<ViewModels.ConjugationPracticeViewModel>(this, (page, _) => page
             .NavigationCacheMode<ConjugationPracticePage>(NavigationCacheMode.Required)
             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
-            .Content(BuildPageLayout(elements))
+            .Content(BuildPageLayout(elements, heightClass))
         );
 
-        HeightResponsiveHelper.AttachResponsiveHandler(elements,
-            heightClass => PracticePageBuilder.ApplyResponsiveValues(elements, heightClass));
+        HeightResponsiveHelper.AttachResponsiveHandler(
+            hc => PracticePageBuilder.ApplyResponsiveValues(elements, hc));
     }
 
-    static Grid BuildPageLayout(ResponsiveElements elements)
+    static Grid BuildPageLayout(ResponsiveElements elements, HeightClass heightClass)
     {
         var config = new PracticePageConfig<ViewModels.ConjugationPracticeViewModel>(
             Title: "Conjugation Practice",
@@ -38,16 +39,16 @@ public sealed partial class ConjugationPracticePage : Page
             DailyProgressPath: vm => vm.DailyGoal.DailyProgress
         );
 
-        var badges = PracticePageBuilder.CreateBadgeSet(
-            PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(
+        var badges = PracticePageBuilder.CreateBadgeSet(heightClass,
+            PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(heightClass,
                 vm => vm.TenseGlyph, vm => vm.TenseLabel, vm => vm.TenseBrush),
-            PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(
+            PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(heightClass,
                 vm => vm.PersonGlyph, vm => vm.PersonLabel, vm => vm.PersonBrush),
-            PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(
+            PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(heightClass,
                 vm => vm.NumberGlyph, vm => vm.NumberLabel, vm => vm.NumberBrush)
         );
 
         // No hint for conjugation
-        return PracticePageBuilder.BuildPage(config, badges, hintElement: null, elements);
+        return PracticePageBuilder.BuildPage(config, badges, hintElement: null, elements, heightClass);
     }
 }

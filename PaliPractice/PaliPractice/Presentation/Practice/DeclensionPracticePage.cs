@@ -9,18 +9,19 @@ public sealed partial class DeclensionPracticePage : Page
     public DeclensionPracticePage()
     {
         var elements = new ResponsiveElements();
+        var heightClass = LayoutConstants.GetCurrentHeightClass();
 
         DeclensionPracticePageMarkup.DataContext<ViewModels.DeclensionPracticeViewModel>(this, (page, _) => page
             .NavigationCacheMode<DeclensionPracticePage>(NavigationCacheMode.Required)
             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
-            .Content(BuildPageLayout(elements))
+            .Content(BuildPageLayout(elements, heightClass))
         );
 
-        HeightResponsiveHelper.AttachResponsiveHandler(elements,
-            heightClass => PracticePageBuilder.ApplyResponsiveValues(elements, heightClass));
+        HeightResponsiveHelper.AttachResponsiveHandler(
+            hc => PracticePageBuilder.ApplyResponsiveValues(elements, hc));
     }
 
-    static Grid BuildPageLayout(ResponsiveElements elements)
+    static Grid BuildPageLayout(ResponsiveElements elements, HeightClass heightClass)
     {
         var config = new PracticePageConfig<ViewModels.DeclensionPracticeViewModel>(
             Title: "Declension Practice",
@@ -40,18 +41,19 @@ public sealed partial class DeclensionPracticePage : Page
             DailyProgressPath: vm => vm.DailyGoal.DailyProgress
         );
 
-        var badges = PracticePageBuilder.CreateBadgeSet(
-            PracticePageBuilder.BuildBadge<ViewModels.DeclensionPracticeViewModel>(
+        var badges = PracticePageBuilder.CreateBadgeSet(heightClass,
+            PracticePageBuilder.BuildBadge<ViewModels.DeclensionPracticeViewModel>(heightClass,
                 vm => vm.CaseGlyph, vm => vm.CaseLabel, vm => vm.CaseBrush),
-            PracticePageBuilder.BuildBadge<ViewModels.DeclensionPracticeViewModel>(
+            PracticePageBuilder.BuildBadge<ViewModels.DeclensionPracticeViewModel>(heightClass,
                 vm => vm.GenderGlyph, vm => vm.GenderLabel, vm => vm.GenderBrush),
-            PracticePageBuilder.BuildBadge<ViewModels.DeclensionPracticeViewModel>(
+            PracticePageBuilder.BuildBadge<ViewModels.DeclensionPracticeViewModel>(heightClass,
                 vm => vm.NumberGlyph, vm => vm.NumberLabel, vm => vm.NumberBrush)
         );
 
+        var fonts = LayoutConstants.PracticeFontSizes.Get(heightClass);
         var hint = RegularText()
             .Text<ViewModels.DeclensionPracticeViewModel>(vm => vm.CaseHint)
-            .FontSize(LayoutConstants.PracticeFontSizes.Tall.BadgeHint)
+            .FontSize(fonts.BadgeHint)
             .FontStyle(Windows.UI.Text.FontStyle.Italic)
             .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
             .HorizontalAlignment(HorizontalAlignment.Center)
@@ -61,6 +63,6 @@ public sealed partial class DeclensionPracticePage : Page
         // Track hint for responsive sizing
         elements.BadgeHintTextBlock = hint;
 
-        return PracticePageBuilder.BuildPage(config, badges, hint, elements);
+        return PracticePageBuilder.BuildPage(config, badges, hint, elements, heightClass);
     }
 }

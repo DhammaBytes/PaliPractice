@@ -59,10 +59,13 @@ public static class PracticePageBuilder
         PracticePageConfig<TVM> config,
         BadgeSet badges,
         UIElement? hintElement,
-        ResponsiveElements elements)
+        ResponsiveElements elements,
+        HeightClass heightClass)
     {
+        var fonts = LayoutConstants.PracticeFontSizes.Get(heightClass);
+
         // Build word display
-        var wordTextBlock = BuildCardWord(config.WordCardPath);
+        var wordTextBlock = BuildCardWord(config.WordCardPath, fonts);
         elements.WordTextBlock = wordTextBlock;
         elements.BadgesPanel = badges.Panel;
         elements.BadgeBorders.AddRange(badges.Borders);
@@ -74,18 +77,19 @@ public static class PracticePageBuilder
             config.AnswerStemPath,
             config.AnswerEndingPath,
             config.AlternativeFormsPath,
-            config.IsRevealedPath);
+            config.IsRevealedPath,
+            fonts);
         elements.AnswerTextBlock = answerTextBlock;
         elements.AnswerSecondaryTextBlock = secondaryTextBlock;
         elements.AnswerPlaceholder = placeholder;
 
         // Build translation carousel
         var (translationText, translationBorder, translationContainer) = BuildTranslationCarousel(
-            config.CarouselPath, config.IsRevealedPath);
+            config.CarouselPath, config.IsRevealedPath, fonts);
         elements.TranslationTextBlock = translationText;
 
         // Build example section
-        var (exampleText, referenceText, exampleContainer) = BuildExampleSection(config.CarouselPath);
+        var (exampleText, referenceText, exampleContainer) = BuildExampleSection(config.CarouselPath, fonts);
         elements.SuttaExampleTextBlock = exampleText;
         elements.SuttaReferenceTextBlock = referenceText;
 
@@ -94,13 +98,22 @@ public static class PracticePageBuilder
             config.RevealCommandPath,
             config.HardCommandPath,
             config.EasyCommandPath,
-            config.IsRevealedPath);
+            config.IsRevealedPath,
+            fonts);
         elements.ButtonElements.AddRange(buttonElements);
+
+        // Debug text for size bracket (in header middle)
+        var debugText = new TextBlock()
+            .Text("Size: --")
+            .FontSize(LayoutConstants.FixedFonts.DebugText)
+            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+            .Opacity(0.6);
+        elements.DebugTextBlock = debugText;
 
         // Assemble card children
         var cardChildren = new List<UIElement>
         {
-            BuildCardHeader(config.WordCardPath, config.RankPrefix),
+            BuildCardHeader(config.WordCardPath, config.RankPrefix, debugText),
             wordTextBlock,
             badges.Panel
         };
@@ -117,7 +130,7 @@ public static class PracticePageBuilder
             .RadiusMode(SquircleRadiusMode.CardSmall)
             .Child(
                 new StackPanel()
-                    .Padding(LayoutConstants.Paddings.CardPaddingTall)
+                    .Padding(LayoutConstants.Paddings.CardPadding(heightClass))
                     .Spacing(LayoutConstants.Spacing.CardInternal)
                     .Children(cardChildren.ToArray())
             );
@@ -134,33 +147,28 @@ public static class PracticePageBuilder
             exampleContainer.MaxWidth = translationWidth;
         };
 
-        // Debug text for size bracket
-        var debugText = new TextBlock()
-            .Text("Size: --")
-            .FontSize(LayoutConstants.FixedFonts.DebugText)
-            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
-            .HorizontalAlignment(HorizontalAlignment.Center)
-            .Opacity(0.6);
-        elements.DebugTextBlock = debugText;
+        // Compute content width from window (clamped to max)
+        var horizontalPadding = LayoutConstants.Paddings.ContentHorizontal(heightClass);
+        var windowWidth = App.MainWindow?.Bounds.Width ?? LayoutConstants.ContentMaxWidth;
+        var contentWidth = Math.Min(windowWidth, LayoutConstants.ContentMaxWidth);
 
-        // Build content area
+        // Build content area with explicit width for proper stretching
         var contentArea = new Grid()
-            .RowDefinitions($"{LayoutConstants.Margins.TopSpacing},Auto,Auto,Auto,Auto,*")
-            .MaxWidth(LayoutConstants.ContentMaxWidth)
+            .RowDefinitions($"{LayoutConstants.Margins.CardTop},Auto,Auto,Auto,*")
+            .Width(contentWidth)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .VerticalAlignment(VerticalAlignment.Stretch)
-            .Padding(LayoutConstants.Spacing.ContentPaddingTall, 0)
+            .Padding(horizontalPadding, 0)
             .Children(
                 new Border().Grid(row: 0), // Fixed top spacing
                 cardBorder.Grid(row: 1),
-                translationContainer.Margin(0, LayoutConstants.Margins.TranslationContainerTop, 0, 0).Grid(row: 2),
+                translationContainer.Margin(0, LayoutConstants.Margins.TranslationTop, 0, 0).Grid(row: 2),
                 exampleContainer.Margin(0, LayoutConstants.Margins.ExampleContainerTop, 0, 0).Grid(row: 3),
-                debugText.Margin(0, LayoutConstants.Margins.DebugTextTop, 0, 0).Grid(row: 4),
-                new Border().Grid(row: 5) // Dynamic bottom spacing
+                new Border().Grid(row: 4) // Dynamic bottom spacing
             );
         elements.ContentArea = contentArea;
 
-        // Build title bar and daily goal bar (capture references for measurement)
+        // Build title bar and daily goal bar
         var titleBar = AppTitleBar.BuildWithHistory(config.Title, config.GoBackCommandPath, config.GoToHistoryCommandPath);
         var dailyGoalBar = BuildDailyGoalBar(config.DailyGoalTextPath, config.DailyProgressPath);
         elements.TitleBar = titleBar;
@@ -183,11 +191,12 @@ public static class PracticePageBuilder
     #region Card Components
 
     /// <summary>
-    /// Builds the header row: [Rank Badge] ... [Anki State]
+    /// Builds the header row: [Rank Badge] [Debug] [Anki State]
     /// </summary>
     static Grid BuildCardHeader<TVM>(
         Expression<Func<TVM, WordCardViewModel>> cardPath,
-        string rankPrefix)
+        string rankPrefix,
+        TextBlock? debugText)
     {
         return new Grid()
             .ColumnDefinitions("Auto,*,Auto")
@@ -215,6 +224,10 @@ public static class PracticePageBuilder
                             )
                     )
                     .Grid(column: 0),
+                (debugText ?? new TextBlock())
+                    .HorizontalAlignment(HorizontalAlignment.Center)
+                    .VerticalAlignment(VerticalAlignment.Center)
+                    .Grid(column: 1),
                 RegularText()
                     .Scope(cardPath)
                     .TextWithin<WordCardViewModel>(c => c.AnkiState)
@@ -228,12 +241,14 @@ public static class PracticePageBuilder
     /// <summary>
     /// Builds the main word TextBlock.
     /// </summary>
-    static TextBlock BuildCardWord<TVM>(Expression<Func<TVM, WordCardViewModel>> cardPath)
+    static TextBlock BuildCardWord<TVM>(
+        Expression<Func<TVM, WordCardViewModel>> cardPath,
+        LayoutConstants.PracticeFontSizes fonts)
     {
         return PaliText()
             .Scope(cardPath)
             .TextWithin<WordCardViewModel>(c => c.CurrentWord)
-            .FontSize(LayoutConstants.Fonts.WordSizeTall)
+            .FontSize(fonts.Word)
             .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .TextAlignment(TextAlignment.Center)
@@ -249,14 +264,15 @@ public static class PracticePageBuilder
         Expression<Func<TVM, string>> answerStemPath,
         Expression<Func<TVM, string>> answerEndingPath,
         Expression<Func<TVM, string>> alternativeFormsPath,
-        Expression<Func<TVM, bool>> isRevealedPath)
+        Expression<Func<TVM, bool>> isRevealedPath,
+        LayoutConstants.PracticeFontSizes fonts)
     {
         // Choose answer display style: toggle between these two lines to test
         // var answerTextBlock = CreateBoldEndingAnswer(answerStemPath, answerEndingPath);
-        var answerTextBlock = CreateColorEndingAnswer(answerStemPath, answerEndingPath);
+        var answerTextBlock = CreateColorEndingAnswer(answerStemPath, answerEndingPath, fonts);
 
         var alternativeFormsTextBlock = PaliText()
-            .FontSize(LayoutConstants.PracticeFontSizes.Tall.AnswerSecondary)
+            .FontSize(fonts.AnswerSecondary)
             .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .TextAlignment(TextAlignment.Center)
@@ -270,10 +286,10 @@ public static class PracticePageBuilder
             .HorizontalAlignment(HorizontalAlignment.Center)
             .Children(
                 new TextBlock()
-                    .FontSize(LayoutConstants.Fonts.AnswerSizeTall)
+                    .FontSize(fonts.Answer)
                     .Text("X"),
                 new TextBlock()
-                    .FontSize(LayoutConstants.PracticeFontSizes.Tall.AnswerSecondary)
+                    .FontSize(fonts.AnswerSecondary)
                     .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
                     .Text("X")
             );
@@ -304,7 +320,8 @@ public static class PracticePageBuilder
 
     static TextBlock CreateColorEndingAnswer<TVM>(
         Expression<Func<TVM, string>> answerStemPath,
-        Expression<Func<TVM, string>> answerEndingPath)
+        Expression<Func<TVM, string>> answerEndingPath,
+        LayoutConstants.PracticeFontSizes fonts)
     {
         var paliFont = new FontFamily(FontPaths.LibertinusSans);
 
@@ -322,7 +339,7 @@ public static class PracticePageBuilder
         endingRun.SetBinding(Run.TextProperty, Bind.Path(answerEndingPath));
 
         var textBlock = PaliText()
-            .FontSize(LayoutConstants.Fonts.AnswerSizeTall)
+            .FontSize(fonts.Answer)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .TextAlignment(TextAlignment.Center);
         textBlock.Inlines.Add(stemRun);
@@ -339,19 +356,22 @@ public static class PracticePageBuilder
     /// Builds a grammar badge with icon and text.
     /// </summary>
     public static (FontIcon icon, TextBlock text, SquircleBorder badge) BuildBadge<TVM>(
+        HeightClass heightClass,
         Expression<Func<TVM, string?>> glyphPath,
         Expression<Func<TVM, string>> labelPath,
         Expression<Func<TVM, Brush>> brushPath)
     {
+        var fonts = LayoutConstants.PracticeFontSizes.Get(heightClass);
+
         var icon = new FontIcon()
-            .FontSize(LayoutConstants.Fonts.BadgeSizeTall)
+            .FontSize(fonts.Badge)
             .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
             .VerticalAlignment(VerticalAlignment.Center)
             .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
             .GlyphWithVisibility<TVM>(glyphPath);
 
         var text = RegularText()
-            .FontSize(LayoutConstants.Fonts.BadgeSizeTall)
+            .FontSize(fonts.Badge)
             .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
             .VerticalAlignment(VerticalAlignment.Center)
             .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
@@ -363,7 +383,7 @@ public static class PracticePageBuilder
             .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)
                 .Spacing(LayoutConstants.Spacing.BadgeInternal)
-                .Padding(LayoutConstants.Paddings.BadgeHorizontalTall, LayoutConstants.Paddings.BadgeVerticalTall)
+                .Padding(LayoutConstants.Paddings.BadgePadding(heightClass))
                 .VerticalAlignment(VerticalAlignment.Center)
                 .Children(icon, text));
 
@@ -373,12 +393,14 @@ public static class PracticePageBuilder
     /// <summary>
     /// Builds a BadgeSet from individual badges.
     /// </summary>
-    public static BadgeSet CreateBadgeSet(params (FontIcon icon, TextBlock text, SquircleBorder badge)[] badges)
+    public static BadgeSet CreateBadgeSet(
+        HeightClass heightClass,
+        params (FontIcon icon, TextBlock text, SquircleBorder badge)[] badges)
     {
         var panel = new StackPanel()
             .Orientation(Orientation.Horizontal)
             .HorizontalAlignment(HorizontalAlignment.Center)
-            .Spacing(LayoutConstants.Spacing.BadgeSpacingTall)
+            .Spacing(LayoutConstants.Spacing.BadgeSpacing(heightClass))
             .Children(badges.Select(b => b.badge).ToArray());
 
         return new BadgeSet(
@@ -398,11 +420,12 @@ public static class PracticePageBuilder
     /// </summary>
     static (TextBlock translationText, SquircleBorder translationBorder, StackPanel container) BuildTranslationCarousel<TVM>(
         Expression<Func<TVM, ExampleCarouselViewModel>> carouselPath,
-        Expression<Func<TVM, bool>> isRevealedPath)
+        Expression<Func<TVM, bool>> isRevealedPath,
+        LayoutConstants.PracticeFontSizes fonts)
     {
         var translationTextBlock = RegularText()
             .TextWithin<ExampleCarouselViewModel>(c => c.CurrentMeaning)
-            .FontSize(LayoutConstants.PracticeFontSizes.Tall.Translation)
+            .FontSize(fonts.Translation)
             .TextWrapping(TextWrapping.Wrap)
             .TextAlignment(TextAlignment.Center)
             .HorizontalAlignment(HorizontalAlignment.Center)
@@ -417,7 +440,7 @@ public static class PracticePageBuilder
             .Children(
                 RegularText()
                     .Text("M") // Single character to get one-line height
-                    .FontSize(LayoutConstants.PracticeFontSizes.Tall.Translation)
+                    .FontSize(fonts.Translation)
                     .TextAlignment(TextAlignment.Center),
                 RegularText()
                     .Text("1 / 1")
@@ -538,11 +561,12 @@ public static class PracticePageBuilder
     /// Builds the example sentence and reference display.
     /// </summary>
     static (TextBlock exampleText, TextBlock referenceText, StackPanel container) BuildExampleSection<TVM>(
-        Expression<Func<TVM, ExampleCarouselViewModel>> carouselPath)
+        Expression<Func<TVM, ExampleCarouselViewModel>> carouselPath,
+        LayoutConstants.PracticeFontSizes fonts)
     {
         var exampleTextBlock = PaliText()
             .HtmlTextWithin<ExampleCarouselViewModel>(c => c.CurrentExample)
-            .FontSize(LayoutConstants.PracticeFontSizes.Tall.SuttaExample)
+            .FontSize(fonts.SuttaExample)
             .TextWrapping(TextWrapping.Wrap)
             .TextAlignment(TextAlignment.Center)
             .HorizontalAlignment(HorizontalAlignment.Center)
@@ -550,7 +574,7 @@ public static class PracticePageBuilder
 
         var referenceTextBlock = PaliText()
             .TextWithin<ExampleCarouselViewModel>(c => c.CurrentReference)
-            .FontSize(LayoutConstants.PracticeFontSizes.Tall.SuttaReference)
+            .FontSize(fonts.SuttaReference)
             .TextWrapping(TextWrapping.Wrap)
             .TextAlignment(TextAlignment.Center)
             .HorizontalAlignment(HorizontalAlignment.Center)
@@ -576,10 +600,11 @@ public static class PracticePageBuilder
         Expression<Func<TVM, ICommand>> revealCommand,
         Expression<Func<TVM, ICommand>> hardCommand,
         Expression<Func<TVM, ICommand>> easyCommand,
-        Expression<Func<TVM, bool>> isRevealedPath)
+        Expression<Func<TVM, bool>> isRevealedPath,
+        LayoutConstants.PracticeFontSizes fonts)
     {
-        var (hardIcon, hardText, hardButton) = BuildActionButton<TVM>("Hard", "\uE711", hardCommand, "SurfaceBrush");
-        var (easyIcon, easyText, easyButton) = BuildActionButton<TVM>("Easy", "\uE73E", easyCommand, "SurfaceBrush");
+        var (hardIcon, hardText, hardButton) = BuildActionButton<TVM>("Hard", "\uE711", hardCommand, "SurfaceBrush", fonts);
+        var (easyIcon, easyText, easyButton) = BuildActionButton<TVM>("Easy", "\uE73E", easyCommand, "SurfaceBrush", fonts);
 
         var container = new Grid()
             .MaxWidth(LayoutConstants.ContentMaxWidth)
@@ -636,16 +661,17 @@ public static class PracticePageBuilder
         string label,
         string glyph,
         Expression<Func<TVM, ICommand>> commandPath,
-        string brushKey)
+        string brushKey,
+        LayoutConstants.PracticeFontSizes fonts)
     {
         var iconElement = new FontIcon()
             .Glyph(glyph)
-            .FontSize(LayoutConstants.PracticeFontSizes.Tall.Button)
+            .FontSize(fonts.Button)
             .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold);
 
         var textElement = RegularText()
             .Text(label)
-            .FontSize(LayoutConstants.PracticeFontSizes.Tall.Button)
+            .FontSize(fonts.Button)
             .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold);
 
         var button = new SquircleButton()
@@ -706,26 +732,30 @@ public static class PracticePageBuilder
     /// <summary>
     /// Applies responsive values to all tracked elements using centralized font config.
     /// </summary>
-    public static void ApplyResponsiveValues(ResponsiveElements elements, HeightResponsiveHelper.HeightClass heightClass)
+    public static void ApplyResponsiveValues(ResponsiveElements elements, HeightClass heightClass)
     {
-        var fonts = HeightResponsiveHelper.GetFontSizes(heightClass);
+        var fonts = LayoutConstants.PracticeFontSizes.Get(heightClass);
 
-        // Content padding
+        // Content width and padding
         if (elements.ContentArea is not null)
         {
-            var padding = HeightResponsiveHelper.GetContentPadding(heightClass);
+            var padding = LayoutConstants.Paddings.ContentHorizontal(heightClass);
+            var windowWidth = App.MainWindow?.Bounds.Width ?? LayoutConstants.ContentMaxWidth;
+            var contentWidth = Math.Min(windowWidth, LayoutConstants.ContentMaxWidth);
+
+            elements.ContentArea.Width = contentWidth;
             elements.ContentArea.Padding(new Thickness(padding, 0, padding, 0));
         }
 
         // Card padding
         if (elements.CardBorder is not null)
         {
-            var cardPad = HeightResponsiveHelper.GetCardPadding(heightClass);
+            var cardPad = LayoutConstants.Paddings.CardPadding(heightClass);
             elements.CardBorder.Padding(new Thickness(cardPad));
         }
 
         // Badge spacing
-        elements.BadgesPanel?.Spacing = HeightResponsiveHelper.GetBadgeSpacing(heightClass);
+        elements.BadgesPanel?.Spacing = LayoutConstants.Spacing.BadgeSpacing(heightClass);
 
         // Word font
         elements.WordTextBlock?.FontSize = fonts.Word;
@@ -734,8 +764,8 @@ public static class PracticePageBuilder
         elements.AnswerTextBlock?.FontSize = fonts.Answer;
         elements.AnswerSecondaryTextBlock?.FontSize = fonts.AnswerSecondary;
 
-        // Badge fonts
-        var badgePadding = HeightResponsiveHelper.GetBadgePadding(heightClass);
+        // Badge fonts and padding
+        var badgePadding = LayoutConstants.Paddings.BadgePadding(heightClass);
         foreach (var border in elements.BadgeBorders)
             border.Padding(badgePadding);
 
@@ -766,8 +796,8 @@ public static class PracticePageBuilder
         // Debug text
         if (elements.DebugTextBlock is not null)
         {
-            var availableHeight = HeightResponsiveHelper.MeasureAvailableHeight(elements);
-            elements.DebugTextBlock.Text = $"{heightClass} ({availableHeight:F0}pt)";
+            var windowHeight = App.MainWindow?.Bounds.Height ?? 0;
+            elements.DebugTextBlock.Text = $"{heightClass} ({windowHeight:F0}pt)";
         }
     }
 

@@ -10,14 +10,10 @@ This directory contains all setup instructions and scripts to build the PaliPrac
 scripts/
 ├── extract_nouns_and_verbs.py   # Main extraction script
 ├── validate_db.py                # Database validation
-├── setup.py                      # Python setup utilities
+├── lemma_registry.json           # Stable lemma ID assignments (version controlled)
 ├── requirements.txt              # Python dependencies
 ├── frequency/                    # Custom Go files for corpus processing
-│   ├── main_available.go        # Processes CST, BJT, SYA frequencies
-├── tests/                        # Test scripts
-│   ├── test_app_database.py     # Test database compatibility
-│   ├── test_frequency_setup.py  # Test frequency Go files setup
-│   └── test_rebuild.py           # Test rebuild process
+│   └── main_available.go        # Processes CST, BJT, SYA frequencies
 ```
 
 ## Main Scripts
@@ -27,14 +23,61 @@ The primary extraction script that:
 - Extracts 3000 most frequent nouns and 2000 most frequent verbs
 - Creates `corpus_declensions` table tracking which forms appear in Tipitaka
 - Creates `corpus_conjugations` table tracking which forms appear in Tipitaka
+- Assigns stable `lemma_id` values via `lemma_registry.json`
 - Uses EBT frequency counts for word selection
 - Outputs to `../PaliPractice/PaliPractice/Data/training.db` for the app's consumption
 
 ### `validate_db.py`
 Validates the generated database:
-- Checks table structure
-- Verifies data integrity
+- Checks table structure and form_id encoding
+- Verifies lemma_id ranges (nouns: 10001-69999, verbs: 70001-99999)
 - Provides statistics on extracted data
+
+### `lemma_registry.json`
+Version-controlled registry that assigns stable IDs to lemmas:
+- Ensures lemma IDs never change across rebuilds
+- New lemmas get appended with new IDs
+- Critical for user progress tracking (bookmarks, history)
+
+---
+
+## Word Selection Criteria
+
+### Noun Filtering
+Words are included if they meet ALL of these criteria:
+- **POS types**: `noun`, `masc`, `fem`, `neut`, `nt`, `abstr`, `act`, `agent`, `dimin`
+- **Has pattern**: `pattern` is not null or empty
+- **Has stem**: `stem` is not null or `-`
+- **Has frequency**: `ebt_count > 0`
+- **Has meaning**: `meaning_1` is not null or empty
+- **Has example**: `sutta_1` is not null or empty
+- **Has inflection template**: DPD inflection data exists
+
+Words are **excluded** if meaning contains:
+- `(gram)` - grammatical terms
+- `(abhi)` - Abhidhamma technical terms
+- `(comm)` - commentary-only terms
+- `in reference to` - contextual references
+- `name of` - proper names
+- `family name` - clan/family names
+
+### Verb Filtering
+Words are included if they meet ALL of these criteria:
+- **POS types**: `vb`, `pr`, `aor`, `fut`, `opt`, `imp`, `cond`, `caus`, `pass`, `reflx`, `deno`, `desid`, `intens`, `trans`, `intrans`, `ditrans`, `impers`, `inf`, `abs`, `ger`, `comp vb`
+- **Excluded POS**: `pp`, `prp`, `ptp`, `imperf`, `perf` (participles, imperfect/perfect tenses)
+- **Has pattern**: `pattern` is not null or empty
+- **Has stem**: `stem` is not null or `-`
+- **Has frequency**: `ebt_count > 0`
+- **Has meaning**: `meaning_1` is not null or empty
+- **Has example**: `sutta_1` is not null or empty
+- **Has inflection template**: DPD inflection data exists
+
+Words are **excluded** if meaning contains: same exclusions as nouns.
+
+### Grouping by Lemma
+- Words are grouped by `lemma_clean` (lemma without numeric suffix)
+- Top N lemmas are selected by highest `ebt_count` within the group
+- All headword variants of selected lemmas are included
 
 ---
 
@@ -158,22 +201,24 @@ cd scripts && python3 extract_nouns_and_verbs.py
 
 ### nouns
 - `id`: Primary key (original DPD headword ID)
+- `lemma_id`: Stable ID (10001-69999) from lemma_registry.json
 - `ebt_count`: Frequency in Early Buddhist Texts (sorted by this)
-- `lemma`: Dictionary form (no _1 suffix)
-- `lemma_clean`: Clean lemma
+- `lemma`: Dictionary form (e.g., "dhamma 1")
+- `lemma_clean`: Clean lemma without suffix (e.g., "dhamma")
 - `gender`: INTEGER - Gender enum (0=None, 1=Masculine, 2=Neuter, 3=Feminine)
 - `stem`: Word stem for inflection
 - `pattern`: Inflection pattern
 - `family_root`: Root family classification (e.g., "√kar", "√gam")
-- `meaning`: Primary meaning (no _1 suffix)
+- `meaning`: Primary meaning
 - `source_1`, `sutta_1`, `example_1`: Primary usage example
 - `source_2`, `sutta_2`, `example_2`: Secondary usage example
 
 ### verbs
 - `id`: Primary key (original DPD headword ID)
+- `lemma_id`: Stable ID (70001-99999) from lemma_registry.json
 - `ebt_count`: Frequency in Early Buddhist Texts (sorted by this)
-- `lemma`: Dictionary form (no _1 suffix)
-- `lemma_clean`: Clean lemma
+- `lemma`: Dictionary form
+- `lemma_clean`: Clean lemma without suffix
 - `pos`: Part of speech / verb type
 - `stem`: Word stem for inflection
 - `pattern`: Inflection pattern
@@ -183,20 +228,32 @@ cd scripts && python3 extract_nouns_and_verbs.py
 - `source_2`, `sutta_2`, `example_2`: Secondary usage example
 
 ### corpus_declensions (for nouns)
-- `noun_id`: Foreign key to nouns table
-- `case_name`: INTEGER - NounCase enum (0=None, 1=Nominative, 2=Accusative, 3=Instrumental, 4=Dative, 5=Ablative, 6=Genitive, 7=Locative, 8=Vocative)
-- `number`: INTEGER - Number enum (0=None, 1=Singular, 2=Plural)
-- `gender`: INTEGER - Gender enum (0=None, 1=Masculine, 2=Neuter, 3=Feminine)
-- `ending_index`: INTEGER - For multiple endings (0, 1, 2...)
+Single-column table storing corpus-attested noun forms as encoded `form_id`:
+- `form_id`: INTEGER PRIMARY KEY - encodes all grammatical info
+
+**FormId encoding**: `lemma_id(5) + case(1) + gender(1) + number(1) + ending_id(1)`
+- Example: lemma_id=10789, case=3, gender=1, number=2, ending_id=2 → `107893122`
 
 ### corpus_conjugations (for verbs)
-- `verb_id`: Foreign key to verbs table
-- `person`: INTEGER - Person enum (0=None, 1=First, 2=Second, 3=Third)
-- `tense`: INTEGER - Tense enum (0=None, 1=Present, 2=Imperative, 3=Optative, 4=Future, 5=Aorist)
-- `voice`: INTEGER - Voice enum (0=None, 1=Active, 2=Reflexive, 3=Passive, 4=Causative)
-- `ending_index`: INTEGER - For multiple endings (0, 1, 2...)
+Single-column table storing corpus-attested verb forms as encoded `form_id`:
+- `form_id`: INTEGER PRIMARY KEY - encodes all grammatical info
 
-**Note**: All grammatical attributes are stored as INTEGER values that map to C# enums defined in `PaliPractice/Models/Enums.cs`.
+**FormId encoding**: `lemma_id(5) + tense(1) + person(1) + number(1) + voice(1) + ending_id(1)`
+- Example: lemma_id=70683, tense=2, person=3, number=1, voice=2, ending_id=3 → `7068323123`
+
+### Enum Values
+All grammatical attributes map to C# enums in `PaliPractice/Models/Enums.cs`:
+
+| Enum | Values |
+|------|--------|
+| Case | 0=None, 1=Nominative, 2=Accusative, 3=Instrumental, 4=Dative, 5=Ablative, 6=Genitive, 7=Locative, 8=Vocative |
+| Number | 0=None, 1=Singular, 2=Plural |
+| Gender | 0=None, 1=Masculine, 2=Neuter, 3=Feminine |
+| Person | 0=None, 1=First, 2=Second, 3=Third |
+| Tense | 0=None, 1=Present, 2=Imperative, 3=Optative, 4=Future, 5=Aorist |
+| Voice | 0=None, 1=Active, 2=Reflexive, 3=Passive, 4=Causative |
+
+**EndingId**: 1-based (1, 2, 3...). Value 0 is reserved for "combination reference" (the declension/conjugation group itself, not a specific form).
 
 ---
 
@@ -222,11 +279,10 @@ uv run python scripts/bash/initial_setup_run_once.py
 ```
 
 ### "all_tipitaka_words: no such file"
-The pickle file was removed in late 2025. Update `extract_nouns_and_verbs.py` to use:
-```python
-from tools.all_tipitaka_words import make_all_tipitaka_word_set
-all_words = make_all_tipitaka_word_set()
-```
+The extraction script now loads corpus words directly from JSON wordlists in `dpd-db/shared_data/frequency/`:
+- `cst_wordlist.json`, `bjt_wordlist.json`, `sya_wordlist.json`, `sc_wordlist.json`
+
+These are generated by `initial_setup_run_once.py`. If missing, re-run that script.
 
 ### Network timeouts during uv sync
 Increase the HTTP timeout:
@@ -235,9 +291,8 @@ UV_HTTP_TIMEOUT=120 uv sync --python 3.12
 ```
 
 ### If Go frequency generation fails
-The custom Go files (located in `scripts/frequency/`) handle missing corpus data:
-- `main_available.go`: Processes CST, BJT, and SYA
-- `main_limited.go`: Processes only CST and SYA if BJT is unavailable
+The custom Go file `scripts/frequency/main_available.go` processes CST, BJT, and SYA corpora.
+Ensure Go is installed (`brew install go` on Mac) and corpus submodules are initialized.
 
 ### If corpus data is missing
 Ensure all submodules are initialized:
@@ -287,11 +342,12 @@ pip install -r scripts/requirements.txt
 After successful completion, you should have:
 - **DPD Database**: `dpd-db/dpd.db` (~450MB) with 82,922+ words
 - **Frequency Data**: 53,041+ words with EBT frequency counts > 0
+- **Lemma Registry**: `scripts/lemma_registry.json` with stable IDs for all lemmas
 - **Training Database**: `PaliPractice/PaliPractice/Data/training.db` with:
-  - 3,000 most frequent nouns
-  - 2,000 most frequent verbs
-  - Corpus-attested declension forms
-  - Corpus-attested conjugation forms
+  - 3,000 most frequent noun lemmas (with stable lemma_id 10001-69999)
+  - 2,000 most frequent verb lemmas (with stable lemma_id 70001-99999)
+  - Corpus-attested declension forms (encoded as form_id)
+  - Corpus-attested conjugation forms (encoded as form_id)
 
 ## Notes
 

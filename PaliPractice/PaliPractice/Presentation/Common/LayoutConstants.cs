@@ -28,14 +28,15 @@ public static class LayoutConstants
     
     // lower limits
     const double HeightTall = 800;
-    const double HeightMedium = 720;
-    const double HeightShort = 600;
+    const double HeightMedium = 700; // iPhone 8+ (414×736), iPad Mini (744×1133), taller old Androids
+    const double HeightShort = 600; // iPhone 8 (375×667, old Androids (360×640), old desktops (1024×768, 1280×720)
+    // anything smaller: iPhone 5s (320×568)
 
     /// <summary>
     /// Determines the height class based on window height.
-    /// Uses window height directly for instant availability (no layout wait).
+    /// Uses window height directly for instant availability.
     /// </summary>
-    public static HeightClass GetHeightClass(double windowHeight) => windowHeight switch
+    static HeightClass GetHeightClass(double windowHeight) => windowHeight switch
     {
         >= HeightTall => HeightClass.Tall,
         >= HeightMedium => HeightClass.Medium,
@@ -245,8 +246,10 @@ public static class LayoutConstants
     public static class Sizes
     {
         public const double RankBadgeCornerRadius = 12;
+        
         public const double PlaceholderHeight = 2;
         public const double PlaceholderBorderThickness = 2;
+        
         public const double ProgressBarHeight = 6;
         public const double ProgressBarCornerRadius = 3;
     }

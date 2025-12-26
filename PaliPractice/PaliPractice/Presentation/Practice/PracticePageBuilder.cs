@@ -153,18 +153,55 @@ public static class PracticePageBuilder
         var windowWidth = App.MainWindow?.Bounds.Width ?? LayoutConstants.ContentMaxWidth;
         var contentWidth = Math.Min(windowWidth, LayoutConstants.ContentMaxWidth);
 
+        // Wrap example in ScrollViewer for overflow handling
+        var exampleScrollViewer = new ScrollViewer()
+            .VerticalScrollBarVisibility(ScrollBarVisibility.Hidden)
+            .HorizontalScrollBarVisibility(ScrollBarVisibility.Disabled)
+            .VerticalAlignment(VerticalAlignment.Top)
+            .Content(exampleContainer);
+
+        // Fade overlay to hint at scrollable content (gradient from transparent to background)
+        var bgBrush = Application.Current.Resources["BackgroundBrush"] as SolidColorBrush;
+        var bgColor = bgBrush?.Color ?? Colors.White;
+
+        var fadeOverlay = new Border()
+            .Height(16)
+            .VerticalAlignment(VerticalAlignment.Bottom)
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .IsHitTestVisible(false)
+            .Opacity(0) // Start hidden
+            .Background(new LinearGradientBrush
+            {
+                StartPoint = new Windows.Foundation.Point(0.5, 0),
+                EndPoint = new Windows.Foundation.Point(0.5, 1),
+                GradientStops =
+                {
+                    new GradientStop { Color = Colors.Transparent, Offset = 0 },
+                    new GradientStop { Color = bgColor, Offset = 1 }
+                }
+            });
+
+        // Detect overflow and show/hide fade overlay
+        exampleScrollViewer.SizeChanged += (s, e) => UpdateFadeOverlay();
+        exampleContainer.SizeChanged += (s, e) => UpdateFadeOverlay();
+        exampleScrollViewer.ViewChanged += (s, e) => UpdateFadeOverlay();
+
+        // Container that fills available space, with ScrollViewer and fade overlay
+        var exampleArea = new Grid()
+            .VerticalAlignment(VerticalAlignment.Stretch)
+            .Children(exampleScrollViewer, fadeOverlay);
+
         // Build content area with explicit width and uniform padding
         var contentArea = new Grid()
-            .RowDefinitions("Auto,Auto,Auto,*")
+            .RowDefinitions("Auto,Auto,*")
             .Width(contentWidth)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .VerticalAlignment(VerticalAlignment.Stretch)
-            .Padding(contentPadding)
+            .Padding(contentPadding, contentPadding, contentPadding, contentPadding)
             .Children(
                 cardBorder.Grid(row: 0),
                 translationContainer.Margin(0, contentPadding, 0, 0).Grid(row: 1),
-                exampleContainer.Margin(0, contentPadding, 0, 0).Grid(row: 2),
-                new Border().Grid(row: 3) // Dynamic bottom spacing
+                exampleArea.Margin(0, contentPadding, 0, 0).Grid(row: 2)
             );
         elements.ContentArea = contentArea;
 
@@ -184,6 +221,13 @@ public static class PracticePageBuilder
                 navContainer.Grid(row: 2),
                 dailyGoalBar.Grid(row: 3)
             );
+
+        void UpdateFadeOverlay()
+        {
+            var hasOverflow = exampleScrollViewer.ScrollableHeight > 0;
+            var isAtBottom = exampleScrollViewer.VerticalOffset >= exampleScrollViewer.ScrollableHeight - 4;
+            fadeOverlay.Opacity = hasOverflow && !isAtBottom ? 1 : 0;
+        }
     }
 
     #endregion
@@ -572,19 +616,25 @@ public static class PracticePageBuilder
             .HorizontalAlignment(HorizontalAlignment.Center)
             .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"));
 
+        // Reference uses Viewbox to shrink font instead of wrapping
         var referenceTextBlock = PaliText()
             .TextWithin<ExampleCarouselViewModel>(c => c.CurrentReference)
             .FontSize(fonts.SuttaReference)
-            .TextWrapping(TextWrapping.Wrap)
+            .TextWrapping(TextWrapping.NoWrap)
             .TextAlignment(TextAlignment.Center)
-            .HorizontalAlignment(HorizontalAlignment.Center)
             .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"));
+
+        var referenceViewbox = new Viewbox()
+            .Stretch(Stretch.Uniform)
+            .StretchDirection(StretchDirection.DownOnly) // Only shrink, never grow
+            .HorizontalAlignment(HorizontalAlignment.Center)
+            .Child(referenceTextBlock);
 
         var container = new StackPanel()
             .Spacing(LayoutConstants.Gaps.ExampleSection)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .Scope(carouselPath)
-            .Children(exampleTextBlock, referenceTextBlock);
+            .Children(exampleTextBlock, referenceViewbox);
 
         return (exampleTextBlock, referenceTextBlock, container);
     }
@@ -610,7 +660,7 @@ public static class PracticePageBuilder
         var contentPadding = LayoutConstants.Gaps.Primary(heightClass);
         var container = new Grid()
             .MaxWidth(LayoutConstants.ContentMaxWidth)
-            .Padding(contentPadding, contentPadding, contentPadding, 0) // No bottom padding (daily goal has top margin)
+            .Padding(contentPadding, 0, contentPadding, 0) // No top/bottom padding (gaps handled by adjacent elements)
             .Children(
                 // Reveal button - visible when NOT revealed
                 BuildRevealButton(revealCommand)

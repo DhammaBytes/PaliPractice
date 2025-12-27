@@ -127,19 +127,21 @@ public partial class App : Application
         
         MainWindow = builder.Window;
         
-        // if (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() || OperatingSystem.IsLinux())
-        // {
-        //     var displayInfo = DisplayInformation.CreateForWindowId(MainWindow.AppWindow.Id);
-        //     
-        //     var logicalWidth = 800;
-        //     var logicalHeight = 600;
-        //     
-        //     MainWindow.AppWindow.Resize(new SizeInt32
-        //     {
-        //         Width = (int)(logicalWidth * scale),
-        //         Height = (int)(logicalHeight * scale)
-        //     });
-        // }
+        if (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() || OperatingSystem.IsLinux())
+        {
+            // var displayInfo = DisplayInformation.CreateForWindowId(MainWindow.AppWindow.Id);
+
+            // var scale = 1;
+            
+            // var logicalWidth = 800;
+            // var logicalHeight = 600;
+            
+            MainWindow.AppWindow.Resize(new SizeInt32
+            {
+                Width = 800,//(int)(logicalWidth * scale),
+                Height = 600//(int)(logicalHeight * scale)
+            });
+        }
 
 #if DEBUG
         MainWindow.UseStudio();

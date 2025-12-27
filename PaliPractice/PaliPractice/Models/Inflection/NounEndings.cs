@@ -1,59 +1,48 @@
 namespace PaliPractice.Models.Inflection;
 
 /// <summary>
-/// Provides noun declension endings for regular patterns.
-/// Returns array of possible endings (some cases have multiple valid forms).
-/// Irregular patterns are in NounPatternsIrregular.cs and return full forms.
+/// Provides noun declension endings for patterns.
+/// Regular patterns return endings; irregular patterns return full forms.
 /// </summary>
-public static partial class NounPatterns
+public static partial class NounEndings
 {
-    /// <summary>
-    /// Set of irregular noun patterns that return full forms instead of endings.
-    /// </summary>
-    static readonly HashSet<string> IrregularPatterns =
-    [
-        "rāja masc",
-        "brahma masc",
-        "kamma nt"
-    ];
-
-    /// <summary>
-    /// Check if a pattern is irregular. Irregular patterns return full forms
-    /// instead of endings that should be appended to the stem.
-    /// </summary>
-    public static bool IsIrregular(string pattern) => IrregularPatterns.Contains(pattern);
-
     /// <summary>
     /// Get declension endings for a noun pattern.
     /// </summary>
-    /// <param name="pattern">Pattern name (e.g., "a masc", "ā fem")</param>
+    /// <param name="pattern">The noun pattern enum value</param>
     /// <param name="nounCase">Grammatical case</param>
     /// <param name="number">Singular or plural</param>
     /// <returns>Array of endings. Empty array if pattern not supported.</returns>
-    public static string[] GetEndings(string pattern, Case nounCase, Number number)
+    public static string[] GetEndings(NounPattern pattern, Case nounCase, Number number)
     {
         return pattern switch
         {
-            // Regular patterns (covers ~94% of nouns)
-            "a masc" => GetA_Masc(nounCase, number),
-            "a nt" => GetA_Nt(nounCase, number),
-            "ā fem" => GetA_Fem(nounCase, number),
-            "i masc" => GetI_Masc(nounCase, number),
-            "i fem" => GetI_Fem(nounCase, number),
-            "i nt" => GetI_Nt(nounCase, number),
-            "ī masc" => GetI_Long_Masc(nounCase, number),
-            "ī fem" => GetI_Long_Fem(nounCase, number),
-            "u masc" => GetU_Masc(nounCase, number),
-            "u nt" => GetU_Nt(nounCase, number),
-            "u fem" => GetU_Fem(nounCase, number),
-            "ū masc" => GetU_Long_Masc(nounCase, number),
-            "as masc" => GetAs_Masc(nounCase, number),
-            "ar masc" => GetAr_Masc(nounCase, number),
-            "ant masc" => GetAnt_Masc(nounCase, number),
-            // Irregular patterns (defined in NounPatternsIrregular.cs)
-            "rāja masc" => GetRaja_Masc(nounCase, number),
-            "brahma masc" => GetBrahma_Masc(nounCase, number),
-            "kamma nt" => GetKamma_Nt(nounCase, number),
+            // Masculine patterns
+            NounPattern.AMasc => GetA_Masc(nounCase, number),
+            NounPattern.IMasc => GetI_Masc(nounCase, number),
+            NounPattern.ĪMasc => GetI_Long_Masc(nounCase, number),
+            NounPattern.UMasc => GetU_Masc(nounCase, number),
+            NounPattern.ŪMasc => GetU_Long_Masc(nounCase, number),
+            NounPattern.AsMasc => GetAs_Masc(nounCase, number),
+            NounPattern.ArMasc => GetAr_Masc(nounCase, number),
+            NounPattern.AntMasc => GetAnt_Masc(nounCase, number),
+
+            // Neuter patterns
+            NounPattern.ANeut => GetA_Nt(nounCase, number),
+            NounPattern.INeut => GetI_Nt(nounCase, number),
+            NounPattern.UNeut => GetU_Nt(nounCase, number),
+
+            // Feminine patterns
+            NounPattern.ĀFem => GetA_Fem(nounCase, number),
+            NounPattern.IFem => GetI_Fem(nounCase, number),
+            NounPattern.ĪFem => GetI_Long_Fem(nounCase, number),
+            NounPattern.UFem => GetU_Fem(nounCase, number),
+
+            // Irregular patterns (defined in NounEndingsIrregular.cs)
+            NounPattern.RājaMasc => GetRaja_Masc(nounCase, number),
+            NounPattern.BrahmaMasc => GetBrahma_Masc(nounCase, number),
+            NounPattern.KammaNeut => GetKamma_Nt(nounCase, number),
+
             _ => []
         };
     }

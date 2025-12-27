@@ -16,7 +16,7 @@ public interface IWord
     string Lemma { get; }
 
     string? Stem { get; }
-    string Pattern { get; }
+    string RawPattern { get; }
 
     /// <summary>
     /// Whether this word uses an irregular inflection pattern.

@@ -6,7 +6,7 @@ namespace PaliPractice.Models.Inflection;
 /// Note: These patterns return full inflected forms (not just endings) because
 /// irregular nouns have stem changes that can't be represented as simple suffixes.
 /// </summary>
-public static partial class NounPatterns
+public static partial class NounEndings
 {
     #region Irregular patterns
 

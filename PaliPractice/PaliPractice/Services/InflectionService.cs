@@ -46,7 +46,7 @@ public class InflectionService : IInflectionService
         Case nounCase,
         Number number)
     {
-        if (string.IsNullOrEmpty(noun.Pattern) || string.IsNullOrEmpty(noun.Stem))
+        if (string.IsNullOrEmpty(noun.RawPattern) || string.IsNullOrEmpty(noun.Stem))
         {
             return new Declension
             {
@@ -59,7 +59,7 @@ public class InflectionService : IInflectionService
         }
 
         // Get all possible endings for this pattern and grammatical parameters
-        var endings = NounPatterns.GetEndings(noun.Pattern, nounCase, number);
+        var endings = NounEndings.GetEndings(noun.Pattern, nounCase, number);
 
         if (endings.Length == 0)
         {
@@ -122,7 +122,7 @@ public class InflectionService : IInflectionService
         Tense tense,
         bool reflexive)
     {
-        if (string.IsNullOrEmpty(verb.Pattern) || string.IsNullOrEmpty(verb.Stem))
+        if (string.IsNullOrEmpty(verb.RawPattern) || string.IsNullOrEmpty(verb.Stem))
         {
             return new Conjugation
             {
@@ -136,7 +136,7 @@ public class InflectionService : IInflectionService
         }
 
         // Get all possible endings for this pattern and grammatical parameters
-        var endings = VerbPatterns.GetEndings(
+        var endings = VerbEndings.GetEndings(
             verb.Pattern,
             person,
             number,

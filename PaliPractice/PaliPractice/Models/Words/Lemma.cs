@@ -29,7 +29,7 @@ public class Lemma : ILemma
 
         // Group by pattern and find the dominant one
         var byPattern = allWords
-            .GroupBy(w => w.Pattern ?? "")
+            .GroupBy(w => w.RawPattern ?? "")
             .Select(g => new
             {
                 Pattern = g.Key,
@@ -46,13 +46,13 @@ public class Lemma : ILemma
         // Separate words into the main list and excluded
         // Order by EbtCount descending so Primary gets highest frequency variant
         _words = allWords
-            .Where(w => (w.Pattern ?? "") == dominantPattern)
+            .Where(w => (w.RawPattern ?? "") == dominantPattern)
             .OrderByDescending(w => w.EbtCount)
             .ThenBy(w => w.Id)
             .ToList();
 
         _excluded = allWords
-            .Where(w => (w.Pattern ?? "") != dominantPattern)
+            .Where(w => (w.RawPattern ?? "") != dominantPattern)
             .OrderBy(w => w.Id)
             .ToList();
     }

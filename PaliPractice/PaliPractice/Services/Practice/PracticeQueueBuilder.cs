@@ -208,6 +208,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         var numberSetting = _userData.GetSetting(SettingsKeys.DeclensionNumberSetting, "Both");
         var minRank = _userData.GetSetting(SettingsKeys.DeclensionLemmaMin, SettingsKeys.DefaultLemmaMin);
         var maxRank = _userData.GetSetting(SettingsKeys.DeclensionLemmaMax, SettingsKeys.DefaultLemmaMax);
+        var includeIrregular = _userData.GetSetting(SettingsKeys.DeclensionIncludeIrregular, true);
 
         // Load excluded patterns per gender
         var mascExcluded = ParsePatternSet(_userData.GetSetting(SettingsKeys.DeclensionMascExcludedPatterns, ""));
@@ -230,7 +231,11 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         {
             var noun = (Noun)lemma.Primary;
 
-            // Skip if pattern is excluded for this gender (gender is derived from pattern selection)
+            // Skip irregular patterns if not enabled
+            if (!includeIrregular && noun.Pattern.IsIrregular())
+                continue;
+
+            // Skip if pattern is excluded for this gender
             if (IsPatternExcluded(noun.Pattern, noun.Gender, mascExcluded, ntExcluded, femExcluded))
                 continue;
 
@@ -254,18 +259,24 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
     /// <summary>
     /// Checks if a noun pattern is excluded based on gender and excluded pattern sets.
-    /// Pattern format is "stem gender" (e.g., "a masc", "ā fem", "i nt").
-    /// Irregular patterns like "rāja masc" are mapped to their base pattern "a".
+    /// Irregular patterns are checked against their parent regular pattern.
+    /// Special patterns like DviCard are always excluded.
     /// </summary>
     static bool IsPatternExcluded(
-        string pattern,
+        NounPattern pattern,
         Gender gender,
         HashSet<string> mascExcluded,
         HashSet<string> ntExcluded,
         HashSet<string> femExcluded)
     {
-        // Extract the pattern stem (first part before space)
-        var stem = GetPatternStem(pattern);
+        // Special patterns (like cardinal numbers) are always excluded
+        if (pattern == NounPattern.DviCard)
+            return true;
+
+        // Get the label to check: parent regular for irregulars, self for regulars
+        var checkboxLabel = pattern.IsIrregular()
+            ? pattern.ParentRegular().ToDisplayLabel()
+            : pattern.ToDisplayLabel();
 
         // Get the appropriate exclusion set for this gender
         var excluded = gender switch
@@ -276,25 +287,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
             _ => []
         };
 
-        return excluded.Contains(stem);
-    }
-
-    /// <summary>
-    /// Extracts the pattern stem from a full pattern string.
-    /// Maps irregular patterns to their base pattern.
-    /// Examples: "a masc" → "a", "rāja masc" → "a", "kamma nt" → "a"
-    /// </summary>
-    static string GetPatternStem(string pattern)
-    {
-        // Map irregular patterns to their base pattern stem
-        // These are included in the "a" checkbox per user specification
-        return pattern switch
-        {
-            "rāja masc" => "a",
-            "brahma masc" => "a",
-            "kamma nt" => "a",
-            _ => pattern.Split(' ')[0]  // First part is the stem
-        };
+        return excluded.Contains(checkboxLabel);
     }
 
     static HashSet<string> ParsePatternSet(string csv)
@@ -310,23 +303,15 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
     /// <summary>
     /// Checks if a verb pattern is excluded based on excluded pattern set.
-    /// Maps irregular patterns to their base checkbox:
-    /// - ati: includes "ati pr", "hoti pr", "atthi pr"
-    /// - oti: includes "oti pr", "karoti pr", "brūti pr"
+    /// Irregular patterns are checked against their parent regular pattern.
     /// </summary>
-    static bool IsVerbPatternExcluded(string pattern, HashSet<string> excludedPatterns)
+    static bool IsVerbPatternExcluded(VerbPattern pattern, HashSet<string> excludedPatterns)
     {
-        // Map pattern to checkbox key
-        var checkboxKey = pattern switch
-        {
-            "ati pr" or "hoti pr" or "atthi pr" => "ati",
-            "eti pr" => "eti",
-            "oti pr" or "karoti pr" or "brūti pr" => "oti",
-            "āti pr" => "āti",
-            _ => null  // Unknown patterns are not excluded
-        };
-
-        return checkboxKey != null && excludedPatterns.Contains(checkboxKey);
+        // Get the label to check: parent regular for irregulars, self for regulars
+        var checkboxLabel = pattern.IsIrregular()
+            ? pattern.ParentRegular().ToDisplayLabel()
+            : pattern.ToDisplayLabel();
+        return excludedPatterns.Contains(checkboxLabel);
     }
 
     List<long> GetEligibleConjugationFormIds()
@@ -338,6 +323,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         var reflexiveSetting = _userData.GetSetting(SettingsKeys.ConjugationReflexive, SettingsKeys.DefaultReflexive);
         var minRank = _userData.GetSetting(SettingsKeys.ConjugationLemmaMin, SettingsKeys.DefaultLemmaMin);
         var maxRank = _userData.GetSetting(SettingsKeys.ConjugationLemmaMax, SettingsKeys.DefaultLemmaMax);
+        var includeIrregular = _userData.GetSetting(SettingsKeys.ConjugationIncludeIrregular, true);
 
         // Load excluded patterns
         var excludedPatterns = ParsePatternSet(_userData.GetSetting(SettingsKeys.ConjugationExcludedPatterns, ""));
@@ -361,6 +347,10 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         foreach (var lemma in lemmas)
         {
             var verb = (Verb)lemma.Primary;
+
+            // Skip irregular patterns if not enabled
+            if (!includeIrregular && verb.Pattern.IsIrregular())
+                continue;
 
             // Skip if pattern is excluded
             if (IsVerbPatternExcluded(verb.Pattern, excludedPatterns))

@@ -21,6 +21,9 @@ public static class SettingsKeys
     public const string DeclensionNtExcludedPatterns = "declension.nt_excluded";
     public const string DeclensionFemExcludedPatterns = "declension.fem_excluded";
 
+    // Declension irregular nouns toggle
+    public const string DeclensionIncludeIrregular = "declension.include_irregular";
+
     // Declension number setting: "Both", "Singular", "Plural"
     public const string DeclensionNumberSetting = "declension.number_setting";
 
@@ -36,6 +39,9 @@ public static class SettingsKeys
     // ati includes: ati pr, hoti pr, atthi pr
     // oti includes: oti pr, karoti pr, brūti pr
     public const string ConjugationExcludedPatterns = "conjugation.excluded_patterns";
+
+    // Conjugation irregular verbs toggle
+    public const string ConjugationIncludeIrregular = "conjugation.include_irregular";
 
     // Conjugation number setting: "Both", "Singular", "Plural"
     public const string ConjugationNumberSetting = "conjugation.number_setting";

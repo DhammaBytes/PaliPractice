@@ -112,7 +112,9 @@ public sealed partial class DeclensionSettingsPage : Page
                         ("ī", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternFemILong)),
                               cb => cb.SetBinding(Control.IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternFemILong))),
                         ("u", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternFemU)),
-                              cb => cb.SetBinding(Control.IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternFemU)))
+                              cb => cb.SetBinding(Control.IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternFemU))),
+                        ("ar", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternFemAr)),
+                              cb => cb.SetBinding(Control.IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternFemAr)))
                     ]
                 ),
 
@@ -128,6 +130,10 @@ public sealed partial class DeclensionSettingsPage : Page
                               cb => cb.SetBinding(Control.IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternNtU)))
                     ]
                 ),
+
+                // Include irregular toggle
+                SettingsRow.BuildToggle<DeclensionSettingsViewModel>(
+                    "Include irregular", v => v.IncludeIrregular),
 
                 // Number dropdown (at end of Practice filters section)
                 SettingsRow.BuildDropdown(

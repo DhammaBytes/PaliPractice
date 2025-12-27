@@ -1,4 +1,3 @@
-using PaliPractice.Models.Inflection;
 using SQLite;
 
 namespace PaliPractice.Models.Words;
@@ -31,15 +30,24 @@ public class Noun : IWord
     [Column("stem")]
     public string? Stem { get; set; }
 
+    /// <summary>
+    /// Raw pattern string from the database (e.g., "a masc").
+    /// </summary>
     [Column("pattern")]
-    public string Pattern { get; set; } = string.Empty;
+    public string RawPattern { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Typed pattern enum value parsed from RawPattern.
+    /// </summary>
+    [Ignore]
+    public NounPattern Pattern => NounPatternHelper.Parse(RawPattern);
 
     /// <summary>
     /// Whether this noun uses an irregular declension pattern.
     /// Irregular patterns return full forms instead of endings.
     /// </summary>
     [Ignore]
-    public bool Irregular => NounPatterns.IsIrregular(Pattern);
+    public bool Irregular => Pattern.IsIrregular();
 
     /// <summary>
     /// Display details for this noun. Lazy-loaded when showing flashcards.

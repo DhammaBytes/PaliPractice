@@ -1,40 +1,22 @@
 namespace PaliPractice.Models.Inflection;
 
 /// <summary>
-/// Provides verb conjugation endings for regular present tense patterns.
-/// Covers 4 regular patterns: ati pr, eti pr, oti pr, āti pr.
-/// Irregular patterns are in VerbPatternsIrregular.cs and return full forms.
+/// Provides verb conjugation endings for present tense patterns.
+/// Regular patterns return endings; irregular patterns return full forms.
 /// </summary>
-public static partial class VerbPatterns
+public static partial class VerbEndings
 {
-    /// <summary>
-    /// Set of irregular verb patterns that return full forms instead of endings.
-    /// </summary>
-    static readonly HashSet<string> IrregularPatterns =
-    [
-        "hoti pr",
-        "atthi pr",
-        "karoti pr",
-        "brūti pr"
-    ];
-
-    /// <summary>
-    /// Check if a pattern is irregular. Irregular patterns return full forms
-    /// instead of endings that should be appended to the stem.
-    /// </summary>
-    public static bool IsIrregular(string pattern) => IrregularPatterns.Contains(pattern);
-
     /// <summary>
     /// Get conjugation endings for a verb pattern.
     /// </summary>
-    /// <param name="pattern">Pattern name (e.g., "ati pr", "eti pr")</param>
+    /// <param name="pattern">The verb pattern enum value</param>
     /// <param name="person">First, second, or third person</param>
     /// <param name="number">Singular or plural</param>
     /// <param name="tense">Tense (includes traditional moods: present, imperative, optative, future, aorist)</param>
     /// <param name="reflexive">Whether to get reflexive (middle voice) forms</param>
     /// <returns>Array of endings. Empty array if combination not supported.</returns>
     public static string[] GetEndings(
-        string pattern,
+        VerbPattern pattern,
         Person person,
         Number number,
         Tense tense,
@@ -43,15 +25,15 @@ public static partial class VerbPatterns
         return pattern switch
         {
             // Regular patterns
-            "ati pr" => GetAti_Pr(person, number, tense, reflexive),
-            "eti pr" => GetEti_Pr(person, number, tense, reflexive),
-            "oti pr" => GetOti_Pr(person, number, tense, reflexive),
-            "āti pr" => GetAti_Long_Pr(person, number, tense, reflexive),
-            // Irregular patterns (defined in VerbPatternsIrregular.cs)
-            "hoti pr" => GetHoti_Pr(person, number, tense, reflexive),
-            "atthi pr" => GetAtthi_Pr(person, number, tense, reflexive),
-            "karoti pr" => GetKaroti_Pr(person, number, tense, reflexive),
-            "brūti pr" => GetBruti_Pr(person, number, tense, reflexive),
+            VerbPattern.Ati => GetAti_Pr(person, number, tense, reflexive),
+            VerbPattern.Eti => GetEti_Pr(person, number, tense, reflexive),
+            VerbPattern.Oti => GetOti_Pr(person, number, tense, reflexive),
+            VerbPattern.Āti => GetAti_Long_Pr(person, number, tense, reflexive),
+            // Irregular patterns (defined in VerbEndingsIrregular.cs)
+            VerbPattern.Hoti => GetHoti_Pr(person, number, tense, reflexive),
+            VerbPattern.Atthi => GetAtthi_Pr(person, number, tense, reflexive),
+            VerbPattern.Karoti => GetKaroti_Pr(person, number, tense, reflexive),
+            VerbPattern.Brūti => GetBruti_Pr(person, number, tense, reflexive),
             _ => []
         };
     }

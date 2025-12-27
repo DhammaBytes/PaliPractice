@@ -1,3 +1,4 @@
+using PaliPractice.Models;
 using PaliPractice.Services.Practice;
 using PaliPractice.Services.UserData;
 
@@ -10,10 +11,13 @@ public partial class DeclensionSettingsViewModel : ObservableObject
     readonly IUserDataService _userData;
     bool _isLoading = true;
 
-    // Pattern stems by gender (matching NounPatterns.cs)
-    public static readonly string[] MascPatterns = ["a", "i", "ī", "u", "ū", "as", "ar", "ant"];
-    public static readonly string[] NtPatterns = ["a", "i", "u"];
-    public static readonly string[] FemPatterns = ["ā", "i", "ī", "u"];
+    // Pattern labels by gender (derived from NounPattern enum)
+    public static readonly string[] MascPatterns = NounPatternHelper.MasculinePatterns
+        .Select(p => p.ToDisplayLabel()).ToArray();
+    public static readonly string[] NtPatterns = NounPatternHelper.NeuterPatterns
+        .Select(p => p.ToDisplayLabel()).ToArray();
+    public static readonly string[] FemPatterns = NounPatternHelper.FemininePatterns
+        .Select(p => p.ToDisplayLabel()).ToArray();
 
     public DeclensionSettingsViewModel(INavigator navigator, IUserDataService userData)
     {
@@ -48,6 +52,10 @@ public partial class DeclensionSettingsViewModel : ObservableObject
         PatternFemI = !femExcluded.Contains("i");
         PatternFemILong = !femExcluded.Contains("ī");
         PatternFemU = !femExcluded.Contains("u");
+        PatternFemAr = !femExcluded.Contains("ar");
+
+        // Load irregular setting
+        IncludeIrregular = _userData.GetSetting(SettingsKeys.DeclensionIncludeIrregular, true);
 
         // Load number setting (migrate old values)
         var numberRaw = _userData.GetSetting(SettingsKeys.DeclensionNumberSetting, "Singular & Plural");
@@ -96,7 +104,11 @@ public partial class DeclensionSettingsViewModel : ObservableObject
         if (!PatternFemI) femExcluded.Add("i");
         if (!PatternFemILong) femExcluded.Add("ī");
         if (!PatternFemU) femExcluded.Add("u");
+        if (!PatternFemAr) femExcluded.Add("ar");
         _userData.SetSetting(SettingsKeys.DeclensionFemExcludedPatterns, string.Join(",", femExcluded));
+
+        // Save irregular setting
+        _userData.SetSetting(SettingsKeys.DeclensionIncludeIrregular, IncludeIrregular);
 
         // Save number setting
         _userData.SetSetting(SettingsKeys.DeclensionNumberSetting, NumberSetting);
@@ -173,7 +185,7 @@ public partial class DeclensionSettingsViewModel : ObservableObject
         (PatternMascAr ? 1 : 0) + (PatternMascAnt ? 1 : 0) +
         (PatternNtA ? 1 : 0) + (PatternNtI ? 1 : 0) + (PatternNtU ? 1 : 0) +
         (PatternFemA ? 1 : 0) + (PatternFemI ? 1 : 0) + (PatternFemILong ? 1 : 0) +
-        (PatternFemU ? 1 : 0);
+        (PatternFemU ? 1 : 0) + (PatternFemAr ? 1 : 0);
 
     // Masculine patterns
     [ObservableProperty]
@@ -460,8 +472,29 @@ public partial class DeclensionSettingsViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(CanDisablePatternFemI))]
     [NotifyPropertyChangedFor(nameof(CanDisablePatternFemILong))]
     [NotifyPropertyChangedFor(nameof(CanDisablePatternFemU))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemAr))]
     bool _patternFemU = true;
     partial void OnPatternFemUChanged(bool value) => SaveSettings();
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascA))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascI))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascILong))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascU))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascULong))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAs))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAr))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAnt))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtA))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtI))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtU))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemA))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemI))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemILong))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemU))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemAr))]
+    bool _patternFemAr = true;
+    partial void OnPatternFemArChanged(bool value) => SaveSettings();
 
     // CanDisable properties - disable when this is the last enabled pattern
     public bool CanDisablePatternMascA => EnabledPatternCount > 1 || !PatternMascA;
@@ -479,6 +512,12 @@ public partial class DeclensionSettingsViewModel : ObservableObject
     public bool CanDisablePatternFemI => EnabledPatternCount > 1 || !PatternFemI;
     public bool CanDisablePatternFemILong => EnabledPatternCount > 1 || !PatternFemILong;
     public bool CanDisablePatternFemU => EnabledPatternCount > 1 || !PatternFemU;
+    public bool CanDisablePatternFemAr => EnabledPatternCount > 1 || !PatternFemAr;
+
+    // Include irregular nouns toggle
+    [ObservableProperty]
+    bool _includeIrregular = true;
+    partial void OnIncludeIrregularChanged(bool value) => SaveSettings();
 
     #endregion
 

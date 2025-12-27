@@ -73,6 +73,10 @@ public sealed partial class ConjugationSettingsPage : Page
                 // Endings checkboxes row
                 BuildEndingsCheckboxRow(),
 
+                // Include irregular toggle
+                SettingsRow.BuildToggle<ConjugationSettingsViewModel>(
+                    "Include irregular", v => v.IncludeIrregular),
+
                 // Person checkboxes row
                 BuildPersonCheckboxRow(),
 

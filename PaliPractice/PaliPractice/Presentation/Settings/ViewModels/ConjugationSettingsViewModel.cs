@@ -1,3 +1,4 @@
+using PaliPractice.Models;
 using PaliPractice.Services.Practice;
 using PaliPractice.Services.UserData;
 
@@ -49,6 +50,9 @@ public partial class ConjugationSettingsViewModel : ObservableObject
         // Load reflexive setting
         ReflexiveSetting = _userData.GetSetting(SettingsKeys.ConjugationReflexive, SettingsKeys.DefaultReflexive);
 
+        // Load irregular setting
+        IncludeIrregular = _userData.GetSetting(SettingsKeys.ConjugationIncludeIrregular, true);
+
         // Load lemma range settings
         LemmaMin = _userData.GetSetting(SettingsKeys.ConjugationLemmaMin, SettingsKeys.DefaultLemmaMin);
         LemmaMax = _userData.GetSetting(SettingsKeys.ConjugationLemmaMax, SettingsKeys.DefaultLemmaMax);
@@ -86,6 +90,9 @@ public partial class ConjugationSettingsViewModel : ObservableObject
 
         // Save reflexive
         _userData.SetSetting(SettingsKeys.ConjugationReflexive, ReflexiveSetting);
+
+        // Save irregular
+        _userData.SetSetting(SettingsKeys.ConjugationIncludeIrregular, IncludeIrregular);
 
         // Save lemma range
         _userData.SetSetting(SettingsKeys.ConjugationLemmaMin, LemmaMin);
@@ -290,6 +297,11 @@ public partial class ConjugationSettingsViewModel : ObservableObject
     /// Whether to include reflexive forms.
     /// </summary>
     public bool IncludeReflexive => ReflexiveSetting is "both" or "reflexive";
+
+    // Include irregular verbs toggle
+    [ObservableProperty]
+    bool _includeIrregular = true;
+    partial void OnIncludeIrregularChanged(bool value) => SaveSettings();
 
     // Lemma range settings
     [ObservableProperty]

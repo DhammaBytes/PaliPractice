@@ -4,7 +4,7 @@ namespace PaliPractice.Models.Inflection;
 /// Irregular verb conjugation patterns.
 /// These are word-specific patterns that don't follow regular rules.
 /// </summary>
-public static partial class VerbPatterns
+public static partial class VerbEndings
 {
     #region Irregular patterns
 

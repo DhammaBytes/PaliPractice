@@ -167,13 +167,13 @@ def compute_declension_form_id(lemma_id: int, case: int, gender: int, number: in
     return lemma_id * 10_000 + case * 1_000 + gender * 100 + number * 10 + ending_index
 
 
-def compute_conjugation_form_id(lemma_id: int, tense: int, person: int, number: int, voice: int, ending_index: int) -> int:
+def compute_conjugation_form_id(lemma_id: int, tense: int, person: int, number: int, reflexive: int, ending_index: int) -> int:
     """
     Compute conjugation form_id matching C# Conjugation.ResolveId().
-    Format: lemma_id(5) + tense(1) + person(1) + number(1) + voice(1) + ending_index(1)
-    Example: 70683_2_3_1_2_3 → 7068323123
+    Format: lemma_id(5) + tense(1) + person(1) + number(1) + reflexive(1) + ending_index(1)
+    Example: 70683_2_3_1_0_3 → 7068323103
     """
-    return lemma_id * 100_000 + tense * 10_000 + person * 1_000 + number * 100 + voice * 10 + ending_index
+    return lemma_id * 100_000 + tense * 10_000 + person * 1_000 + number * 100 + reflexive * 10 + ending_index
 
 
 sys.path.append('../dpd-db')
@@ -319,12 +319,9 @@ class GrammarEnums:
     PERSON_SECOND = 2
     PERSON_THIRD = 3
 
-    # Voice enum
-    VOICE_NONE = 0
-    VOICE_ACTIVE = 1
-    VOICE_REFLEXIVE = 2
-    VOICE_PASSIVE = 3
-    VOICE_CAUSATIVE = 4
+    # Reflexive (boolean as int)
+    REFLEXIVE_NO = 0
+    REFLEXIVE_YES = 1
 
     # Tense enum (includes traditional moods: imperative, optative)
     TENSE_NONE = 0
@@ -361,13 +358,6 @@ class GrammarEnums:
         'first': PERSON_FIRST,
         'second': PERSON_SECOND,
         'third': PERSON_THIRD
-    }
-
-    VOICE_MAP = {
-        'active': VOICE_ACTIVE,
-        'reflexive': VOICE_REFLEXIVE,
-        'passive': VOICE_PASSIVE,
-        'causative': VOICE_CAUSATIVE
     }
 
     TENSE_MAP = {
@@ -473,7 +463,7 @@ class NounVerbExtractor:
                 ebt_count INTEGER DEFAULT 0,
                 lemma TEXT NOT NULL UNIQUE,
                 lemma_clean TEXT NOT NULL,
-                pos TEXT NOT NULL,
+                has_reflexive INTEGER NOT NULL DEFAULT 0,
                 type TEXT DEFAULT '',
                 trans TEXT DEFAULT '',
                 pattern TEXT,
@@ -508,7 +498,6 @@ class NounVerbExtractor:
         """)
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_nouns_gender ON nouns(gender)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_nouns_lemma_id ON nouns(lemma_id)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_verbs_pos ON verbs(pos)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_verbs_lemma_id ON verbs(lemma_id)")
         
         conn.commit()
@@ -516,15 +505,18 @@ class NounVerbExtractor:
         print(f"Created database schema at {self.output_db_path}")
     
     def get_noun_pos_list(self) -> List[str]:
-        """Get list of noun POS categories."""
-        return ['noun', 'masc', 'fem', 'neut', 'nt', 'abstr', 'act', 'agent', 'dimin']
+        """Get list of noun POS categories (exact matches only)."""
+        return ['masc', 'fem', 'nt']
     
     def get_verb_pos_list(self) -> List[str]:
-        """Get list of verb POS categories."""
-        return ['vb', 'pr', 'aor', 'fut', 'imperf', 'perf', 'opt', 'imp', 'cond', 
-                'caus', 'pass', 'reflx', 'deno', 'desid', 'intens', 'trans', 
-                'intrans', 'ditrans', 'impers', 'inf', 'abs', 'ger', 'pp', 
-                'prp', 'app', 'ptp', 'comp vb']
+        """Get list of verb POS categories (exact matches only).
+
+        Only 'pr' (present tense regular verbs) for now.
+        Future work: add irregular tense forms (aor, fut, opt, imp, cond) as separate trainer.
+        Future work: add ger, abs forms.
+        Future work: pp, prp, ptp, imperf, perf.
+        """
+        return ['pr']
     
     def get_training_nouns(self) -> List[DpdHeadword]:
         """Get most frequent nouns suitable for training, limited by unique lemma_clean count."""
@@ -576,20 +568,35 @@ class NounVerbExtractor:
             result.extend(lemma_words[lc])
         result.sort(key=lambda w: -(w.ebt_count or 0))
 
-        print(f"Found {len(result)} noun rows ({len(top_lemmas)} unique lemmas) with inflection templates")
-        if result:
-            print(f"Noun frequency range: {result[0].ebt_count} (highest) to {result[-1].ebt_count} (lowest)")
+        # Report lemmas with frequency variance across variants
+        print(f"\nNoun lemmas with frequency variance across senses:")
+        variance_count = 0
+        for lc in top_lemmas:
+            words = lemma_words[lc]
+            if len(words) > 1:
+                freqs = [w.ebt_count or 0 for w in words]
+                if min(freqs) != max(freqs):
+                    variance_count += 1
+                    if variance_count <= 10:  # Show first 10
+                        variants = ", ".join(f"{w.lemma_1}={w.ebt_count}" for w in sorted(words, key=lambda x: x.lemma_1))
+                        print(f"  {lc}: [{variants}]")
+        print(f"  ... {variance_count} lemmas total with frequency variance")
+
+        print(f"\nFound {len(result)} noun rows ({len(top_lemmas)} unique lemmas) with inflection templates")
+        if top_lemmas:
+            # Report frequency range based on lemma group's ranking frequency (max among variants)
+            first_lemma = top_lemmas[0]
+            last_lemma = top_lemmas[-1]
+            print(f"Lemma ranking frequency range: {lemma_max_ebt[first_lemma]} (highest: {first_lemma}) to {lemma_max_ebt[last_lemma]} (lowest: {last_lemma})")
         return result
     
     def get_training_verbs(self) -> List[DpdHeadword]:
         """Get most frequent verbs suitable for training, limited by unique lemma_clean count."""
         verb_pos = self.get_verb_pos_list()
-        excluded_verb_pos = ['pp', 'prp', 'ptp', 'imperf', 'perf']
 
         # lemma_clean is a Python @property, so we fetch all and filter in Python
         all_words = self.db_session.query(DpdHeadword).filter(
             DpdHeadword.pos.in_(verb_pos),
-            ~DpdHeadword.pos.in_(excluded_verb_pos),
             DpdHeadword.pattern.isnot(None),
             DpdHeadword.pattern != '',
             DpdHeadword.stem.isnot(None),
@@ -604,7 +611,10 @@ class NounVerbExtractor:
             ~DpdHeadword.meaning_1.contains('(comm)'),
             ~DpdHeadword.meaning_1.contains('in reference to'),
             ~DpdHeadword.meaning_1.contains('name of'),
-            ~DpdHeadword.meaning_1.contains('family name')
+            ~DpdHeadword.meaning_1.contains('names of'),
+            ~DpdHeadword.meaning_1.contains('family name'),
+            # Exclude verbs with reflexive-only forms (these are special cases)
+            ~DpdHeadword.grammar.contains('reflx')
         ).all()
 
         # Filter to words with inflection templates
@@ -632,9 +642,26 @@ class NounVerbExtractor:
             result.extend(lemma_words[lc])
         result.sort(key=lambda w: -(w.ebt_count or 0))
 
-        print(f"Found {len(result)} verb rows ({len(top_lemmas)} unique lemmas) with inflection templates")
-        if result:
-            print(f"Verb frequency range: {result[0].ebt_count} (highest) to {result[-1].ebt_count} (lowest)")
+        # Report lemmas with frequency variance across variants
+        print(f"\nVerb lemmas with frequency variance across senses:")
+        variance_count = 0
+        for lc in top_lemmas:
+            words = lemma_words[lc]
+            if len(words) > 1:
+                freqs = [w.ebt_count or 0 for w in words]
+                if min(freqs) != max(freqs):
+                    variance_count += 1
+                    if variance_count <= 10:  # Show first 10
+                        variants = ", ".join(f"{w.lemma_1}={w.ebt_count}" for w in sorted(words, key=lambda x: x.lemma_1))
+                        print(f"  {lc}: [{variants}]")
+        print(f"  ... {variance_count} lemmas total with frequency variance")
+
+        print(f"\nFound {len(result)} verb rows ({len(top_lemmas)} unique lemmas) with inflection templates")
+        if top_lemmas:
+            # Report frequency range based on lemma group's ranking frequency (max among variants)
+            first_lemma = top_lemmas[0]
+            last_lemma = top_lemmas[-1]
+            print(f"Lemma ranking frequency range: {lemma_max_ebt[first_lemma]} (highest: {first_lemma}) to {lemma_max_ebt[last_lemma]} (lowest: {last_lemma})")
         return result
     
     def parse_inflection_template(self, word: DpdHeadword, word_type: str) -> Tuple[List[Dict[str, Any]], int, int]:
@@ -786,7 +813,7 @@ class NounVerbExtractor:
             'person': GrammarEnums.PERSON_NONE,
             'number': GrammarEnums.NUMBER_NONE,
             'tense': GrammarEnums.TENSE_NONE,
-            'voice': GrammarEnums.VOICE_NONE
+            'reflexive': GrammarEnums.REFLEXIVE_NO
         }
 
         # Normalize once for consistent matching
@@ -809,28 +836,21 @@ class NounVerbExtractor:
             result['number'] = GrammarEnums.NUMBER_PLURAL
 
         # Tense - includes traditional moods (imperative, optative)
-        # Priority order: opt > imp > fut > aor > pr
-        if pos_lower == 'opt' or 'opt' in grammar_lower:
+        # For now we only extract 'pr' verbs, but template may contain other tenses
+        if 'opt' in grammar_lower:
             result['tense'] = GrammarEnums.TENSE_OPTATIVE
-        elif pos_lower == 'imp' or 'imp' in grammar_lower:
+        elif 'imp' in grammar_lower:
             result['tense'] = GrammarEnums.TENSE_IMPERATIVE
-        elif pos_lower == 'fut' or 'fut' in grammar_lower:
+        elif 'fut' in grammar_lower:
             result['tense'] = GrammarEnums.TENSE_FUTURE
-        elif pos_lower == 'aor' or 'aor' in grammar_lower:
+        elif 'aor' in grammar_lower:
             result['tense'] = GrammarEnums.TENSE_AORIST
-        elif pos_lower == 'pr' or 'pres' in grammar_lower:
+        elif 'pr' in grammar_lower or 'pres' in grammar_lower:
             result['tense'] = GrammarEnums.TENSE_PRESENT
 
-        # Voice - check pos first (DPD uses pos like 'pass', 'caus', 'reflx'),
-        # then grammar_str as fallback, default to Active
-        if pos_lower == 'caus' or 'caus' in grammar_lower:
-            result['voice'] = GrammarEnums.VOICE_CAUSATIVE
-        elif pos_lower == 'pass' or 'pass' in grammar_lower:
-            result['voice'] = GrammarEnums.VOICE_PASSIVE
-        elif pos_lower == 'reflx' or 'reflx' in grammar_lower:
-            result['voice'] = GrammarEnums.VOICE_REFLEXIVE
-        else:
-            result['voice'] = GrammarEnums.VOICE_ACTIVE
+        # Reflexive - detected from grammar string (template columns 5-8 have 'reflx' in grammar info)
+        if 'reflx' in grammar_lower:
+            result['reflexive'] = GrammarEnums.REFLEXIVE_YES
 
         return result
     
@@ -856,6 +876,7 @@ class NounVerbExtractor:
         # Process nouns
         total_declensions = 0
         nouns_processed = 0
+        nouns_discarded: List[str] = []  # Track nouns without nom sg
         total_noun_forms_generated = 0
         total_noun_forms_filtered = 0
 
@@ -916,6 +937,10 @@ class NounVerbExtractor:
                             except sqlite3.IntegrityError:
                                 # Skip duplicates
                                 pass
+                else:
+                    nouns_discarded.append(word.lemma_1)
+            else:
+                nouns_discarded.append(word.lemma_1)
         
         # Process verbs
         total_conjugations = 0
@@ -928,25 +953,29 @@ class NounVerbExtractor:
             if i % 100 == 0:
                 print(f"Processing verb {i}/{len(verbs)}: {word.lemma_1}")
 
-            # Insert verb
             lemma_id = get_verb_lemma_id(registry, word.lemma_clean)
+
+            # Extract conjugations first to determine has_reflexive
+            forms, generated, filtered = self.parse_inflection_template(word, 'verb')
+            total_verb_forms_generated += generated
+            total_verb_forms_filtered += filtered
+
+            # Check if any form has reflexive=1
+            has_reflexive = 1 if any(f.get('reflexive', 0) == GrammarEnums.REFLEXIVE_YES for f in forms) else 0
+
+            # Insert verb
             cursor.execute("""
                 INSERT INTO verbs (
-                    id, lemma_id, ebt_count, lemma, lemma_clean, pos, type, trans, pattern, derived_from, family_root,
+                    id, lemma_id, ebt_count, lemma, lemma_clean, has_reflexive, type, trans, pattern, derived_from, family_root,
                     stem, plus_case, meaning, source_1, sutta_1, example_1, source_2, sutta_2, example_2
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
-                word.id, lemma_id, word.ebt_count or 0, word.lemma_1, word.lemma_clean, word.pos,
+                word.id, lemma_id, word.ebt_count or 0, word.lemma_1, word.lemma_clean, has_reflexive,
                 word.verb or '', word.trans or '', word.pattern, word.derived_from or '', word.family_root or '',
                 clean_stem(word.stem), word.plus_case or '', word.meaning_1,
                 word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
                 word.source_2 or '', word.sutta_2 or '', word.example_2 or ''
             ))
-
-            # Extract conjugations
-            forms, generated, filtered = self.parse_inflection_template(word, 'verb')
-            total_verb_forms_generated += generated
-            total_verb_forms_filtered += filtered
 
             if forms:
                 verbs_processed += 1
@@ -961,7 +990,7 @@ class NounVerbExtractor:
                             tense=form.get('tense', GrammarEnums.TENSE_NONE),
                             person=form.get('person', GrammarEnums.PERSON_NONE),
                             number=form.get('number', GrammarEnums.NUMBER_NONE),
-                            voice=form.get('voice', GrammarEnums.VOICE_NONE),
+                            reflexive=form.get('reflexive', GrammarEnums.REFLEXIVE_NO),
                             ending_index=form.get('ending_index', 0) + 1  # Convert to 1-based
                         )
                         try:
@@ -990,6 +1019,8 @@ class NounVerbExtractor:
         print(f"Database: {self.output_db_path}")
         print(f"Total headwords: {len(nouns) + len(verbs)}")
         print(f"Nouns processed: {nouns_processed}/{len(nouns)}")
+        if nouns_discarded:
+            print(f"  Discarded (no nom sg): {', '.join(nouns_discarded)}")
         print(f"Verbs processed: {verbs_processed}/{len(verbs)}")
         print(f"Total declensions: {total_declensions}")
         print(f"Total conjugations: {total_conjugations}")
@@ -1032,11 +1063,12 @@ class NounVerbExtractor:
         for gender, count in cursor.fetchall():
             print(f"  {gender_names.get(gender, f'unknown({gender})')}: {count}")
 
-        # Verbs by POS
-        cursor.execute("SELECT pos, COUNT(*) FROM verbs GROUP BY pos ORDER BY COUNT(*) DESC LIMIT 10")
-        print("\nTop 10 Verb Types:")
-        for pos, count in cursor.fetchall():
-            print(f"  {pos}: {count}")
+        # Verbs by reflexive capability
+        cursor.execute("SELECT has_reflexive, COUNT(*) FROM verbs GROUP BY has_reflexive")
+        print("\nVerbs by Reflexive Capability:")
+        for has_reflex, count in cursor.fetchall():
+            label = "with reflexive forms" if has_reflex else "active only"
+            print(f"  {label}: {count}")
 
         # Corpus attestation counts
         cursor.execute("SELECT COUNT(*) FROM corpus_declensions")

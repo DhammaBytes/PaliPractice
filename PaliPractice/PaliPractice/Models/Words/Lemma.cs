@@ -19,7 +19,7 @@ public class Lemma : ILemma
     {
         LemmaClean = lemmaClean;
 
-        // All words with same lemma_clean share the same LemmaId
+        // All words with the same lemma_clean share the same LemmaId
         LemmaId = words.First().LemmaId;
 
         var allWords = words.ToList();
@@ -40,10 +40,12 @@ public class Lemma : ILemma
 
         var dominantPattern = byPattern.First().Pattern;
 
-        // Separate words into main list and variants
+        // Separate words into the main list and variants
+        // Order by EbtCount descending so .First() gets highest frequency variant
         _words = allWords
             .Where(w => (w.Pattern ?? "") == dominantPattern)
-            .OrderBy(w => w.Id)
+            .OrderByDescending(w => w.EbtCount)
+            .ThenBy(w => w.Id)
             .ToList();
 
         _variants = allWords

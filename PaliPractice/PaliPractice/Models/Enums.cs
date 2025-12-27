@@ -48,16 +48,7 @@ public enum Number
 }
 
 
-#region Verb-specific, not used seriously
-public enum Voice
-{
-    None,
-    Active = 1,
-    Reflexive = 2,
-    Passive = 3,
-    Causative = 4
-}
-
+// Transitivity - not actively used yet
 public enum Transitivity
 {
     None,
@@ -65,4 +56,3 @@ public enum Transitivity
     Intransitive = 2,
     Ditransitive = 3
 }
-#endregion

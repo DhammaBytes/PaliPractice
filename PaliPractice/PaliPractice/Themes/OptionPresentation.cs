@@ -8,7 +8,7 @@ public static class OptionPresentation
     // Pre-defined color constants
     static readonly Color NumberColor = Color.FromArgb(255, 230, 230, 255);
     static readonly Color PersonColor = Color.FromArgb(255, 230, 255, 230);
-    static readonly Color VoiceColor = Color.FromArgb(255, 255, 230, 230);
+    static readonly Color ReflexiveColor = Color.FromArgb(255, 255, 230, 230);
     static readonly Color TenseColor = Color.FromArgb(255, 240, 240, 255);
     static readonly Color GenderColor = Color.FromArgb(255, 220, 255, 220);
     static readonly Color CaseColor = Color.FromArgb(255, 255, 243, 224);
@@ -23,17 +23,18 @@ public static class OptionPresentation
         Person.Second => "\uE748",
         Person.Third => "\uE716",
 
-        Voice.Active => "\uE768",
-        Voice.Reflexive => "\uE74C",
-        Voice.Passive => "\uE72C",
-        Voice.Causative => "\uE74E",
-
         Gender.Masculine => "\uE71A",
         Gender.Neuter => "\uE734",
         Gender.Feminine => "\uE716",
 
         _ => null
     };
+
+    /// <summary>
+    /// Gets the glyph for reflexive voice indicator.
+    /// </summary>
+    public static string GetReflexiveGlyph(bool reflexive) =>
+        reflexive ? "\uE74C" : "\uE768";
 
     public static Color GetChipColor<T>(T value) where T : struct, Enum => value switch
     {
@@ -43,11 +44,6 @@ public static class OptionPresentation
         Person.First => PersonColor,
         Person.Second => PersonColor,
         Person.Third => PersonColor,
-
-        Voice.Active => VoiceColor,
-        Voice.Reflexive => VoiceColor,
-        Voice.Passive => VoiceColor,
-        Voice.Causative => VoiceColor,
 
         Tense.Present => TenseColor,
         Tense.Imperative => TenseColor,
@@ -70,6 +66,24 @@ public static class OptionPresentation
 
         _ => DefaultColor
     };
+
+    /// <summary>
+    /// Gets the chip color for reflexive indicator.
+    /// </summary>
+    public static Color GetReflexiveChipColor() => ReflexiveColor;
+
+    /// <summary>
+    /// Gets a cached SolidColorBrush for reflexive indicator.
+    /// </summary>
+    public static SolidColorBrush GetReflexiveChipBrush()
+    {
+        if (!_brushCache.TryGetValue(ReflexiveColor, out var brush))
+        {
+            brush = new SolidColorBrush(ReflexiveColor);
+            _brushCache[ReflexiveColor] = brush;
+        }
+        return brush;
+    }
 
     /// <summary>
     /// Gets a cached SolidColorBrush for the given enum value.

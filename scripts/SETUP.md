@@ -45,7 +45,7 @@ Version-controlled registry that assigns stable IDs to lemmas:
 
 ### Noun Filtering
 Words are included if they meet ALL of these criteria:
-- **POS types**: `noun`, `masc`, `fem`, `neut`, `nt`, `abstr`, `act`, `agent`, `dimin`
+- **POS types (exact match)**: `masc`, `fem`, `nt` only
 - **Has pattern**: `pattern` is not null or empty
 - **Has stem**: `stem` is not null or `-`
 - **Has frequency**: `ebt_count > 0`
@@ -63,8 +63,9 @@ Words are **excluded** if meaning contains:
 
 ### Verb Filtering
 Words are included if they meet ALL of these criteria:
-- **POS types**: `vb`, `pr`, `aor`, `fut`, `opt`, `imp`, `cond`, `caus`, `pass`, `reflx`, `deno`, `desid`, `intens`, `trans`, `intrans`, `ditrans`, `impers`, `inf`, `abs`, `ger`, `comp vb`
-- **Excluded POS**: `pp`, `prp`, `ptp`, `imperf`, `perf` (participles, imperfect/perfect tenses)
+- **POS types (exact match)**: `pr` only (present tense regular verbs)
+- **Excluded grammar**: Verbs with `reflx` in grammar column are excluded
+- **Future expansion**: `pp`, `prp`, `ptp`, `imperf`, `perf` may be added later
 - **Has pattern**: `pattern` is not null or empty
 - **Has stem**: `stem` is not null or `-`
 - **Has frequency**: `ebt_count > 0`
@@ -219,7 +220,9 @@ cd scripts && python3 extract_nouns_and_verbs.py
 - `ebt_count`: Frequency in Early Buddhist Texts (sorted by this)
 - `lemma`: Dictionary form
 - `lemma_clean`: Clean lemma without suffix
-- `pos`: Part of speech / verb type
+- `has_reflexive`: INTEGER - 1 if verb has reflexive (middle voice) forms in template, 0 otherwise
+- `type`: Verb type (e.g., "trans", "intrans")
+- `trans`: Transitivity
 - `stem`: Word stem for inflection
 - `pattern`: Inflection pattern
 - `family_root`: Root family classification
@@ -238,8 +241,8 @@ Single-column table storing corpus-attested noun forms as encoded `form_id`:
 Single-column table storing corpus-attested verb forms as encoded `form_id`:
 - `form_id`: INTEGER PRIMARY KEY - encodes all grammatical info
 
-**FormId encoding**: `lemma_id(5) + tense(1) + person(1) + number(1) + voice(1) + ending_id(1)`
-- Example: lemma_id=70683, tense=2, person=3, number=1, voice=2, ending_id=3 → `7068323123`
+**FormId encoding**: `lemma_id(5) + tense(1) + person(1) + number(1) + reflexive(1) + ending_id(1)`
+- Example: lemma_id=70683, tense=2, person=3, number=1, reflexive=1, ending_id=3 → `7068323113`
 
 ### Enum Values
 All grammatical attributes map to C# enums in `PaliPractice/Models/Enums.cs`:
@@ -251,7 +254,7 @@ All grammatical attributes map to C# enums in `PaliPractice/Models/Enums.cs`:
 | Gender | 0=None, 1=Masculine, 2=Neuter, 3=Feminine |
 | Person | 0=None, 1=First, 2=Second, 3=Third |
 | Tense | 0=None, 1=Present, 2=Imperative, 3=Optative, 4=Future, 5=Aorist |
-| Voice | 0=None, 1=Active, 2=Reflexive, 3=Passive, 4=Causative |
+| Reflexive | 0=Active (non-reflexive), 1=Reflexive (middle voice) |
 
 **EndingId**: 1-based (1, 2, 3...). Value 0 is reserved for "combination reference" (the declension/conjugation group itself, not a specific form).
 

@@ -25,7 +25,7 @@ public interface IDatabaseService
     /// Check if a specific verb form appears in the Pali Tipitaka corpus.
     /// Uses form_id lookup for efficient querying.
     /// </summary>
-    bool IsVerbFormInCorpus(int lemmaId, Tense tense, Person person, Number number, Voice voice, int endingIndex);
+    bool IsVerbFormInCorpus(int lemmaId, Tense tense, Person person, Number number, bool reflexive, int endingIndex);
 }
 
 public class DatabaseService : IDatabaseService
@@ -179,12 +179,12 @@ public class DatabaseService : IDatabaseService
         Tense tense,
         Person person,
         Number number,
-        Voice voice,
+        bool reflexive,
         int endingIndex)
     {
         EnsureInitialized();
 
-        var formId = Conjugation.ResolveId(lemmaId, tense, person, number, voice, endingIndex);
+        var formId = Conjugation.ResolveId(lemmaId, tense, person, number, reflexive, endingIndex);
         return _database!
             .Table<CorpusConjugation>()
             .Any(c => c.FormId == formId);

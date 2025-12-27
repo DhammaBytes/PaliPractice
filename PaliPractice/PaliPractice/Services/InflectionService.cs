@@ -23,7 +23,7 @@ public interface IInflectionService
         Person person,
         Number number,
         Tense tense,
-        Voice voice);
+        bool reflexive);
 }
 
 public class InflectionService : IInflectionService
@@ -118,7 +118,7 @@ public class InflectionService : IInflectionService
         Person person,
         Number number,
         Tense tense,
-        Voice voice)
+        bool reflexive)
     {
         if (string.IsNullOrEmpty(verb.Pattern) || string.IsNullOrEmpty(verb.Stem))
         {
@@ -128,7 +128,7 @@ public class InflectionService : IInflectionService
                 Person = person,
                 Number = number,
                 Tense = tense,
-                Voice = voice,
+                Reflexive = reflexive,
                 Forms = []
             };
         }
@@ -139,7 +139,7 @@ public class InflectionService : IInflectionService
             person,
             number,
             tense,
-            voice
+            reflexive
         );
 
         if (endings.Length == 0)
@@ -150,7 +150,7 @@ public class InflectionService : IInflectionService
                 Person = person,
                 Number = number,
                 Tense = tense,
-                Voice = voice,
+                Reflexive = reflexive,
                 Forms = []
             };
         }
@@ -165,7 +165,7 @@ public class InflectionService : IInflectionService
 
             // Convert array index to 1-based EndingId
             var endingId = EndingIdFromIndex(i);
-            var formId = Conjugation.ResolveId(verb.LemmaId, tense, person, number, voice, endingId);
+            var formId = Conjugation.ResolveId(verb.LemmaId, tense, person, number, reflexive, endingId);
 
             // Check if this specific form appears in the corpus
             var inCorpus = _databaseService.IsVerbFormInCorpus(
@@ -173,7 +173,7 @@ public class InflectionService : IInflectionService
                 tense,
                 person,
                 number,
-                voice,
+                reflexive,
                 endingId
             );
 
@@ -192,7 +192,7 @@ public class InflectionService : IInflectionService
             Person = person,
             Number = number,
             Tense = tense,
-            Voice = voice,
+            Reflexive = reflexive,
             Forms = forms
         };
     }

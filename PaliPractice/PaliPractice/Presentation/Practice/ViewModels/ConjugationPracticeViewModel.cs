@@ -50,7 +50,7 @@ public partial class ConjugationPracticeViewModel : Common.PracticeViewModelBase
         // Use first word (all share the same dominant pattern)
         var verb = (Verb)lemma.Words.First();
 
-        // Generate all grouped conjugations for this verb (one per person+number+tense+voice combo)
+        // Generate all grouped conjugations for this verb (one per person+number+tense+reflexive combo)
         var allConjugations = new List<Conjugation>();
         foreach (var person in Enum.GetValues<Person>())
         {
@@ -58,9 +58,9 @@ public partial class ConjugationPracticeViewModel : Common.PracticeViewModelBase
             {
                 foreach (var tense in Enum.GetValues<Tense>())
                 {
-                    foreach (var voice in Enum.GetValues<Voice>())
+                    foreach (var reflexive in new[] { false, true })
                     {
-                        var conjugation = _inflectionService.GenerateVerbForms(verb, person, number, tense, voice);
+                        var conjugation = _inflectionService.GenerateVerbForms(verb, person, number, tense, reflexive);
                         // Only include if it has an attested primary form
                         if (conjugation.Primary.HasValue)
                         {
@@ -79,7 +79,7 @@ public partial class ConjugationPracticeViewModel : Common.PracticeViewModelBase
             return;
         }
 
-        // Pick a random conjugation (person+number+tense+voice combo) for the user to produce
+        // Pick a random conjugation (person+number+tense+reflexive combo) for the user to produce
         _currentConjugation = allConjugations[_random.Next(allConjugations.Count)];
 
         // Update badge display properties

@@ -96,25 +96,25 @@ public class FormIdTests
     [Test]
     public void Conjugation_ResolveId_ProducesExpectedFormat()
     {
-        // lemmaId=70683, tense=2(Imperative), person=3(Third), number=1(Sg), voice=2(Reflexive), endingId=3
-        // Expected: 70683_2_3_1_2_3 → 7068323123
-        var formId = Conjugation.ResolveId(70683, Tense.Imperative, Person.Third, Number.Singular, Voice.Reflexive, 3);
+        // lemmaId=70683, tense=2(Imperative), person=3(Third), number=1(Sg), reflexive=1(true), endingId=3
+        // Expected: 70683_2_3_1_1_3 → 7068323113
+        var formId = Conjugation.ResolveId(70683, Tense.Imperative, Person.Third, Number.Singular, reflexive: true, 3);
 
-        formId.Should().Be(7068323123L);
+        formId.Should().Be(7068323113L);
     }
 
     [Test]
     public void Conjugation_ParseId_ReconstructsComponents()
     {
-        var formId = 7068323123L;
+        var formId = 7068323113L;
 
-        var (lemmaId, tense, person, number, voice, endingId) = Conjugation.ParseId(formId);
+        var (lemmaId, tense, person, number, reflexive, endingId) = Conjugation.ParseId(formId);
 
         lemmaId.Should().Be(70683);
         tense.Should().Be(Tense.Imperative);
         person.Should().Be(Person.Third);
         number.Should().Be(Number.Singular);
-        voice.Should().Be(Voice.Reflexive);
+        reflexive.Should().BeTrue();
         endingId.Should().Be(3);
     }
 
@@ -124,18 +124,18 @@ public class FormIdTests
         foreach (Tense t in Enum.GetValues<Tense>().Where(t => t != Tense.None))
         foreach (Person p in Enum.GetValues<Person>().Where(p => p != Person.None))
         foreach (Number n in Enum.GetValues<Number>().Where(n => n != Number.None))
-        foreach (Voice v in Enum.GetValues<Voice>().Where(v => v != Voice.None))
+        foreach (bool reflexive in new[] { false, true })
         for (int e = 0; e <= 4; e++)
         {
             var lemmaId = 75000;
-            var formId = Conjugation.ResolveId(lemmaId, t, p, n, v, e);
+            var formId = Conjugation.ResolveId(lemmaId, t, p, n, reflexive, e);
             var parsed = Conjugation.ParseId(formId);
 
             parsed.LemmaId.Should().Be(lemmaId);
             parsed.Tense.Should().Be(t);
             parsed.Person.Should().Be(p);
             parsed.Number.Should().Be(n);
-            parsed.Voice.Should().Be(v);
+            parsed.Reflexive.Should().Be(reflexive);
             parsed.EndingId.Should().Be(e);
         }
     }
@@ -143,7 +143,7 @@ public class FormIdTests
     [Test]
     public void Conjugation_FormId_ZeroEndingId_IndicatesCombination()
     {
-        var formId = Conjugation.ResolveId(70001, Tense.Present, Person.First, Number.Singular, Voice.Active, 0);
+        var formId = Conjugation.ResolveId(70001, Tense.Present, Person.First, Number.Singular, reflexive: false, 0);
 
         var parsed = Conjugation.ParseId(formId);
         parsed.EndingId.Should().Be(0, "EndingId=0 indicates a combination, not a specific ending");
@@ -158,27 +158,27 @@ public class FormIdTests
             Tense = Tense.Present,
             Person = Person.First,
             Number = Number.Singular,
-            Voice = Voice.Active,
+            Reflexive = false,
             Forms = []
         };
 
-        var expected = Conjugation.ResolveId(70001, Tense.Present, Person.First, Number.Singular, Voice.Active, 0);
+        var expected = Conjugation.ResolveId(70001, Tense.Present, Person.First, Number.Singular, reflexive: false, 0);
         conjugation.FormId.Should().Be(expected);
     }
 
-    [TestCase(70001, 7000111110L, Description = "First verb, Present 1st Sg Active, no ending")]
-    [TestCase(99999, 9999911110L, Description = "Last verb ID boundary")]
+    [TestCase(70001, 7000111100L, Description = "First verb, Present 1st Sg Active, no ending")]
+    [TestCase(99999, 9999911100L, Description = "Last verb ID boundary")]
     public void Conjugation_BoundaryLemmaIds(int lemmaId, long expectedFormId)
     {
-        var formId = Conjugation.ResolveId(lemmaId, Tense.Present, Person.First, Number.Singular, Voice.Active, 0);
+        var formId = Conjugation.ResolveId(lemmaId, Tense.Present, Person.First, Number.Singular, reflexive: false, 0);
         formId.Should().Be(expectedFormId);
     }
 
     [Test]
     public void Conjugation_FormId_IsLong_DueToTenDigits()
     {
-        // Max possible: 99999_5_3_2_4_4 = 9999953244
-        var maxFormId = Conjugation.ResolveId(99999, Tense.Aorist, Person.Third, Number.Plural, Voice.Causative, 4);
+        // Max possible: 99999_5_3_2_1_4 = 9999953214 (reflexive=true)
+        var maxFormId = Conjugation.ResolveId(99999, Tense.Aorist, Person.Third, Number.Plural, reflexive: true, 4);
 
         maxFormId.Should().BeGreaterThan(int.MaxValue, "10-digit verb FormIds exceed int.MaxValue");
     }
@@ -194,7 +194,7 @@ public class FormIdTests
         // Verb range: 70001-99999 → FormIds start at 7000100000
 
         var maxNounFormId = Declension.ResolveId(69999, Case.Vocative, Gender.Feminine, Number.Plural, 4);
-        var minVerbFormId = Conjugation.ResolveId(70001, Tense.Present, Person.First, Number.Singular, Voice.Active, 0);
+        var minVerbFormId = Conjugation.ResolveId(70001, Tense.Present, Person.First, Number.Singular, reflexive: false, 0);
 
         ((long)maxNounFormId).Should().BeLessThan(minVerbFormId,
             "Noun FormIds should never overlap with Verb FormIds");

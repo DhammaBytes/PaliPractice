@@ -28,22 +28,22 @@ public static class EnumMapper
     /// Parse a verb title like "pr 3rd sg" or "reflx opt 1st pl" into enum values.
     /// Note: Tense now includes traditional moods (imperative, optative).
     /// </summary>
-    public static (Tense tense, Person person, Number number, Voice voice) ParseVerbTitle(string title)
+    public static (Tense tense, Person person, Number number, bool reflexive) ParseVerbTitle(string title)
     {
         var parts = title.ToLower().Split(' ');
 
-        Voice voice;
+        bool reflexive;
         int offset;
 
         // Check for reflexive prefix
         if (parts[0] == "reflx")
         {
-            voice = Voice.Reflexive;
+            reflexive = true;
             offset = 1; // Skip the "reflx" part
         }
         else
         {
-            voice = Voice.Active;
+            reflexive = false;
             offset = 0;
         }
 
@@ -62,7 +62,7 @@ public static class EnumMapper
         // Parse number (sg, pl)
         var number = ParseNumber(parts[offset + 2]);
 
-        return (tense, person, number, voice);
+        return (tense, person, number, reflexive);
     }
 
     static Gender ParseGender(string gender)

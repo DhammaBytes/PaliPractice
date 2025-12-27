@@ -4,14 +4,14 @@ namespace PaliPractice.Presentation.Practice.ViewModels.Common.Entries;
 
 /// <summary>
 /// Represents a single example entry in the carousel.
-/// Combines a word with an example index (0 for Example1, 1 for Example2).
+/// Combines word details with an example index (0 for Example1, 1 for Example2).
 /// </summary>
-public record ExampleEntry(IWord Word, int ExampleIndex)
+public record ExampleEntry(IWordDetails Details, int ExampleIndex)
 {
     /// <summary>
     /// Gets the example text for this entry.
     /// </summary>
-    public string Example => ExampleIndex == 0 ? Word.Example1 : Word.Example2;
+    public string Example => ExampleIndex == 0 ? Details.Example1 : Details.Example2;
 
     /// <summary>
     /// Gets the combined reference (source + sutta).
@@ -21,8 +21,8 @@ public record ExampleEntry(IWord Word, int ExampleIndex)
     {
         get
         {
-            var source = ExampleIndex == 0 ? Word.Source1 : Word.Source2;
-            var sutta = ExampleIndex == 0 ? Word.Sutta1 : Word.Sutta2;
+            var source = ExampleIndex == 0 ? Details.Source1 : Details.Source2;
+            var sutta = ExampleIndex == 0 ? Details.Sutta1 : Details.Sutta2;
 
             // Format sutta: convert newlines to parenthetical format
             if (!string.IsNullOrEmpty(sutta))
@@ -43,7 +43,7 @@ public record ExampleEntry(IWord Word, int ExampleIndex)
     }
 
     /// <summary>
-    /// Gets the meaning from the parent word.
+    /// Gets the meaning from the word details.
     /// </summary>
-    public string? Meaning => Word.Meaning;
+    public string? Meaning => Details.Meaning;
 }

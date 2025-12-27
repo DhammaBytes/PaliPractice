@@ -1,4 +1,5 @@
 using PaliPractice.Models.Inflection;
+using PaliPractice.Models.Words;
 using PaliPractice.Services.UserData;
 using PaliPractice.Services.UserData.Entities;
 
@@ -215,11 +216,13 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
         var formIds = new List<long>();
 
-        // Get nouns by rank
-        var nouns = _trainingDb.GetNounsByRank(minRank, maxRank);
+        // Get noun lemmas by rank
+        var lemmas = _trainingDb.GetNounLemmasByRank(minRank, maxRank);
 
-        foreach (var noun in nouns)
+        foreach (var lemma in lemmas)
         {
+            var noun = (Noun)lemma.Primary;
+
             // Skip if noun's gender is not enabled
             if (!enabledGenders.Contains(noun.Gender))
                 continue;
@@ -229,10 +232,10 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                 foreach (var number in enabledNumbers)
                 {
                     // Check if this combination has corpus attestation
-                    if (_trainingDb.HasAttestedNounForm(noun.LemmaId, @case, noun.Gender, number))
+                    if (_trainingDb.HasAttestedNounForm(lemma.LemmaId, @case, noun.Gender, number))
                     {
                         // Use EndingId=0 for combination reference
-                        var formId = Declension.ResolveId(noun.LemmaId, @case, noun.Gender, number, 0);
+                        var formId = Declension.ResolveId(lemma.LemmaId, @case, noun.Gender, number, 0);
                         formIds.Add(formId);
                     }
                 }
@@ -260,12 +263,13 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
         var formIds = new List<long>();
 
-        // Get verbs by rank
-        var verbs = _trainingDb.GetVerbsByRank(minRank, maxRank);
+        // Get verb lemmas by rank
+        var lemmas = _trainingDb.GetVerbLemmasByRank(minRank, maxRank);
 
-        foreach (var verb in verbs)
+        foreach (var lemma in lemmas)
         {
-            var hasReflexive = _trainingDb.VerbHasReflexive(verb.LemmaId);
+            var verb = (Verb)lemma.Primary;
+            var hasReflexive = _trainingDb.VerbHasReflexive(lemma.LemmaId);
 
             foreach (var tense in enabledTenses)
             {
@@ -276,9 +280,9 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                         // Active forms
                         if (includeActive)
                         {
-                            if (_trainingDb.HasAttestedVerbForm(verb.LemmaId, tense, person, number, reflexive: false))
+                            if (_trainingDb.HasAttestedVerbForm(lemma.LemmaId, tense, person, number, reflexive: false))
                             {
-                                var formId = Conjugation.ResolveId(verb.LemmaId, tense, person, number, reflexive: false, 0);
+                                var formId = Conjugation.ResolveId(lemma.LemmaId, tense, person, number, reflexive: false, 0);
                                 formIds.Add(formId);
                             }
                         }
@@ -286,9 +290,9 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                         // Reflexive forms
                         if (includeReflexive && hasReflexive)
                         {
-                            if (_trainingDb.HasAttestedVerbForm(verb.LemmaId, tense, person, number, reflexive: true))
+                            if (_trainingDb.HasAttestedVerbForm(lemma.LemmaId, tense, person, number, reflexive: true))
                             {
-                                var formId = Conjugation.ResolveId(verb.LemmaId, tense, person, number, reflexive: true, 0);
+                                var formId = Conjugation.ResolveId(lemma.LemmaId, tense, person, number, reflexive: true, 0);
                                 formIds.Add(formId);
                             }
                         }

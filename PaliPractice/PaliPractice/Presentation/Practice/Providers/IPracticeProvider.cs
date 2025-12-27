@@ -5,7 +5,6 @@ namespace PaliPractice.Presentation.Practice.Providers;
 
 /// <summary>
 /// Provides practice items using the spaced repetition queue.
-/// Replaces ILemmaProvider for SRS-aware practice.
 /// </summary>
 public interface IPracticeProvider
 {
@@ -41,9 +40,9 @@ public interface IPracticeProvider
     bool MoveNext();
 
     /// <summary>
-    /// Get the word (Noun/Verb) for the current form.
+    /// Get the current lemma with details loaded.
     /// </summary>
-    IWord? GetCurrentWord();
+    ILemma? GetCurrentLemma();
 
     /// <summary>
     /// Get the grammatical parameters for the current form.

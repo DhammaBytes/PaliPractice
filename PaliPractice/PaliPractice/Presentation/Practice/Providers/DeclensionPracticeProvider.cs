@@ -56,12 +56,17 @@ public sealed class DeclensionPracticeProvider : IPracticeProvider
         return true;
     }
 
-    public IWord? GetCurrentWord()
+    public ILemma? GetCurrentLemma()
     {
         var item = Current;
         if (item == null) return null;
 
-        return _db.GetNounByLemmaId(item.LemmaId);
+        var lemma = _db.GetNounLemma(item.LemmaId);
+        if (lemma == null) return null;
+
+        // Ensure details are loaded
+        _db.EnsureDetails(lemma);
+        return lemma;
     }
 
     public object GetCurrentParameters()

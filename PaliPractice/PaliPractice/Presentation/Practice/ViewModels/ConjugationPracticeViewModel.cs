@@ -52,9 +52,9 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
         _ = InitializeAsync();
     }
 
-    protected override void PrepareCardAnswer(IWord word, object parameters)
+    protected override void PrepareCardAnswer(ILemma lemma, object parameters)
     {
-        var verb = (Verb)word;
+        var verb = (Verb)lemma.Primary;
 
         // Extract grammatical parameters from the SRS queue
         var (tense, person, number, reflexive) = ((Tense, Person, Number, bool))parameters;

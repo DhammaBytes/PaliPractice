@@ -50,34 +50,25 @@ public class TranslationEntry
     }
 
     /// <summary>
-    /// Builds translation entries from all words under a lemma.
-    /// Groups by unique meaning, collecting all examples for each.
+    /// Builds translation entry from a single word details.
     /// </summary>
-    public static IReadOnlyList<TranslationEntry> BuildFromLemma(ILemma lemma)
+    public static IReadOnlyList<TranslationEntry> BuildFromDetails(IWordDetails details)
     {
-        return BuildFromWords(lemma.Words);
+        return BuildFromAllDetails([details]);
     }
 
     /// <summary>
-    /// Builds translation entry from a single word.
-    /// </summary>
-    public static IReadOnlyList<TranslationEntry> BuildFromWord(IWord word)
-    {
-        return BuildFromWords([word]);
-    }
-
-    /// <summary>
-    /// Builds translation entries from a collection of words.
+    /// Builds translation entries from all word variants (all details for a lemma).
     /// Groups by unique meaning, collecting all examples for each.
     /// </summary>
-    static IReadOnlyList<TranslationEntry> BuildFromWords(IEnumerable<IWord> words)
+    public static IReadOnlyList<TranslationEntry> BuildFromAllDetails(IEnumerable<IWordDetails> detailsCollection)
     {
         var examplesByMeaning = new Dictionary<string, List<ExampleEntry>>();
-        var firstWordByMeaning = new Dictionary<string, IWord>();
+        var firstDetailsByMeaning = new Dictionary<string, IWordDetails>();
 
-        foreach (var word in words)
+        foreach (var details in detailsCollection)
         {
-            var meaning = word.Meaning ?? string.Empty;
+            var meaning = details.Meaning ?? string.Empty;
             if (string.IsNullOrWhiteSpace(meaning))
                 continue;
 
@@ -85,14 +76,14 @@ public class TranslationEntry
             {
                 examples = [];
                 examplesByMeaning[meaning] = examples;
-                firstWordByMeaning[meaning] = word;
+                firstDetailsByMeaning[meaning] = details;
             }
 
             // Add examples that have references
-            if (!string.IsNullOrEmpty(word.Example1))
-                examples.Add(new ExampleEntry(word, 0));
-            if (!string.IsNullOrEmpty(word.Example2))
-                examples.Add(new ExampleEntry(word, 1));
+            if (!string.IsNullOrEmpty(details.Example1))
+                examples.Add(new ExampleEntry(details, 0));
+            if (!string.IsNullOrEmpty(details.Example2))
+                examples.Add(new ExampleEntry(details, 1));
         }
 
         // Build entries, ensuring each has at least one example for reference
@@ -103,10 +94,10 @@ public class TranslationEntry
             {
                 entries.Add(new TranslationEntry(meaning, examples));
             }
-            else if (firstWordByMeaning.TryGetValue(meaning, out var firstWord))
+            else if (firstDetailsByMeaning.TryGetValue(meaning, out var firstDetails))
             {
-                // Create a dummy entry with the first word if no examples
-                entries.Add(new TranslationEntry(meaning, [new ExampleEntry(firstWord, 0)]));
+                // Create a dummy entry with the first details if no examples
+                entries.Add(new TranslationEntry(meaning, [new ExampleEntry(firstDetails, 0)]));
             }
         }
 

@@ -1,18 +1,25 @@
 namespace PaliPractice.Models.Words;
 
 /// <summary>
-/// Represents a practice unit grouping all IWord instances that share the same lemma.
-/// The practice session iterates by lemma, not individual word.
+/// Represents a lemma (dictionary entry) grouping all IWord variants.
+/// This is the root abstraction for practice, dictionary views, and history.
+/// Details can be lazy-loaded via LoadDetails().
 /// </summary>
 public interface ILemma
 {
     /// <summary>
     /// Stable ID for this lemma group (10001-69999 for nouns, 70001-99999 for verbs).
+    /// Used for form_id encoding and SRS tracking.
     /// </summary>
     int LemmaId { get; }
 
     /// <summary>
-    /// The dictionary form (lemma) used as practice unit identifier, e.g., "dhamma".
+    /// EbtCount from the primary word, used for ranking/ordering.
+    /// </summary>
+    int EbtCount { get; }
+
+    /// <summary>
+    /// The dictionary form (lemma), e.g., "dhamma", "hoti".
     /// </summary>
     string BaseForm { get; }
 
@@ -23,14 +30,26 @@ public interface ILemma
     IReadOnlyList<IWord> Words { get; }
 
     /// <summary>
+    /// The primary word variant (first by EbtCount).
+    /// Use this for inflection generation.
+    /// </summary>
+    IWord Primary { get; }
+
+    /// <summary>
     /// Words with minority inflection patterns, excluded from the main practice.
     /// These have the same lemma but different Pattern values.
     /// </summary>
     IReadOnlyList<IWord> ExcludedWords { get; }
 
     /// <summary>
-    /// EbtCount from the first word, used for ranking/ordering.
-    /// All words in a lemma share the same frequency count.
+    /// Whether details have been loaded for this lemma's words.
     /// </summary>
-    int EbtCount { get; }
+    bool HasDetails { get; }
+
+    /// <summary>
+    /// Load details into each word's Details property.
+    /// Called by database service after fetching details from DB.
+    /// </summary>
+    /// <param name="details">All details for this lemma (matched by DPD id).</param>
+    void LoadDetails(IReadOnlyList<IWordDetails> details);
 }

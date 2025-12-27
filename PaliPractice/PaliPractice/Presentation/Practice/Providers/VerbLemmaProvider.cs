@@ -15,15 +15,9 @@ public sealed class VerbLemmaProvider : ILemmaProvider
         _db.Initialize();
         _lemmas.Clear();
 
-        // Get verbs, group by lemma, create Lemma instances
-        var verbs = _db.GetRandomVerbs(100);
-        var grouped = verbs
-            .GroupBy(v => v.Lemma)
-            .Select(g => new Lemma(g.Key, g.Cast<IWord>()))
-            .OrderByDescending(l => l.EbtCount)
-            .ToList();
-
-        _lemmas.AddRange(grouped);
+        // Get top 100 verb lemmas by rank
+        var lemmas = _db.GetVerbLemmasByRank(1, 100);
+        _lemmas.AddRange(lemmas);
         return Task.CompletedTask;
     }
 }

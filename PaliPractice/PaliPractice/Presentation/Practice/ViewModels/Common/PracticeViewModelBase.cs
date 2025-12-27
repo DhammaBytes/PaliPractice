@@ -33,12 +33,12 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     readonly RelayCommand _revealCommand;
 
     /// <summary>
-    /// Called when a new card is displayed. Subclasses should use the word
+    /// Called when a new card is displayed. Subclasses should use the lemma
     /// and grammatical parameters to set up badge display properties.
     /// </summary>
-    /// <param name="word">The word (Noun or Verb) for the current form.</param>
+    /// <param name="lemma">The lemma with details loaded.</param>
     /// <param name="parameters">Grammatical parameters from GetCurrentParameters().</param>
-    protected abstract void PrepareCardAnswer(IWord word, object parameters);
+    protected abstract void PrepareCardAnswer(ILemma lemma, object parameters);
 
     /// <summary>
     /// Returns the inflected form to display when the answer is revealed.
@@ -125,19 +125,21 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     void DisplayCurrentCard()
     {
-        var word = _provider.GetCurrentWord();
-        if (word == null)
+        var lemma = _provider.GetCurrentLemma();
+        if (lemma == null)
         {
-            Logger.LogWarning("No word for current form");
+            Logger.LogWarning("No lemma for current form");
             return;
         }
 
         var masteryLevel = _provider.Current?.MasteryLevel ?? 1;
-        FlashCard.DisplayWord(word, _provider.CurrentIndex, _provider.TotalCount, masteryLevel);
-        ExampleCarousel.Initialize(word);
+        FlashCard.DisplayWord(lemma.Primary, _provider.CurrentIndex, _provider.TotalCount, masteryLevel);
+
+        // Initialize carousel with all word variants for this lemma
+        ExampleCarousel.Initialize(lemma.Words);
 
         var parameters = _provider.GetCurrentParameters();
-        PrepareCardAnswer(word, parameters);
+        PrepareCardAnswer(lemma, parameters);
         Flashcard.SetAnswer(GetInflectedForm(), GetInflectedEnding());
     }
 

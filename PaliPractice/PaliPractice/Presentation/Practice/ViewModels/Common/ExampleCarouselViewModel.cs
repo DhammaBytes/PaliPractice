@@ -26,20 +26,20 @@ public partial class ExampleCarouselViewModel : ObservableObject
     [ObservableProperty] bool _isRevealed;
 
     /// <summary>
-    /// Initialize carousel with translations from all words under a lemma.
-    /// Picks a random starting translation.
+    /// Initialize carousel with translations from a lemma (all word variants).
     /// </summary>
-    public void Initialize(ILemma lemma)
-    {
-        InitializeEntries(TranslationEntry.BuildFromLemma(lemma));
-    }
+    public void Initialize(ILemma lemma) => Initialize(lemma.Words);
 
     /// <summary>
-    /// Initialize carousel with translations from a single word.
+    /// Initialize carousel with translations from word variants (extracts Details from each).
     /// </summary>
-    public void Initialize(IWord word)
+    public void Initialize(IEnumerable<IWord> words)
     {
-        InitializeEntries(TranslationEntry.BuildFromWord(word));
+        var allDetails = words
+            .Select(w => w.Details)
+            .Where(d => d != null)
+            .Cast<IWordDetails>();
+        InitializeEntries(TranslationEntry.BuildFromAllDetails(allDetails));
     }
 
     void InitializeEntries(IReadOnlyList<TranslationEntry> entries)
@@ -92,11 +92,6 @@ public partial class ExampleCarouselViewModel : ObservableObject
         _entries[CurrentIndex].ShuffleReference();
         UpdateCurrentDisplay();
     }
-
-    /// <summary>
-    /// Gets the current word (for inflection generation).
-    /// </summary>
-    public IWord? CurrentWord => _entries.Count > 0 ? _entries[CurrentIndex].CurrentExample.Word : null;
 
     /// <summary>
     /// Reset with a new random translation and hide the answer.

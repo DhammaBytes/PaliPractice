@@ -1,44 +1,60 @@
 namespace PaliPractice.Models.Words;
 
 /// <summary>
-/// Common interface for both Noun and Verb entities.
-/// Provides access to shared properties while allowing concrete implementations
-/// to maintain their unique properties (Gender for Noun, Pos for Verb).
+/// Slim interface for word entities. Contains only core properties needed
+/// for queue building and inflection generation.
 /// </summary>
 public interface IWord
 {
-    int Id { get; set; }
-    int EbtCount { get; set; }
-    int LemmaId { get; set; }
+    int Id { get; }
+    int EbtCount { get; }
+    int LemmaId { get; }
 
     /// <summary>
-    /// The lemma (dictionary form) of this word, e.g., "aññāti".
+    /// The lemma (dictionary form) of this word, e.g., "dhamma".
     /// </summary>
-    string Lemma { get; set; }
+    string Lemma { get; }
 
-    /// <summary>
-    /// The variant identifier within the lemma group, e.g., "1.1" or empty string.
-    /// Combined with Lemma gives the full DPD identifier like "aññāti 1.1".
-    /// </summary>
-    string Variant { get; set; }
-
-    string? Stem { get; set; }
-    string Pattern { get; set; }
+    string? Stem { get; }
+    string Pattern { get; }
 
     /// <summary>
     /// Whether this word uses an irregular inflection pattern.
-    /// Irregular patterns return full forms from GetEndings() instead of
-    /// endings that should be appended to the stem.
     /// </summary>
     bool Irregular { get; }
 
-    string FamilyRoot { get; set; }
-    string? Meaning { get; set; }
-    string PlusCase { get; set; }
-    string Source1 { get; set; }
-    string Sutta1 { get; set; }
-    string Example1 { get; set; }
-    string Source2 { get; set; }
-    string Sutta2 { get; set; }
-    string Example2 { get; set; }
+    /// <summary>
+    /// Display details for this word. Lazy-loaded when showing flashcards.
+    /// Null until fetched from the database.
+    /// </summary>
+    IWordDetails? Details { get; set; }
+}
+
+/// <summary>
+/// Display details for a word. Lazy-loaded when showing flashcards.
+/// </summary>
+public interface IWordDetails
+{
+    /// <summary>
+    /// DPD headword ID. Matches IWord.Id for 1:1 relationship.
+    /// </summary>
+    int Id { get; }
+
+    int LemmaId { get; }
+
+    /// <summary>
+    /// The variant identifier within the lemma group, e.g., "1.1" or empty.
+    /// </summary>
+    string Variant { get; }
+
+    /// <summary>
+    /// Primary meaning/translation. Never null - extraction filters for words with meanings.
+    /// </summary>
+    string Meaning { get; }
+    string Source1 { get; }
+    string Sutta1 { get; }
+    string Example1 { get; }
+    string Source2 { get; }
+    string Sutta2 { get; }
+    string Example2 { get; }
 }

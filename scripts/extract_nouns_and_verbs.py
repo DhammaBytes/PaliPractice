@@ -449,21 +449,31 @@ class NounVerbExtractor:
         conn = sqlite3.connect(self.output_db_path)
         cursor = conn.cursor()
 
-        # Nouns table - column order: id, ebt_count, lemma_id, lemma, word, ...
+        # Nouns table (slim) - only fields needed for queue building + inflection
+        # id = DPD headword ID (e.g., ID for "dhamma 1.1")
+        # lemma_id = our stable ID for clean lemma (e.g., "dhamma") used in form_id encoding
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS nouns (
                 id INTEGER PRIMARY KEY,
                 ebt_count INTEGER DEFAULT 0,
                 lemma_id INTEGER NOT NULL,
                 lemma TEXT NOT NULL,
-                word TEXT NOT NULL DEFAULT '',
                 gender INTEGER NOT NULL DEFAULT 0,
                 stem TEXT,
-                pattern TEXT,
-                derived_from TEXT DEFAULT '',
-                family_root TEXT DEFAULT '',
+                pattern TEXT
+            )
+        """)
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_nouns_lemma_id ON nouns(lemma_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_nouns_ebt_count ON nouns(ebt_count DESC)")
+
+        # Noun details table - lazy loaded for flashcard display
+        # Uses same id as nouns table (1:1 relationship, all variants preserved)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS nouns_details (
+                id INTEGER PRIMARY KEY,
+                lemma_id INTEGER NOT NULL,
+                word TEXT NOT NULL DEFAULT '',
                 meaning TEXT,
-                plus_case TEXT DEFAULT '',
                 source_1 TEXT DEFAULT '',
                 sutta_1 TEXT DEFAULT '',
                 example_1 TEXT DEFAULT '',
@@ -472,23 +482,33 @@ class NounVerbExtractor:
                 example_2 TEXT DEFAULT ''
             )
         """)
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_nouns_details_lemma_id ON nouns_details(lemma_id)")
 
-        # Verbs table - column order: id, ebt_count, lemma_id, lemma, word, ...
+        # Verbs table (slim) - only fields needed for queue building + inflection
+        # id = DPD headword ID, lemma_id = our stable ID for form_id encoding
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS verbs (
                 id INTEGER PRIMARY KEY,
                 ebt_count INTEGER DEFAULT 0,
                 lemma_id INTEGER NOT NULL,
                 lemma TEXT NOT NULL,
+                stem TEXT,
+                pattern TEXT
+            )
+        """)
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_verbs_lemma_id ON verbs(lemma_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_verbs_ebt_count ON verbs(ebt_count DESC)")
+
+        # Verb details table - lazy loaded for flashcard display
+        # Uses same id as verbs table (1:1 relationship, all variants preserved)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS verbs_details (
+                id INTEGER PRIMARY KEY,
+                lemma_id INTEGER NOT NULL,
                 word TEXT NOT NULL DEFAULT '',
                 type TEXT DEFAULT '',
                 trans TEXT DEFAULT '',
-                stem TEXT,
-                pattern TEXT,
-                derived_from TEXT DEFAULT '',
-                family_root TEXT DEFAULT '',
                 meaning TEXT,
-                plus_case TEXT DEFAULT '',
                 source_1 TEXT DEFAULT '',
                 sutta_1 TEXT DEFAULT '',
                 example_1 TEXT DEFAULT '',
@@ -497,6 +517,7 @@ class NounVerbExtractor:
                 example_2 TEXT DEFAULT ''
             )
         """)
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_verbs_details_lemma_id ON verbs_details(lemma_id)")
 
         # Non-reflexive verbs - stores lemma_ids of verbs that have NO reflexive forms
         # Most verbs have reflexive forms, so we store the exceptions (only ~28 lemmas)
@@ -523,7 +544,9 @@ class NounVerbExtractor:
         """)
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_nouns_gender ON nouns(gender)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_nouns_lemma_id ON nouns(lemma_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_nouns_ebt_count ON nouns(ebt_count DESC)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_verbs_lemma_id ON verbs(lemma_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_verbs_ebt_count ON verbs(ebt_count DESC)")
         
         conn.commit()
         conn.close()
@@ -910,19 +933,25 @@ class NounVerbExtractor:
             if i % 100 == 0:
                 print(f"Processing noun {i}/{len(nouns)}: {word.lemma_1}")
 
-            # Insert noun
+            # Insert noun (slim table)
             gender = self.pos_to_gender(word.pos)
             lemma_id = get_noun_lemma_id(registry, word.lemma_clean)
             word_variant = self.extract_word_variant(word.lemma_1, word.lemma_clean)
             cursor.execute("""
-                INSERT INTO nouns (
-                    id, ebt_count, lemma_id, lemma, word, gender, stem, pattern, derived_from, family_root,
-                    meaning, plus_case, source_1, sutta_1, example_1, source_2, sutta_2, example_2
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO nouns (id, ebt_count, lemma_id, lemma, gender, stem, pattern)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             """, (
-                word.id, word.ebt_count or 0, lemma_id, word.lemma_clean, word_variant, gender,
-                clean_stem(word.stem), word.pattern, word.derived_from or '', word.family_root or '',
-                word.meaning_1, word.plus_case or '',
+                word.id, word.ebt_count or 0, lemma_id, word.lemma_clean, gender,
+                clean_stem(word.stem), word.pattern
+            ))
+
+            # Insert noun details (1:1 with nouns table, all variants preserved)
+            cursor.execute("""
+                INSERT INTO nouns_details (
+                    id, lemma_id, word, meaning, source_1, sutta_1, example_1, source_2, sutta_2, example_2
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                word.id, lemma_id, word_variant, word.meaning_1,
                 word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
                 word.source_2 or '', word.sutta_2 or '', word.example_2 or ''
             ))
@@ -993,18 +1022,24 @@ class NounVerbExtractor:
             if any(f.get('reflexive', 0) == GrammarEnums.REFLEXIVE_YES for f in forms):
                 reflexive_lemma_ids.add(lemma_id)
 
-            # Insert verb
+            # Insert verb (slim table)
             word_variant = self.extract_word_variant(word.lemma_1, word.lemma_clean)
             cursor.execute("""
-                INSERT INTO verbs (
-                    id, ebt_count, lemma_id, lemma, word, type, trans, stem, pattern,
-                    derived_from, family_root, meaning, plus_case,
-                    source_1, sutta_1, example_1, source_2, sutta_2, example_2
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO verbs (id, ebt_count, lemma_id, lemma, stem, pattern)
+                VALUES (?, ?, ?, ?, ?, ?)
             """, (
-                word.id, word.ebt_count or 0, lemma_id, word.lemma_clean, word_variant,
-                word.verb or '', word.trans or '', clean_stem(word.stem), word.pattern,
-                word.derived_from or '', word.family_root or '', word.meaning_1, word.plus_case or '',
+                word.id, word.ebt_count or 0, lemma_id, word.lemma_clean,
+                clean_stem(word.stem), word.pattern
+            ))
+
+            # Insert verb details (1:1 with verbs table, all variants preserved)
+            cursor.execute("""
+                INSERT INTO verbs_details (
+                    id, lemma_id, word, type, trans, meaning,
+                    source_1, sutta_1, example_1, source_2, sutta_2, example_2
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                word.id, lemma_id, word_variant, word.verb or '', word.trans or '', word.meaning_1,
                 word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
                 word.source_2 or '', word.sutta_2 or '', word.example_2 or ''
             ))
@@ -1109,6 +1144,31 @@ class NounVerbExtractor:
         print("\nVerb Lemmas by Reflexive Capability:")
         print(f"  with reflexive forms: {reflexive_count}")
         print(f"  active only: {nonreflexive_count}")
+
+        # Verify slim and details tables have matching counts (1:1 relationship)
+        cursor.execute("SELECT COUNT(*) FROM nouns")
+        noun_slim_count = cursor.fetchone()[0]
+        cursor.execute("SELECT COUNT(*) FROM nouns_details")
+        noun_details_count = cursor.fetchone()[0]
+        cursor.execute("SELECT COUNT(*) FROM verbs")
+        verb_slim_count = cursor.fetchone()[0]
+        cursor.execute("SELECT COUNT(*) FROM verbs_details")
+        verb_details_count = cursor.fetchone()[0]
+
+        print("\nTable Record Counts (slim and details should match):")
+        print(f"  nouns: {noun_slim_count}, nouns_details: {noun_details_count}",
+              "✓" if noun_slim_count == noun_details_count else "✗ MISMATCH!")
+        print(f"  verbs: {verb_slim_count}, verbs_details: {verb_details_count}",
+              "✓" if verb_slim_count == verb_details_count else "✗ MISMATCH!")
+
+        # Unique lemma counts
+        cursor.execute("SELECT COUNT(DISTINCT lemma_id) FROM nouns")
+        unique_noun_lemmas = cursor.fetchone()[0]
+        cursor.execute("SELECT COUNT(DISTINCT lemma_id) FROM verbs")
+        unique_verb_lemmas = cursor.fetchone()[0]
+        print(f"\nUnique Lemmas:")
+        print(f"  nouns: {unique_noun_lemmas} unique lemma_ids")
+        print(f"  verbs: {unique_verb_lemmas} unique lemma_ids")
 
         # Corpus attestation counts
         cursor.execute("SELECT COUNT(*) FROM corpus_declensions")

@@ -52,9 +52,9 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
         _ = InitializeAsync();
     }
 
-    protected override void PrepareCardAnswer(IWord word, object parameters)
+    protected override void PrepareCardAnswer(ILemma lemma, object parameters)
     {
-        var noun = (Noun)word;
+        var noun = (Noun)lemma.Primary;
 
         // Extract grammatical parameters from the SRS queue
         var (nounCase, gender, number) = ((Case, Gender, Number))parameters;

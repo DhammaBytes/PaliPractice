@@ -3,6 +3,10 @@ using SQLite;
 
 namespace PaliPractice.Models.Words;
 
+/// <summary>
+/// Slim noun model for queue building and inflection generation.
+/// Details (meaning, examples) are lazy-loaded via NounDetails when needed for display.
+/// </summary>
 [Table("nouns")]
 public class Noun : IWord
 {
@@ -21,12 +25,6 @@ public class Noun : IWord
     [Column("lemma")]
     public string Lemma { get; set; } = string.Empty;
 
-    /// <summary>
-    /// The variant identifier within the lemma group, e.g., "1" or "1.1" or empty.
-    /// </summary>
-    [Column("word")]
-    public string Variant { get; set; } = string.Empty;
-
     [Column("gender")]
     public Gender Gender { get; set; }
 
@@ -43,33 +41,9 @@ public class Noun : IWord
     [Ignore]
     public bool Irregular => NounPatterns.IsIrregular(Pattern);
 
-    [Column("derived_from")]
-    public string DerivedFrom { get; set; } = string.Empty;
-
-    [Column("family_root")]
-    public string FamilyRoot { get; set; } = string.Empty;
-
-    [Column("meaning")]
-    public string? Meaning { get; set; }
-
-    [Column("plus_case")]
-    public string PlusCase { get; set; } = string.Empty;
-
-    [Column("source_1")]
-    public string Source1 { get; set; } = string.Empty;
-
-    [Column("sutta_1")]
-    public string Sutta1 { get; set; } = string.Empty;
-
-    [Column("example_1")]
-    public string Example1 { get; set; } = string.Empty;
-
-    [Column("source_2")]
-    public string Source2 { get; set; } = string.Empty;
-
-    [Column("sutta_2")]
-    public string Sutta2 { get; set; } = string.Empty;
-
-    [Column("example_2")]
-    public string Example2 { get; set; } = string.Empty;
+    /// <summary>
+    /// Display details for this noun. Lazy-loaded when showing flashcards.
+    /// </summary>
+    [Ignore]
+    public IWordDetails? Details { get; set; }
 }

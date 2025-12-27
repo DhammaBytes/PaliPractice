@@ -15,15 +15,9 @@ public sealed class NounLemmaProvider : ILemmaProvider
         _db.Initialize();
         _lemmas.Clear();
 
-        // Get nouns, group by lemma, create Lemma instances
-        var nouns = _db.GetRandomNouns(100);
-        var grouped = nouns
-            .GroupBy(n => n.Lemma)
-            .Select(g => new Lemma(g.Key, g.Cast<IWord>()))
-            .OrderByDescending(l => l.EbtCount)
-            .ToList();
-
-        _lemmas.AddRange(grouped);
+        // Get top 100 noun lemmas by rank
+        var lemmas = _db.GetNounLemmasByRank(1, 100);
+        _lemmas.AddRange(lemmas);
         return Task.CompletedTask;
     }
 }

@@ -56,12 +56,17 @@ public sealed class ConjugationPracticeProvider : IPracticeProvider
         return true;
     }
 
-    public IWord? GetCurrentWord()
+    public ILemma? GetCurrentLemma()
     {
         var item = Current;
         if (item == null) return null;
 
-        return _db.GetVerbByLemmaId(item.LemmaId);
+        var lemma = _db.GetVerbLemma(item.LemmaId);
+        if (lemma == null) return null;
+
+        // Ensure details are loaded
+        _db.EnsureDetails(lemma);
+        return lemma;
     }
 
     public object GetCurrentParameters()

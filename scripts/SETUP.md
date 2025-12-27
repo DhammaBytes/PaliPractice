@@ -200,35 +200,87 @@ cd scripts && python3 extract_nouns_and_verbs.py
 
 ## Database Schema
 
-### nouns
-- `id`: Primary key (original DPD headword ID)
-- `lemma_id`: Stable ID (10001-69999) from lemma_registry.json
-- `ebt_count`: Frequency in Early Buddhist Texts (sorted by this)
-- `lemma`: Dictionary form (e.g., "dhamma 1")
-- `lemma_clean`: Clean lemma without suffix (e.g., "dhamma")
+### Split Table Design
+
+The database uses a **split table design** for performance optimization:
+
+1. **Slim tables** (`nouns`, `verbs`): Only fields needed for queue building and inflection
+   - Pre-cached on first practice to enable O(1) lookups
+   - Used for building the SRS practice queue
+   - Used for generating inflected forms
+
+2. **Details tables** (`nouns_details`, `verbs_details`): Fields needed for flashcard display
+   - Lazy-loaded only when displaying a specific flashcard
+   - Contains meanings, examples, and references
+   - Fetched by `lemma_id` to get all word variants
+
+### Key Concepts: id vs lemma_id
+
+Understanding the distinction between `id` and `lemma_id` is crucial:
+
+- **`id`** = DPD headword ID (e.g., ID for "dhamma 1.1")
+  - Unique per word variant in DPD
+  - Used as **PRIMARY KEY** in both slim and details tables
+  - Ensures 1:1 relationship between slim and details records
+
+- **`lemma_id`** = Our stable ID for the clean lemma (e.g., "dhamma")
+  - Assigned from `lemma_registry.json` (nouns: 10001-69999, verbs: 70001-99999)
+  - **Multiple words can share the same `lemma_id`** (e.g., "dhamma 1", "dhamma 1.1")
+  - Used in `form_id` encoding for SRS tracking
+  - Used to **GROUP variants** when displaying all translations in carousel
+  - **INDEXED** for fast querying
+
+### Table Record Counts
+
+Both slim and details tables must have the **same number of records** (1:1 relationship):
+- Every `nouns` row has a corresponding `nouns_details` row with the same `id`
+- Every `verbs` row has a corresponding `verbs_details` row with the same `id`
+
+This ensures all word variants are preserved with their meanings and examples.
+
+### nouns (slim table)
+Fields needed for queue building and inflection generation:
+- `id`: PRIMARY KEY - DPD headword ID
+- `lemma_id`: Our stable lemma ID (INDEXED)
+- `ebt_count`: Frequency in Early Buddhist Texts (INDEXED DESC)
+- `lemma`: Clean lemma without suffix (e.g., "dhamma")
 - `gender`: INTEGER - Gender enum (0=None, 1=Masculine, 2=Neuter, 3=Feminine)
-- `stem`: Word stem for inflection
-- `pattern`: Inflection pattern
-- `family_root`: Root family classification (e.g., "√kar", "√gam")
-- `meaning`: Primary meaning
+- `stem`: Word stem for inflection (cleaned, no DPD markers)
+- `pattern`: Inflection pattern name
+
+### nouns_details (display table)
+Fields for flashcard display, lazy-loaded:
+- `id`: PRIMARY KEY - same as nouns.id (1:1 join)
+- `lemma_id`: Our stable lemma ID for grouping (INDEXED)
+- `word`: Variant suffix (e.g., "1", "1.1", or empty for base form)
+- `meaning`: Primary meaning text
 - `source_1`, `sutta_1`, `example_1`: Primary usage example
 - `source_2`, `sutta_2`, `example_2`: Secondary usage example
 
-### verbs
-- `id`: Primary key (original DPD headword ID)
-- `lemma_id`: Stable ID (70001-99999) from lemma_registry.json
-- `ebt_count`: Frequency in Early Buddhist Texts (sorted by this)
-- `lemma`: Dictionary form
-- `lemma_clean`: Clean lemma without suffix
-- `has_reflexive`: INTEGER - 1 if verb has reflexive (middle voice) forms in template, 0 otherwise
+### verbs (slim table)
+Fields needed for queue building and conjugation generation:
+- `id`: PRIMARY KEY - DPD headword ID
+- `lemma_id`: Our stable lemma ID (INDEXED)
+- `ebt_count`: Frequency in Early Buddhist Texts (INDEXED DESC)
+- `lemma`: Clean lemma without suffix
+- `stem`: Word stem for inflection (cleaned, no DPD markers)
+- `pattern`: Inflection pattern name
+
+### verbs_details (display table)
+Fields for flashcard display, lazy-loaded:
+- `id`: PRIMARY KEY - same as verbs.id (1:1 join)
+- `lemma_id`: Our stable lemma ID for grouping (INDEXED)
+- `word`: Variant suffix (e.g., "1", "1.1", or empty for base form)
 - `type`: Verb type (e.g., "trans", "intrans")
 - `trans`: Transitivity
-- `stem`: Word stem for inflection
-- `pattern`: Inflection pattern
-- `family_root`: Root family classification
-- `meaning`: Primary meaning
+- `meaning`: Primary meaning text
 - `source_1`, `sutta_1`, `example_1`: Primary usage example
 - `source_2`, `sutta_2`, `example_2`: Secondary usage example
+
+### verbs_nonreflexive
+Stores `lemma_id` of verbs that have NO reflexive forms:
+- `lemma_id`: PRIMARY KEY - verbs without middle voice forms
+- Most verbs have reflexive forms, so we store only the exceptions (~28 lemmas)
 
 ### corpus_declensions (for nouns)
 Single-column table storing corpus-attested noun forms as encoded `form_id`:

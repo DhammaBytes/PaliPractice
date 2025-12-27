@@ -8,52 +8,65 @@ namespace PaliPractice.Services.Database;
 public interface IDatabaseService
 {
     void Initialize();
-    List<Noun> GetRandomNouns(int count = 10);
-    List<Verb> GetRandomVerbs(int count = 10);
-    Noun? GetNounById(int id);
-    Verb? GetVerbById(int id);
-    Noun? GetNounByLemmaId(int lemmaId);
-    Verb? GetVerbByLemmaId(int lemmaId);
+
+    /// <summary>
+    /// Get noun lemma by lemma ID. O(1) from cache.
+    /// </summary>
+    ILemma? GetNounLemma(int lemmaId);
+
+    /// <summary>
+    /// Get verb lemma by lemma ID. O(1) from cache.
+    /// </summary>
+    ILemma? GetVerbLemma(int lemmaId);
+
+    /// <summary>
+    /// Ensure details are loaded for the lemma.
+    /// Fetches from DB if not already loaded.
+    /// </summary>
+    void EnsureDetails(ILemma lemma);
+
     int GetNounCount();
     int GetVerbCount();
 
     /// <summary>
-    /// Get nouns within a rank range, ordered by EbtCount descending.
+    /// Get noun lemmas within a rank range, ordered by EbtCount descending.
     /// Rank 1 = most common noun.
     /// </summary>
-    List<Noun> GetNounsByRank(int minRank, int maxRank);
+    List<ILemma> GetNounLemmasByRank(int minRank, int maxRank);
 
     /// <summary>
-    /// Get verbs within a rank range, ordered by EbtCount descending.
+    /// Get verb lemmas within a rank range, ordered by EbtCount descending.
     /// Rank 1 = most common verb.
     /// </summary>
-    List<Verb> GetVerbsByRank(int minRank, int maxRank);
+    List<ILemma> GetVerbLemmasByRank(int minRank, int maxRank);
 
     /// <summary>
     /// Check if a verb lemma has reflexive conjugation forms.
-    /// Most verbs do have reflexive forms; only ~28 lemmas are active-only.
+    /// O(1) from cache.
     /// </summary>
     bool VerbHasReflexive(int lemmaId);
 
     /// <summary>
-    /// Check if a specific noun form appears in the Pali Tipitaka corpus.
-    /// Uses form_id lookup for efficient querying.
+    /// Check if a specific noun form appears in the corpus.
+    /// O(1) from cache.
     /// </summary>
     bool IsNounFormInCorpus(int lemmaId, Case @case, Gender gender, Number number, int endingIndex);
 
     /// <summary>
-    /// Check if a specific verb form appears in the Pali Tipitaka corpus.
-    /// Uses form_id lookup for efficient querying.
+    /// Check if a specific verb form appears in the corpus.
+    /// O(1) from cache.
     /// </summary>
     bool IsVerbFormInCorpus(int lemmaId, Tense tense, Person person, Number number, bool reflexive, int endingIndex);
 
     /// <summary>
-    /// Check if a noun form (without ending) is attested in the corpus.
+    /// Check if any ending variant is attested for this noun form.
+    /// O(1) from cache (checks up to 9 ending variants).
     /// </summary>
     bool HasAttestedNounForm(int lemmaId, Case @case, Gender gender, Number number);
 
     /// <summary>
-    /// Check if a verb form (without ending) is attested in the corpus.
+    /// Check if any ending variant is attested for this verb form.
+    /// O(1) from cache (checks up to 9 ending variants).
     /// </summary>
     bool HasAttestedVerbForm(int lemmaId, Tense tense, Person person, Number number, bool reflexive);
 }
@@ -61,37 +74,118 @@ public interface IDatabaseService
 public class DatabaseService : IDatabaseService
 {
     SQLiteConnection? _database;
-    readonly Lock _initLock = new();
-    bool _isInitialized = false;
+    readonly Lock _dbLock = new();
+    readonly Lock _nounCacheLock = new();
+    readonly Lock _verbCacheLock = new();
+    bool _isDbInitialized;
+    bool _isNounCacheLoaded;
+    bool _isVerbCacheLoaded;
 
-    // Cache of verb lemma_ids that do NOT have reflexive forms (the minority)
+    // Noun caches - loaded lazily on first declension practice
+    HashSet<int>? _attestedDeclensionFormIds;
+    Dictionary<int, ILemma>? _nounLemmas;
+    List<ILemma>? _nounLemmasByRank;
+
+    // Verb caches - loaded lazily on first conjugation practice
     HashSet<int>? _nonReflexiveLemmaIds;
+    HashSet<long>? _attestedConjugationFormIds;
+    Dictionary<int, ILemma>? _verbLemmas;
+    List<ILemma>? _verbLemmasByRank;
 
     public void Initialize()
     {
-        if (_isInitialized) return;
+        if (_isDbInitialized) return;
 
-        lock (_initLock)
+        lock (_dbLock)
         {
-            if (_isInitialized) return;
+            if (_isDbInitialized) return;
 
-            // Extract embedded database to app data folder
             var databasePath = ExtractDatabase();
-
-            // Create SQLite connection
             _database = new SQLiteConnection(databasePath, SQLiteOpenFlags.ReadOnly);
-
-            // Load non-reflexive verb lemma IDs into HashSet for O(1) lookup
-            _nonReflexiveLemmaIds = _database
-                .Query<NonReflexiveVerb>("SELECT lemma_id FROM verbs_nonreflexive")
-                .Select(v => v.LemmaId)
-                .ToHashSet();
-
-            _isInitialized = true;
+            _isDbInitialized = true;
         }
     }
 
-    // Helper class for querying verbs_nonreflexive table
+    /// <summary>
+    /// Ensures noun caches are loaded. Called on first declension practice.
+    /// </summary>
+    void EnsureNounCacheLoaded()
+    {
+        if (_isNounCacheLoaded) return;
+
+        lock (_nounCacheLock)
+        {
+            if (_isNounCacheLoaded) return;
+            EnsureInitialized();
+
+            // Pre-cache corpus attestation form_ids for O(1) lookup
+            _attestedDeclensionFormIds = _database!
+                .Table<CorpusDeclension>()
+                .Select(d => d.FormId)
+                .ToHashSet();
+
+            // Build lemma objects grouping all noun variants
+            _nounLemmas = _database
+                .Table<Noun>()
+                .ToList()
+                .GroupBy(n => n.LemmaId)
+                .ToDictionary(
+                    g => g.Key,
+                    g => (ILemma)new Lemma(g.First().Lemma, g.Cast<IWord>()));
+
+            // Pre-sort for rank-based queries
+            _nounLemmasByRank = _nounLemmas.Values
+                .OrderByDescending(l => l.EbtCount)
+                .ToList();
+
+            _isNounCacheLoaded = true;
+        }
+    }
+
+    /// <summary>
+    /// Ensures verb caches are loaded. Called on first conjugation practice.
+    /// </summary>
+    void EnsureVerbCacheLoaded()
+    {
+        if (_isVerbCacheLoaded) return;
+
+        lock (_verbCacheLock)
+        {
+            if (_isVerbCacheLoaded) return;
+            EnsureInitialized();
+
+            // Load non-reflexive verb lemma IDs (~28 entries)
+            _nonReflexiveLemmaIds = _database!
+                .Table<NonReflexiveVerb>()
+                .Select(v => v.LemmaId)
+                .ToHashSet();
+
+            // Pre-cache corpus attestation form_ids for O(1) lookup
+            _attestedConjugationFormIds = _database
+                .Table<CorpusConjugation>()
+                .Select(c => c.FormId)
+                .ToHashSet();
+
+            // Build lemma objects grouping all verb variants
+            _verbLemmas = _database
+                .Table<Verb>()
+                .ToList()
+                .GroupBy(v => v.LemmaId)
+                .ToDictionary(
+                    g => g.Key,
+                    g => (ILemma)new Lemma(g.First().Lemma, g.Cast<IWord>()));
+
+            // Pre-sort for rank-based queries
+            _verbLemmasByRank = _verbLemmas.Values
+                .OrderByDescending(l => l.EbtCount)
+                .ToList();
+
+            _isVerbCacheLoaded = true;
+        }
+    }
+
+    // Helper classes for LINQ queries on helper tables
+    [Table("verbs_nonreflexive")]
     class NonReflexiveVerb
     {
         [Column("lemma_id")]
@@ -147,103 +241,69 @@ public class DatabaseService : IDatabaseService
 
     void EnsureInitialized()
     {
-        if (!_isInitialized || _database == null)
+        if (!_isDbInitialized || _database == null)
             Initialize();
     }
 
-    public List<Noun> GetRandomNouns(int count = 10)
+    public ILemma? GetNounLemma(int lemmaId)
     {
-        EnsureInitialized();
-
-        return _database!.Table<Noun>()
-            .OrderByDescending(n => n.EbtCount)
-            .Take(count)
-            .ToList();
+        EnsureNounCacheLoaded();
+        return _nounLemmas!.GetValueOrDefault(lemmaId);
     }
 
-    public List<Verb> GetRandomVerbs(int count = 10)
+    public ILemma? GetVerbLemma(int lemmaId)
     {
-        EnsureInitialized();
-
-        return _database!.Table<Verb>()
-            .OrderByDescending(v => v.EbtCount)
-            .Take(count)
-            .ToList();
+        EnsureVerbCacheLoaded();
+        return _verbLemmas!.GetValueOrDefault(lemmaId);
     }
 
-    public Noun? GetNounById(int id)
+    public void EnsureDetails(ILemma lemma)
     {
+        if (lemma.HasDetails) return;
+
         EnsureInitialized();
 
-        return _database!
-            .Table<Noun>()
-            .FirstOrDefault(n => n.Id == id);
-    }
+        // Determine if this is a noun or verb lemma by checking the first word
+        var firstWord = lemma.Primary;
+        IReadOnlyList<IWordDetails> details = firstWord switch
+        {
+            Noun => _database!.Table<NounDetails>()
+                .Where(d => d.LemmaId == lemma.LemmaId)
+                .ToList(),
+            Verb => _database!.Table<VerbDetails>()
+                .Where(d => d.LemmaId == lemma.LemmaId)
+                .ToList(),
+            _ => []
+        };
 
-    public Verb? GetVerbById(int id)
-    {
-        EnsureInitialized();
-
-        return _database!
-            .Table<Verb>()
-            .FirstOrDefault(v => v.Id == id);
-    }
-
-    public Noun? GetNounByLemmaId(int lemmaId)
-    {
-        EnsureInitialized();
-
-        return _database!
-            .Table<Noun>()
-            .FirstOrDefault(n => n.LemmaId == lemmaId);
-    }
-
-    public Verb? GetVerbByLemmaId(int lemmaId)
-    {
-        EnsureInitialized();
-
-        return _database!
-            .Table<Verb>()
-            .FirstOrDefault(v => v.LemmaId == lemmaId);
+        lemma.LoadDetails(details);
     }
 
     public int GetNounCount()
     {
-        EnsureInitialized();
-
-        return _database!.Table<Noun>()
-            .Count();
+        EnsureNounCacheLoaded();
+        return _nounLemmas!.Count;
     }
 
     public int GetVerbCount()
     {
-        EnsureInitialized();
-
-        return _database!.Table<Verb>()
-            .Count();
+        EnsureVerbCacheLoaded();
+        return _verbLemmas!.Count;
     }
 
-    public List<Noun> GetNounsByRank(int minRank, int maxRank)
+    public List<ILemma> GetNounLemmasByRank(int minRank, int maxRank)
     {
-        EnsureInitialized();
-
-        // Rank is 1-indexed: rank 1 = highest EbtCount
-        // Skip (minRank - 1) items, take (maxRank - minRank + 1) items
-        return _database!.Table<Noun>()
-            .OrderByDescending(n => n.EbtCount)
+        EnsureNounCacheLoaded();
+        return _nounLemmasByRank!
             .Skip(minRank - 1)
             .Take(maxRank - minRank + 1)
             .ToList();
     }
 
-    public List<Verb> GetVerbsByRank(int minRank, int maxRank)
+    public List<ILemma> GetVerbLemmasByRank(int minRank, int maxRank)
     {
-        EnsureInitialized();
-
-        // Rank is 1-indexed: rank 1 = highest EbtCount
-        // Skip (minRank - 1) items, take (maxRank - minRank + 1) items
-        return _database!.Table<Verb>()
-            .OrderByDescending(v => v.EbtCount)
+        EnsureVerbCacheLoaded();
+        return _verbLemmasByRank!
             .Skip(minRank - 1)
             .Take(maxRank - minRank + 1)
             .ToList();
@@ -251,9 +311,7 @@ public class DatabaseService : IDatabaseService
 
     public bool VerbHasReflexive(int lemmaId)
     {
-        EnsureInitialized();
-
-        // Most verbs have reflexive forms, so we check if NOT in the exceptions set
+        EnsureVerbCacheLoaded();
         return !_nonReflexiveLemmaIds!.Contains(lemmaId);
     }
 
@@ -264,12 +322,9 @@ public class DatabaseService : IDatabaseService
         Number number,
         int endingIndex)
     {
-        EnsureInitialized();
-
+        EnsureNounCacheLoaded();
         var formId = Declension.ResolveId(lemmaId, @case, gender, number, endingIndex);
-        return _database!
-            .Table<CorpusDeclension>()
-            .Any(d => d.FormId == formId);
+        return _attestedDeclensionFormIds!.Contains(formId);
     }
 
     public bool IsVerbFormInCorpus(
@@ -280,41 +335,35 @@ public class DatabaseService : IDatabaseService
         bool reflexive,
         int endingIndex)
     {
-        EnsureInitialized();
-
+        EnsureVerbCacheLoaded();
         var formId = Conjugation.ResolveId(lemmaId, tense, person, number, reflexive, endingIndex);
-        return _database!
-            .Table<CorpusConjugation>()
-            .Any(c => c.FormId == formId);
+        return _attestedConjugationFormIds!.Contains(formId);
     }
 
     public bool HasAttestedNounForm(int lemmaId, Case @case, Gender gender, Number number)
     {
-        EnsureInitialized();
-
-        // Check if ANY ending variant (1-9) is attested for this combination
-        // We query for the base formId range (endingId 1-9)
+        EnsureNounCacheLoaded();
+        // Check if ANY ending variant (1-9) is attested - O(9) HashSet lookups
         var baseFormId = Declension.ResolveId(lemmaId, @case, gender, number, 0);
-        var minFormId = baseFormId + 1;  // EndingId 1
-        var maxFormId = baseFormId + 9;  // EndingId 9 (max possible)
-
-        return _database!
-            .Table<CorpusDeclension>()
-            .Any(d => d.FormId >= minFormId && d.FormId <= maxFormId);
+        for (int endingId = 1; endingId <= 9; endingId++)
+        {
+            if (_attestedDeclensionFormIds!.Contains(baseFormId + endingId))
+                return true;
+        }
+        return false;
     }
 
     public bool HasAttestedVerbForm(int lemmaId, Tense tense, Person person, Number number, bool reflexive)
     {
-        EnsureInitialized();
-
-        // Check if ANY ending variant (1-9) is attested for this combination
+        EnsureVerbCacheLoaded();
+        // Check if ANY ending variant (1-9) is attested - O(9) HashSet lookups
         var baseFormId = Conjugation.ResolveId(lemmaId, tense, person, number, reflexive, 0);
-        var minFormId = baseFormId + 1;  // EndingId 1
-        var maxFormId = baseFormId + 9;  // EndingId 9 (max possible)
-
-        return _database!
-            .Table<CorpusConjugation>()
-            .Any(c => c.FormId >= minFormId && c.FormId <= maxFormId);
+        for (int endingId = 1; endingId <= 9; endingId++)
+        {
+            if (_attestedConjugationFormIds!.Contains(baseFormId + endingId))
+                return true;
+        }
+        return false;
     }
 
     public void Dispose()

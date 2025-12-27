@@ -9,6 +9,8 @@ using PaliPractice.Presentation.Practice.ViewModels;
 using PaliPractice.Presentation.Practice.ViewModels.Common;
 using PaliPractice.Presentation.Settings;
 using PaliPractice.Presentation.Settings.ViewModels;
+using PaliPractice.Services.Practice;
+using PaliPractice.Services.UserData;
 using AboutPage = PaliPractice.Presentation.Main.AboutPage;
 using ConjugationPracticePage = PaliPractice.Presentation.Practice.ConjugationPracticePage;
 using ConjugationPracticeViewModel = PaliPractice.Presentation.Practice.ViewModels.ConjugationPracticeViewModel;
@@ -95,12 +97,18 @@ public partial class App : Application
                 {
                     services.AddSingleton<IDatabaseService, DatabaseService>();
                     services.AddSingleton<IInflectionService, InflectionService>();
+                    services.AddSingleton<IUserDataService, UserDataService>();
+                    services.AddTransient<IPracticeQueueBuilder, PracticeQueueBuilder>();
 
                     services.AddTransient<FlashCardViewModel>();
 
-                    // Word providers
+                    // Word providers (legacy - to be deprecated)
                     services.AddKeyedTransient<ILemmaProvider, NounLemmaProvider>("noun");
                     services.AddKeyedTransient<ILemmaProvider, VerbLemmaProvider>("verb");
+
+                    // SRS Practice providers (new)
+                    services.AddKeyedTransient<IPracticeProvider, DeclensionPracticeProvider>("declension");
+                    services.AddKeyedTransient<IPracticeProvider, ConjugationPracticeProvider>("conjugation");
 
                     // ViewModels
                     services.AddTransient<DeclensionPracticeViewModel>();

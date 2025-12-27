@@ -1,5 +1,7 @@
 using PaliPractice.Models.Words;
 using PaliPractice.Presentation.Practice.Providers;
+using PaliPractice.Services.Practice;
+using PaliPractice.Services.UserData;
 
 namespace PaliPractice.Presentation.Practice.ViewModels.Common;
 
@@ -7,11 +9,13 @@ namespace PaliPractice.Presentation.Practice.ViewModels.Common;
 /// Base class for practice ViewModels (Conjugation and Declension).
 /// Implements flashcard reveal mechanics: user sees a dictionary form,
 /// guesses the inflected form, reveals the answer, then rates Easy/Hard.
+/// Uses IPracticeProvider for SRS-aware practice queue.
 /// </summary>
 [Bindable]
 public abstract partial class PracticeViewModelBase : ObservableObject
 {
     protected readonly ILogger Logger;
+    protected readonly IUserDataService UserData;
 
     [ObservableProperty] bool _canRateCard;
 
@@ -19,22 +23,22 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     public FlashcardStateViewModel Flashcard { get; }
     public DailyGoalViewModel DailyGoal { get; }
     public ExampleCarouselViewModel ExampleCarousel { get; }
-    
-    readonly ILemmaProvider _lemmas;
+
+    readonly IPracticeProvider _provider;
     readonly INavigator _navigator;
-    
+
     // Commands - stored as fields to maintain reference for NotifyCanExecuteChanged
     readonly RelayCommand _hardCommand;
     readonly RelayCommand _easyCommand;
     readonly RelayCommand _revealCommand;
-    
-    int _currentIndex;
 
     /// <summary>
-    /// Called when a new card is displayed. Subclasses should generate the inflected form
-    /// for the current lemma and set up badge display properties.
+    /// Called when a new card is displayed. Subclasses should use the word
+    /// and grammatical parameters to set up badge display properties.
     /// </summary>
-    protected abstract void PrepareCardAnswer(ILemma lemma);
+    /// <param name="word">The word (Noun or Verb) for the current form.</param>
+    /// <param name="parameters">Grammatical parameters from GetCurrentParameters().</param>
+    protected abstract void PrepareCardAnswer(IWord word, object parameters);
 
     /// <summary>
     /// Returns the inflected form to display when the answer is revealed.
@@ -51,18 +55,26 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     /// </summary>
     protected abstract PracticeType CurrentPracticeType { get; }
 
+    /// <summary>
+    /// Record the practice result with combination difficulty update.
+    /// Subclasses implement to call the appropriate difficulty update method.
+    /// </summary>
+    protected abstract void RecordCombinationDifficulty(bool wasHard);
+
     protected PracticeViewModelBase(
-        ILemmaProvider lemmas,
+        IPracticeProvider provider,
+        IUserDataService userData,
         FlashCardViewModel flashCard,
         INavigator navigator,
         ILogger logger)
     {
-        _lemmas = lemmas;
+        _provider = provider;
+        UserData = userData;
         FlashCard = flashCard;
         _navigator = navigator;
         Logger = logger;
         Flashcard = new FlashcardStateViewModel();
-        DailyGoal = new DailyGoalViewModel();
+        DailyGoal = new DailyGoalViewModel(userData, CurrentPracticeType);
         ExampleCarousel = new ExampleCarouselViewModel();
 
         // Initialize commands with CanExecute predicates
@@ -86,10 +98,10 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         {
             FlashCard.IsLoading = true;
 
-            await _lemmas.LoadAsync(ct);
-            if (_lemmas.Lemmas.Count == 0)
+            await _provider.LoadAsync(ct);
+            if (_provider.TotalCount == 0)
             {
-                FlashCard.ErrorMessage = "No words found";
+                FlashCard.ErrorMessage = "No forms to practice. Check your settings.";
                 return;
             }
 
@@ -102,7 +114,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Failed to load words");
+            Logger.LogError(ex, "Failed to load practice queue");
             FlashCard.ErrorMessage = $"Failed to load data: {ex.Message}";
         }
         finally
@@ -113,10 +125,19 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     void DisplayCurrentCard()
     {
-        var lemma = _lemmas.Lemmas[_currentIndex];
-        FlashCard.DisplayCurrentCard(lemma);
-        ExampleCarousel.Initialize(lemma);
-        PrepareCardAnswer(lemma);
+        var word = _provider.GetCurrentWord();
+        if (word == null)
+        {
+            Logger.LogWarning("No word for current form");
+            return;
+        }
+
+        var masteryLevel = _provider.Current?.MasteryLevel ?? 1;
+        FlashCard.DisplayWord(word, _provider.CurrentIndex, _provider.TotalCount, masteryLevel);
+        ExampleCarousel.Initialize(word);
+
+        var parameters = _provider.GetCurrentParameters();
+        PrepareCardAnswer(word, parameters);
         Flashcard.SetAnswer(GetInflectedForm(), GetInflectedEnding());
     }
 
@@ -129,9 +150,9 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     void UpdateNavigationState()
     {
-        var hasNext = _currentIndex < _lemmas.Lemmas.Count - 1;
+        var hasNext = _provider.HasNext;
         var isRevealed = Flashcard.IsRevealed;
-        CanRateCard = hasNext && isRevealed;
+        CanRateCard = isRevealed;
 
         Logger.LogDebug("UpdateNavigationState: hasNext={HasNext}, isRevealed={IsRevealed}, CanRateCard={CanRate}",
             hasNext, isRevealed, CanRateCard);
@@ -153,24 +174,49 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     void MarkAsHard()
     {
         if (!CanRateCard) return;
-        Logger.LogInformation("Marked hard: {Word}", FlashCard.Question);
-        DailyGoal.Advance();
+        RecordResult(wasEasy: false);
         MoveToNextCard();
     }
 
     void MarkAsEasy()
     {
         if (!CanRateCard) return;
-        Logger.LogInformation("Marked easy: {Word}", FlashCard.Question);
-        DailyGoal.Advance();
+        RecordResult(wasEasy: true);
         MoveToNextCard();
+    }
+
+    void RecordResult(bool wasEasy)
+    {
+        var current = _provider.Current;
+        if (current == null) return;
+
+        var formText = GetInflectedForm();
+        Logger.LogInformation("Marked {Result}: {Form} (FormId={FormId})",
+            wasEasy ? "easy" : "hard", formText, current.FormId);
+
+        // Record to SRS system
+        UserData.RecordPracticeResult(current.FormId, CurrentPracticeType, wasEasy, formText);
+
+        // Update combination difficulty
+        RecordCombinationDifficulty(wasHard: !wasEasy);
+
+        // Update daily progress
+        UserData.IncrementProgress(CurrentPracticeType);
+        DailyGoal.Refresh();
     }
 
     void MoveToNextCard()
     {
-        if (_currentIndex >= _lemmas.Lemmas.Count - 1) return;
+        if (!_provider.MoveNext())
+        {
+            // Queue exhausted - could show completion screen
+            Logger.LogInformation("Practice queue exhausted");
+            CanRateCard = false;
+            _hardCommand.NotifyCanExecuteChanged();
+            _easyCommand.NotifyCanExecuteChanged();
+            return;
+        }
 
-        _currentIndex++;
         Flashcard.Reset();
         ExampleCarousel.Reset();
         DisplayCurrentCard();

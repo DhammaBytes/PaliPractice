@@ -1,0 +1,60 @@
+using SQLite;
+
+namespace PaliPractice.Services.UserData.Entities;
+
+/// <summary>
+/// Tracks mastery level for an individual form (EndingId=0 FormIds).
+/// NextDue is calculated from LastPracticedUtc + cooldown based on MasteryLevel.
+/// </summary>
+[Table("form_mastery")]
+public class FormMastery
+{
+    /// <summary>
+    /// FormId with EndingId=0 (combination reference).
+    /// Declension: 9-digit int, Conjugation: 10-digit long.
+    /// </summary>
+    [PrimaryKey]
+    [Column("form_id")]
+    public long FormId { get; set; }
+
+    [Column("practice_type")]
+    public PracticeType PracticeType { get; set; }
+
+    /// <summary>
+    /// Mastery level 1-10. Default: 5.
+    /// 1 = struggling (1 day cooldown), 10 = mastered (~8.5 months cooldown).
+    /// </summary>
+    [Column("mastery_level")]
+    public int MasteryLevel { get; set; } = CooldownCalculator.DefaultLevel;
+
+    /// <summary>
+    /// Previous mastery level before last practice.
+    /// Used to show progress direction in HistoryPage.
+    /// </summary>
+    [Column("previous_level")]
+    public int PreviousLevel { get; set; } = CooldownCalculator.DefaultLevel;
+
+    [Column("last_practiced_utc")]
+    public DateTime LastPracticedUtc { get; set; }
+
+    [Column("created_utc")]
+    public DateTime CreatedUtc { get; set; }
+
+    /// <summary>
+    /// Calculated next due time based on LastPracticedUtc and MasteryLevel.
+    /// </summary>
+    [Ignore]
+    public DateTime NextDueUtc => CooldownCalculator.CalculateNextDue(LastPracticedUtc, MasteryLevel);
+
+    /// <summary>
+    /// Whether this form is currently due for review.
+    /// </summary>
+    [Ignore]
+    public bool IsDue => CooldownCalculator.IsDue(LastPracticedUtc, MasteryLevel);
+
+    /// <summary>
+    /// Whether the level improved since last practice.
+    /// </summary>
+    [Ignore]
+    public bool IsImproved => MasteryLevel > PreviousLevel;
+}

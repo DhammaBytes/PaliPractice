@@ -1,38 +1,40 @@
 using PaliPractice.Models.Words;
+using PaliPractice.Services.UserData;
 
 namespace PaliPractice.Presentation.Practice.ViewModels.Common;
 
 /// <summary>
-/// Tracks daily practice goal progress.
+/// Tracks daily practice goal progress from persisted user data.
 /// </summary>
 [Bindable]
 public partial class DailyGoalViewModel : ObservableObject
 {
-    const int DailyTarget = 50;
+    readonly IUserDataService _userData;
+    readonly PracticeType _practiceType;
 
     [ObservableProperty] string _dailyGoalText = "0/50";
     [ObservableProperty] double _dailyProgress = 0.0;
 
-    int _completedToday;
-
-    /// <summary>
-    /// Advances the daily goal by one completed card.
-    /// </summary>
-    public void Advance()
+    public DailyGoalViewModel(IUserDataService userData, PracticeType practiceType)
     {
-        _completedToday = Math.Min(DailyTarget, _completedToday + 1);
-        DailyGoalText = $"{_completedToday}/{DailyTarget}";
-        DailyProgress = 100.0 * _completedToday / DailyTarget;
+        _userData = userData;
+        _practiceType = practiceType;
+        Refresh();
     }
 
     /// <summary>
-    /// Resets daily progress (e.g., at start of new day).
+    /// Refreshes progress from persisted data.
     /// </summary>
-    public void Reset()
+    public void Refresh()
     {
-        _completedToday = 0;
-        DailyGoalText = "0/50";
-        DailyProgress = 0.0;
+        var progress = _userData.GetTodayProgress();
+        var goal = _userData.GetDailyGoal(_practiceType);
+        var completed = _practiceType == PracticeType.Declension
+            ? progress.DeclensionsCompleted
+            : progress.ConjugationsCompleted;
+
+        DailyGoalText = $"{completed}/{goal}";
+        DailyProgress = goal > 0 ? 100.0 * Math.Min(completed, goal) / goal : 0;
     }
 }
 
@@ -96,14 +98,17 @@ public partial class FlashCardViewModel : ObservableObject
 {
     [ObservableProperty] string _question = string.Empty;
     [ObservableProperty] string _rankText = "Top-100";
-    [ObservableProperty] string _ankiState = "Anki state: 6/10";
+    [ObservableProperty] string _progressText = "1/50";
+    [ObservableProperty] string _masteryText = "Progress: 1/10";
     [ObservableProperty] bool _isLoading = true;
     [ObservableProperty] string _errorMessage = string.Empty;
 
-    public void DisplayCurrentCard(ILemma lemma)
+    public void DisplayWord(IWord word, int currentIndex, int totalCount, int masteryLevel)
     {
-        Question = lemma.BaseForm;
-        RankText = lemma.EbtCount switch
+        Question = word.Lemma;
+        ProgressText = $"{currentIndex + 1}/{totalCount}";
+        MasteryText = $"Progress: {masteryLevel}/10";
+        RankText = word.EbtCount switch
         {
             > 1000 => "Top-100",
             > 500 => "Top-300",

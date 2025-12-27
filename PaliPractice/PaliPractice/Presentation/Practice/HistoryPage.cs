@@ -1,5 +1,6 @@
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Practice.ViewModels;
+using PaliPractice.Services.UserData.Entities;
 using static PaliPractice.Presentation.Common.TextHelpers;
 
 namespace PaliPractice.Presentation.Practice;
@@ -23,7 +24,7 @@ public sealed partial class HistoryPage : Page
                         .MaxWidth(LayoutConstants.ContentMaxWidth)
                         .Grid(row: 1)
                         .ItemsSource(() => vm.Records)
-                        .ItemTemplate<HistoryRecord>(record =>
+                        .ItemTemplate<PracticeHistory>(record =>
                             new Grid()
                                 .HorizontalAlignment(HorizontalAlignment.Stretch)
                                 .ColumnDefinitions("*,Auto,60")
@@ -32,7 +33,7 @@ public sealed partial class HistoryPage : Page
                                 .Children(
                                     // Column 0: Form text (Pāli word)
                                     PaliText()
-                                        .Text(() => record.Form)
+                                        .Text(() => record.FormText)
                                         .FontSize(16)
                                         .VerticalAlignment(VerticalAlignment.Center)
                                         .Grid(column: 0),
@@ -49,12 +50,12 @@ public sealed partial class HistoryPage : Page
                                                 : (Brush)Application.Current.Resources["SystemFillColorCriticalBrush"])
                                         .Grid(column: 1),
 
-                                    // Column 2: Progress bar
+                                    // Column 2: Progress bar (0-100 scale)
                                     new ProgressBar()
                                         .Width(60)
                                         .Minimum(0)
                                         .Maximum(100)
-                                        .Value(() => record.NewValue)
+                                        .Value(() => record.NewLevelPercent)
                                         .VerticalAlignment(VerticalAlignment.Center)
                                         .Grid(column: 2)
                                 )

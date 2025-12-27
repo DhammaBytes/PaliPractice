@@ -7,6 +7,7 @@ global using Microsoft.Extensions.Options;
 global using PaliPractice.Models;
 global using PaliPractice.Presentation;
 global using PaliPractice.Presentation.Common.Squircle;
+global using PaliPractice.Presentation.Practice.ViewModels.Common;
 global using PaliPractice.Services;
 global using PaliPractice.Services.Database;
 global using PaliPractice.Services.Endpoints;

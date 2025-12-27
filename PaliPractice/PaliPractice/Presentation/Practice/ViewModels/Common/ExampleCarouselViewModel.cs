@@ -31,7 +31,20 @@ public partial class ExampleCarouselViewModel : ObservableObject
     /// </summary>
     public void Initialize(ILemma lemma)
     {
-        _entries = TranslationEntry.BuildFromLemma(lemma);
+        InitializeEntries(TranslationEntry.BuildFromLemma(lemma));
+    }
+
+    /// <summary>
+    /// Initialize carousel with translations from a single word.
+    /// </summary>
+    public void Initialize(IWord word)
+    {
+        InitializeEntries(TranslationEntry.BuildFromWord(word));
+    }
+
+    void InitializeEntries(IReadOnlyList<TranslationEntry> entries)
+    {
+        _entries = entries;
 
         TotalTranslations = _entries.Count;
         HasMultipleTranslations = TotalTranslations > 1;

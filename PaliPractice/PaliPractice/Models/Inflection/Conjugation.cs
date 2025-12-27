@@ -3,6 +3,14 @@ namespace PaliPractice.Models.Inflection;
 /// <summary>
 /// Represents a grouped verb conjugation for a specific person/number/tense/reflexive combination.
 /// Contains 1-N possible form variants (usually 1-3).
+///
+/// FormId encoding (10 digits):
+///   LLLLL_T_P_N_R_E  where L=lemmaId, T=tense, P=person, N=number, R=reflexive, E=endingId
+///   Example: lemma 70123, present(0), 3rd(2), singular(0), active(0), ending 0
+///            → 7012320000
+///
+/// EndingId=0 represents the combination itself (used for SRS tracking).
+/// EndingId=1+ represents specific form variants within the combination.
 /// </summary>
 public class Conjugation
 {
@@ -71,6 +79,49 @@ public class Conjugation
             (formId % 100 / 10) == 1,
             (int)(formId % 10)
         );
+    }
+
+    // DPD-style abbreviations for combo keys
+    static readonly Dictionary<Tense, string> TenseAbbrev = new()
+    {
+        [Tense.Present] = "pr",
+        [Tense.Imperative] = "imp",
+        [Tense.Optative] = "opt",
+        [Tense.Future] = "fut"
+    };
+
+    static readonly Dictionary<Person, string> PersonAbbrev = new()
+    {
+        [Person.First] = "1st",
+        [Person.Second] = "2nd",
+        [Person.Third] = "3rd"
+    };
+
+    static readonly Dictionary<Number, string> NumberAbbrev = new()
+    {
+        [Number.Singular] = "sg",
+        [Number.Plural] = "pl"
+    };
+
+    /// <summary>
+    /// Generate DPD-style combo key for a conjugation (e.g., "pr_1st_sg" or "opt_3rd_pl_reflx").
+    /// </summary>
+    public static string ComboKey(Tense tense, Person person, Number number, bool reflexive)
+    {
+        var t = TenseAbbrev.GetValueOrDefault(tense, tense.ToString().ToLowerInvariant());
+        var p = PersonAbbrev.GetValueOrDefault(person, person.ToString().ToLowerInvariant());
+        var n = NumberAbbrev.GetValueOrDefault(number, number.ToString().ToLowerInvariant());
+        var key = $"{t}_{p}_{n}";
+        return reflexive ? $"{key}_reflx" : key;
+    }
+
+    /// <summary>
+    /// Generate combo key from a FormId.
+    /// </summary>
+    public static string ComboKeyFromId(long formId)
+    {
+        var parsed = ParseId(formId);
+        return ComboKey(parsed.Tense, parsed.Person, parsed.Number, parsed.Reflexive);
     }
 
     /// <summary>

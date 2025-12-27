@@ -2,6 +2,7 @@ using PaliPractice.Models.Inflection;
 using PaliPractice.Models.Words;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Presentation.Practice.ViewModels.Common;
+using PaliPractice.Services.UserData;
 using PaliPractice.Themes;
 
 namespace PaliPractice.Presentation.Practice.ViewModels;
@@ -10,8 +11,13 @@ namespace PaliPractice.Presentation.Practice.ViewModels;
 public partial class ConjugationPracticeViewModel : PracticeViewModelBase
 {
     readonly IInflectionService _inflectionService;
-    readonly Random _random = new();
     Conjugation? _currentConjugation;
+
+    // Current grammatical parameters from the SRS queue
+    Tense _currentTense;
+    Person _currentPerson;
+    Number _currentNumber;
+    bool _currentReflexive;
 
     protected override PracticeType CurrentPracticeType => PracticeType.Conjugation;
 
@@ -34,56 +40,48 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
     [ObservableProperty] string _alternativeForms = string.Empty;
 
     public ConjugationPracticeViewModel(
-        [FromKeyedServices("verb")] ILemmaProvider lemmas,
+        [FromKeyedServices("conjugation")] IPracticeProvider provider,
+        IUserDataService userData,
         FlashCardViewModel flashCard,
         INavigator navigator,
         ILogger<ConjugationPracticeViewModel> logger,
         IInflectionService inflectionService)
-        : base(lemmas, flashCard, navigator, logger)
+        : base(provider, userData, flashCard, navigator, logger)
     {
         _inflectionService = inflectionService;
         _ = InitializeAsync();
     }
 
-    protected override void PrepareCardAnswer(ILemma lemma)
+    protected override void PrepareCardAnswer(IWord word, object parameters)
     {
-        // Use first word (all share the same dominant pattern)
-        var verb = (Verb)lemma.Words.First();
+        var verb = (Verb)word;
 
-        // Generate all grouped conjugations for this verb (one per person+number+tense+reflexive combo)
-        var allConjugations = new List<Conjugation>();
-        foreach (var person in Enum.GetValues<Person>())
-        {
-            foreach (var number in Enum.GetValues<Number>())
-            {
-                foreach (var tense in Enum.GetValues<Tense>())
-                {
-                    foreach (var reflexive in new[] { false, true })
-                    {
-                        var conjugation = _inflectionService.GenerateVerbForms(verb, person, number, tense, reflexive);
-                        // Only include if it has an attested primary form
-                        if (conjugation.Primary.HasValue)
-                        {
-                            allConjugations.Add(conjugation);
-                        }
-                    }
-                }
-            }
-        }
+        // Extract grammatical parameters from the SRS queue
+        var (tense, person, number, reflexive) = ((Tense, Person, Number, bool))parameters;
+        _currentTense = tense;
+        _currentPerson = person;
+        _currentNumber = number;
+        _currentReflexive = reflexive;
 
-        if (allConjugations.Count == 0)
+        // Generate the conjugation for the specified grammatical combination
+        _currentConjugation = _inflectionService.GenerateVerbForms(verb, person, number, tense, reflexive);
+
+        if (!_currentConjugation.Primary.HasValue)
         {
-            Logger.LogError("No attested conjugations for verb {Lemma} (id={Id})", verb.Lemma, verb.Id);
+            Logger.LogError("No attested conjugation for verb {Lemma} (id={Id}) tense={Tense} person={Person} number={Number} reflexive={Reflexive}",
+                verb.Lemma, verb.Id, tense, person, number, reflexive);
             _currentConjugation = null;
             SetBadgesFallback();
             return;
         }
 
-        // Pick a random conjugation (person+number+tense+reflexive combo) for the user to produce
-        _currentConjugation = allConjugations[_random.Next(allConjugations.Count)];
-
         // Update badge display properties
         UpdateBadges(_currentConjugation);
+    }
+
+    protected override void RecordCombinationDifficulty(bool wasHard)
+    {
+        UserData.UpdateConjugationDifficulty(_currentTense, _currentPerson, _currentNumber, _currentReflexive, wasHard);
     }
 
     void UpdateBadges(Conjugation c)

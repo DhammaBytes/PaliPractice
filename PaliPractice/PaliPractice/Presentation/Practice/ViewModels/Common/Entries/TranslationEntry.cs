@@ -55,9 +55,27 @@ public class TranslationEntry
     /// </summary>
     public static IReadOnlyList<TranslationEntry> BuildFromLemma(ILemma lemma)
     {
-        var examplesByMeaning = new Dictionary<string, List<ExampleEntry>>();
+        return BuildFromWords(lemma.Words);
+    }
 
-        foreach (var word in lemma.Words)
+    /// <summary>
+    /// Builds translation entry from a single word.
+    /// </summary>
+    public static IReadOnlyList<TranslationEntry> BuildFromWord(IWord word)
+    {
+        return BuildFromWords([word]);
+    }
+
+    /// <summary>
+    /// Builds translation entries from a collection of words.
+    /// Groups by unique meaning, collecting all examples for each.
+    /// </summary>
+    static IReadOnlyList<TranslationEntry> BuildFromWords(IEnumerable<IWord> words)
+    {
+        var examplesByMeaning = new Dictionary<string, List<ExampleEntry>>();
+        var firstWordByMeaning = new Dictionary<string, IWord>();
+
+        foreach (var word in words)
         {
             var meaning = word.Meaning ?? string.Empty;
             if (string.IsNullOrWhiteSpace(meaning))
@@ -67,6 +85,7 @@ public class TranslationEntry
             {
                 examples = [];
                 examplesByMeaning[meaning] = examples;
+                firstWordByMeaning[meaning] = word;
             }
 
             // Add examples that have references
@@ -84,14 +103,10 @@ public class TranslationEntry
             {
                 entries.Add(new TranslationEntry(meaning, examples));
             }
-            else
+            else if (firstWordByMeaning.TryGetValue(meaning, out var firstWord))
             {
                 // Create a dummy entry with the first word if no examples
-                var firstWord = lemma.Words.FirstOrDefault(w => w.Meaning == meaning);
-                if (firstWord != null)
-                {
-                    entries.Add(new TranslationEntry(meaning, [new ExampleEntry(firstWord, 0)]));
-                }
+                entries.Add(new TranslationEntry(meaning, [new ExampleEntry(firstWord, 0)]));
             }
         }
 

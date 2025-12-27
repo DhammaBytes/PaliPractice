@@ -12,8 +12,22 @@ public interface IDatabaseService
     List<Verb> GetRandomVerbs(int count = 10);
     Noun? GetNounById(int id);
     Verb? GetVerbById(int id);
+    Noun? GetNounByLemmaId(int lemmaId);
+    Verb? GetVerbByLemmaId(int lemmaId);
     int GetNounCount();
     int GetVerbCount();
+
+    /// <summary>
+    /// Get nouns within a rank range, ordered by EbtCount descending.
+    /// Rank 1 = most common noun.
+    /// </summary>
+    List<Noun> GetNounsByRank(int minRank, int maxRank);
+
+    /// <summary>
+    /// Get verbs within a rank range, ordered by EbtCount descending.
+    /// Rank 1 = most common verb.
+    /// </summary>
+    List<Verb> GetVerbsByRank(int minRank, int maxRank);
 
     /// <summary>
     /// Check if a verb lemma has reflexive conjugation forms.
@@ -32,6 +46,16 @@ public interface IDatabaseService
     /// Uses form_id lookup for efficient querying.
     /// </summary>
     bool IsVerbFormInCorpus(int lemmaId, Tense tense, Person person, Number number, bool reflexive, int endingIndex);
+
+    /// <summary>
+    /// Check if a noun form (without ending) is attested in the corpus.
+    /// </summary>
+    bool HasAttestedNounForm(int lemmaId, Case @case, Gender gender, Number number);
+
+    /// <summary>
+    /// Check if a verb form (without ending) is attested in the corpus.
+    /// </summary>
+    bool HasAttestedVerbForm(int lemmaId, Tense tense, Person person, Number number, bool reflexive);
 }
 
 public class DatabaseService : IDatabaseService
@@ -165,6 +189,24 @@ public class DatabaseService : IDatabaseService
             .FirstOrDefault(v => v.Id == id);
     }
 
+    public Noun? GetNounByLemmaId(int lemmaId)
+    {
+        EnsureInitialized();
+
+        return _database!
+            .Table<Noun>()
+            .FirstOrDefault(n => n.LemmaId == lemmaId);
+    }
+
+    public Verb? GetVerbByLemmaId(int lemmaId)
+    {
+        EnsureInitialized();
+
+        return _database!
+            .Table<Verb>()
+            .FirstOrDefault(v => v.LemmaId == lemmaId);
+    }
+
     public int GetNounCount()
     {
         EnsureInitialized();
@@ -179,6 +221,32 @@ public class DatabaseService : IDatabaseService
 
         return _database!.Table<Verb>()
             .Count();
+    }
+
+    public List<Noun> GetNounsByRank(int minRank, int maxRank)
+    {
+        EnsureInitialized();
+
+        // Rank is 1-indexed: rank 1 = highest EbtCount
+        // Skip (minRank - 1) items, take (maxRank - minRank + 1) items
+        return _database!.Table<Noun>()
+            .OrderByDescending(n => n.EbtCount)
+            .Skip(minRank - 1)
+            .Take(maxRank - minRank + 1)
+            .ToList();
+    }
+
+    public List<Verb> GetVerbsByRank(int minRank, int maxRank)
+    {
+        EnsureInitialized();
+
+        // Rank is 1-indexed: rank 1 = highest EbtCount
+        // Skip (minRank - 1) items, take (maxRank - minRank + 1) items
+        return _database!.Table<Verb>()
+            .OrderByDescending(v => v.EbtCount)
+            .Skip(minRank - 1)
+            .Take(maxRank - minRank + 1)
+            .ToList();
     }
 
     public bool VerbHasReflexive(int lemmaId)
@@ -218,6 +286,35 @@ public class DatabaseService : IDatabaseService
         return _database!
             .Table<CorpusConjugation>()
             .Any(c => c.FormId == formId);
+    }
+
+    public bool HasAttestedNounForm(int lemmaId, Case @case, Gender gender, Number number)
+    {
+        EnsureInitialized();
+
+        // Check if ANY ending variant (1-9) is attested for this combination
+        // We query for the base formId range (endingId 1-9)
+        var baseFormId = Declension.ResolveId(lemmaId, @case, gender, number, 0);
+        var minFormId = baseFormId + 1;  // EndingId 1
+        var maxFormId = baseFormId + 9;  // EndingId 9 (max possible)
+
+        return _database!
+            .Table<CorpusDeclension>()
+            .Any(d => d.FormId >= minFormId && d.FormId <= maxFormId);
+    }
+
+    public bool HasAttestedVerbForm(int lemmaId, Tense tense, Person person, Number number, bool reflexive)
+    {
+        EnsureInitialized();
+
+        // Check if ANY ending variant (1-9) is attested for this combination
+        var baseFormId = Conjugation.ResolveId(lemmaId, tense, person, number, reflexive, 0);
+        var minFormId = baseFormId + 1;  // EndingId 1
+        var maxFormId = baseFormId + 9;  // EndingId 9 (max possible)
+
+        return _database!
+            .Table<CorpusConjugation>()
+            .Any(c => c.FormId >= minFormId && c.FormId <= maxFormId);
     }
 
     public void Dispose()

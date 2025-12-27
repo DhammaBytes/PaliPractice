@@ -44,22 +44,16 @@ public sealed partial class ConjugationSettingsPage : Page
                                             "Plural", v => v.Plural)
                                     ),
 
-                                    // Tense section
+                                    // Tense section (aligned with current Tense enum)
                                     SettingsSection.Build("Tense",
                                         SettingsRow.BuildToggle<ViewModels.ConjugationSettingsViewModel>(
                                             "Present", v => v.Present),
                                         SettingsRow.BuildToggle<ViewModels.ConjugationSettingsViewModel>(
-                                            "Imperfect", v => v.Imperfect),
-                                        SettingsRow.BuildToggle<ViewModels.ConjugationSettingsViewModel>(
-                                            "Aorist", v => v.Aorist),
-                                        SettingsRow.BuildToggle<ViewModels.ConjugationSettingsViewModel>(
-                                            "Future", v => v.Future),
+                                            "Imperative", v => v.Imperative),
                                         SettingsRow.BuildToggle<ViewModels.ConjugationSettingsViewModel>(
                                             "Optative", v => v.Optative),
                                         SettingsRow.BuildToggle<ViewModels.ConjugationSettingsViewModel>(
-                                            "Imperative", v => v.Imperative),
-                                        SettingsRow.BuildToggle<ViewModels.ConjugationSettingsViewModel>(
-                                            "Conditional", v => v.Conditional)
+                                            "Future", v => v.Future)
                                     )
                                 )
                         )

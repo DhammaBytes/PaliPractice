@@ -274,7 +274,7 @@ public static class PracticePageBuilder
                     .Grid(column: 1),
                 RegularText()
                     .Scope(cardPath)
-                    .TextWithin<FlashCardViewModel>(c => c.AnkiState)
+                    .TextWithin<FlashCardViewModel>(c => c.MasteryText)
                     .FontSize(LayoutConstants.FixedFonts.AnkiState)
                     .HorizontalAlignment(HorizontalAlignment.Right)
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))

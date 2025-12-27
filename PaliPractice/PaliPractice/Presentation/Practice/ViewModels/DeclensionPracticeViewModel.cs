@@ -2,6 +2,7 @@ using PaliPractice.Models.Inflection;
 using PaliPractice.Models.Words;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Presentation.Practice.ViewModels.Common;
+using PaliPractice.Services.UserData;
 using PaliPractice.Themes;
 
 namespace PaliPractice.Presentation.Practice.ViewModels;
@@ -10,8 +11,12 @@ namespace PaliPractice.Presentation.Practice.ViewModels;
 public partial class DeclensionPracticeViewModel : PracticeViewModelBase
 {
     readonly IInflectionService _inflectionService;
-    readonly Random _random = new();
     Declension? _currentDeclension;
+
+    // Current grammatical parameters from the SRS queue
+    Case _currentCase;
+    Gender _currentGender;
+    Number _currentNumber;
 
     protected override PracticeType CurrentPracticeType => PracticeType.Declension;
 
@@ -35,50 +40,47 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
     [ObservableProperty] string _alternativeForms = string.Empty;
 
     public DeclensionPracticeViewModel(
-        [FromKeyedServices("noun")] ILemmaProvider lemmas,
+        [FromKeyedServices("declension")] IPracticeProvider provider,
+        IUserDataService userData,
         FlashCardViewModel flashCard,
         INavigator navigator,
         ILogger<DeclensionPracticeViewModel> logger,
         IInflectionService inflectionService)
-        : base(lemmas, flashCard, navigator, logger)
+        : base(provider, userData, flashCard, navigator, logger)
     {
         _inflectionService = inflectionService;
         _ = InitializeAsync();
     }
 
-    protected override void PrepareCardAnswer(ILemma lemma)
+    protected override void PrepareCardAnswer(IWord word, object parameters)
     {
-        // Use the first word (all share the same dominant pattern)
-        var noun = (Noun)lemma.Words.First();
+        var noun = (Noun)word;
 
-        // Generate all grouped declensions for this noun (one per case+number combo)
-        var allDeclensions = new List<Declension>();
-        foreach (var nounCase in Enum.GetValues<Case>())
-        {
-            foreach (var number in Enum.GetValues<Number>())
-            {
-                var declension = _inflectionService.GenerateNounForms(noun, nounCase, number);
-                // Only include if it has an attested primary form
-                if (declension.Primary.HasValue)
-                {
-                    allDeclensions.Add(declension);
-                }
-            }
-        }
+        // Extract grammatical parameters from the SRS queue
+        var (nounCase, gender, number) = ((Case, Gender, Number))parameters;
+        _currentCase = nounCase;
+        _currentGender = gender;
+        _currentNumber = number;
 
-        if (allDeclensions.Count == 0)
+        // Generate the declension for the specified grammatical combination
+        _currentDeclension = _inflectionService.GenerateNounForms(noun, nounCase, number);
+
+        if (!_currentDeclension.Primary.HasValue)
         {
-            Logger.LogError("No attested declensions for noun {Lemma} (id={Id})", noun.Lemma, noun.Id);
+            Logger.LogError("No attested declension for noun {Lemma} (id={Id}) case={Case} number={Number}",
+                noun.Lemma, noun.Id, nounCase, number);
             _currentDeclension = null;
             SetBadgesFallback(noun);
             return;
         }
 
-        // Pick a random declension (case+number combo) for the user to produce
-        _currentDeclension = allDeclensions[_random.Next(allDeclensions.Count)];
-
         // Set badge display properties
         UpdateBadges(_currentDeclension);
+    }
+
+    protected override void RecordCombinationDifficulty(bool wasHard)
+    {
+        UserData.UpdateDeclensionDifficulty(_currentCase, _currentGender, _currentNumber, wasHard);
     }
 
     void UpdateBadges(Declension d)

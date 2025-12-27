@@ -3,6 +3,14 @@ namespace PaliPractice.Models.Inflection;
 /// <summary>
 /// Represents a grouped noun declension for a specific case/number/gender combination.
 /// Contains 1-N possible form variants (usually 1-3).
+///
+/// FormId encoding (9 digits):
+///   LLLLL_C_G_N_E  where L=lemmaId, C=case, G=gender, N=number, E=endingId
+///   Example: lemma 12345, accusative(1), masculine(0), plural(1), ending 0
+///            → 123451010
+///
+/// EndingId=0 represents the combination itself (used for SRS tracking).
+/// EndingId=1+ represents specific form variants within the combination.
 /// </summary>
 public class Declension
 {
@@ -64,6 +72,52 @@ public class Declension
             (Number)(formId % 100 / 10),
             formId % 10
         );
+    }
+
+    // DPD-style abbreviations for combo keys
+    static readonly Dictionary<Case, string> CaseAbbrev = new()
+    {
+        [Case.Nominative] = "nom",
+        [Case.Accusative] = "acc",
+        [Case.Instrumental] = "instr",
+        [Case.Dative] = "dat",
+        [Case.Ablative] = "abl",
+        [Case.Genitive] = "gen",
+        [Case.Locative] = "loc",
+        [Case.Vocative] = "voc"
+    };
+
+    static readonly Dictionary<Gender, string> GenderAbbrev = new()
+    {
+        [Gender.Masculine] = "masc",
+        [Gender.Feminine] = "fem",
+        [Gender.Neuter] = "nt"
+    };
+
+    static readonly Dictionary<Number, string> NumberAbbrev = new()
+    {
+        [Number.Singular] = "sg",
+        [Number.Plural] = "pl"
+    };
+
+    /// <summary>
+    /// Generate DPD-style combo key for a declension (e.g., "nom_masc_sg").
+    /// </summary>
+    public static string ComboKey(Case @case, Gender gender, Number number)
+    {
+        var c = CaseAbbrev.GetValueOrDefault(@case, @case.ToString().ToLowerInvariant());
+        var g = GenderAbbrev.GetValueOrDefault(gender, gender.ToString().ToLowerInvariant());
+        var n = NumberAbbrev.GetValueOrDefault(number, number.ToString().ToLowerInvariant());
+        return $"{c}_{g}_{n}";
+    }
+
+    /// <summary>
+    /// Generate combo key from a FormId.
+    /// </summary>
+    public static string ComboKeyFromId(int formId)
+    {
+        var parsed = ParseId(formId);
+        return ComboKey(parsed.Case, parsed.Gender, parsed.Number);
     }
 
     /// <summary>

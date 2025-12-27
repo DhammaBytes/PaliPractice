@@ -29,8 +29,7 @@ public sealed partial class SettingsPage : Page
                                 .Children(
                                     // General section
                                     SettingsSection.Build("General",
-                                        SettingsRow.BuildPlaceholder("Appearance"),
-                                        SettingsRow.BuildPlaceholder("Translation set")
+                                        SettingsRow.BuildPlaceholder("Appearance")
                                     ),
 
                                     // Practice settings sections

@@ -205,14 +205,21 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
     {
         // Load settings
         var casesStr = _userData.GetSetting(SettingsKeys.DeclensionCases, SettingsKeys.DefaultDeclensionCases);
-        var gendersStr = _userData.GetSetting(SettingsKeys.DeclensionGenders, SettingsKeys.DefaultDeclensionGenders);
-        var numbersStr = _userData.GetSetting(SettingsKeys.DeclensionNumbers, SettingsKeys.DefaultNumbers);
+        var numberSetting = _userData.GetSetting(SettingsKeys.DeclensionNumberSetting, "Both");
         var minRank = _userData.GetSetting(SettingsKeys.DeclensionLemmaMin, SettingsKeys.DefaultLemmaMin);
         var maxRank = _userData.GetSetting(SettingsKeys.DeclensionLemmaMax, SettingsKeys.DefaultLemmaMax);
 
+        // Load excluded patterns per gender
+        var mascExcluded = ParsePatternSet(_userData.GetSetting(SettingsKeys.DeclensionMascExcludedPatterns, ""));
+        var ntExcluded = ParsePatternSet(_userData.GetSetting(SettingsKeys.DeclensionNtExcludedPatterns, ""));
+        var femExcluded = ParsePatternSet(_userData.GetSetting(SettingsKeys.DeclensionFemExcludedPatterns, ""));
+
         var enabledCases = ParseEnumList<Case>(casesStr);
-        var enabledGenders = ParseEnumList<Gender>(gendersStr);
-        var enabledNumbers = ParseEnumList<Number>(numbersStr);
+
+        // Parse number setting
+        var enabledNumbers = new List<Number>();
+        if (numberSetting is "Singular & Plural" or "Singular only") enabledNumbers.Add(Number.Singular);
+        if (numberSetting is "Singular & Plural" or "Plural only") enabledNumbers.Add(Number.Plural);
 
         var formIds = new List<long>();
 
@@ -223,8 +230,8 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         {
             var noun = (Noun)lemma.Primary;
 
-            // Skip if noun's gender is not enabled
-            if (!enabledGenders.Contains(noun.Gender))
+            // Skip if pattern is excluded for this gender (gender is derived from pattern selection)
+            if (IsPatternExcluded(noun.Pattern, noun.Gender, mascExcluded, ntExcluded, femExcluded))
                 continue;
 
             foreach (var @case in enabledCases)
@@ -245,19 +252,104 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         return formIds;
     }
 
+    /// <summary>
+    /// Checks if a noun pattern is excluded based on gender and excluded pattern sets.
+    /// Pattern format is "stem gender" (e.g., "a masc", "ā fem", "i nt").
+    /// Irregular patterns like "rāja masc" are mapped to their base pattern "a".
+    /// </summary>
+    static bool IsPatternExcluded(
+        string pattern,
+        Gender gender,
+        HashSet<string> mascExcluded,
+        HashSet<string> ntExcluded,
+        HashSet<string> femExcluded)
+    {
+        // Extract the pattern stem (first part before space)
+        var stem = GetPatternStem(pattern);
+
+        // Get the appropriate exclusion set for this gender
+        var excluded = gender switch
+        {
+            Gender.Masculine => mascExcluded,
+            Gender.Neuter => ntExcluded,
+            Gender.Feminine => femExcluded,
+            _ => []
+        };
+
+        return excluded.Contains(stem);
+    }
+
+    /// <summary>
+    /// Extracts the pattern stem from a full pattern string.
+    /// Maps irregular patterns to their base pattern.
+    /// Examples: "a masc" → "a", "rāja masc" → "a", "kamma nt" → "a"
+    /// </summary>
+    static string GetPatternStem(string pattern)
+    {
+        // Map irregular patterns to their base pattern stem
+        // These are included in the "a" checkbox per user specification
+        return pattern switch
+        {
+            "rāja masc" => "a",
+            "brahma masc" => "a",
+            "kamma nt" => "a",
+            _ => pattern.Split(' ')[0]  // First part is the stem
+        };
+    }
+
+    static HashSet<string> ParsePatternSet(string csv)
+    {
+        if (string.IsNullOrWhiteSpace(csv))
+            return [];
+
+        return csv.Split(',')
+            .Select(s => s.Trim())
+            .Where(s => !string.IsNullOrEmpty(s))
+            .ToHashSet();
+    }
+
+    /// <summary>
+    /// Checks if a verb pattern is excluded based on excluded pattern set.
+    /// Maps irregular patterns to their base checkbox:
+    /// - ati: includes "ati pr", "hoti pr", "atthi pr"
+    /// - oti: includes "oti pr", "karoti pr", "brūti pr"
+    /// </summary>
+    static bool IsVerbPatternExcluded(string pattern, HashSet<string> excludedPatterns)
+    {
+        // Map pattern to checkbox key
+        var checkboxKey = pattern switch
+        {
+            "ati pr" or "hoti pr" or "atthi pr" => "ati",
+            "eti pr" => "eti",
+            "oti pr" or "karoti pr" or "brūti pr" => "oti",
+            "āti pr" => "āti",
+            _ => null  // Unknown patterns are not excluded
+        };
+
+        return checkboxKey != null && excludedPatterns.Contains(checkboxKey);
+    }
+
     List<long> GetEligibleConjugationFormIds()
     {
         // Load settings
         var tensesStr = _userData.GetSetting(SettingsKeys.ConjugationTenses, SettingsKeys.DefaultConjugationTenses);
         var personsStr = _userData.GetSetting(SettingsKeys.ConjugationPersons, SettingsKeys.DefaultConjugationPersons);
-        var numbersStr = _userData.GetSetting(SettingsKeys.ConjugationNumbers, SettingsKeys.DefaultNumbers);
+        var numberSetting = _userData.GetSetting(SettingsKeys.ConjugationNumberSetting, "Singular & Plural");
         var reflexiveSetting = _userData.GetSetting(SettingsKeys.ConjugationReflexive, SettingsKeys.DefaultReflexive);
         var minRank = _userData.GetSetting(SettingsKeys.ConjugationLemmaMin, SettingsKeys.DefaultLemmaMin);
         var maxRank = _userData.GetSetting(SettingsKeys.ConjugationLemmaMax, SettingsKeys.DefaultLemmaMax);
 
+        // Load excluded patterns
+        var excludedPatterns = ParsePatternSet(_userData.GetSetting(SettingsKeys.ConjugationExcludedPatterns, ""));
+
         var enabledTenses = ParseEnumList<Tense>(tensesStr);
         var enabledPersons = ParseEnumList<Person>(personsStr);
-        var enabledNumbers = ParseEnumList<Number>(numbersStr);
+
+        // Parse number setting (dropdown)
+        var enabledNumbers = new List<Number>();
+        if (numberSetting is "Singular & Plural" or "Singular only") enabledNumbers.Add(Number.Singular);
+        if (numberSetting is "Singular & Plural" or "Plural only") enabledNumbers.Add(Number.Plural);
+
         var includeActive = reflexiveSetting is "both" or "active";
         var includeReflexive = reflexiveSetting is "both" or "reflexive";
 
@@ -269,6 +361,11 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         foreach (var lemma in lemmas)
         {
             var verb = (Verb)lemma.Primary;
+
+            // Skip if pattern is excluded
+            if (IsVerbPatternExcluded(verb.Pattern, excludedPatterns))
+                continue;
+
             var hasReflexive = _trainingDb.VerbHasReflexive(lemma.LemmaId);
 
             foreach (var tense in enabledTenses)

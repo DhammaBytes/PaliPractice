@@ -1,3 +1,4 @@
+using PaliPractice.Services.Practice;
 using PaliPractice.Services.UserData;
 
 namespace PaliPractice.Presentation.Settings.ViewModels;
@@ -27,10 +28,16 @@ public partial class ConjugationSettingsViewModel : ObservableObject
         SecondPerson = persons.Contains(Person.Second);
         ThirdPerson = persons.Contains(Person.Third);
 
-        // Load number settings
-        var numbers = ParseEnumSet<Number>(_userData.GetSetting(SettingsKeys.ConjugationNumbers, SettingsKeys.DefaultNumbers));
-        Singular = numbers.Contains(Number.Singular);
-        Plural = numbers.Contains(Number.Plural);
+        // Load number setting (migrate old values)
+        var numberRaw = _userData.GetSetting(SettingsKeys.ConjugationNumberSetting, "Singular & Plural");
+        NumberSetting = MigrateNumberSetting(numberRaw);
+
+        // Load pattern settings (stored as excluded patterns)
+        var excluded = ParsePatternSet(_userData.GetSetting(SettingsKeys.ConjugationExcludedPatterns, ""));
+        PatternAti = !excluded.Contains("ati");
+        PatternEti = !excluded.Contains("eti");
+        PatternOti = !excluded.Contains("oti");
+        PatternAtiLong = !excluded.Contains("āti");
 
         // Load tense settings
         var tenses = ParseEnumSet<Tense>(_userData.GetSetting(SettingsKeys.ConjugationTenses, SettingsKeys.DefaultConjugationTenses));
@@ -58,11 +65,16 @@ public partial class ConjugationSettingsViewModel : ObservableObject
         if (ThirdPerson) persons.Add(Person.Third);
         _userData.SetSetting(SettingsKeys.ConjugationPersons, ToEnumString(persons));
 
-        // Save numbers
-        var numbers = new List<Number>();
-        if (Singular) numbers.Add(Number.Singular);
-        if (Plural) numbers.Add(Number.Plural);
-        _userData.SetSetting(SettingsKeys.ConjugationNumbers, ToEnumString(numbers));
+        // Save number setting
+        _userData.SetSetting(SettingsKeys.ConjugationNumberSetting, NumberSetting);
+
+        // Save pattern exclusions
+        var excluded = new List<string>();
+        if (!PatternAti) excluded.Add("ati");
+        if (!PatternEti) excluded.Add("eti");
+        if (!PatternOti) excluded.Add("oti");
+        if (!PatternAtiLong) excluded.Add("āti");
+        _userData.SetSetting(SettingsKeys.ConjugationExcludedPatterns, string.Join(",", excluded));
 
         // Save tenses
         var tenses = new List<Tense>();
@@ -95,46 +107,174 @@ public partial class ConjugationSettingsViewModel : ObservableObject
     static string ToEnumString<T>(IEnumerable<T> values) where T : Enum
         => string.Join(",", values.Select(v => Convert.ToInt32(v)));
 
+    static HashSet<string> ParsePatternSet(string csv)
+    {
+        if (string.IsNullOrWhiteSpace(csv))
+            return [];
+
+        return csv.Split(',')
+            .Select(s => s.Trim())
+            .Where(s => !string.IsNullOrEmpty(s))
+            .ToHashSet();
+    }
+
+    /// <summary>
+    /// Migrates old number setting values to new format.
+    /// </summary>
+    static string MigrateNumberSetting(string value) => value switch
+    {
+        "Both" => "Singular & Plural",
+        "Singular" => "Singular only",
+        "Plural" => "Plural only",
+        _ => value
+    };
+
     public ICommand GoBackCommand => new AsyncRelayCommand(() => _navigator.NavigateBackAsync(this));
 
-    // Person settings
+    public ICommand GoToLemmaRangeCommand => new AsyncRelayCommand(() =>
+        _navigator.NavigateViewModelAsync<LemmaRangeSettingsViewModel>(this,
+            data: new LemmaRangeNavigationData(PracticeType.Conjugation)));
+
+    #region Person settings with "at least one enabled" validation
+
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanDisableFirstPerson))]
+    [NotifyPropertyChangedFor(nameof(CanDisableSecondPerson))]
+    [NotifyPropertyChangedFor(nameof(CanDisableThirdPerson))]
     bool _firstPerson;
     partial void OnFirstPersonChanged(bool value) => SaveSettings();
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanDisableFirstPerson))]
+    [NotifyPropertyChangedFor(nameof(CanDisableSecondPerson))]
+    [NotifyPropertyChangedFor(nameof(CanDisableThirdPerson))]
     bool _secondPerson;
     partial void OnSecondPersonChanged(bool value) => SaveSettings();
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanDisableFirstPerson))]
+    [NotifyPropertyChangedFor(nameof(CanDisableSecondPerson))]
+    [NotifyPropertyChangedFor(nameof(CanDisableThirdPerson))]
     bool _thirdPerson;
     partial void OnThirdPersonChanged(bool value) => SaveSettings();
 
-    // Number settings
+    public bool CanDisableFirstPerson => SecondPerson || ThirdPerson;
+    public bool CanDisableSecondPerson => FirstPerson || ThirdPerson;
+    public bool CanDisableThirdPerson => FirstPerson || SecondPerson;
+
+    #endregion
+
+    #region Pattern settings with "at least one enabled" validation
+
+    /// <summary>
+    /// Total count of enabled patterns.
+    /// Used to ensure at least one pattern remains enabled.
+    /// </summary>
+    int EnabledPatternCount =>
+        (PatternAti ? 1 : 0) + (PatternEti ? 1 : 0) + (PatternOti ? 1 : 0) + (PatternAtiLong ? 1 : 0);
+
+    // Pattern: ati (includes hoti pr, atthi pr)
     [ObservableProperty]
-    bool _singular;
-    partial void OnSingularChanged(bool value) => SaveSettings();
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternAti))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternEti))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternOti))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternAtiLong))]
+    bool _patternAti = true;
+    partial void OnPatternAtiChanged(bool value) => SaveSettings();
+
+    // Pattern: eti
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternAti))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternEti))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternOti))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternAtiLong))]
+    bool _patternEti = true;
+    partial void OnPatternEtiChanged(bool value) => SaveSettings();
+
+    // Pattern: oti (includes karoti pr, brūti pr)
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternAti))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternEti))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternOti))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternAtiLong))]
+    bool _patternOti = true;
+    partial void OnPatternOtiChanged(bool value) => SaveSettings();
+
+    // Pattern: āti
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternAti))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternEti))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternOti))]
+    [NotifyPropertyChangedFor(nameof(CanDisablePatternAtiLong))]
+    bool _patternAtiLong = true;
+    partial void OnPatternAtiLongChanged(bool value) => SaveSettings();
+
+    // CanDisable properties
+    public bool CanDisablePatternAti => EnabledPatternCount > 1 || !PatternAti;
+    public bool CanDisablePatternEti => EnabledPatternCount > 1 || !PatternEti;
+    public bool CanDisablePatternOti => EnabledPatternCount > 1 || !PatternOti;
+    public bool CanDisablePatternAtiLong => EnabledPatternCount > 1 || !PatternAtiLong;
+
+    #endregion
+
+    #region Number settings (dropdown)
+
+    public static readonly string[] NumberOptions = ["Singular & Plural", "Singular only", "Plural only"];
 
     [ObservableProperty]
-    bool _plural;
-    partial void OnPluralChanged(bool value) => SaveSettings();
+    string _numberSetting = "Singular & Plural";
+    partial void OnNumberSettingChanged(string value) => SaveSettings();
 
-    // Tense settings (aligned with Tense enum: Present=1, Imperative=2, Optative=3, Future=4)
+    /// <summary>Whether to include singular forms in practice.</summary>
+    public bool IncludeSingular => NumberSetting is "Singular & Plural" or "Singular only";
+
+    /// <summary>Whether to include plural forms in practice.</summary>
+    public bool IncludePlural => NumberSetting is "Singular & Plural" or "Plural only";
+
+    #endregion
+
+    #region Tense settings with "at least one enabled" validation
+
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanDisablePresent))]
+    [NotifyPropertyChangedFor(nameof(CanDisableImperative))]
+    [NotifyPropertyChangedFor(nameof(CanDisableOptative))]
+    [NotifyPropertyChangedFor(nameof(CanDisableFuture))]
     bool _present;
     partial void OnPresentChanged(bool value) => SaveSettings();
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanDisablePresent))]
+    [NotifyPropertyChangedFor(nameof(CanDisableImperative))]
+    [NotifyPropertyChangedFor(nameof(CanDisableOptative))]
+    [NotifyPropertyChangedFor(nameof(CanDisableFuture))]
     bool _imperative;
     partial void OnImperativeChanged(bool value) => SaveSettings();
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanDisablePresent))]
+    [NotifyPropertyChangedFor(nameof(CanDisableImperative))]
+    [NotifyPropertyChangedFor(nameof(CanDisableOptative))]
+    [NotifyPropertyChangedFor(nameof(CanDisableFuture))]
     bool _optative;
     partial void OnOptativeChanged(bool value) => SaveSettings();
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanDisablePresent))]
+    [NotifyPropertyChangedFor(nameof(CanDisableImperative))]
+    [NotifyPropertyChangedFor(nameof(CanDisableOptative))]
+    [NotifyPropertyChangedFor(nameof(CanDisableFuture))]
     bool _future;
     partial void OnFutureChanged(bool value) => SaveSettings();
+
+    int EnabledTenseCount => (Present ? 1 : 0) + (Imperative ? 1 : 0) + (Optative ? 1 : 0) + (Future ? 1 : 0);
+
+    public bool CanDisablePresent => EnabledTenseCount > 1 || !Present;
+    public bool CanDisableImperative => EnabledTenseCount > 1 || !Imperative;
+    public bool CanDisableOptative => EnabledTenseCount > 1 || !Optative;
+    public bool CanDisableFuture => EnabledTenseCount > 1 || !Future;
+
+    #endregion
 
     // Reflexive setting: "both", "active", "reflexive"
     [ObservableProperty]
@@ -153,10 +293,23 @@ public partial class ConjugationSettingsViewModel : ObservableObject
 
     // Lemma range settings
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(RangeText))]
     int _lemmaMin;
     partial void OnLemmaMinChanged(int value) => SaveSettings();
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(RangeText))]
     int _lemmaMax;
     partial void OnLemmaMaxChanged(int value) => SaveSettings();
+
+    public string RangeText => $"{LemmaMin}–{LemmaMax}";
+
+    public void RefreshRange()
+    {
+        _isLoading = true;
+        LemmaMin = _userData.GetSetting(SettingsKeys.ConjugationLemmaMin, SettingsKeys.DefaultLemmaMin);
+        LemmaMax = _userData.GetSetting(SettingsKeys.ConjugationLemmaMax, SettingsKeys.DefaultLemmaMax);
+        _isLoading = false;
+        OnPropertyChanged(nameof(RangeText));
+    }
 }

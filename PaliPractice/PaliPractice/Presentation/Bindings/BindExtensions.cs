@@ -168,6 +168,34 @@ public static class BindExtensions
         toggle.SetBinding(ToggleSwitch.IsOnProperty, Bind.TwoWayPath(path));
         return toggle;
     }
+
+    /// <summary>
+    /// Binds Control.IsEnabled to a bool property path
+    /// </summary>
+    public static T IsEnabled<T, TDC>(this T control, Expression<Func<TDC, bool>> path)
+        where T : Control
+    {
+        control.SetBinding(Control.IsEnabledProperty, Bind.Path(path));
+        return control;
+    }
+
+    /// <summary>
+    /// Binds UIElement.Visibility to a bool property path (true = Visible, false = Collapsed)
+    /// </summary>
+    public static T Visibility<T, TDC>(this T element, Expression<Func<TDC, bool>> path)
+        where T : UIElement
+    {
+        return element.BoolToVisibility<T, TDC>(path);
+    }
+
+    /// <summary>
+    /// Binds CheckBox.IsChecked to a bool property path (TwoWay binding)
+    /// </summary>
+    public static CheckBox IsChecked<TDC>(this CheckBox checkBox, Expression<Func<TDC, bool>> path)
+    {
+        checkBox.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath(path));
+        return checkBox;
+    }
 }
 
 /// <summary>

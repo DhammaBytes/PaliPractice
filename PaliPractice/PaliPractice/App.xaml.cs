@@ -20,6 +20,9 @@ using DeclensionPracticePage = PaliPractice.Presentation.Practice.DeclensionPrac
 using DeclensionPracticeViewModel = PaliPractice.Presentation.Practice.ViewModels.DeclensionPracticeViewModel;
 using DeclensionSettingsPage = PaliPractice.Presentation.Settings.DeclensionSettingsPage;
 using DeclensionSettingsViewModel = PaliPractice.Presentation.Settings.ViewModels.DeclensionSettingsViewModel;
+using LemmaRangeSettingsPage = PaliPractice.Presentation.Settings.LemmaRangeSettingsPage;
+using LemmaRangeSettingsViewModel = PaliPractice.Presentation.Settings.ViewModels.LemmaRangeSettingsViewModel;
+using LemmaRangeNavigationData = PaliPractice.Presentation.Settings.ViewModels.LemmaRangeNavigationData;
 using HelpPage = PaliPractice.Presentation.Main.HelpPage;
 using HistoryPage = PaliPractice.Presentation.Practice.HistoryPage;
 using SettingsPage = PaliPractice.Presentation.Settings.SettingsPage;
@@ -116,6 +119,7 @@ public partial class App : Application
                     services.AddTransient<SettingsViewModel>();
                     services.AddTransient<ConjugationSettingsViewModel>();
                     services.AddTransient<DeclensionSettingsViewModel>();
+                    services.AddTransient<LemmaRangeSettingsViewModel>();
                     services.AddTransient<HistoryViewModel>();
                 })
                 .UseNavigation(RegisterRoutes)
@@ -157,6 +161,7 @@ public partial class App : Application
             new ViewMap<SettingsPage, SettingsViewModel>(),
             new ViewMap<ConjugationSettingsPage, ConjugationSettingsViewModel>(),
             new ViewMap<DeclensionSettingsPage, DeclensionSettingsViewModel>(),
+            new DataViewMap<LemmaRangeSettingsPage, LemmaRangeSettingsViewModel, LemmaRangeNavigationData>(),
             new DataViewMap<HistoryPage, HistoryViewModel, HistoryNavigationData>()
         );
 
@@ -172,6 +177,7 @@ public partial class App : Application
                     new("Settings", View: views.FindByViewModel<SettingsViewModel>()),
                     new("ConjugationSettings", View: views.FindByViewModel<ConjugationSettingsViewModel>()),
                     new("DeclensionSettings", View: views.FindByViewModel<DeclensionSettingsViewModel>()),
+                    new("LemmaRangeSettings", View: views.FindByViewModel<LemmaRangeSettingsViewModel>()),
                     new("History", View: views.FindByViewModel<HistoryViewModel>()),
                 ]
             )

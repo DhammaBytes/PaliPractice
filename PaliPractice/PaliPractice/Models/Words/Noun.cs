@@ -1,3 +1,4 @@
+using PaliPractice.Models.Inflection;
 using SQLite;
 
 namespace PaliPractice.Models.Words;
@@ -8,17 +9,23 @@ public class Noun : IWord
     [PrimaryKey]
     public int Id { get; set; }
 
-    [Column("lemma_id")]
-    public int LemmaId { get; set; }
-
     [Column("ebt_count")]
     public int EbtCount { get; set; }
 
+    [Column("lemma_id")]
+    public int LemmaId { get; set; }
+
+    /// <summary>
+    /// The lemma (dictionary form) of this noun, e.g., "dhamma".
+    /// </summary>
     [Column("lemma")]
     public string Lemma { get; set; } = string.Empty;
 
-    [Column("lemma_clean")]
-    public string LemmaClean { get; set; } = string.Empty;
+    /// <summary>
+    /// The variant identifier within the lemma group, e.g., "1" or "1.1" or empty.
+    /// </summary>
+    [Column("word")]
+    public string Variant { get; set; } = string.Empty;
 
     [Column("gender")]
     public Gender Gender { get; set; }
@@ -27,7 +34,14 @@ public class Noun : IWord
     public string? Stem { get; set; }
 
     [Column("pattern")]
-    public string? Pattern { get; set; }
+    public string Pattern { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Whether this noun uses an irregular declension pattern.
+    /// Irregular patterns return full forms instead of endings.
+    /// </summary>
+    [Ignore]
+    public bool Irregular => NounPatterns.IsIrregular(Pattern);
 
     [Column("derived_from")]
     public string DerivedFrom { get; set; } = string.Empty;

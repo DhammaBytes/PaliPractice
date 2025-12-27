@@ -41,17 +41,20 @@ public class NounPatternsTests
 
     /// <summary>
     /// Generate test cases for all noun patterns.
-    /// For each of the 12 patterns, get top 3 words and test all 16 grammatical combinations.
+    /// For each pattern, get top 3 words and test all 16 grammatical combinations.
     /// </summary>
     public static IEnumerable<NounTestCase> GetNounTestCases()
     {
-        // These are the 12 patterns we support (94% coverage)
+        // Regular patterns + key irregular patterns
         var patterns = new[]
         {
+            // Regular (covers ~94% of nouns)
             "a masc", "a nt", "ā fem",
-            "i masc", "i fem", "ī masc", "ī fem",
-            "u masc", "u nt", "u fem",
-            "as masc", "ar masc"
+            "i masc", "i fem", "i nt", "ī masc", "ī fem",
+            "u masc", "u nt", "u fem", "ū masc",
+            "as masc", "ar masc", "ant masc",
+            // Irregular
+            "rāja masc", "brahma masc", "kamma nt"
         };
 
         using var helper = new DpdTestHelper(DpdDbPath);

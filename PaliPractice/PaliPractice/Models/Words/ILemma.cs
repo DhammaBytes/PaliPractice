@@ -1,7 +1,7 @@
 namespace PaliPractice.Models.Words;
 
 /// <summary>
-/// Represents a practice unit grouping all IWord instances that share the same lemma_clean.
+/// Represents a practice unit grouping all IWord instances that share the same lemma.
 /// The practice session iterates by lemma, not individual word.
 /// </summary>
 public interface ILemma
@@ -12,21 +12,21 @@ public interface ILemma
     int LemmaId { get; }
 
     /// <summary>
-    /// The clean lemma form used as practice unit identifier.
+    /// The dictionary form (lemma) used as practice unit identifier, e.g., "dhamma".
     /// </summary>
-    string LemmaClean { get; }
+    string BaseForm { get; }
 
     /// <summary>
-    /// Words sharing this lemma_clean with the dominant inflection pattern.
+    /// Words sharing this lemma with the dominant inflection pattern.
     /// Multiple entries may exist for different meanings.
     /// </summary>
     IReadOnlyList<IWord> Words { get; }
 
     /// <summary>
     /// Words with minority inflection patterns, excluded from the main practice.
-    /// These have the same lemma_clean but different Pattern values.
+    /// These have the same lemma but different Pattern values.
     /// </summary>
-    IReadOnlyList<IWord> Variants { get; }
+    IReadOnlyList<IWord> ExcludedWords { get; }
 
     /// <summary>
     /// EbtCount from the first word, used for ranking/ordering.

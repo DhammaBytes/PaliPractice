@@ -1,12 +1,28 @@
 namespace PaliPractice.Models.Inflection;
 
 /// <summary>
-/// Provides noun declension endings for common patterns.
+/// Provides noun declension endings for regular patterns.
 /// Returns array of possible endings (some cases have multiple valid forms).
-/// Covers top 12 patterns = 94% of all nouns.
+/// Irregular patterns are in NounPatternsIrregular.cs and return full forms.
 /// </summary>
-public static class NounPatterns
+public static partial class NounPatterns
 {
+    /// <summary>
+    /// Set of irregular noun patterns that return full forms instead of endings.
+    /// </summary>
+    static readonly HashSet<string> IrregularPatterns =
+    [
+        "rāja masc",
+        "brahma masc",
+        "kamma nt"
+    ];
+
+    /// <summary>
+    /// Check if a pattern is irregular. Irregular patterns return full forms
+    /// instead of endings that should be appended to the stem.
+    /// </summary>
+    public static bool IsIrregular(string pattern) => IrregularPatterns.Contains(pattern);
+
     /// <summary>
     /// Get declension endings for a noun pattern.
     /// </summary>
@@ -18,22 +34,33 @@ public static class NounPatterns
     {
         return pattern switch
         {
+            // Regular patterns (covers ~94% of nouns)
             "a masc" => GetA_Masc(nounCase, number),
             "a nt" => GetA_Nt(nounCase, number),
             "ā fem" => GetA_Fem(nounCase, number),
             "i masc" => GetI_Masc(nounCase, number),
             "i fem" => GetI_Fem(nounCase, number),
+            "i nt" => GetI_Nt(nounCase, number),
             "ī masc" => GetI_Long_Masc(nounCase, number),
             "ī fem" => GetI_Long_Fem(nounCase, number),
             "u masc" => GetU_Masc(nounCase, number),
             "u nt" => GetU_Nt(nounCase, number),
             "u fem" => GetU_Fem(nounCase, number),
+            "ū masc" => GetU_Long_Masc(nounCase, number),
             "as masc" => GetAs_Masc(nounCase, number),
             "ar masc" => GetAr_Masc(nounCase, number),
-            _ => Array.Empty<string>()
+            "ant masc" => GetAnt_Masc(nounCase, number),
+            // Irregular patterns (defined in NounPatternsIrregular.cs)
+            "rāja masc" => GetRaja_Masc(nounCase, number),
+            "brahma masc" => GetBrahma_Masc(nounCase, number),
+            "kamma nt" => GetKamma_Nt(nounCase, number),
+            _ => []
         };
     }
 
+    #region Regular patterns
+
+    /// <summary>a masc - like dhamma</summary>
     static string[] GetA_Masc(Case nounCase, Number number)
     {
         return (nounCase, number) switch
@@ -54,7 +81,7 @@ public static class NounPatterns
             (Case.Locative, Number.Plural) => ["esu"],
             (Case.Vocative, Number.Singular) => ["a", "ā"],
             (Case.Vocative, Number.Plural) => ["ā"],
-            _ => Array.Empty<string>()
+            _ => []
         };
     }
 
@@ -78,7 +105,7 @@ public static class NounPatterns
             (Case.Locative, Number.Plural) => ["esu"],
             (Case.Vocative, Number.Singular) => ["a", "aṃ", "ā"],
             (Case.Vocative, Number.Plural) => ["ā", "āni"],
-            _ => Array.Empty<string>()
+            _ => []
         };
     }
 
@@ -102,7 +129,7 @@ public static class NounPatterns
             (Case.Locative, Number.Plural) => ["āsu"],
             (Case.Vocative, Number.Singular) => ["a", "e"],
             (Case.Vocative, Number.Plural) => ["ā", "āyo"],
-            _ => Array.Empty<string>()
+            _ => []
         };
     }
 
@@ -124,9 +151,9 @@ public static class NounPatterns
             (Case.Genitive, Number.Plural) => ["inaṃ", "īnaṃ"],
             (Case.Locative, Number.Singular) => ["imhi", "ismiṃ"],
             (Case.Locative, Number.Plural) => ["isu", "īsu"],
-            (Case.Vocative, Number.Singular) => ["i"],
+            (Case.Vocative, Number.Singular) => ["i", "e"],
             (Case.Vocative, Number.Plural) => ["ayo", "ī"],
-            _ => Array.Empty<string>()
+            _ => []
         };
     }
 
@@ -150,7 +177,7 @@ public static class NounPatterns
             (Case.Locative, Number.Plural) => ["isu", "īsu"],
             (Case.Vocative, Number.Singular) => ["i"],
             (Case.Vocative, Number.Plural) => ["iyo", "ī"],
-            _ => Array.Empty<string>()
+            _ => []
         };
     }
 
@@ -174,7 +201,7 @@ public static class NounPatterns
             (Case.Locative, Number.Plural) => ["isu", "īsu"],
             (Case.Vocative, Number.Singular) => ["i", "ī"],
             (Case.Vocative, Number.Plural) => ["ino", "ī"],
-            _ => Array.Empty<string>()
+            _ => []
         };
     }
 
@@ -198,7 +225,7 @@ public static class NounPatterns
             (Case.Locative, Number.Plural) => ["isu", "īsu"],
             (Case.Vocative, Number.Singular) => ["i", "ī"],
             (Case.Vocative, Number.Plural) => ["iyo", "ī"],
-            _ => Array.Empty<string>()
+            _ => []
         };
     }
 
@@ -222,7 +249,7 @@ public static class NounPatterns
             (Case.Locative, Number.Plural) => ["usu", "ūsu"],
             (Case.Vocative, Number.Singular) => ["u"],
             (Case.Vocative, Number.Plural) => ["ave", "avo", "ū"],
-            _ => Array.Empty<string>()
+            _ => []
         };
     }
 
@@ -246,7 +273,7 @@ public static class NounPatterns
             (Case.Locative, Number.Plural) => ["usu", "ūsu"],
             (Case.Vocative, Number.Singular) => ["u"],
             (Case.Vocative, Number.Plural) => ["ū", "ūni"],
-            _ => Array.Empty<string>()
+            _ => []
         };
     }
 
@@ -270,7 +297,7 @@ public static class NounPatterns
             (Case.Locative, Number.Plural) => ["usu", "ūsu"],
             (Case.Vocative, Number.Singular) => ["u"],
             (Case.Vocative, Number.Plural) => ["uyo", "ū"],
-            _ => Array.Empty<string>()
+            _ => []
         };
     }
 
@@ -294,10 +321,11 @@ public static class NounPatterns
             (Case.Locative, Number.Plural) => ["esu"],
             (Case.Vocative, Number.Singular) => ["a", "ā"],
             (Case.Vocative, Number.Plural) => ["ā"],
-            _ => Array.Empty<string>()
+            _ => []
         };
     }
 
+    /// <summary>ar masc - like satthar</summary>
     static string[] GetAr_Masc(Case nounCase, Number number)
     {
         return (nounCase, number) switch
@@ -309,16 +337,93 @@ public static class NounPatterns
             (Case.Instrumental, Number.Singular) => ["ārā", "unā"],
             (Case.Instrumental, Number.Plural) => ["ārehi", "ubhi"],
             (Case.Dative, Number.Singular) => ["u", "uno", "ussa"],
-            (Case.Dative, Number.Plural) => ["ānaṃ", "ārānaṃ"],
+            (Case.Dative, Number.Plural) => ["ānaṃ", "ārānaṃ", "ūnaṃ"],
             (Case.Ablative, Number.Singular) => ["ārā"],
             (Case.Ablative, Number.Plural) => ["ārehi", "ubhi"],
             (Case.Genitive, Number.Singular) => ["u", "uno", "ussa"],
-            (Case.Genitive, Number.Plural) => ["ānaṃ", "ārānaṃ"],
+            (Case.Genitive, Number.Plural) => ["ānaṃ", "ārānaṃ", "ūnaṃ"],
             (Case.Locative, Number.Singular) => ["ari"],
             (Case.Locative, Number.Plural) => ["āresu"],
             (Case.Vocative, Number.Singular) => ["a", "ā", "e"],
             (Case.Vocative, Number.Plural) => ["āro"],
-            _ => Array.Empty<string>()
+            _ => []
         };
     }
+
+    /// <summary>i nt - like sappi</summary>
+    static string[] GetI_Nt(Case nounCase, Number number)
+    {
+        return (nounCase, number) switch
+        {
+            (Case.Nominative, Number.Singular) => ["i", "iṃ"],
+            (Case.Nominative, Number.Plural) => ["ī", "īni"],
+            (Case.Accusative, Number.Singular) => ["iṃ"],
+            (Case.Accusative, Number.Plural) => ["ī", "īni"],
+            (Case.Instrumental, Number.Singular) => ["inā"],
+            (Case.Instrumental, Number.Plural) => ["ibhi", "īhi"],
+            (Case.Dative, Number.Singular) => ["ino", "issa"],
+            (Case.Dative, Number.Plural) => ["īnaṃ"],
+            (Case.Ablative, Number.Singular) => ["ito", "inā", "imhā", "ismā"],
+            (Case.Ablative, Number.Plural) => ["ibhi", "īhi"],
+            (Case.Genitive, Number.Singular) => ["ino", "issa"],
+            (Case.Genitive, Number.Plural) => ["īnaṃ"],
+            (Case.Locative, Number.Singular) => ["ini", "imhi", "ismiṃ"],
+            (Case.Locative, Number.Plural) => ["isu", "īsu"],
+            (Case.Vocative, Number.Singular) => ["i"],
+            (Case.Vocative, Number.Plural) => ["ī", "īni"],
+            _ => []
+        };
+    }
+
+    /// <summary>ū masc - like lokavidū</summary>
+    static string[] GetU_Long_Masc(Case nounCase, Number number)
+    {
+        return (nounCase, number) switch
+        {
+            (Case.Nominative, Number.Singular) => ["ū"],
+            (Case.Nominative, Number.Plural) => ["uno", "ū", "ūno"],
+            (Case.Accusative, Number.Singular) => ["unaṃ", "uṃ"],
+            (Case.Accusative, Number.Plural) => ["uno", "ū", "ūno"],
+            (Case.Instrumental, Number.Singular) => ["unā"],
+            (Case.Instrumental, Number.Plural) => ["ūhi"],
+            (Case.Dative, Number.Singular) => ["uno"],
+            (Case.Dative, Number.Plural) => ["ūna", "ūnaṃ"],
+            (Case.Ablative, Number.Singular) => ["unā", "ūto"],
+            (Case.Ablative, Number.Plural) => ["ūhi"],
+            (Case.Genitive, Number.Singular) => ["uno", "ussa"],
+            (Case.Genitive, Number.Plural) => ["unnaṃ", "ūna", "ūnaṃ"],
+            (Case.Locative, Number.Singular) => ["umhi", "usmiṃ"],
+            (Case.Locative, Number.Plural) => ["ūsu"],
+            (Case.Vocative, Number.Singular) => ["ū"],
+            (Case.Vocative, Number.Plural) => ["uno", "ū"],
+            _ => []
+        };
+    }
+
+    /// <summary>ant masc - like bhagavant</summary>
+    static string[] GetAnt_Masc(Case nounCase, Number number)
+    {
+        return (nounCase, number) switch
+        {
+            (Case.Nominative, Number.Singular) => ["anto", "ā"],
+            (Case.Nominative, Number.Plural) => ["antā", "anto", "ā"],
+            (Case.Accusative, Number.Singular) => ["antaṃ"],
+            (Case.Accusative, Number.Plural) => ["ante"],
+            (Case.Instrumental, Number.Singular) => ["atā", "antena"],
+            (Case.Instrumental, Number.Plural) => ["antehi"],
+            (Case.Dative, Number.Singular) => ["ato", "antassa"],
+            (Case.Dative, Number.Plural) => ["ataṃ", "antānaṃ"],
+            (Case.Ablative, Number.Singular) => ["atā", "ato", "antamhā", "antasmā", "antā"],
+            (Case.Ablative, Number.Plural) => ["antehi"],
+            (Case.Genitive, Number.Singular) => ["ato", "antassa", "assa"],
+            (Case.Genitive, Number.Plural) => ["ataṃ", "antānaṃ"],
+            (Case.Locative, Number.Singular) => ["ati", "antamhi", "antasmiṃ", "ante"],
+            (Case.Locative, Number.Plural) => ["antesu"],
+            (Case.Vocative, Number.Singular) => ["a", "aṃ", "ā"],
+            (Case.Vocative, Number.Plural) => ["antā", "anto"],
+            _ => []
+        };
+    }
+
+    #endregion
 }

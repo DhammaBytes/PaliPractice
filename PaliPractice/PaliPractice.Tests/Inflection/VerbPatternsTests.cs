@@ -43,15 +43,17 @@ public class VerbPatternsTests
 
     /// <summary>
     /// Generate test cases for all verb patterns.
-    /// For each of the 3 regular patterns, get top 3 words and test all relevant grammatical combinations.
+    /// For each pattern, get top 3 words and test all relevant grammatical combinations.
     /// </summary>
     public static IEnumerable<VerbTestCase> GetVerbTestCases()
     {
-        // These are the 3 regular present tense patterns we support
-        // Aorist and irregular patterns are excluded due to high variability
+        // Regular patterns + key irregular patterns
         var patterns = new[]
         {
-            "ati pr", "eti pr", "oti pr"
+            // Regular
+            "ati pr", "eti pr", "oti pr", "āti pr",
+            // Irregular
+            "hoti pr", "atthi pr", "karoti pr", "brūti pr"
         };
 
         using var helper = new DpdTestHelper(DpdDbPath);

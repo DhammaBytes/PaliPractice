@@ -79,7 +79,9 @@ public class InflectionService : IInflectionService
         for (int i = 0; i < endings.Length; i++)
         {
             var ending = endings[i];
-            var form = noun.Stem + ending;
+            // For irregular patterns, endings ARE the full forms
+            // For regular patterns, concatenate stem + ending
+            var form = noun.Irregular ? ending : noun.Stem + ending;
 
             // Convert array index to 1-based EndingId
             var endingId = EndingIdFromIndex(i);
@@ -161,7 +163,9 @@ public class InflectionService : IInflectionService
         for (int i = 0; i < endings.Length; i++)
         {
             var ending = endings[i];
-            var form = verb.Stem + ending;
+            // For irregular patterns, endings ARE the full forms
+            // For regular patterns, concatenate stem + ending
+            var form = verb.Irregular ? ending : verb.Stem + ending;
 
             // Convert array index to 1-based EndingId
             var endingId = EndingIdFromIndex(i);

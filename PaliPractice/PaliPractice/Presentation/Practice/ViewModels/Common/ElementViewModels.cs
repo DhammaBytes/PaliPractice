@@ -102,7 +102,7 @@ public partial class WordCardViewModel : ObservableObject
 
     public void DisplayCurrentCard(ILemma lemma)
     {
-        CurrentWord = lemma.LemmaClean;
+        CurrentWord = lemma.BaseForm;
         RankText = lemma.EbtCount switch
         {
             > 1000 => "Top-100",

@@ -39,13 +39,15 @@ public class DpdTestHelper : IDisposable
         var words = new List<DpdWord>();
 
         // Use GROUP BY lemma_2 to get distinct entries, taking the one with highest ebt_count
-        var sql = @"
-            SELECT id, lemma_1, lemma_2, pattern, pos, ebt_count, inflections_html
-            FROM dpd_headwords
-            WHERE pattern = @pattern
-            GROUP BY lemma_2
-            ORDER BY MAX(ebt_count) DESC
-            LIMIT @limit";
+        const string sql = """
+
+                                       SELECT id, lemma_1, lemma_2, pattern, pos, ebt_count, inflections_html
+                                       FROM dpd_headwords
+                                       WHERE pattern = @pattern
+                                       GROUP BY lemma_2
+                                       ORDER BY MAX(ebt_count) DESC
+                                       LIMIT @limit
+                           """;
 
         using var command = _connection.CreateCommand();
         command.CommandText = sql;
@@ -77,12 +79,14 @@ public class DpdTestHelper : IDisposable
     {
         var patterns = new List<string>();
 
-        var sql = @"
-            SELECT DISTINCT pattern
-            FROM dpd_headwords
-            WHERE pos = 'noun'
-            AND pattern != ''
-            ORDER BY pattern";
+        const string sql = """
+
+                                       SELECT DISTINCT pattern
+                                       FROM dpd_headwords
+                                       WHERE pos = 'noun'
+                                       AND pattern != ''
+                                       ORDER BY pattern
+                           """;
 
         using var command = _connection.CreateCommand();
         command.CommandText = sql;
@@ -103,12 +107,14 @@ public class DpdTestHelper : IDisposable
     {
         var patterns = new List<string>();
 
-        var sql = @"
-            SELECT DISTINCT pattern
-            FROM dpd_headwords
-            WHERE pos = 'verb'
-            AND pattern != ''
-            ORDER BY pattern";
+        const string sql = """
+
+                                       SELECT DISTINCT pattern
+                                       FROM dpd_headwords
+                                       WHERE pos = 'verb'
+                                       AND pattern != ''
+                                       ORDER BY pattern
+                           """;
 
         using var command = _connection.CreateCommand();
         command.CommandText = sql;

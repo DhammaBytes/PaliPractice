@@ -421,6 +421,24 @@ class NounVerbExtractor:
 
         return all_words
         
+    def extract_word_variant(self, lemma_1: str, lemma_clean: str) -> str:
+        """Extract the variant identifier from DPD lemma_1.
+
+        Examples:
+            lemma_1="dhamma", lemma_clean="dhamma" -> ""
+            lemma_1="dhamma 1", lemma_clean="dhamma" -> "1"
+            lemma_1="aññāti 1.1", lemma_clean="aññāti" -> "1.1"
+        """
+        if lemma_1 == lemma_clean:
+            return ""
+        # The variant is everything after the lemma_clean + space
+        prefix = lemma_clean + " "
+        if lemma_1.startswith(prefix):
+            return lemma_1[len(prefix):]
+        # Fallback: try splitting on last space
+        parts = lemma_1.rsplit(" ", 1)
+        return parts[1] if len(parts) > 1 else ""
+
     def create_schema(self):
         """Create a normalized database schema for nouns and verbs."""
         # Delete old database if it exists
@@ -431,21 +449,21 @@ class NounVerbExtractor:
         conn = sqlite3.connect(self.output_db_path)
         cursor = conn.cursor()
 
-        # Nouns table
+        # Nouns table - column order: id, ebt_count, lemma_id, lemma, word, ...
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS nouns (
                 id INTEGER PRIMARY KEY,
-                lemma_id INTEGER NOT NULL,
                 ebt_count INTEGER DEFAULT 0,
-                lemma TEXT NOT NULL UNIQUE,
-                lemma_clean TEXT NOT NULL,
+                lemma_id INTEGER NOT NULL,
+                lemma TEXT NOT NULL,
+                word TEXT NOT NULL DEFAULT '',
                 gender INTEGER NOT NULL DEFAULT 0,
+                stem TEXT,
                 pattern TEXT,
                 derived_from TEXT DEFAULT '',
                 family_root TEXT DEFAULT '',
-                stem TEXT,
-                plus_case TEXT DEFAULT '',
                 meaning TEXT,
+                plus_case TEXT DEFAULT '',
                 source_1 TEXT DEFAULT '',
                 sutta_1 TEXT DEFAULT '',
                 example_1 TEXT DEFAULT '',
@@ -455,23 +473,23 @@ class NounVerbExtractor:
             )
         """)
 
-        # Verbs table
+        # Verbs table - column order: id, ebt_count, lemma_id, lemma, word, ...
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS verbs (
                 id INTEGER PRIMARY KEY,
-                lemma_id INTEGER NOT NULL,
                 ebt_count INTEGER DEFAULT 0,
-                lemma TEXT NOT NULL UNIQUE,
-                lemma_clean TEXT NOT NULL,
+                lemma_id INTEGER NOT NULL,
+                lemma TEXT NOT NULL,
+                word TEXT NOT NULL DEFAULT '',
                 has_reflexive INTEGER NOT NULL DEFAULT 0,
                 type TEXT DEFAULT '',
                 trans TEXT DEFAULT '',
+                stem TEXT,
                 pattern TEXT,
                 derived_from TEXT DEFAULT '',
                 family_root TEXT DEFAULT '',
-                stem TEXT,
-                plus_case TEXT DEFAULT '',
                 meaning TEXT,
+                plus_case TEXT DEFAULT '',
                 source_1 TEXT DEFAULT '',
                 sutta_1 TEXT DEFAULT '',
                 example_1 TEXT DEFAULT '',
@@ -888,15 +906,16 @@ class NounVerbExtractor:
             # Insert noun
             gender = self.pos_to_gender(word.pos)
             lemma_id = get_noun_lemma_id(registry, word.lemma_clean)
+            word_variant = self.extract_word_variant(word.lemma_1, word.lemma_clean)
             cursor.execute("""
                 INSERT INTO nouns (
-                    id, lemma_id, ebt_count, lemma, lemma_clean, gender, pattern, derived_from, family_root,
-                    stem, plus_case, meaning, source_1, sutta_1, example_1, source_2, sutta_2, example_2
+                    id, ebt_count, lemma_id, lemma, word, gender, stem, pattern, derived_from, family_root,
+                    meaning, plus_case, source_1, sutta_1, example_1, source_2, sutta_2, example_2
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
-                word.id, lemma_id, word.ebt_count or 0, word.lemma_1, word.lemma_clean, gender,
-                word.pattern, word.derived_from or '', word.family_root or '',
-                clean_stem(word.stem), word.plus_case or '', word.meaning_1,
+                word.id, word.ebt_count or 0, lemma_id, word.lemma_clean, word_variant, gender,
+                clean_stem(word.stem), word.pattern, word.derived_from or '', word.family_root or '',
+                word.meaning_1, word.plus_case or '',
                 word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
                 word.source_2 or '', word.sutta_2 or '', word.example_2 or ''
             ))
@@ -964,15 +983,17 @@ class NounVerbExtractor:
             has_reflexive = 1 if any(f.get('reflexive', 0) == GrammarEnums.REFLEXIVE_YES for f in forms) else 0
 
             # Insert verb
+            word_variant = self.extract_word_variant(word.lemma_1, word.lemma_clean)
             cursor.execute("""
                 INSERT INTO verbs (
-                    id, lemma_id, ebt_count, lemma, lemma_clean, has_reflexive, type, trans, pattern, derived_from, family_root,
-                    stem, plus_case, meaning, source_1, sutta_1, example_1, source_2, sutta_2, example_2
+                    id, ebt_count, lemma_id, lemma, word, has_reflexive, type, trans, stem, pattern,
+                    derived_from, family_root, meaning, plus_case,
+                    source_1, sutta_1, example_1, source_2, sutta_2, example_2
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
-                word.id, lemma_id, word.ebt_count or 0, word.lemma_1, word.lemma_clean, has_reflexive,
-                word.verb or '', word.trans or '', word.pattern, word.derived_from or '', word.family_root or '',
-                clean_stem(word.stem), word.plus_case or '', word.meaning_1,
+                word.id, word.ebt_count or 0, lemma_id, word.lemma_clean, word_variant, has_reflexive,
+                word.verb or '', word.trans or '', clean_stem(word.stem), word.pattern,
+                word.derived_from or '', word.family_root or '', word.meaning_1, word.plus_case or '',
                 word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
                 word.source_2 or '', word.sutta_2 or '', word.example_2 or ''
             ))

@@ -1,12 +1,29 @@
 namespace PaliPractice.Models.Inflection;
 
 /// <summary>
-/// Provides verb conjugation endings for common patterns.
-/// Covers 3 regular present tense patterns: ati pr, eti pr, oti pr.
-/// Aorist and irregular patterns are excluded due to high variability.
+/// Provides verb conjugation endings for regular present tense patterns.
+/// Covers 4 regular patterns: ati pr, eti pr, oti pr, āti pr.
+/// Irregular patterns are in VerbPatternsIrregular.cs and return full forms.
 /// </summary>
-public static class VerbPatterns
+public static partial class VerbPatterns
 {
+    /// <summary>
+    /// Set of irregular verb patterns that return full forms instead of endings.
+    /// </summary>
+    static readonly HashSet<string> IrregularPatterns =
+    [
+        "hoti pr",
+        "atthi pr",
+        "karoti pr",
+        "brūti pr"
+    ];
+
+    /// <summary>
+    /// Check if a pattern is irregular. Irregular patterns return full forms
+    /// instead of endings that should be appended to the stem.
+    /// </summary>
+    public static bool IsIrregular(string pattern) => IrregularPatterns.Contains(pattern);
+
     /// <summary>
     /// Get conjugation endings for a verb pattern.
     /// </summary>
@@ -25,13 +42,23 @@ public static class VerbPatterns
     {
         return pattern switch
         {
+            // Regular patterns
             "ati pr" => GetAti_Pr(person, number, tense, reflexive),
             "eti pr" => GetEti_Pr(person, number, tense, reflexive),
             "oti pr" => GetOti_Pr(person, number, tense, reflexive),
+            "āti pr" => GetAti_Long_Pr(person, number, tense, reflexive),
+            // Irregular patterns (defined in VerbPatternsIrregular.cs)
+            "hoti pr" => GetHoti_Pr(person, number, tense, reflexive),
+            "atthi pr" => GetAtthi_Pr(person, number, tense, reflexive),
+            "karoti pr" => GetKaroti_Pr(person, number, tense, reflexive),
+            "brūti pr" => GetBruti_Pr(person, number, tense, reflexive),
             _ => []
         };
     }
 
+    #region Regular patterns
+
+    /// <summary>ati pr - like bhavati</summary>
     static string[] GetAti_Pr(Person person, Number number, Tense tense, bool reflexive)
     {
         // Present tense, active
@@ -157,6 +184,7 @@ public static class VerbPatterns
         return [];
     }
 
+    /// <summary>eti pr - like vadeti</summary>
     static string[] GetEti_Pr(Person person, Number number, Tense tense, bool reflexive)
     {
         // Present tense, active (no reflexive forms for present indicative)
@@ -267,6 +295,7 @@ public static class VerbPatterns
         return [];
     }
 
+    /// <summary>oti pr - like byākaroti</summary>
     static string[] GetOti_Pr(Person person, Number number, Tense tense, bool reflexive)
     {
         // Present tense, active
@@ -361,4 +390,132 @@ public static class VerbPatterns
 
         return [];
     }
+
+    /// <summary>āti pr - like pajānāti</summary>
+    static string[] GetAti_Long_Pr(Person person, Number number, Tense tense, bool reflexive)
+    {
+        // Present tense, active
+        if (tense == Tense.Present && !reflexive)
+        {
+            return (person, number) switch
+            {
+                (Person.Third, Number.Singular) => ["āti"],
+                (Person.Third, Number.Plural) => ["anti"],
+                (Person.Second, Number.Singular) => ["asi", "āsi"],
+                (Person.Second, Number.Plural) => ["ātha"],
+                (Person.First, Number.Singular) => ["āmi"],
+                (Person.First, Number.Plural) => ["āma"],
+                _ => []
+            };
+        }
+
+        // Present tense, reflexive
+        if (tense == Tense.Present && reflexive)
+        {
+            return (person, number) switch
+            {
+                (Person.Third, Number.Singular) => ["āte"],
+                (Person.Third, Number.Plural) => ["ante", "are"],
+                (Person.Second, Number.Singular) => ["āse"],
+                (Person.Second, Number.Plural) => ["avhe"],
+                (Person.First, Number.Singular) => ["e"],
+                (Person.First, Number.Plural) => ["amhase", "āmhe"],
+                _ => []
+            };
+        }
+
+        // Imperative, active
+        if (tense == Tense.Imperative && !reflexive)
+        {
+            return (person, number) switch
+            {
+                (Person.Third, Number.Singular) => ["a", "atu", "ātu"],
+                (Person.Third, Number.Plural) => ["antu"],
+                (Person.Second, Number.Singular) => ["ahi", "āhi"],
+                (Person.Second, Number.Plural) => ["atha", "ātha"],
+                (Person.First, Number.Singular) => ["āmi"],
+                (Person.First, Number.Plural) => ["āma"],
+                _ => []
+            };
+        }
+
+        // Imperative, reflexive
+        if (tense == Tense.Imperative && reflexive)
+        {
+            return (person, number) switch
+            {
+                (Person.Third, Number.Singular) => ["ataṃ"],
+                (Person.Third, Number.Plural) => ["antaṃ"],
+                (Person.Second, Number.Singular) => ["assu"],
+                (Person.Second, Number.Plural) => ["avho"],
+                (Person.First, Number.Singular) => ["e"],
+                (Person.First, Number.Plural) => ["āmase"],
+                _ => []
+            };
+        }
+
+        // Optative, active
+        if (tense == Tense.Optative && !reflexive)
+        {
+            return (person, number) switch
+            {
+                (Person.Third, Number.Singular) => ["e", "eyya"],
+                (Person.Third, Number.Plural) => ["eyyuṃ"],
+                (Person.Second, Number.Singular) => ["e", "eyyāsi"],
+                (Person.Second, Number.Plural) => ["etha", "eyyātha"],
+                (Person.First, Number.Singular) => ["e", "eyyāmi"],
+                (Person.First, Number.Plural) => ["ema", "emu", "eyyāma"],
+                _ => []
+            };
+        }
+
+        // Optative, reflexive
+        if (tense == Tense.Optative && reflexive)
+        {
+            return (person, number) switch
+            {
+                (Person.Third, Number.Singular) => ["etha"],
+                (Person.Third, Number.Plural) => ["eraṃ"],
+                (Person.Second, Number.Singular) => ["etho"],
+                (Person.Second, Number.Plural) => ["eyyavho", "eyyāvho"],
+                (Person.First, Number.Singular) => ["eyyaṃ"],
+                (Person.First, Number.Plural) => ["eyyāmhe"],
+                _ => []
+            };
+        }
+
+        // Future, active
+        if (tense == Tense.Future && !reflexive)
+        {
+            return (person, number) switch
+            {
+                (Person.Third, Number.Singular) => ["issati"],
+                (Person.Third, Number.Plural) => ["issanti"],
+                (Person.Second, Number.Singular) => ["issasi"],
+                (Person.Second, Number.Plural) => ["issatha"],
+                (Person.First, Number.Singular) => ["issāmi"],
+                (Person.First, Number.Plural) => ["issāma"],
+                _ => []
+            };
+        }
+
+        // Future, reflexive
+        if (tense == Tense.Future && reflexive)
+        {
+            return (person, number) switch
+            {
+                (Person.Third, Number.Singular) => ["issate"],
+                (Person.Third, Number.Plural) => ["issante", "issare"],
+                (Person.Second, Number.Singular) => ["issase"],
+                (Person.Second, Number.Plural) => ["issavhe"],
+                (Person.First, Number.Singular) => ["issaṃ"],
+                (Person.First, Number.Plural) => ["issāmhe"],
+                _ => []
+            };
+        }
+
+        return [];
+    }
+
+    #endregion
 }

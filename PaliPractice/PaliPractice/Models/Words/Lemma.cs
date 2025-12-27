@@ -1,7 +1,7 @@
 namespace PaliPractice.Models.Words;
 
 /// <summary>
-/// Implementation of ILemma that groups words by lemma_clean.
+/// Implementation of ILemma that groups words by lemma.
 /// Filters out words with minority inflection patterns into Variants.
 /// </summary>
 public class Lemma : ILemma
@@ -10,16 +10,16 @@ public class Lemma : ILemma
     readonly List<IWord> _variants;
 
     public int LemmaId { get; }
-    public string LemmaClean { get; }
+    public string BaseForm { get; }
     public IReadOnlyList<IWord> Words => _words;
-    public IReadOnlyList<IWord> Variants => _variants;
+    public IReadOnlyList<IWord> ExcludedWords => _variants;
     public int EbtCount => _words.First().EbtCount;
 
-    public Lemma(string lemmaClean, IEnumerable<IWord> words)
+    public Lemma(string baseForm, IEnumerable<IWord> words)
     {
-        LemmaClean = lemmaClean;
+        BaseForm = baseForm;
 
-        // All words with the same lemma_clean share the same LemmaId
+        // All words with the same lemma share the same LemmaId
         LemmaId = words.First().LemmaId;
 
         var allWords = words.ToList();

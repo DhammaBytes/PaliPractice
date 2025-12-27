@@ -6,6 +6,7 @@ using PaliPractice.Presentation.Main.ViewModels;
 using PaliPractice.Presentation.Practice;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Presentation.Practice.ViewModels;
+using PaliPractice.Presentation.Practice.ViewModels.Common;
 using PaliPractice.Presentation.Settings;
 using PaliPractice.Presentation.Settings.ViewModels;
 using AboutPage = PaliPractice.Presentation.Main.AboutPage;
@@ -22,7 +23,6 @@ using HistoryPage = PaliPractice.Presentation.Practice.HistoryPage;
 using SettingsPage = PaliPractice.Presentation.Settings.SettingsPage;
 using Shell = PaliPractice.Presentation.Main.Shell;
 using StartPage = PaliPractice.Presentation.Main.StartPage;
-using WordCardViewModel = PaliPractice.Presentation.Practice.ViewModels.Common.WordCardViewModel;
 
 namespace PaliPractice;
 
@@ -96,7 +96,7 @@ public partial class App : Application
                     services.AddSingleton<IDatabaseService, DatabaseService>();
                     services.AddSingleton<IInflectionService, InflectionService>();
 
-                    services.AddTransient<WordCardViewModel>();
+                    services.AddTransient<FlashCardViewModel>();
 
                     // Word providers
                     services.AddKeyedTransient<ILemmaProvider, NounLemmaProvider>("noun");

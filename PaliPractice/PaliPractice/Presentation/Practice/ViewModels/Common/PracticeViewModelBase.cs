@@ -15,10 +15,10 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     [ObservableProperty] bool _canRateCard;
 
-    public Common.WordCardViewModel WordCard { get; }
-    public Common.FlashcardStateViewModel Flashcard { get; }
-    public Common.DailyGoalViewModel DailyGoal { get; }
-    public Common.ExampleCarouselViewModel ExampleCarousel { get; }
+    public FlashCardViewModel FlashCard { get; }
+    public FlashcardStateViewModel Flashcard { get; }
+    public DailyGoalViewModel DailyGoal { get; }
+    public ExampleCarouselViewModel ExampleCarousel { get; }
     
     readonly ILemmaProvider _lemmas;
     readonly INavigator _navigator;
@@ -53,17 +53,17 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     protected PracticeViewModelBase(
         ILemmaProvider lemmas,
-        Common.WordCardViewModel wordCard,
+        FlashCardViewModel flashCard,
         INavigator navigator,
         ILogger logger)
     {
         _lemmas = lemmas;
-        WordCard = wordCard;
+        FlashCard = flashCard;
         _navigator = navigator;
         Logger = logger;
-        Flashcard = new Common.FlashcardStateViewModel();
-        DailyGoal = new Common.DailyGoalViewModel();
-        ExampleCarousel = new Common.ExampleCarouselViewModel();
+        Flashcard = new FlashcardStateViewModel();
+        DailyGoal = new DailyGoalViewModel();
+        ExampleCarousel = new ExampleCarouselViewModel();
 
         // Initialize commands with CanExecute predicates
         _hardCommand = new RelayCommand(MarkAsHard, () => CanRateCard);
@@ -73,7 +73,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         // Subscribe to flashcard state changes to update navigation
         Flashcard.PropertyChanged += (_, e) =>
         {
-            if (e.PropertyName == nameof(Common.FlashcardStateViewModel.IsRevealed))
+            if (e.PropertyName == nameof(FlashcardStateViewModel.IsRevealed))
             {
                 UpdateNavigationState();
             }
@@ -84,12 +84,12 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     {
         try
         {
-            WordCard.IsLoading = true;
+            FlashCard.IsLoading = true;
 
             await _lemmas.LoadAsync(ct);
             if (_lemmas.Lemmas.Count == 0)
             {
-                WordCard.ErrorMessage = "No words found";
+                FlashCard.ErrorMessage = "No words found";
                 return;
             }
 
@@ -103,18 +103,18 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to load words");
-            WordCard.ErrorMessage = $"Failed to load data: {ex.Message}";
+            FlashCard.ErrorMessage = $"Failed to load data: {ex.Message}";
         }
         finally
         {
-            WordCard.IsLoading = false;
+            FlashCard.IsLoading = false;
         }
     }
 
     void DisplayCurrentCard()
     {
         var lemma = _lemmas.Lemmas[_currentIndex];
-        WordCard.DisplayCurrentCard(lemma);
+        FlashCard.DisplayCurrentCard(lemma);
         ExampleCarousel.Initialize(lemma);
         PrepareCardAnswer(lemma);
         Flashcard.SetAnswer(GetInflectedForm(), GetInflectedEnding());
@@ -153,7 +153,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     void MarkAsHard()
     {
         if (!CanRateCard) return;
-        Logger.LogInformation("Marked hard: {Word}", WordCard.CurrentWord);
+        Logger.LogInformation("Marked hard: {Word}", FlashCard.Question);
         DailyGoal.Advance();
         MoveToNextCard();
     }
@@ -161,7 +161,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     void MarkAsEasy()
     {
         if (!CanRateCard) return;
-        Logger.LogInformation("Marked easy: {Word}", WordCard.CurrentWord);
+        Logger.LogInformation("Marked easy: {Word}", FlashCard.Question);
         DailyGoal.Advance();
         MoveToNextCard();
     }

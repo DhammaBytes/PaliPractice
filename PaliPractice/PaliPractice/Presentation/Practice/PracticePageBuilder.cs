@@ -2,10 +2,10 @@ using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Practice.ViewModels;
+using PaliPractice.Presentation.Practice.ViewModels.Common;
 using PaliPractice.Themes;
 using static PaliPractice.Presentation.Common.TextHelpers;
 using ExampleCarouselViewModel = PaliPractice.Presentation.Practice.ViewModels.Common.ExampleCarouselViewModel;
-using WordCardViewModel = PaliPractice.Presentation.Practice.ViewModels.Common.WordCardViewModel;
 
 namespace PaliPractice.Presentation.Practice;
 
@@ -17,7 +17,7 @@ namespace PaliPractice.Presentation.Practice;
 public record PracticePageConfig<TVM>(
     string Title,
     string RankPrefix,
-    Expression<Func<TVM, WordCardViewModel>> WordCardPath,
+    Expression<Func<TVM, FlashCardViewModel>> FlashCardPath,
     Expression<Func<TVM, string>> AnswerStemPath,
     Expression<Func<TVM, string>> AnswerEndingPath,
     Expression<Func<TVM, string>> AlternativeFormsPath,
@@ -65,7 +65,7 @@ public static class PracticePageBuilder
         var fonts = LayoutConstants.PracticeFontSizes.Get(heightClass);
 
         // Build word display
-        var wordTextBlock = BuildCardWord(config.WordCardPath, fonts);
+        var wordTextBlock = BuildCardWord(config.FlashCardPath, fonts);
         elements.WordTextBlock = wordTextBlock;
         elements.BadgesPanel = badges.Panel;
         elements.BadgeBorders.AddRange(badges.Borders);
@@ -114,7 +114,7 @@ public static class PracticePageBuilder
         // Assemble card children
         var cardChildren = new List<UIElement>
         {
-            BuildCardHeader(config.WordCardPath, config.RankPrefix, debugText),
+            BuildCardHeader(config.FlashCardPath, config.RankPrefix, debugText),
             wordTextBlock,
             badges.Panel
         };
@@ -238,7 +238,7 @@ public static class PracticePageBuilder
     /// Builds the header row: [Rank Badge] [Debug] [Anki State]
     /// </summary>
     static Grid BuildCardHeader<TVM>(
-        Expression<Func<TVM, WordCardViewModel>> cardPath,
+        Expression<Func<TVM, FlashCardViewModel>> cardPath,
         string rankPrefix,
         TextBlock? debugText)
     {
@@ -261,7 +261,7 @@ public static class PracticePageBuilder
                                     .Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush")),
                                 RegularText()
                                     .Scope(cardPath)
-                                    .TextWithin<WordCardViewModel>(c => c.RankText)
+                                    .TextWithin<FlashCardViewModel>(c => c.RankText)
                                     .FontSize(LayoutConstants.FixedFonts.RankText)
                                     .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
                                     .Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush"))
@@ -274,7 +274,7 @@ public static class PracticePageBuilder
                     .Grid(column: 1),
                 RegularText()
                     .Scope(cardPath)
-                    .TextWithin<WordCardViewModel>(c => c.AnkiState)
+                    .TextWithin<FlashCardViewModel>(c => c.AnkiState)
                     .FontSize(LayoutConstants.FixedFonts.AnkiState)
                     .HorizontalAlignment(HorizontalAlignment.Right)
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
@@ -286,12 +286,12 @@ public static class PracticePageBuilder
     /// Builds the main word TextBlock.
     /// </summary>
     static TextBlock BuildCardWord<TVM>(
-        Expression<Func<TVM, WordCardViewModel>> cardPath,
+        Expression<Func<TVM, FlashCardViewModel>> cardPath,
         LayoutConstants.PracticeFontSizes fonts)
     {
         return PaliText()
             .Scope(cardPath)
-            .TextWithin<WordCardViewModel>(c => c.CurrentWord)
+            .TextWithin<FlashCardViewModel>(c => c.Question)
             .FontSize(fonts.Word)
             .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
             .HorizontalAlignment(HorizontalAlignment.Center)

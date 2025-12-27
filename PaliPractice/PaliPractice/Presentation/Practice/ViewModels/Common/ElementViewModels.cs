@@ -92,9 +92,9 @@ public partial class FlashcardStateViewModel : ObservableObject
 /// Displays the current word being practiced.
 /// </summary>
 [Bindable]
-public partial class WordCardViewModel : ObservableObject
+public partial class FlashCardViewModel : ObservableObject
 {
-    [ObservableProperty] string _currentWord = string.Empty;
+    [ObservableProperty] string _question = string.Empty;
     [ObservableProperty] string _rankText = "Top-100";
     [ObservableProperty] string _ankiState = "Anki state: 6/10";
     [ObservableProperty] bool _isLoading = true;
@@ -102,7 +102,7 @@ public partial class WordCardViewModel : ObservableObject
 
     public void DisplayCurrentCard(ILemma lemma)
     {
-        CurrentWord = lemma.BaseForm;
+        Question = lemma.BaseForm;
         RankText = lemma.EbtCount switch
         {
             > 1000 => "Top-100",

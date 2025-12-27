@@ -26,7 +26,7 @@ public sealed partial class DeclensionPracticePage : Page
         var config = new PracticePageConfig<ViewModels.DeclensionPracticeViewModel>(
             Title: "Declension Practice",
             RankPrefix: "N",
-            WordCardPath: vm => vm.WordCard,
+            FlashCardPath: vm => vm.FlashCard,
             AnswerStemPath: vm => vm.Flashcard.AnswerStem,
             AnswerEndingPath: vm => vm.Flashcard.AnswerEnding,
             AlternativeFormsPath: vm => vm.AlternativeForms,

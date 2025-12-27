@@ -7,7 +7,7 @@ using PaliPractice.Themes;
 namespace PaliPractice.Presentation.Practice.ViewModels;
 
 [Bindable]
-public partial class ConjugationPracticeViewModel : Common.PracticeViewModelBase
+public partial class ConjugationPracticeViewModel : PracticeViewModelBase
 {
     readonly IInflectionService _inflectionService;
     readonly Random _random = new();
@@ -35,11 +35,11 @@ public partial class ConjugationPracticeViewModel : Common.PracticeViewModelBase
 
     public ConjugationPracticeViewModel(
         [FromKeyedServices("verb")] ILemmaProvider lemmas,
-        Common.WordCardViewModel wordCard,
+        FlashCardViewModel flashCard,
         INavigator navigator,
         ILogger<ConjugationPracticeViewModel> logger,
         IInflectionService inflectionService)
-        : base(lemmas, wordCard, navigator, logger)
+        : base(lemmas, flashCard, navigator, logger)
     {
         _inflectionService = inflectionService;
         _ = InitializeAsync();
@@ -142,7 +142,7 @@ public partial class ConjugationPracticeViewModel : Common.PracticeViewModelBase
 
     protected override string GetInflectedForm()
     {
-        return _currentConjugation?.Primary?.Form ?? WordCard.CurrentWord;
+        return _currentConjugation?.Primary?.Form ?? FlashCard.Question;
     }
 
     protected override string GetInflectedEnding()

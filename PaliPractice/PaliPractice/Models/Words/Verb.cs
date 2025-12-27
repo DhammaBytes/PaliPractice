@@ -27,12 +27,6 @@ public class Verb : IWord
     [Column("word")]
     public string Variant { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Whether this verb has reflexive (middle voice) conjugation forms in its template.
-    /// </summary>
-    [Column("has_reflexive")]
-    public bool HasReflexive { get; set; }
-
     [Column("type")]
     public string VerbType { get; set; } = string.Empty;
 

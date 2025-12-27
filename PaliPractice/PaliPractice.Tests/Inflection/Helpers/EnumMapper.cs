@@ -121,7 +121,7 @@ public static class EnumMapper
             "imp" => Tense.Imperative,
             "opt" => Tense.Optative,
             "fut" => Tense.Future,
-            "aor" => Tense.Aorist,
+            // "aor" => Tense.Aorist,
             _ => throw new ArgumentException($"Unknown tense indicator: {indicator}. Only pr, imp, opt, fut, aor are supported.")
         };
     }

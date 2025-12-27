@@ -16,6 +16,12 @@ public interface IDatabaseService
     int GetVerbCount();
 
     /// <summary>
+    /// Check if a verb lemma has reflexive conjugation forms.
+    /// Most verbs do have reflexive forms; only ~28 lemmas are active-only.
+    /// </summary>
+    bool VerbHasReflexive(int lemmaId);
+
+    /// <summary>
     /// Check if a specific noun form appears in the Pali Tipitaka corpus.
     /// Uses form_id lookup for efficient querying.
     /// </summary>
@@ -34,6 +40,9 @@ public class DatabaseService : IDatabaseService
     readonly Lock _initLock = new();
     bool _isInitialized = false;
 
+    // Cache of verb lemma_ids that do NOT have reflexive forms (the minority)
+    HashSet<int>? _nonReflexiveLemmaIds;
+
     public void Initialize()
     {
         if (_isInitialized) return;
@@ -48,8 +57,21 @@ public class DatabaseService : IDatabaseService
             // Create SQLite connection
             _database = new SQLiteConnection(databasePath, SQLiteOpenFlags.ReadOnly);
 
+            // Load non-reflexive verb lemma IDs into HashSet for O(1) lookup
+            _nonReflexiveLemmaIds = _database
+                .Query<NonReflexiveVerb>("SELECT lemma_id FROM verbs_nonreflexive")
+                .Select(v => v.LemmaId)
+                .ToHashSet();
+
             _isInitialized = true;
         }
+    }
+
+    // Helper class for querying verbs_nonreflexive table
+    class NonReflexiveVerb
+    {
+        [Column("lemma_id")]
+        public int LemmaId { get; set; }
     }
 
     string ExtractDatabase()
@@ -157,6 +179,14 @@ public class DatabaseService : IDatabaseService
 
         return _database!.Table<Verb>()
             .Count();
+    }
+
+    public bool VerbHasReflexive(int lemmaId)
+    {
+        EnsureInitialized();
+
+        // Most verbs have reflexive forms, so we check if NOT in the exceptions set
+        return !_nonReflexiveLemmaIds!.Contains(lemmaId);
     }
 
     public bool IsNounFormInCorpus(

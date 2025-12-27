@@ -178,7 +178,7 @@ public class FormIdTests
     public void Conjugation_FormId_IsLong_DueToTenDigits()
     {
         // Max possible: 99999_5_3_2_1_4 = 9999953214 (reflexive=true)
-        var maxFormId = Conjugation.ResolveId(99999, Tense.Aorist, Person.Third, Number.Plural, reflexive: true, 4);
+        var maxFormId = Conjugation.ResolveId(99999, Tense.Present, Person.Third, Number.Plural, reflexive: true, 4);
 
         maxFormId.Should().BeGreaterThan(int.MaxValue, "10-digit verb FormIds exceed int.MaxValue");
     }

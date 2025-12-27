@@ -481,7 +481,6 @@ class NounVerbExtractor:
                 lemma_id INTEGER NOT NULL,
                 lemma TEXT NOT NULL,
                 word TEXT NOT NULL DEFAULT '',
-                has_reflexive INTEGER NOT NULL DEFAULT 0,
                 type TEXT DEFAULT '',
                 trans TEXT DEFAULT '',
                 stem TEXT,
@@ -496,6 +495,14 @@ class NounVerbExtractor:
                 source_2 TEXT DEFAULT '',
                 sutta_2 TEXT DEFAULT '',
                 example_2 TEXT DEFAULT ''
+            )
+        """)
+
+        # Non-reflexive verbs - stores lemma_ids of verbs that have NO reflexive forms
+        # Most verbs have reflexive forms, so we store the exceptions (only ~28 lemmas)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS verbs_nonreflexive (
+                lemma_id INTEGER PRIMARY KEY
             )
         """)
         
@@ -966,6 +973,8 @@ class NounVerbExtractor:
         verbs_processed = 0
         total_verb_forms_generated = 0
         total_verb_forms_filtered = 0
+        all_verb_lemma_ids: set[int] = set()
+        reflexive_lemma_ids: set[int] = set()
 
         print(f"\nProcessing {len(verbs)} verbs...")
         for i, word in enumerate(verbs, 1):
@@ -973,25 +982,27 @@ class NounVerbExtractor:
                 print(f"Processing verb {i}/{len(verbs)}: {word.lemma_1}")
 
             lemma_id = get_verb_lemma_id(registry, word.lemma_clean)
+            all_verb_lemma_ids.add(lemma_id)
 
-            # Extract conjugations first to determine has_reflexive
+            # Extract conjugations to check for reflexive forms
             forms, generated, filtered = self.parse_inflection_template(word, 'verb')
             total_verb_forms_generated += generated
             total_verb_forms_filtered += filtered
 
-            # Check if any form has reflexive=1
-            has_reflexive = 1 if any(f.get('reflexive', 0) == GrammarEnums.REFLEXIVE_YES for f in forms) else 0
+            # Track lemma_ids that have any reflexive form
+            if any(f.get('reflexive', 0) == GrammarEnums.REFLEXIVE_YES for f in forms):
+                reflexive_lemma_ids.add(lemma_id)
 
             # Insert verb
             word_variant = self.extract_word_variant(word.lemma_1, word.lemma_clean)
             cursor.execute("""
                 INSERT INTO verbs (
-                    id, ebt_count, lemma_id, lemma, word, has_reflexive, type, trans, stem, pattern,
+                    id, ebt_count, lemma_id, lemma, word, type, trans, stem, pattern,
                     derived_from, family_root, meaning, plus_case,
                     source_1, sutta_1, example_1, source_2, sutta_2, example_2
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
-                word.id, word.ebt_count or 0, lemma_id, word.lemma_clean, word_variant, has_reflexive,
+                word.id, word.ebt_count or 0, lemma_id, word.lemma_clean, word_variant,
                 word.verb or '', word.trans or '', clean_stem(word.stem), word.pattern,
                 word.derived_from or '', word.family_root or '', word.meaning_1, word.plus_case or '',
                 word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
@@ -1023,7 +1034,12 @@ class NounVerbExtractor:
                         except sqlite3.IntegrityError:
                             # Skip duplicates
                             pass
-        
+
+        # Insert non-reflexive verb lemma_ids (the minority)
+        nonreflexive_lemma_ids = all_verb_lemma_ids - reflexive_lemma_ids
+        for lemma_id in sorted(nonreflexive_lemma_ids):
+            cursor.execute("INSERT INTO verbs_nonreflexive (lemma_id) VALUES (?)", (lemma_id,))
+
         conn.commit()
         conn.close()
 
@@ -1084,12 +1100,15 @@ class NounVerbExtractor:
         for gender, count in cursor.fetchall():
             print(f"  {gender_names.get(gender, f'unknown({gender})')}: {count}")
 
-        # Verbs by reflexive capability
-        cursor.execute("SELECT has_reflexive, COUNT(*) FROM verbs GROUP BY has_reflexive")
-        print("\nVerbs by Reflexive Capability:")
-        for has_reflex, count in cursor.fetchall():
-            label = "with reflexive forms" if has_reflex else "active only"
-            print(f"  {label}: {count}")
+        # Verbs by reflexive capability (using lemma counts)
+        cursor.execute("SELECT COUNT(DISTINCT lemma_id) FROM verbs")
+        total_lemmas = cursor.fetchone()[0]
+        cursor.execute("SELECT COUNT(*) FROM verbs_nonreflexive")
+        nonreflexive_count = cursor.fetchone()[0]
+        reflexive_count = total_lemmas - nonreflexive_count
+        print("\nVerb Lemmas by Reflexive Capability:")
+        print(f"  with reflexive forms: {reflexive_count}")
+        print(f"  active only: {nonreflexive_count}")
 
         # Corpus attestation counts
         cursor.execute("SELECT COUNT(*) FROM corpus_declensions")

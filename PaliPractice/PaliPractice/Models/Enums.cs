@@ -19,8 +19,8 @@ public enum Tense
     Present = 1,
     Imperative = 2,
     Optative = 3,
-    Future = 4,
-    Aorist = 5
+    Future = 4
+    // Aorist = 5
 }
 
 

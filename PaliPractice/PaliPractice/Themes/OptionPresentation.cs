@@ -49,7 +49,7 @@ public static class OptionPresentation
         Tense.Imperative => TenseColor,
         Tense.Optative => TenseColor,
         Tense.Future => TenseColor,
-        Tense.Aorist => TenseColor,
+        // Tense.Aorist => TenseColor,
 
         Gender.Masculine => GenderColor,
         Gender.Neuter => GenderColor,

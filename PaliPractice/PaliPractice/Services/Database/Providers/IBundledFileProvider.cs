@@ -1,4 +1,4 @@
-namespace PaliPractice.Services.Database;
+namespace PaliPractice.Services.Database.Providers;
 
 /// <summary>
 /// Platform abstraction for accessing bundled files.

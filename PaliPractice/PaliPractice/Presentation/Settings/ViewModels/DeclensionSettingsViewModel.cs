@@ -71,7 +71,7 @@ public partial class DeclensionSettingsViewModel : ObservableObject
         // Load number setting (index-based: 0=both, 1=singular, 2=plural)
         var numbersCsv = _userData.GetSetting(SettingsKeys.NounsNumbers,
             SettingsHelpers.ToCsv(SettingsKeys.DefaultNumbers));
-        NumberIndex = NumberIndexFromCsv(numbersCsv);
+        NumberIndex = SettingsHelpers.NumberIndexFromCsv(numbersCsv);
 
         // Load case settings
         var cases = SettingsHelpers.FromCsvSet<Case>(
@@ -125,7 +125,7 @@ public partial class DeclensionSettingsViewModel : ObservableObject
         _userData.SetSetting(SettingsKeys.NounsFemPatterns, SettingsHelpers.ToCsv(femEnabled));
 
         // Save number setting
-        _userData.SetSetting(SettingsKeys.NounsNumbers, NumberIndexToCsv(NumberIndex));
+        _userData.SetSetting(SettingsKeys.NounsNumbers, SettingsHelpers.NumberIndexToCsv(NumberIndex));
 
         // Save cases
         var cases = new List<Case>();
@@ -492,25 +492,36 @@ public partial class DeclensionSettingsViewModel : ObservableObject
     public bool CanDisablePatternFemAr => EnabledPatternCount > 1 || !PatternFemAr;
     #endregion
 
-    #region Daily goal settings (dropdown)
-
-    public static readonly int[] DailyGoalOptions = [25, 50, 100];
+    #region Daily goal settings
 
     [ObservableProperty]
     int _dailyGoal = SettingsKeys.DefaultDailyGoal;
     partial void OnDailyGoalChanged(int value) => SaveSettings();
+
+    /// <summary>
+    /// Validates and corrects the daily goal when the field loses focus.
+    /// </summary>
+    [RelayCommand]
+    void ValidateDailyGoal()
+    {
+        if (_isLoading) return;
+
+        var validated = SettingsHelpers.ValidateDailyGoal(DailyGoal);
+        if (validated != DailyGoal)
+        {
+            _isLoading = true;
+            DailyGoal = validated;
+            _isLoading = false;
+            SaveSettings();
+        }
+    }
 
     #endregion
 
     #region Number settings (dropdown)
 
     /// <summary>
-    /// Labels for the number dropdown. Index maps to: 0=both, 1=singular only, 2=plural only.
-    /// </summary>
-    public static readonly string[] NumberOptions = ["Singular & Plural", "Singular only", "Plural only"];
-
-    /// <summary>
-    /// Index for ComboBox binding. Maps to Number CSV: 0="1,2", 1="1", 2="2".
+    /// Index for ComboBox binding. Maps to Number CSV: 0=both, 1=singular, 2=plural.
     /// </summary>
     [ObservableProperty]
     int _numberIndex;
@@ -521,28 +532,6 @@ public partial class DeclensionSettingsViewModel : ObservableObject
 
     /// <summary>Whether to include plural forms in practice.</summary>
     public bool IncludePlural => NumberIndex is 0 or 2;
-
-    /// <summary>Converts dropdown index to CSV for storage.</summary>
-    static string NumberIndexToCsv(int index) => index switch
-    {
-        1 => SettingsHelpers.ToCsv([Number.Singular]),
-        2 => SettingsHelpers.ToCsv([Number.Plural]),
-        _ => SettingsHelpers.ToCsv([Number.Singular, Number.Plural])
-    };
-
-    /// <summary>Converts CSV to dropdown index.</summary>
-    static int NumberIndexFromCsv(string csv)
-    {
-        var singular = SettingsHelpers.IncludesSingular(csv);
-        var plural = SettingsHelpers.IncludesPlural(csv);
-        return (singular, plural) switch
-        {
-            (true, true) => 0,
-            (true, false) => 1,
-            (false, true) => 2,
-            _ => 0
-        };
-    }
 
     #endregion
 

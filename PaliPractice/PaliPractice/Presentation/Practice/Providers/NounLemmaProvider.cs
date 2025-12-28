@@ -1,5 +1,6 @@
 using PaliPractice.Models.Words;
 using PaliPractice.Services.Database;
+using PaliPractice.Services.UserData;
 
 namespace PaliPractice.Presentation.Practice.Providers;
 
@@ -15,8 +16,10 @@ public sealed class NounLemmaProvider : ILemmaProvider
     {
         _lemmas.Clear();
 
-        // Get top 100 noun lemmas by rank
-        var lemmas = _db.Nouns.GetLemmasByRank(1, 100);
+        // Get noun lemmas by rank using user settings
+        var minRank = _db.UserData.GetSetting(SettingsKeys.NounsLemmaMin, SettingsKeys.DefaultLemmaMin);
+        var maxRank = _db.UserData.GetSetting(SettingsKeys.NounsLemmaMax, SettingsKeys.DefaultLemmaMax);
+        var lemmas = _db.Nouns.GetLemmasByRank(minRank, maxRank);
         _lemmas.AddRange(lemmas);
         return Task.CompletedTask;
     }

@@ -1,6 +1,6 @@
 using SQLite;
 
-namespace PaliPractice.Services.Database;
+namespace PaliPractice.Services.Database.Entities;
 
 /// <summary>
 /// Represents an irregular verb form stored in the database.

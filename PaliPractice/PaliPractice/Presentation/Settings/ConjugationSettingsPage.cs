@@ -1,12 +1,20 @@
+using Microsoft.UI.Xaml.Controls;
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Settings.Controls;
 using PaliPractice.Presentation.Settings.ViewModels;
+using PaliPractice.Services.UserData;
 
 namespace PaliPractice.Presentation.Settings;
 
 public sealed partial class ConjugationSettingsPage : Page
 {
+    static void OnDailyGoalLostFocus(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement { DataContext: ConjugationSettingsViewModel viewModel })
+            viewModel.ValidateDailyGoalCommand.Execute(null);
+    }
+
     public ConjugationSettingsPage()
     {
         Loaded += OnLoaded;
@@ -36,12 +44,15 @@ public sealed partial class ConjugationSettingsPage : Page
                                             "Practice range",
                                             v => v.GoToLemmaRangeCommand,
                                             tb => tb.Text(() => vm.RangeText)),
-                                        SettingsRow.BuildDropdown(
+                                        SettingsRow.BuildNumberBox(
                                             "Daily practice goal",
-                                            ConjugationSettingsViewModel.DailyGoalOptions,
-                                            cb => cb.SetBinding(
-                                                ComboBox.SelectedItemProperty,
-                                                Bind.TwoWayPath<ConjugationSettingsViewModel, int>(v => v.DailyGoal)))
+                                            minimum: SettingsHelpers.DailyGoalMin,
+                                            maximum: SettingsHelpers.DailyGoalMax,
+                                            bindValue: nb =>
+                                            {
+                                                nb.Value(x => x.Binding(() => vm.DailyGoal).TwoWay());
+                                                nb.LostFocus += OnDailyGoalLostFocus;
+                                            })
                                     ),
 
                                     // Practice filters section
@@ -87,7 +98,7 @@ public sealed partial class ConjugationSettingsPage : Page
                 // Number dropdown
                 SettingsRow.BuildDropdown(
                     "Number",
-                    ConjugationSettingsViewModel.NumberOptions,
+                    SettingsHelpers.NumberOptions,
                     cb => cb.SetBinding(
                         ComboBox.SelectedIndexProperty,
                         Bind.TwoWayPath<ConjugationSettingsViewModel, int>(v => v.NumberIndex))),

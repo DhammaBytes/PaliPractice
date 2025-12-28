@@ -1,12 +1,20 @@
+using Microsoft.UI.Xaml.Controls;
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Settings.Controls;
 using PaliPractice.Presentation.Settings.ViewModels;
+using PaliPractice.Services.UserData;
 
 namespace PaliPractice.Presentation.Settings;
 
 public sealed partial class DeclensionSettingsPage : Page
 {
+    static void OnDailyGoalLostFocus(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement { DataContext: DeclensionSettingsViewModel viewModel })
+            viewModel.ValidateDailyGoalCommand.Execute(null);
+    }
+
     public DeclensionSettingsPage()
     {
         Loaded += OnLoaded;
@@ -36,12 +44,15 @@ public sealed partial class DeclensionSettingsPage : Page
                                             "Practice range",
                                             v => v.GoToLemmaRangeCommand,
                                             tb => tb.Text(() => vm.RangeText)),
-                                        SettingsRow.BuildDropdown(
+                                        SettingsRow.BuildNumberBox(
                                             "Daily practice goal",
-                                            DeclensionSettingsViewModel.DailyGoalOptions,
-                                            cb => cb.SetBinding(
-                                                ComboBox.SelectedItemProperty,
-                                                Bind.TwoWayPath<DeclensionSettingsViewModel, int>(v => v.DailyGoal)))
+                                            minimum: SettingsHelpers.DailyGoalMin,
+                                            maximum: SettingsHelpers.DailyGoalMax,
+                                            bindValue: nb =>
+                                            {
+                                                nb.Value(x => x.Binding(() => vm.DailyGoal).TwoWay());
+                                                nb.LostFocus += OnDailyGoalLostFocus;
+                                            })
                                     ),
 
                                     // Practice filters section
@@ -142,7 +153,7 @@ public sealed partial class DeclensionSettingsPage : Page
                 // Number dropdown (at end of Practice filters section)
                 SettingsRow.BuildDropdown(
                     "Number",
-                    DeclensionSettingsViewModel.NumberOptions,
+                    SettingsHelpers.NumberOptions,
                     cb => cb.SetBinding(
                         ComboBox.SelectedIndexProperty,
                         Bind.TwoWayPath<DeclensionSettingsViewModel, int>(v => v.NumberIndex)))

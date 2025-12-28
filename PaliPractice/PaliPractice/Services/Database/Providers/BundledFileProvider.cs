@@ -1,7 +1,7 @@
 using Windows.Storage;
 using IOPath = System.IO.Path;
 
-namespace PaliPractice.Services.Database;
+namespace PaliPractice.Services.Database.Providers;
 
 /// <summary>
 /// Platform-specific implementation of bundled file access.

@@ -3,11 +3,88 @@ using PaliPractice.Models;
 namespace PaliPractice.Services.UserData;
 
 /// <summary>
-/// Helper methods for converting between enum collections and CSV strings for settings storage.
-/// All settings are stored as comma-separated integers (e.g., "1,2,3").
+/// Helper methods for settings: CSV conversion, validation, and index-based dropdown conversions.
 /// </summary>
 public static class SettingsHelpers
 {
+    #region Validation
+
+    /// <summary>
+    /// Minimum allowed daily goal value.
+    /// </summary>
+    public const int DailyGoalMin = 10;
+
+    /// <summary>
+    /// Maximum allowed daily goal value.
+    /// </summary>
+    public const int DailyGoalMax = 500;
+
+    /// <summary>
+    /// Validates and clamps a daily goal value to allowed range.
+    /// </summary>
+    public static int ValidateDailyGoal(int goal)
+        => Math.Clamp(goal, DailyGoalMin, DailyGoalMax);
+
+    /// <summary>
+    /// Validates and clamps a range (min/max pair) to allowed bounds.
+    /// Ensures min is less than max.
+    /// </summary>
+    public static (int min, int max) ValidateRange(int min, int max, int minAllowed, int maxAllowed)
+    {
+        // Clamp to bounds
+        min = Math.Max(min, minAllowed);
+        max = Math.Min(max, maxAllowed);
+
+        // Ensure max is at least minAllowed + 1
+        if (max < minAllowed + 1)
+            max = minAllowed + 1;
+
+        // Ensure min < max
+        if (min >= max)
+            min = max - 1;
+
+        return (min, max);
+    }
+
+    #endregion
+
+    #region Number Index Conversion
+
+    /// <summary>
+    /// Labels for the number dropdown. Index: 0=both, 1=singular only, 2=plural only.
+    /// </summary>
+    public static readonly string[] NumberOptions = ["Singular & Plural", "Singular only", "Plural only"];
+
+    /// <summary>
+    /// Converts dropdown index to CSV for storage.
+    /// </summary>
+    public static string NumberIndexToCsv(int index) => index switch
+    {
+        1 => ToCsv([Number.Singular]),
+        2 => ToCsv([Number.Plural]),
+        _ => ToCsv([Number.Singular, Number.Plural])
+    };
+
+    /// <summary>
+    /// Converts CSV to dropdown index.
+    /// </summary>
+    public static int NumberIndexFromCsv(string csv)
+    {
+        var singular = IncludesSingular(csv);
+        var plural = IncludesPlural(csv);
+        return (singular, plural) switch
+        {
+            (true, true) => 0,
+            (true, false) => 1,
+            (false, true) => 2,
+            _ => 0
+        };
+    }
+
+    #endregion
+
+    #region CSV Conversion
+
     /// <summary>
     /// Converts an enum collection to a CSV string of integer values.
     /// Example: [Case.Nominative, Case.Accusative] → "1,2"
@@ -67,4 +144,6 @@ public static class SettingsHelpers
     /// </summary>
     public static bool IncludesReflexive(string voicesCsv)
         => Contains(voicesCsv, Voice.Reflexive);
+
+    #endregion
 }

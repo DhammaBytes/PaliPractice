@@ -1,5 +1,6 @@
 using PaliPractice.Models.Inflection;
 using PaliPractice.Models.Words;
+using PaliPractice.Services.Database.Entities;
 using SQLite;
 
 namespace PaliPractice.Services.Database.Repositories;

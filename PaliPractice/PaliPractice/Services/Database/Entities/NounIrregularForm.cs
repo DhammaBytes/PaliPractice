@@ -1,6 +1,6 @@
 using SQLite;
 
-namespace PaliPractice.Services.Database;
+namespace PaliPractice.Services.Database.Entities;
 
 /// <summary>
 /// Represents an irregular noun form stored in the database.

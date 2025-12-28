@@ -1,6 +1,6 @@
 using SQLite;
 
-namespace PaliPractice.Services.Database;
+namespace PaliPractice.Services.Database.Entities;
 
 /// <summary>
 /// Represents a verb conjugation form that appears in the Pali Tipitaka corpus.

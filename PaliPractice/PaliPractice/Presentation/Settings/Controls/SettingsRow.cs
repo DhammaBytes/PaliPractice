@@ -265,4 +265,43 @@ public static class SettingsRow
                 comboBox
             );
     }
+
+    /// <summary>
+    /// Builds a settings row with a label and NumberBox for numeric input.
+    /// </summary>
+    public static Grid BuildNumberBox(
+        string label,
+        int minimum,
+        int maximum,
+        Action<NumberBox> bindValue,
+        Action<NumberBox>? configure = null)
+    {
+        var numberBox = new NumberBox()
+            .Minimum(minimum)
+            .Maximum(maximum)
+            .SmallChange(10)
+            .LargeChange(50)
+            .SpinButtonPlacementMode(NumberBoxSpinButtonPlacementMode.Compact)
+            .ValidationMode(NumberBoxValidationMode.InvalidInputOverwritten)
+            .MinWidth(120)
+            .VerticalAlignment(VerticalAlignment.Center)
+            .Grid(column: 1);
+
+        bindValue(numberBox);
+        configure?.Invoke(numberBox);
+
+        return new Grid()
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .ColumnDefinitions("*,Auto")
+            .Padding(16, 12)
+            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .Children(
+                RegularText()
+                    .Text(label)
+                    .FontSize(16)
+                    .VerticalAlignment(VerticalAlignment.Center)
+                    .Grid(column: 0),
+                numberBox
+            );
+    }
 }

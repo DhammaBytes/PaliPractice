@@ -10,7 +10,6 @@ global using PaliPractice.Presentation.Common.Squircle;
 global using PaliPractice.Presentation.Practice.ViewModels.Common;
 global using PaliPractice.Services;
 global using PaliPractice.Services.Database;
-global using PaliPractice.Services.Endpoints;
 global using ApplicationExecutionState = Windows.ApplicationModel.Activation.ApplicationExecutionState;
 global using Color = Windows.UI.Color;
 global using CommunityToolkit.Mvvm.ComponentModel;

@@ -4,9 +4,9 @@ Configuration constants for PaliPractice extraction.
 
 from pathlib import Path
 
-# Lemma registry paths
-REGISTRY_PATH = Path(__file__).parent.parent / "lemma_registry.json"
-REGISTRY_BACKUP_PATH = Path(__file__).parent.parent / "lemma_registry.backup.json"
+# Lemma registry paths (in configs folder)
+REGISTRY_PATH = Path(__file__).parent.parent / "configs" / "lemma_registry.json"
+REGISTRY_BACKUP_PATH = Path(__file__).parent.parent / "configs" / "lemma_registry.backup.json"
 
 # Maximum lemma length (characters) - filters out very long compounds
 # that would break UI layouts

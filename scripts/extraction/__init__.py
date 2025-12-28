@@ -38,6 +38,7 @@ from .html_parser import (
     parse_verb_title,
 )
 from .plural_dedup import PluralOnlyDeduplicator
+from .translations import TranslationAdjustments
 from .validate_inflections import InflectionValidator, PluralOnlyMatch
 from .validate_db import validate_database
 
@@ -75,6 +76,8 @@ __all__ = [
     'parse_verb_title',
     # Plural Deduplication
     'PluralOnlyDeduplicator',
+    # Translations
+    'TranslationAdjustments',
     # Validation
     'InflectionValidator',
     'PluralOnlyMatch',

@@ -8,13 +8,23 @@ This directory contains all setup instructions and scripts to build the PaliPrac
 
 ```
 scripts/
-├── extract_nouns_and_verbs.py   # Main extraction script
-├── validate_inflections.py       # Inflection completeness validation (called during extraction)
-├── validate_db.py                # Database validation
-├── lemma_registry.json           # Stable lemma ID assignments (version controlled)
+├── extract_nouns_and_verbs.py    # Main extraction script
 ├── requirements.txt              # Python dependencies
+├── configs/                      # Configuration files
+│   ├── lemma_registry.json       # Stable lemma ID assignments (version controlled)
+│   └── custom_translations.json  # Translation adjustments for specific lemmas
+├── extraction/                   # Extraction modules
+│   ├── config.py                 # Constants and paths
+│   ├── registry.py               # Lemma ID management
+│   ├── grammar.py                # Grammar enum definitions
+│   ├── forms.py                  # Form ID computation
+│   ├── html_parser.py            # DPD HTML parsing
+│   ├── plural_dedup.py           # Plural-only deduplication
+│   ├── translations.py           # Translation adjustments
+│   ├── validate_inflections.py   # Inflection validation
+│   └── validate_db.py            # Database validation
 ├── frequency/                    # Custom Go files for corpus processing
-│   └── main_available.go        # Processes CST, BJT, SYA frequencies
+│   └── main_available.go         # Processes CST, BJT, SYA frequencies
 ```
 
 ## Main Scripts
@@ -24,7 +34,7 @@ The primary extraction script that:
 - Extracts 3000 most frequent nouns and 2000 most frequent verbs
 - Creates `corpus_declensions` table tracking which forms appear in Tipitaka
 - Creates `corpus_conjugations` table tracking which forms appear in Tipitaka
-- Assigns stable `lemma_id` values via `lemma_registry.json`
+- Assigns stable `lemma_id` values via `configs/lemma_registry.json`
 - Uses EBT frequency counts for word selection
 - Outputs to `../PaliPractice/PaliPractice/Data/training.db` for the app's consumption
 
@@ -78,7 +88,7 @@ Validates the generated database:
 - Verifies lemma_id ranges (nouns: 10001-69999, verbs: 70001-99999)
 - Provides statistics on extracted data
 
-### `lemma_registry.json`
+### `configs/lemma_registry.json`
 Version-controlled registry that assigns stable IDs to lemmas:
 - Ensures lemma IDs never change across rebuilds
 - New lemmas get appended with new IDs
@@ -269,7 +279,7 @@ Understanding the distinction between `id` and `lemma_id` is crucial:
   - Ensures 1:1 relationship between slim and details records
 
 - **`lemma_id`** = Our stable ID for the clean lemma (e.g., "dhamma")
-  - Assigned from `lemma_registry.json` (nouns: 10001-69999, verbs: 70001-99999)
+  - Assigned from `configs/lemma_registry.json` (nouns: 10001-69999, verbs: 70001-99999)
   - **Multiple words can share the same `lemma_id`** (e.g., "dhamma 1", "dhamma 1.1")
   - Used in `form_id` encoding for SRS tracking
   - Used to **GROUP variants** when displaying all translations in carousel
@@ -442,7 +452,7 @@ pip install -r scripts/requirements.txt
 After successful completion, you should have:
 - **DPD Database**: `dpd-db/dpd.db` (~450MB) with 82,922+ words
 - **Frequency Data**: 53,041+ words with EBT frequency counts > 0
-- **Lemma Registry**: `scripts/lemma_registry.json` with stable IDs for all lemmas
+- **Lemma Registry**: `scripts/configs/lemma_registry.json` with stable IDs for all lemmas
 - **Training Database**: `PaliPractice/PaliPractice/Data/training.db` with:
   - 3,000 most frequent noun lemmas (with stable lemma_id 10001-69999)
   - 2,000 most frequent verb lemmas (with stable lemma_id 70001-99999)

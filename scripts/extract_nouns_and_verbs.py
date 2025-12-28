@@ -47,6 +47,8 @@ from extraction import (
     parse_verb_title,
     # Plural Deduplication
     PluralOnlyDeduplicator,
+    # Translations
+    TranslationAdjustments,
 )
 from extraction.config import (
     REGISTRY_PATH,
@@ -184,6 +186,9 @@ class NounVerbExtractor:
 
         # Initialize plural-only deduplicator
         self.plural_dedup = PluralOnlyDeduplicator(self.db_session)
+
+        # Initialize translation adjustments
+        self.translations = TranslationAdjustments()
 
     def _load_tipitaka_words(self) -> Set[str]:
         """Load all words from the Tipitaka corpus JSON wordlists."""
@@ -651,12 +656,15 @@ class NounVerbExtractor:
                 clean_stem(word.stem), word.pattern
             ))
 
+            # Apply custom translation adjustments
+            meaning = self.translations.apply(word.id, word.lemma_1, word.meaning_1 or '')
+
             cursor.execute("""
                 INSERT INTO nouns_details (
                     id, lemma_id, word, meaning, source_1, sutta_1, example_1, source_2, sutta_2, example_2
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
-                word.id, lemma_id, word_variant, word.meaning_1,
+                word.id, lemma_id, word_variant, meaning,
                 word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
                 word.source_2 or '', word.sutta_2 or '', word.example_2 or ''
             ))
@@ -766,13 +774,16 @@ class NounVerbExtractor:
                 clean_stem(word.stem), word.pattern
             ))
 
+            # Apply custom translation adjustments
+            meaning = self.translations.apply(word.id, word.lemma_1, word.meaning_1 or '')
+
             cursor.execute("""
                 INSERT INTO verbs_details (
                     id, lemma_id, word, type, trans, meaning,
                     source_1, sutta_1, example_1, source_2, sutta_2, example_2
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
-                word.id, lemma_id, word_variant, word.verb or '', word.trans or '', word.meaning_1,
+                word.id, lemma_id, word_variant, word.verb or '', word.trans or '', meaning,
                 word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
                 word.source_2 or '', word.sutta_2 or '', word.example_2 or ''
             ))

@@ -30,7 +30,21 @@ public sealed partial class DeclensionSettingsPage : Page
                             new StackPanel()
                                 .MaxWidth(LayoutConstants.ContentMaxWidth)
                                 .Children(
-                                    // Practice filters section (merged)
+                                    // General section
+                                    SettingsSection.Build("General",
+                                        SettingsRow.BuildNavigation<DeclensionSettingsViewModel>(
+                                            "Practice range",
+                                            v => v.GoToLemmaRangeCommand,
+                                            tb => tb.Text(() => vm.RangeText)),
+                                        SettingsRow.BuildDropdown(
+                                            "Daily practice goal",
+                                            DeclensionSettingsViewModel.DailyGoalOptions,
+                                            cb => cb.SetBinding(
+                                                ComboBox.SelectedItemProperty,
+                                                Bind.TwoWayPath<DeclensionSettingsViewModel, int>(v => v.DailyGoal)))
+                                    ),
+
+                                    // Practice filters section
                                     BuildPracticeFiltersSection(vm),
 
                                     // Case section
@@ -72,32 +86,26 @@ public sealed partial class DeclensionSettingsPage : Page
                     .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"))
                     .Margin(16, 16, 16, 8),
 
-                // Practice range (navigation)
-                SettingsRow.BuildNavigation<DeclensionSettingsViewModel>(
-                    "Practice range",
-                    v => v.GoToLemmaRangeCommand,
-                    tb => tb.Text(() => vm.RangeText)),
-
                 // Masculine patterns
                 GenderPatternSection.Build(
                     "Masculine",
                     [
                         ("a", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternMascA)),
-                              cb => cb.SetBinding(Control.IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternMascA))),
+                              cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternMascA))),
                         ("i", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternMascI)),
-                              cb => cb.SetBinding(Control.IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternMascI))),
+                              cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternMascI))),
                         ("ī", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternMascILong)),
-                              cb => cb.SetBinding(Control.IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternMascILong))),
+                              cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternMascILong))),
                         ("u", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternMascU)),
-                              cb => cb.SetBinding(Control.IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternMascU))),
+                              cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternMascU))),
                         ("ū", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternMascULong)),
-                              cb => cb.SetBinding(Control.IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternMascULong))),
+                              cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternMascULong))),
                         ("as", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternMascAs)),
-                              cb => cb.SetBinding(Control.IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternMascAs))),
+                              cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternMascAs))),
                         ("ar", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternMascAr)),
-                              cb => cb.SetBinding(Control.IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternMascAr))),
+                              cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternMascAr))),
                         ("ant", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternMascAnt)),
-                               cb => cb.SetBinding(Control.IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternMascAnt)))
+                               cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternMascAnt)))
                     ]
                 ),
 
@@ -106,15 +114,15 @@ public sealed partial class DeclensionSettingsPage : Page
                     "Feminine",
                     [
                         ("ā", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternFemA)),
-                              cb => cb.SetBinding(Control.IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternFemA))),
+                              cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternFemA))),
                         ("i", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternFemI)),
-                              cb => cb.SetBinding(Control.IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternFemI))),
+                              cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternFemI))),
                         ("ī", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternFemILong)),
-                              cb => cb.SetBinding(Control.IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternFemILong))),
+                              cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternFemILong))),
                         ("u", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternFemU)),
-                              cb => cb.SetBinding(Control.IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternFemU))),
+                              cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternFemU))),
                         ("ar", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternFemAr)),
-                              cb => cb.SetBinding(Control.IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternFemAr)))
+                              cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternFemAr)))
                     ]
                 ),
 
@@ -123,17 +131,13 @@ public sealed partial class DeclensionSettingsPage : Page
                     "Neuter",
                     [
                         ("a", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternNtA)),
-                              cb => cb.SetBinding(Control.IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternNtA))),
+                              cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternNtA))),
                         ("i", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternNtI)),
-                              cb => cb.SetBinding(Control.IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternNtI))),
+                              cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternNtI))),
                         ("u", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternNtU)),
-                              cb => cb.SetBinding(Control.IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternNtU)))
+                              cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternNtU)))
                     ]
                 ),
-
-                // Include irregular toggle
-                SettingsRow.BuildToggle<DeclensionSettingsViewModel>(
-                    "Include irregular", v => v.IncludeIrregular),
 
                 // Number dropdown (at end of Practice filters section)
                 SettingsRow.BuildDropdown(

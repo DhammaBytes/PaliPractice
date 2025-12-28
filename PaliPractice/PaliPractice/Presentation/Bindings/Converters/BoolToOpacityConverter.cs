@@ -17,6 +17,6 @@ public sealed class BoolToOpacityConverter : IValueConverter
 
     public object ConvertBack(object value, Type targetType, object parameter, string language)
     {
-        return value is double d && d > 0.5;
+        return value is double and > 0.5;
     }
 }

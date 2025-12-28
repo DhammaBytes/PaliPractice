@@ -74,7 +74,7 @@ public static class BindExtensions
         where T : UIElement
     {
         // Detect and unwrap logical NOT
-        if (path.Body is UnaryExpression u && u.NodeType == ExpressionType.Not)
+        if (path.Body is UnaryExpression { NodeType: ExpressionType.Not } u)
         {
             invert = !invert;
             path = Expression.Lambda<Func<TDC, bool>>(u.Operand, path.Parameters);

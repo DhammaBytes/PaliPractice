@@ -30,10 +30,24 @@ public sealed partial class ConjugationSettingsPage : Page
                             new StackPanel()
                                 .MaxWidth(LayoutConstants.ContentMaxWidth)
                                 .Children(
+                                    // General section
+                                    SettingsSection.Build("General",
+                                        SettingsRow.BuildNavigation<ConjugationSettingsViewModel>(
+                                            "Practice range",
+                                            v => v.GoToLemmaRangeCommand,
+                                            tb => tb.Text(() => vm.RangeText)),
+                                        SettingsRow.BuildDropdown(
+                                            "Daily practice goal",
+                                            ConjugationSettingsViewModel.DailyGoalOptions,
+                                            cb => cb.SetBinding(
+                                                ComboBox.SelectedItemProperty,
+                                                Bind.TwoWayPath<ConjugationSettingsViewModel, int>(v => v.DailyGoal)))
+                                    ),
+
                                     // Practice filters section
                                     BuildPracticeFiltersSection(vm),
 
-                                    // Tense section (unchanged)
+                                    // Tense section
                                     SettingsSection.Build("Tense",
                                         SettingsRow.BuildToggle<ConjugationSettingsViewModel>(
                                             "Present", v => v.Present, v => v.CanDisablePresent),
@@ -64,18 +78,8 @@ public sealed partial class ConjugationSettingsPage : Page
                     .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"))
                     .Margin(16, 16, 16, 8),
 
-                // Practice range (navigation)
-                SettingsRow.BuildNavigation<ConjugationSettingsViewModel>(
-                    "Practice range",
-                    v => v.GoToLemmaRangeCommand,
-                    tb => tb.Text(() => vm.RangeText)),
-
                 // Endings checkboxes row
                 BuildEndingsCheckboxRow(),
-
-                // Include irregular toggle
-                SettingsRow.BuildToggle<ConjugationSettingsViewModel>(
-                    "Include irregular", v => v.IncludeIrregular),
 
                 // Person checkboxes row
                 BuildPersonCheckboxRow(),
@@ -112,7 +116,7 @@ public sealed partial class ConjugationSettingsPage : Page
             .MinWidth(60)
             .Padding(4, 0);
         cbAti.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<ConjugationSettingsViewModel, bool>(v => v.PatternAti));
-        cbAti.SetBinding(Control.IsEnabledProperty, Bind.Path<ConjugationSettingsViewModel, bool>(v => v.CanDisablePatternAti));
+        cbAti.SetBinding(IsEnabledProperty, Bind.Path<ConjugationSettingsViewModel, bool>(v => v.CanDisablePatternAti));
 
         // eti checkbox
         var cbEti = new CheckBox()
@@ -126,7 +130,7 @@ public sealed partial class ConjugationSettingsPage : Page
             .MinWidth(60)
             .Padding(4, 0);
         cbEti.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<ConjugationSettingsViewModel, bool>(v => v.PatternEti));
-        cbEti.SetBinding(Control.IsEnabledProperty, Bind.Path<ConjugationSettingsViewModel, bool>(v => v.CanDisablePatternEti));
+        cbEti.SetBinding(IsEnabledProperty, Bind.Path<ConjugationSettingsViewModel, bool>(v => v.CanDisablePatternEti));
 
         // oti checkbox
         var cbOti = new CheckBox()
@@ -140,7 +144,7 @@ public sealed partial class ConjugationSettingsPage : Page
             .MinWidth(60)
             .Padding(4, 0);
         cbOti.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<ConjugationSettingsViewModel, bool>(v => v.PatternOti));
-        cbOti.SetBinding(Control.IsEnabledProperty, Bind.Path<ConjugationSettingsViewModel, bool>(v => v.CanDisablePatternOti));
+        cbOti.SetBinding(IsEnabledProperty, Bind.Path<ConjugationSettingsViewModel, bool>(v => v.CanDisablePatternOti));
 
         // āti checkbox
         var cbAtiLong = new CheckBox()
@@ -154,7 +158,7 @@ public sealed partial class ConjugationSettingsPage : Page
             .MinWidth(60)
             .Padding(4, 0);
         cbAtiLong.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<ConjugationSettingsViewModel, bool>(v => v.PatternAtiLong));
-        cbAtiLong.SetBinding(Control.IsEnabledProperty, Bind.Path<ConjugationSettingsViewModel, bool>(v => v.CanDisablePatternAtiLong));
+        cbAtiLong.SetBinding(IsEnabledProperty, Bind.Path<ConjugationSettingsViewModel, bool>(v => v.CanDisablePatternAtiLong));
 
         // Traditional order: a, ā, e, o
         row.Children.Add(cbAti);
@@ -199,7 +203,7 @@ public sealed partial class ConjugationSettingsPage : Page
             .MinWidth(60)
             .Padding(4, 0);
         cb1.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<ConjugationSettingsViewModel, bool>(v => v.FirstPerson));
-        cb1.SetBinding(Control.IsEnabledProperty, Bind.Path<ConjugationSettingsViewModel, bool>(v => v.CanDisableFirstPerson));
+        cb1.SetBinding(IsEnabledProperty, Bind.Path<ConjugationSettingsViewModel, bool>(v => v.CanDisableFirstPerson));
 
         // 2nd person checkbox
         var cb2 = new CheckBox()
@@ -213,7 +217,7 @@ public sealed partial class ConjugationSettingsPage : Page
             .MinWidth(60)
             .Padding(4, 0);
         cb2.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<ConjugationSettingsViewModel, bool>(v => v.SecondPerson));
-        cb2.SetBinding(Control.IsEnabledProperty, Bind.Path<ConjugationSettingsViewModel, bool>(v => v.CanDisableSecondPerson));
+        cb2.SetBinding(IsEnabledProperty, Bind.Path<ConjugationSettingsViewModel, bool>(v => v.CanDisableSecondPerson));
 
         // 3rd person checkbox
         var cb3 = new CheckBox()
@@ -227,7 +231,7 @@ public sealed partial class ConjugationSettingsPage : Page
             .MinWidth(60)
             .Padding(4, 0);
         cb3.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<ConjugationSettingsViewModel, bool>(v => v.ThirdPerson));
-        cb3.SetBinding(Control.IsEnabledProperty, Bind.Path<ConjugationSettingsViewModel, bool>(v => v.CanDisableThirdPerson));
+        cb3.SetBinding(IsEnabledProperty, Bind.Path<ConjugationSettingsViewModel, bool>(v => v.CanDisableThirdPerson));
 
         checkboxContainer.Children.Add(cb1);
         checkboxContainer.Children.Add(cb2);

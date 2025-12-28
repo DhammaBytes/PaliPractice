@@ -9,7 +9,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
 {
     static void OnNumberBoxLostFocus(object sender, RoutedEventArgs e)
     {
-        if (sender is FrameworkElement fe && fe.DataContext is LemmaRangeSettingsViewModel viewModel)
+        if (sender is FrameworkElement { DataContext: LemmaRangeSettingsViewModel viewModel })
             viewModel.ValidateRangeCommand.Execute(null);
     }
 

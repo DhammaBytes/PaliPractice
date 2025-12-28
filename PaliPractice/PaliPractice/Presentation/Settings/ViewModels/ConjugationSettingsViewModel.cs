@@ -23,6 +23,9 @@ public partial class ConjugationSettingsViewModel : ObservableObject
 
     void LoadSettings()
     {
+        // Load daily goal
+        DailyGoal = _userData.GetSetting(SettingsKeys.ConjugationDailyGoal, SettingsKeys.DefaultDailyGoal);
+
         // Load person settings
         var persons = ParseEnumSet<Person>(_userData.GetSetting(SettingsKeys.ConjugationPersons, SettingsKeys.DefaultConjugationPersons));
         FirstPerson = persons.Contains(Person.First);
@@ -50,9 +53,6 @@ public partial class ConjugationSettingsViewModel : ObservableObject
         // Load reflexive setting
         ReflexiveSetting = _userData.GetSetting(SettingsKeys.ConjugationReflexive, SettingsKeys.DefaultReflexive);
 
-        // Load irregular setting
-        IncludeIrregular = _userData.GetSetting(SettingsKeys.ConjugationIncludeIrregular, true);
-
         // Load lemma range settings
         LemmaMin = _userData.GetSetting(SettingsKeys.ConjugationLemmaMin, SettingsKeys.DefaultLemmaMin);
         LemmaMax = _userData.GetSetting(SettingsKeys.ConjugationLemmaMax, SettingsKeys.DefaultLemmaMax);
@@ -61,6 +61,9 @@ public partial class ConjugationSettingsViewModel : ObservableObject
     void SaveSettings()
     {
         if (_isLoading) return;
+
+        // Save daily goal
+        _userData.SetSetting(SettingsKeys.ConjugationDailyGoal, DailyGoal);
 
         // Save persons
         var persons = new List<Person>();
@@ -90,9 +93,6 @@ public partial class ConjugationSettingsViewModel : ObservableObject
 
         // Save reflexive
         _userData.SetSetting(SettingsKeys.ConjugationReflexive, ReflexiveSetting);
-
-        // Save irregular
-        _userData.SetSetting(SettingsKeys.ConjugationIncludeIrregular, IncludeIrregular);
 
         // Save lemma range
         _userData.SetSetting(SettingsKeys.ConjugationLemmaMin, LemmaMin);
@@ -224,6 +224,16 @@ public partial class ConjugationSettingsViewModel : ObservableObject
 
     #endregion
 
+    #region Daily goal settings (dropdown)
+
+    public static readonly int[] DailyGoalOptions = [25, 50, 100];
+
+    [ObservableProperty]
+    int _dailyGoal = SettingsKeys.DefaultDailyGoal;
+    partial void OnDailyGoalChanged(int value) => SaveSettings();
+
+    #endregion
+
     #region Number settings (dropdown)
 
     public static readonly string[] NumberOptions = ["Singular & Plural", "Singular only", "Plural only"];
@@ -297,11 +307,6 @@ public partial class ConjugationSettingsViewModel : ObservableObject
     /// Whether to include reflexive forms.
     /// </summary>
     public bool IncludeReflexive => ReflexiveSetting is "both" or "reflexive";
-
-    // Include irregular verbs toggle
-    [ObservableProperty]
-    bool _includeIrregular = true;
-    partial void OnIncludeIrregularChanged(bool value) => SaveSettings();
 
     // Lemma range settings
     [ObservableProperty]

@@ -208,7 +208,6 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         var numberSetting = _userData.GetSetting(SettingsKeys.DeclensionNumberSetting, "Both");
         var minRank = _userData.GetSetting(SettingsKeys.DeclensionLemmaMin, SettingsKeys.DefaultLemmaMin);
         var maxRank = _userData.GetSetting(SettingsKeys.DeclensionLemmaMax, SettingsKeys.DefaultLemmaMax);
-        var includeIrregular = _userData.GetSetting(SettingsKeys.DeclensionIncludeIrregular, true);
 
         // Load excluded patterns per gender
         var mascExcluded = ParsePatternSet(_userData.GetSetting(SettingsKeys.DeclensionMascExcludedPatterns, ""));
@@ -230,10 +229,6 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         foreach (var lemma in lemmas)
         {
             var noun = (Noun)lemma.Primary;
-
-            // Skip irregular patterns if not enabled
-            if (!includeIrregular && noun.Pattern.IsIrregular())
-                continue;
 
             // Skip if pattern is excluded for this gender
             if (IsPatternExcluded(noun.Pattern, noun.Gender, mascExcluded, ntExcluded, femExcluded))
@@ -318,7 +313,6 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         var reflexiveSetting = _userData.GetSetting(SettingsKeys.ConjugationReflexive, SettingsKeys.DefaultReflexive);
         var minRank = _userData.GetSetting(SettingsKeys.ConjugationLemmaMin, SettingsKeys.DefaultLemmaMin);
         var maxRank = _userData.GetSetting(SettingsKeys.ConjugationLemmaMax, SettingsKeys.DefaultLemmaMax);
-        var includeIrregular = _userData.GetSetting(SettingsKeys.ConjugationIncludeIrregular, true);
 
         // Load excluded patterns
         var excludedPatterns = ParsePatternSet(_userData.GetSetting(SettingsKeys.ConjugationExcludedPatterns, ""));
@@ -342,10 +336,6 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         foreach (var lemma in lemmas)
         {
             var verb = (Verb)lemma.Primary;
-
-            // Skip irregular patterns if not enabled
-            if (!includeIrregular && verb.Pattern.IsIrregular())
-                continue;
 
             // Skip if pattern is excluded
             if (IsVerbPatternExcluded(verb.Pattern, excludedPatterns))
@@ -438,7 +428,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
     List<PracticeItem> ShuffleWithPriorityBias(List<PracticeItem> queue)
     {
         var tier1 = queue.Where(i => i.Priority >= 0.7).OrderBy(_ => _random.Next()).ToList();
-        var tier2 = queue.Where(i => i.Priority >= 0.4 && i.Priority < 0.7).OrderBy(_ => _random.Next()).ToList();
+        var tier2 = queue.Where(i => i.Priority is >= 0.4 and < 0.7).OrderBy(_ => _random.Next()).ToList();
         var tier3 = queue.Where(i => i.Priority < 0.4).OrderBy(_ => _random.Next()).ToList();
 
         var result = new List<PracticeItem>();

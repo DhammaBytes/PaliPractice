@@ -25,9 +25,9 @@ public class UserDataService : IUserDataService
             var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             var appFolder = System.IO.Path.Combine(appDataPath, "PaliPractice");
 
-            if (!System.IO.Directory.Exists(appFolder))
+            if (!Directory.Exists(appFolder))
             {
-                System.IO.Directory.CreateDirectory(appFolder);
+                Directory.CreateDirectory(appFolder);
             }
 
             var databasePath = System.IO.Path.Combine(appFolder, "user_data.db");

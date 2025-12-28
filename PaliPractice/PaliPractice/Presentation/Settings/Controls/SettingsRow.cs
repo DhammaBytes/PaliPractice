@@ -192,4 +192,37 @@ public static class SettingsRow
                 comboBox
             );
     }
+
+    /// <summary>
+    /// Builds a settings row with a label and dropdown (ComboBox) for int options.
+    /// </summary>
+    public static Grid BuildDropdown(
+        string label,
+        int[] options,
+        Action<ComboBox> bindSelectedItem)
+    {
+        var comboBox = new ComboBox()
+            .VerticalAlignment(VerticalAlignment.Center)
+            .MinWidth(160)
+            .Grid(column: 1);
+
+        foreach (var option in options)
+            comboBox.Items.Add(option);
+
+        bindSelectedItem(comboBox);
+
+        return new Grid()
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .ColumnDefinitions("*,Auto")
+            .Padding(16, 12)
+            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .Children(
+                RegularText()
+                    .Text(label)
+                    .FontSize(16)
+                    .VerticalAlignment(VerticalAlignment.Center)
+                    .Grid(column: 0),
+                comboBox
+            );
+    }
 }

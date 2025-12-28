@@ -47,12 +47,12 @@ public static class TipitakaWordlistLoader
             foreach (var file in WordlistFiles)
             {
                 var path = System.IO.Path.Combine(FrequencyPath, file);
-                if (!System.IO.File.Exists(path))
+                if (!File.Exists(path))
                 {
                     throw new FileNotFoundException($"Tipitaka wordlist not found: {path}");
                 }
 
-                var json = System.IO.File.ReadAllText(path);
+                var json = File.ReadAllText(path);
                 var wordlist = JsonSerializer.Deserialize<string[]>(json);
                 if (wordlist != null)
                 {

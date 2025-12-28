@@ -17,10 +17,10 @@ public partial class DeclensionSettingsViewModel : ObservableObject
         .Where(p => p < NounPattern._RegularFem)
         .Select(p => p.ToDisplayLabel()).ToArray();
     public static readonly string[] NtPatterns = Enum.GetValues<NounPattern>()
-        .Where(p => p > NounPattern._RegularNeut && p < NounPattern._Irregular)
+        .Where(p => p is > NounPattern._RegularNeut and < NounPattern._Irregular)
         .Select(p => p.ToDisplayLabel()).ToArray();
     public static readonly string[] FemPatterns = Enum.GetValues<NounPattern>()
-        .Where(p => p > NounPattern._RegularFem && p < NounPattern._RegularNeut)
+        .Where(p => p is > NounPattern._RegularFem and < NounPattern._RegularNeut)
         .Select(p => p.ToDisplayLabel()).ToArray();
 
     public DeclensionSettingsViewModel(INavigator navigator, IUserDataService userData)
@@ -35,6 +35,9 @@ public partial class DeclensionSettingsViewModel : ObservableObject
 
     void LoadSettings()
     {
+        // Load daily goal
+        DailyGoal = _userData.GetSetting(SettingsKeys.DeclensionDailyGoal, SettingsKeys.DefaultDailyGoal);
+
         // Load pattern settings (stored as excluded patterns per gender)
         var mascExcluded = ParsePatternSet(_userData.GetSetting(SettingsKeys.DeclensionMascExcludedPatterns, ""));
         PatternMascA = !mascExcluded.Contains("a");
@@ -57,9 +60,6 @@ public partial class DeclensionSettingsViewModel : ObservableObject
         PatternFemILong = !femExcluded.Contains("ī");
         PatternFemU = !femExcluded.Contains("u");
         PatternFemAr = !femExcluded.Contains("ar");
-
-        // Load irregular setting
-        IncludeIrregular = _userData.GetSetting(SettingsKeys.DeclensionIncludeIrregular, true);
 
         // Load number setting (migrate old values)
         var numberRaw = _userData.GetSetting(SettingsKeys.DeclensionNumberSetting, "Singular & Plural");
@@ -84,6 +84,9 @@ public partial class DeclensionSettingsViewModel : ObservableObject
     void SaveSettings()
     {
         if (_isLoading) return;
+
+        // Save daily goal
+        _userData.SetSetting(SettingsKeys.DeclensionDailyGoal, DailyGoal);
 
         // Save pattern exclusions
         var mascExcluded = new List<string>();
@@ -110,9 +113,6 @@ public partial class DeclensionSettingsViewModel : ObservableObject
         if (!PatternFemU) femExcluded.Add("u");
         if (!PatternFemAr) femExcluded.Add("ar");
         _userData.SetSetting(SettingsKeys.DeclensionFemExcludedPatterns, string.Join(",", femExcluded));
-
-        // Save irregular setting
-        _userData.SetSetting(SettingsKeys.DeclensionIncludeIrregular, IncludeIrregular);
 
         // Save number setting
         _userData.SetSetting(SettingsKeys.DeclensionNumberSetting, NumberSetting);
@@ -517,11 +517,15 @@ public partial class DeclensionSettingsViewModel : ObservableObject
     public bool CanDisablePatternFemILong => EnabledPatternCount > 1 || !PatternFemILong;
     public bool CanDisablePatternFemU => EnabledPatternCount > 1 || !PatternFemU;
     public bool CanDisablePatternFemAr => EnabledPatternCount > 1 || !PatternFemAr;
+    #endregion
 
-    // Include irregular nouns toggle
+    #region Daily goal settings (dropdown)
+
+    public static readonly int[] DailyGoalOptions = [25, 50, 100];
+
     [ObservableProperty]
-    bool _includeIrregular = true;
-    partial void OnIncludeIrregularChanged(bool value) => SaveSettings();
+    int _dailyGoal = SettingsKeys.DefaultDailyGoal;
+    partial void OnDailyGoalChanged(int value) => SaveSettings();
 
     #endregion
 

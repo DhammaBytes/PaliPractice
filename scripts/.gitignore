@@ -1,0 +1,9 @@
+# Validation log files (generated during extraction)
+inflection_validation_*.log
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Backup files
+*.backup.json

@@ -12,6 +12,8 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple, Set
 import sys
 
+from validate_inflections import InflectionValidator
+
 # Lemma registry for stable IDs across rebuilds
 REGISTRY_PATH = Path(__file__).parent / "lemma_registry.json"
 REGISTRY_BACKUP_PATH = Path(__file__).parent / "lemma_registry.backup.json"
@@ -555,6 +557,30 @@ class NounVerbExtractor:
     def get_noun_pos_list(self) -> List[str]:
         """Get list of noun POS categories (exact matches only)."""
         return ['masc', 'fem', 'nt']
+
+    def validate_noun_pattern_gender(self, word: DpdHeadword) -> bool:
+        """Validate that noun pattern gender matches pos gender.
+
+        Returns True if valid, False if mismatch (should be skipped).
+        """
+        pos = word.pos.lower()
+        pattern = word.pattern.lower() if word.pattern else ""
+
+        # Map pos to expected pattern gender suffix
+        if pos == 'masc':
+            if 'masc' not in pattern:
+                print(f"  SKIP: Pattern-POS mismatch: {word.lemma_1} pos={word.pos} pattern={word.pattern}")
+                return False
+        elif pos == 'fem':
+            if 'fem' not in pattern:
+                print(f"  SKIP: Pattern-POS mismatch: {word.lemma_1} pos={word.pos} pattern={word.pattern}")
+                return False
+        elif pos == 'nt':
+            if 'nt' not in pattern:
+                print(f"  SKIP: Pattern-POS mismatch: {word.lemma_1} pos={word.pos} pattern={word.pattern}")
+                return False
+
+        return True
     
     def get_verb_pos_list(self) -> List[str]:
         """Get list of verb POS categories (exact matches only).
@@ -590,8 +616,9 @@ class NounVerbExtractor:
             ~DpdHeadword.meaning_1.contains('family name')
         ).all()
 
-        # Filter to words with inflection templates
-        words_with_templates = [w for w in all_words if w.it is not None]
+        # Filter to words with inflection templates and valid pattern-pos gender match
+        print("\nValidating noun pattern-pos gender matches...")
+        words_with_templates = [w for w in all_words if w.it is not None and self.validate_noun_pattern_gender(w)]
 
         # Group by lemma_clean and get max ebt_count for ordering
         lemma_max_ebt: Dict[str, int] = {}
@@ -607,7 +634,6 @@ class NounVerbExtractor:
 
         # Get top N lemmas by max ebt_count
         top_lemmas = sorted(lemma_max_ebt.keys(), key=lambda lc: -lemma_max_ebt[lc])[:self.noun_limit]
-        top_lemmas_set = set(top_lemmas)
         print(f"Selected {len(top_lemmas)} unique noun lemmas")
 
         # Collect all words from selected lemmas, ordered by ebt_count
@@ -914,6 +940,9 @@ class NounVerbExtractor:
         # Create schema
         self.create_schema()
 
+        # Initialize inflection validator
+        validator = InflectionValidator(log_dir=Path(__file__).parent)
+
         # Get words
         nouns = self.get_training_nouns()
         verbs = self.get_training_verbs()
@@ -960,6 +989,9 @@ class NounVerbExtractor:
             forms, generated, filtered = self.parse_inflection_template(word, 'noun')
             total_noun_forms_generated += generated
             total_noun_forms_filtered += filtered
+
+            # Validate noun declension completeness
+            validator.validate_noun(word.lemma_clean, word.pattern, forms)
 
             if forms:
                 # For nouns, check if we have a nominative singular form
@@ -1017,6 +1049,9 @@ class NounVerbExtractor:
             forms, generated, filtered = self.parse_inflection_template(word, 'verb')
             total_verb_forms_generated += generated
             total_verb_forms_filtered += filtered
+
+            # Validate verb conjugation completeness
+            validator.validate_verb(word.lemma_clean, word.pattern, forms)
 
             # Track lemma_ids that have any reflexive form
             if any(f.get('reflexive', 0) == GrammarEnums.REFLEXIVE_YES for f in forms):
@@ -1109,7 +1144,12 @@ class NounVerbExtractor:
         print(f"Total: {total_forms_generated} forms")
         print(f"  - In Tipitaka corpus (in_corpus=1): {total_forms_in_corpus} ({100-not_in_corpus_percentage:.1f}%)")
         print(f"  - Theoretical only (in_corpus=0): {total_forms_not_in_corpus} ({not_in_corpus_percentage:.1f}%)")
-        
+
+        # Write validation report and print summary
+        log_path = validator.write_report()
+        print(f"\nInflection validation log: {log_path}")
+        validator.print_summary()
+
         self.print_summary_stats()
     
     def print_summary_stats(self):

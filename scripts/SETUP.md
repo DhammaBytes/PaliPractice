@@ -9,6 +9,7 @@ This directory contains all setup instructions and scripts to build the PaliPrac
 ```
 scripts/
 ├── extract_nouns_and_verbs.py   # Main extraction script
+├── validate_inflections.py       # Inflection completeness validation (called during extraction)
 ├── validate_db.py                # Database validation
 ├── lemma_registry.json           # Stable lemma ID assignments (version controlled)
 ├── requirements.txt              # Python dependencies
@@ -26,6 +27,50 @@ The primary extraction script that:
 - Assigns stable `lemma_id` values via `lemma_registry.json`
 - Uses EBT frequency counts for word selection
 - Outputs to `../PaliPractice/PaliPractice/Data/training.db` for the app's consumption
+
+### `validate_inflections.py`
+Validates inflection completeness during extraction (called automatically by `extract_nouns_and_verbs.py`):
+- Outputs to timestamped log file: `inflection_validation_YYYYMMDD_HHMMSS.log`
+- Prints summary to stdout without polluting main extraction output
+
+**Noun Validations:**
+| Category | Description |
+|----------|-------------|
+| Plural-only | Patterns ending in ` pl` (e.g., `a masc pl`) - lacks singular declensions |
+| Singular-only | No plural forms in template |
+| Missing forms | Incomplete case/number grid (8 cases × 2 numbers expected) |
+
+**Verb Validations:**
+| Category | Description |
+|----------|-------------|
+| Unusual tenses | Has Aorist (unexpected for `pr` pattern verbs) |
+| Missing tenses | Missing expected tenses (Present, Imperative, Optative, Future) |
+| Impersonal | Only 3rd person forms exist |
+| Defective persons | Missing some persons in certain tenses |
+| Incomplete conjugations | Missing person/number combinations |
+
+**Example log output:**
+```
+=== NOUN IRREGULARITIES ===
+
+PLURAL-ONLY (pattern ends in 'pl'):
+  devamanussā - "a masc pl" - lacks singular declensions
+
+SINGULAR-ONLY (no plural forms in template):
+  [listed if found]
+
+=== VERB IRREGULARITIES ===
+
+MISSING TENSES:
+  hoti - "hoti pr" - missing tenses: [opt, fut]
+  natthi - "natthi pr" - missing tenses: [imp, opt, fut]
+
+IMPERSONAL (3rd person only):
+  [listed if found]
+
+DEFECTIVE PERSONS:
+  verb - "pattern" - pr: missing [1st, 2nd]
+```
 
 ### `validate_db.py`
 Validates the generated database:

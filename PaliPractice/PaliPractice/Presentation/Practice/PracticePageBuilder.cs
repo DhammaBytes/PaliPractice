@@ -64,23 +64,23 @@ public static class PracticePageBuilder
     {
         var fonts = LayoutConstants.PracticeFontSizes.Get(heightClass);
 
-        // Build word display
-        var wordTextBlock = BuildCardWord(config.FlashCardPath, fonts);
-        elements.WordTextBlock = wordTextBlock;
+        // Build word display (Viewbox shrinks long words automatically)
+        var wordViewbox = BuildCardWord(config.FlashCardPath, fonts);
+        elements.WordViewbox = wordViewbox;
         elements.BadgesPanel = badges.Panel;
         elements.BadgeBorders.AddRange(badges.Borders);
         elements.BadgeTextBlocks.AddRange(badges.TextBlocks);
         elements.BadgeIcons.AddRange(badges.Icons);
 
-        // Build answer section
-        var (answerTextBlock, secondaryTextBlock, placeholder, answerContainer) = BuildAnswerSection(
+        // Build answer section (Viewbox shrinks long words automatically)
+        var (answerViewbox, secondaryViewbox, placeholder, answerContainer) = BuildAnswerSection(
             config.AnswerStemPath,
             config.AnswerEndingPath,
             config.AlternativeFormsPath,
             config.IsRevealedPath,
             fonts);
-        elements.AnswerTextBlock = answerTextBlock;
-        elements.AnswerSecondaryTextBlock = secondaryTextBlock;
+        elements.AnswerViewbox = answerViewbox;
+        elements.AnswerSecondaryViewbox = secondaryViewbox;
         elements.AnswerPlaceholder = placeholder;
 
         // Build translation carousel
@@ -115,7 +115,7 @@ public static class PracticePageBuilder
         var cardChildren = new List<UIElement>
         {
             BuildCardHeader(config.FlashCardPath, config.RankPrefix, debugText),
-            wordTextBlock,
+            wordViewbox,
             badges.Panel
         };
 
@@ -283,28 +283,36 @@ public static class PracticePageBuilder
     }
 
     /// <summary>
-    /// Builds the main word TextBlock.
+    /// Builds the main word display with Viewbox for shrinking long words.
     /// </summary>
-    static TextBlock BuildCardWord<TVM>(
+    static Viewbox BuildCardWord<TVM>(
         Expression<Func<TVM, FlashCardViewModel>> cardPath,
         LayoutConstants.PracticeFontSizes fonts)
     {
-        return PaliText()
+        var textBlock = PaliText()
             .Scope(cardPath)
             .TextWithin<FlashCardViewModel>(c => c.Question)
             .FontSize(fonts.Word)
             .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .TextAlignment(TextAlignment.Center)
-            .TextWrapping(TextWrapping.Wrap)
-            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
-            .Margin(0, LayoutConstants.Gaps.WordTop, 0, LayoutConstants.Gaps.WordBottom);
+            .TextWrapping(TextWrapping.NoWrap)
+            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"));
+
+        return new Viewbox()
+            .Stretch(Stretch.Uniform)
+            .StretchDirection(StretchDirection.DownOnly)
+            .HorizontalAlignment(HorizontalAlignment.Center)
+            .MaxHeight(fonts.Word * 1.5) // Limit height to prevent over-shrinking
+            .Margin(0, LayoutConstants.Gaps.WordTop, 0, LayoutConstants.Gaps.WordBottom)
+            .Child(textBlock);
     }
 
     /// <summary>
     /// Builds the answer section with spacer, content, and placeholder.
+    /// Returns Viewbox wrappers that shrink long words automatically.
     /// </summary>
-    static (TextBlock answerTextBlock, TextBlock secondaryTextBlock, Border placeholder, Grid answerContainer) BuildAnswerSection<TVM>(
+    static (Viewbox answerViewbox, Viewbox secondaryViewbox, Border placeholder, Grid answerContainer) BuildAnswerSection<TVM>(
         Expression<Func<TVM, string>> answerStemPath,
         Expression<Func<TVM, string>> answerEndingPath,
         Expression<Func<TVM, string>> alternativeFormsPath,
@@ -315,14 +323,32 @@ public static class PracticePageBuilder
         // var answerTextBlock = CreateBoldEndingAnswer(answerStemPath, answerEndingPath);
         var answerTextBlock = CreateColorEndingAnswer(answerStemPath, answerEndingPath, fonts);
 
+        // Wrap answer in Viewbox to shrink long words
+        var answerViewbox = new Viewbox()
+            .Stretch(Stretch.Uniform)
+            .StretchDirection(StretchDirection.DownOnly)
+            .HorizontalAlignment(HorizontalAlignment.Center)
+            .MaxHeight(fonts.Answer * 1.5)
+            .Child(answerTextBlock);
+
         var alternativeFormsTextBlock = PaliText()
             .FontSize(fonts.AnswerSecondary)
             .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .TextAlignment(TextAlignment.Center)
+            .TextWrapping(TextWrapping.NoWrap)
             .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
             .Text<TVM>(alternativeFormsPath)
             .StringToVisibility<TextBlock, TVM>(alternativeFormsPath);
+
+        // Wrap alternatives in Viewbox to shrink long forms
+        var alternativesViewbox = new Viewbox()
+            .Stretch(Stretch.Uniform)
+            .StretchDirection(StretchDirection.DownOnly)
+            .HorizontalAlignment(HorizontalAlignment.Center)
+            .MaxHeight(fonts.AnswerSecondary * 1.5)
+            .StringToVisibility<Viewbox, TVM>(alternativeFormsPath)
+            .Child(alternativeFormsTextBlock);
 
         var answerSpacer = new StackPanel()
             .Spacing(LayoutConstants.Gaps.AnswerLines)
@@ -343,7 +369,7 @@ public static class PracticePageBuilder
             .HorizontalAlignment(HorizontalAlignment.Center)
             .VerticalAlignment(VerticalAlignment.Center)
             .BoolToVisibility<StackPanel, TVM>(isRevealedPath)
-            .Children(answerTextBlock, alternativeFormsTextBlock);
+            .Children(answerViewbox, alternativesViewbox);
 
         // Placeholder uses relative width via binding or we track width changes
         var answerPlaceholder = new Border()
@@ -359,7 +385,7 @@ public static class PracticePageBuilder
             .Margin(0, LayoutConstants.Gaps.AnswerTop, 0, 0)
             .Children(answerSpacer, answerContent, answerPlaceholder);
 
-        return (answerTextBlock, alternativeFormsTextBlock, answerPlaceholder, answerContainer);
+        return (answerViewbox, alternativesViewbox, answerPlaceholder, answerContainer);
     }
 
     static TextBlock CreateColorEndingAnswer<TVM>(
@@ -813,12 +839,15 @@ public static class PracticePageBuilder
         // Badge spacing
         elements.BadgesPanel?.Spacing = LayoutConstants.Gaps.BadgeSpacing(heightClass);
 
-        // Word font
-        elements.WordTextBlock?.FontSize = fonts.Word;
+        // Word Viewbox max height (controls shrinking threshold)
+        if (elements.WordViewbox is not null)
+            elements.WordViewbox.MaxHeight = fonts.Word * 1.5;
 
-        // Answer fonts
-        elements.AnswerTextBlock?.FontSize = fonts.Answer;
-        elements.AnswerSecondaryTextBlock?.FontSize = fonts.AnswerSecondary;
+        // Answer Viewbox max heights
+        if (elements.AnswerViewbox is not null)
+            elements.AnswerViewbox.MaxHeight = fonts.Answer * 1.5;
+        if (elements.AnswerSecondaryViewbox is not null)
+            elements.AnswerSecondaryViewbox.MaxHeight = fonts.AnswerSecondary * 1.5;
 
         // Badge fonts and padding
         var badgePadding = LayoutConstants.Gaps.Badge(heightClass);
@@ -870,9 +899,9 @@ public class ResponsiveElements
     public Grid? ContentArea { get; set; }
     public SquircleBorder? CardBorder { get; set; }
     public StackPanel? BadgesPanel { get; set; }
-    public TextBlock? WordTextBlock { get; set; }
-    public TextBlock? AnswerTextBlock { get; set; }
-    public TextBlock? AnswerSecondaryTextBlock { get; set; }
+    public Viewbox? WordViewbox { get; set; }
+    public Viewbox? AnswerViewbox { get; set; }
+    public Viewbox? AnswerSecondaryViewbox { get; set; }
     public Border? AnswerPlaceholder { get; set; }
     public TextBlock? BadgeHintTextBlock { get; set; }
     public TextBlock? TranslationTextBlock { get; set; }

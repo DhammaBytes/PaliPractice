@@ -195,6 +195,16 @@ public static class NounPatternHelper
             => pattern >= NounPattern._Irregular;
 
         /// <summary>
+        /// Returns true if the pattern is plural-only (lacks singular forms).
+        /// These are true "pluralia tantum" nouns.
+        /// </summary>
+        public bool IsPluralOnly() => pattern is
+            NounPattern.AMascPl or
+            NounPattern.ĪMascPl or
+            NounPattern.UMascPl or
+            NounPattern.ANeutPl;
+
+        /// <summary>
         /// Gets the gender for a pattern using breakpoint comparisons.
         /// For irregular patterns, recursively gets parent's gender.
         /// </summary>

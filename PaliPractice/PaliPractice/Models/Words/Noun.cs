@@ -52,6 +52,13 @@ public class Noun : IWord
     public bool Irregular => Pattern.IsIrregular();
 
     /// <summary>
+    /// Whether this noun is plural-only (lacks singular forms).
+    /// True "pluralia tantum" nouns should not be asked for singular declensions.
+    /// </summary>
+    [Ignore]
+    public bool PluralOnly => Pattern.IsPluralOnly();
+
+    /// <summary>
     /// Display details for this noun. Lazy-loaded when showing flashcards.
     /// </summary>
     [Ignore]

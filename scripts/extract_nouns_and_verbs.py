@@ -59,10 +59,11 @@ from extraction.config import (
     TIPITAKA_FREQ_PATH,
     TIPITAKA_WORDLIST_FILES,
     is_plural_only_pattern,
+    MAX_LEMMA_LENGTH,
 )
 from extraction.grammar import pos_to_gender
 
-from validate_inflections import InflectionValidator
+from extraction.validate_inflections import InflectionValidator, PluralOnlyMatch
 
 sys.path.append('../dpd-db')
 
@@ -369,16 +370,36 @@ class NounVerbExtractor:
             ~DpdHeadword.meaning_1.contains('(abhi)'),
             ~DpdHeadword.meaning_1.contains('(comm)'),
             ~DpdHeadword.meaning_1.contains('in reference to'),
+            ~DpdHeadword.meaning_1.contains('people of'),
             ~DpdHeadword.meaning_1.contains('name of'),
             ~DpdHeadword.meaning_1.contains('family name')
         ).all()
 
-        # Filter to words with inflection templates and valid pattern-pos gender match
+        # Filter to words with inflection templates, valid pattern-pos gender match, and reasonable length
         print("\nValidating noun pattern-pos gender matches...")
-        words_with_templates = [w for w in all_words if w.it is not None and self.validate_noun_pattern_gender(w)]
+        words_with_templates = [
+            w for w in all_words
+            if w.it is not None
+            and self.validate_noun_pattern_gender(w)
+            and len(w.lemma_clean) <= MAX_LEMMA_LENGTH
+        ]
+        long_filtered = sum(1 for w in all_words if w.it and len(w.lemma_clean) > MAX_LEMMA_LENGTH)
+        if long_filtered:
+            print(f"  Filtered {long_filtered} nouns with lemma > {MAX_LEMMA_LENGTH} chars")
 
-        # Build singular index for plural-only deduplication
-        self.plural_dedup.build_singular_index(words_with_templates)
+        # Build singular index from ALL DPD nouns (not just filtered ones)
+        # This ensures plural-only deduplication finds matches even when
+        # the singular form lacks meaning/sutta and wouldn't be extracted
+        print("\nBuilding singular index from all DPD nouns...")
+        all_dpd_nouns = self.db_session.query(DpdHeadword).filter(
+            DpdHeadword.pos.in_(NOUN_POS_LIST),
+            DpdHeadword.pattern.isnot(None),
+            DpdHeadword.pattern != '',
+            DpdHeadword.stem.isnot(None),
+            DpdHeadword.stem != '-',
+        ).all()
+        all_dpd_nouns_with_templates = [w for w in all_dpd_nouns if w.it is not None]
+        self.plural_dedup.build_singular_index(all_dpd_nouns_with_templates)
 
         # Filter out redundant plural-only lemmas
         print("\nChecking for redundant plural-only lemmas...")
@@ -469,8 +490,14 @@ class NounVerbExtractor:
             ~DpdHeadword.grammar.contains('reflx')
         ).all()
 
-        # Filter to words with inflection templates
-        words_with_templates = [w for w in all_words if w.it is not None]
+        # Filter to words with inflection templates and reasonable length
+        words_with_templates = [
+            w for w in all_words
+            if w.it is not None and len(w.lemma_clean) <= MAX_LEMMA_LENGTH
+        ]
+        long_filtered = sum(1 for w in all_words if w.it and len(w.lemma_clean) > MAX_LEMMA_LENGTH)
+        if long_filtered:
+            print(f"  Filtered {long_filtered} verbs with lemma > {MAX_LEMMA_LENGTH} chars")
 
         # Group by lemma_clean and get max ebt_count
         lemma_max_ebt: Dict[str, int] = {}
@@ -638,7 +665,16 @@ class NounVerbExtractor:
             total_noun_forms_generated += generated
             total_noun_forms_filtered += filtered
 
-            validator.validate_noun(word.lemma_clean, word.pattern, forms)
+            # Get match info for plural-only nouns (for validation report)
+            plural_matches = None
+            if is_plural_only_pattern(word.pattern):
+                raw_matches = self.plural_dedup.get_all_matches(word)
+                plural_matches = [
+                    PluralOnlyMatch(lemma=m[0], pattern=m[1], match_ratio=m[2])
+                    for m in raw_matches
+                ]
+
+            validator.validate_noun(word.lemma_clean, word.pattern, forms, plural_matches)
 
             if forms:
                 has_nom_sg = any(

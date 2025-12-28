@@ -7,9 +7,9 @@ with pattern "a masc"). When the plural-only lemma's forms exactly match
 another lemma's plural column, we skip it to avoid redundancy.
 
 Algorithm:
-1. Build an index of all singular lemmas grouped by (stem_clean, gender)
+1. Build an index of all singular lemmas grouped by stem (gender-agnostic)
 2. For each plural-only lemma (pattern ends with ' pl'):
-   a. Look up lemmas with same (stem_clean, gender)
+   a. Look up all lemmas with same stem (any gender)
    b. For each candidate, compare plural-only forms to candidate's plural column
    c. If 100% match found, mark the plural-only lemma as redundant
 
@@ -19,7 +19,7 @@ plural forms are kept and marked specially in the Noun model.
 
 import json
 import re
-from typing import Dict, List, Set, Tuple, Optional, Any
+from typing import Dict, List, Set, Optional, Any, Tuple
 from dataclasses import dataclass
 
 from .config import is_plural_only_pattern
@@ -62,8 +62,8 @@ class PluralOnlyDeduplicator:
             db_session: SQLAlchemy session for DPD database
         """
         self.db_session = db_session
-        # Index: (stem_clean, gender) -> list of (lemma_1, pattern, plural_forms)
-        self._singular_index: Dict[Tuple[str, str], List[Tuple[str, str, Set[str]]]] = {}
+        # Index: stem -> list of (lemma_1, pattern, plural_forms)
+        self._singular_index: Dict[str, List[Tuple[str, str, Set[str]]]] = {}
         self._redundant_count = 0
         self._true_plural_only_count = 0
 
@@ -102,6 +102,11 @@ class PluralOnlyDeduplicator:
         # Plural forms are typically in column pairs 3-4 (indices 3, 4)
         for row in template_data[1:]:  # Skip header
             if len(row) < 4:
+                continue
+
+            # Skip "in comps" row - it's not a grammatical case
+            row_label = row[0][0] if row[0] and isinstance(row[0], list) else (row[0] or "")
+            if "in comps" in str(row_label).lower():
                 continue
 
             # Check columns for plural forms
@@ -151,6 +156,11 @@ class PluralOnlyDeduplicator:
         stem = clean_stem(word.stem)
 
         for row in template_data[1:]:  # Skip header
+            # Skip "in comps" row - it's not a grammatical case
+            row_label = row[0][0] if row[0] and isinstance(row[0], list) else (row[0] or "")
+            if "in comps" in str(row_label).lower():
+                continue
+
             for col_idx in range(1, len(row), 2):  # Odd columns have endings
                 endings = row[col_idx] if col_idx < len(row) else None
                 if not endings:
@@ -182,25 +192,25 @@ class PluralOnlyDeduplicator:
             if is_plural_only_pattern(pattern):
                 continue
 
+            # We still need a gender to ensure it's a valid noun pattern
             gender = self._extract_gender_from_pattern(pattern)
             if not gender:
                 continue
 
             stem = clean_stem(word.stem)
-            key = (stem, gender)
 
             # Get plural forms from this singular lemma's template
             plural_forms = self._get_plural_forms_from_template(word)
             if not plural_forms:
                 continue
 
-            if key not in self._singular_index:
-                self._singular_index[key] = []
+            if stem not in self._singular_index:
+                self._singular_index[stem] = []
 
-            self._singular_index[key].append((word.lemma_1, pattern, plural_forms))
+            self._singular_index[stem].append((word.lemma_1, pattern, plural_forms))
 
         total_entries = sum(len(v) for v in self._singular_index.values())
-        print(f"  Indexed {total_entries} singular lemmas across {len(self._singular_index)} (stem, gender) keys")
+        print(f"  Indexed {total_entries} singular lemmas across {len(self._singular_index)} unique stems")
 
     def check_redundant(self, word) -> PluralMatchResult:
         """
@@ -216,17 +226,15 @@ class PluralOnlyDeduplicator:
         if not is_plural_only_pattern(pattern):
             return PluralMatchResult(is_redundant=False)
 
-        gender = self._extract_gender_from_pattern(pattern)
         stem = clean_stem(word.stem)
-        key = (stem, gender)
 
         # Get all forms from plural-only (all forms are plural)
         plural_only_forms = self._get_all_forms_from_template(word)
         if not plural_only_forms:
             return PluralMatchResult(is_redundant=False, plural_only_forms=0)
 
-        # Look for matching singulars
-        candidates = self._singular_index.get(key, [])
+        # Look for matching singulars by stem (any gender)
+        candidates = self._singular_index.get(stem, [])
 
         best_match = PluralMatchResult(
             is_redundant=False,
@@ -244,7 +252,7 @@ class PluralOnlyDeduplicator:
 
             if match_ratio > best_match.match_ratio:
                 best_match = PluralMatchResult(
-                    is_redundant=(match_ratio == 1.0),
+                    is_redundant=(match_ratio > 0.5),  # >50% match = redundant
                     matched_lemma=lemma_1,
                     matched_pattern=sing_pattern,
                     match_ratio=match_ratio,
@@ -252,8 +260,8 @@ class PluralOnlyDeduplicator:
                     matching_forms=len(matching)
                 )
 
-            # Early exit on perfect match
-            if match_ratio == 1.0:
+            # Early exit on sufficient match
+            if match_ratio > 0.5:
                 break
 
         if best_match.is_redundant:
@@ -263,11 +271,51 @@ class PluralOnlyDeduplicator:
 
         return best_match
 
+    def get_all_matches(self, word) -> List[Tuple[str, str, float]]:
+        """
+        Get all stem matches for a plural-only lemma with their match ratios.
+
+        Args:
+            word: DpdHeadword object with plural-only pattern
+
+        Returns:
+            List of (lemma_1, pattern, match_ratio) for all candidates
+        """
+        pattern = word.pattern or ""
+        if not is_plural_only_pattern(pattern):
+            return []
+
+        stem = clean_stem(word.stem)
+
+        # Get all forms from plural-only
+        plural_only_forms = self._get_all_forms_from_template(word)
+        if not plural_only_forms:
+            return []
+
+        # Look for matching singulars by stem
+        candidates = self._singular_index.get(stem, [])
+        matches = []
+
+        for lemma_1, sing_pattern, sing_plural_forms in candidates:
+            if not sing_plural_forms:
+                continue
+
+            # Check overlap
+            matching = plural_only_forms & sing_plural_forms
+            match_ratio = len(matching) / len(plural_only_forms)
+
+            if match_ratio > 0:
+                matches.append((lemma_1, sing_pattern, match_ratio))
+
+        # Sort by match ratio descending
+        matches.sort(key=lambda x: -x[2])
+        return matches
+
     def get_stats(self) -> Dict[str, int]:
         """Get deduplication statistics."""
         return {
             'singular_lemmas_indexed': sum(len(v) for v in self._singular_index.values()),
-            'unique_stem_gender_keys': len(self._singular_index),
+            'unique_stems': len(self._singular_index),
             'redundant_plural_only': self._redundant_count,
             'true_plural_only': self._true_plural_only_count,
         }
@@ -277,6 +325,6 @@ class PluralOnlyDeduplicator:
         stats = self.get_stats()
         print(f"\n=== PLURAL-ONLY DEDUPLICATION SUMMARY ===")
         print(f"Singular lemmas indexed: {stats['singular_lemmas_indexed']}")
-        print(f"Unique (stem, gender) keys: {stats['unique_stem_gender_keys']}")
+        print(f"Unique stems: {stats['unique_stems']}")
         print(f"Redundant plural-only (skipped): {stats['redundant_plural_only']}")
         print(f"True plural-only (kept): {stats['true_plural_only']}")

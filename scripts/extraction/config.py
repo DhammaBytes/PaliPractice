@@ -8,6 +8,10 @@ from pathlib import Path
 REGISTRY_PATH = Path(__file__).parent.parent / "lemma_registry.json"
 REGISTRY_BACKUP_PATH = Path(__file__).parent.parent / "lemma_registry.backup.json"
 
+# Maximum lemma length (characters) - filters out very long compounds
+# that would break UI layouts
+MAX_LEMMA_LENGTH = 18
+
 # Lemma ID ranges
 # Nouns: 10001-69999
 # Verbs: 70001-99999

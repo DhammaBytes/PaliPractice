@@ -13,6 +13,14 @@ from dataclasses import dataclass, field
 
 
 @dataclass
+class PluralOnlyMatch:
+    """Match info for a plural-only noun against singular lemmas."""
+    lemma: str
+    pattern: str
+    match_ratio: float  # 0.0-1.0
+
+
+@dataclass
 class NounIrregularity:
     """Represents a noun with incomplete or unusual declensions."""
     lemma: str
@@ -21,6 +29,7 @@ class NounIrregularity:
     is_singular_only: bool = False  # No plural forms in template
     missing_cases: List[str] = field(default_factory=list)  # e.g., ["acc_sg", "dat_pl"]
     missing_numbers: List[str] = field(default_factory=list)  # "sg" or "pl"
+    plural_only_matches: List[PluralOnlyMatch] = field(default_factory=list)  # Candidates for plural-only
 
 
 @dataclass
@@ -89,7 +98,13 @@ class InflectionValidator:
         """Check if pattern is a known plural-only pattern (ends in 'pl')."""
         return pattern.strip().endswith(' pl')
 
-    def validate_noun(self, lemma: str, pattern: str, forms: List[Dict[str, Any]]) -> None:
+    def validate_noun(
+        self,
+        lemma: str,
+        pattern: str,
+        forms: List[Dict[str, Any]],
+        plural_only_matches: Optional[List[PluralOnlyMatch]] = None
+    ) -> None:
         """
         Validate noun declension completeness.
 
@@ -97,6 +112,7 @@ class InflectionValidator:
             lemma: The noun lemma (e.g., "dhamma")
             pattern: The inflection pattern (e.g., "a masc", "a masc pl")
             forms: List of form dicts from parse_inflection_template()
+            plural_only_matches: For plural-only patterns, list of stem matches with ratios
         """
         self.noun_count += 1
 
@@ -150,7 +166,8 @@ class InflectionValidator:
                 is_plural_only=is_plural_only,
                 is_singular_only=is_singular_only,
                 missing_cases=missing_combos,
-                missing_numbers=[self.NUMBER_NAMES.get(n, f'num{n}') for n in missing_numbers]
+                missing_numbers=[self.NUMBER_NAMES.get(n, f'num{n}') for n in missing_numbers],
+                plural_only_matches=plural_only_matches or []
             )
             self.noun_irregularities.append(irregularity)
 
@@ -296,7 +313,13 @@ class InflectionValidator:
             f.write("PLURAL-ONLY (pattern ends in 'pl'):\n")
             f.write("-" * 40 + "\n")
             for irr in plural_only:
-                f.write(f'  {irr.lemma} - "{irr.pattern}" - lacks singular declensions\n')
+                if not irr.plural_only_matches:
+                    f.write(f'  {irr.lemma} - "{irr.pattern}" - no other forms with same stem\n')
+                else:
+                    matches_str = ", ".join(
+                        f'{m.lemma} ({m.match_ratio:.0%})' for m in irr.plural_only_matches
+                    )
+                    f.write(f'  {irr.lemma} - "{irr.pattern}" - {matches_str}\n')
             f.write(f"\nTotal: {len(plural_only)} nouns\n\n")
 
         # Singular-only nouns

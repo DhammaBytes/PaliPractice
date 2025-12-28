@@ -6,8 +6,8 @@ namespace PaliPractice.Models.Inflection;
 ///
 /// FormId encoding (9 digits):
 ///   LLLLL_C_G_N_E  where L=lemmaId, C=case, G=gender, N=number, E=endingId
-///   Example: lemma 12345, accusative(1), masculine(0), plural(1), ending 0
-///            → 123451010
+///   Example: lemma 12345, accusative(2), masculine(1), plural(2), ending 0
+///            → 123452120
 ///
 /// EndingId=0 represents the combination itself (used for SRS tracking).
 /// EndingId=1+ represents specific form variants within the combination.

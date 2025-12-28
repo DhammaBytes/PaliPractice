@@ -13,7 +13,7 @@ public record LemmaRangeNavigationData(PracticeType PracticeType);
 /// <summary>
 /// ViewModel for lemma range selection settings.
 /// Supports both Declension and Conjugation practice types.
-/// Presets: 0=Top100, 1=Top300, 2=Top500, 3=All, 4=Custom
+/// Preset is derived from min/max values: 0=Top100, 1=Top300, 2=Top500, 3=All, 4=Custom.
 /// </summary>
 [Bindable]
 public partial class LemmaRangeSettingsViewModel : ObservableObject
@@ -55,35 +55,56 @@ public partial class LemmaRangeSettingsViewModel : ObservableObject
 
     void LoadSettings()
     {
-        var (presetKey, minKey, maxKey) = GetSettingsKeys();
+        var (minKey, maxKey) = GetSettingsKeys();
 
-        SelectedPreset = _userData.GetSetting(presetKey, SettingsKeys.DefaultLemmaPreset);
         LemmaMin = _userData.GetSetting(minKey, SettingsKeys.DefaultLemmaMin);
         LemmaMax = _userData.GetSetting(maxKey, SettingsKeys.DefaultLemmaMax);
+
+        // Derive preset from loaded min/max values
+        _selectedPreset = DerivePresetFromRange(LemmaMin, LemmaMax);
     }
 
     void SaveSettings()
     {
         if (_isLoading) return;
 
-        var (presetKey, minKey, maxKey) = GetSettingsKeys();
+        var (minKey, maxKey) = GetSettingsKeys();
 
-        _userData.SetSetting(presetKey, SelectedPreset);
         _userData.SetSetting(minKey, LemmaMin);
         _userData.SetSetting(maxKey, LemmaMax);
     }
 
-    (string presetKey, string minKey, string maxKey) GetSettingsKeys()
+    (string minKey, string maxKey) GetSettingsKeys()
     {
         return _practiceType == PracticeType.Declension
-            ? (SettingsKeys.NounsLemmaPreset, SettingsKeys.NounsLemmaMin, SettingsKeys.NounsLemmaMax)
-            : (SettingsKeys.VerbsLemmaPreset, SettingsKeys.VerbsLemmaMin, SettingsKeys.VerbsLemmaMax);
+            ? (SettingsKeys.NounsLemmaMin, SettingsKeys.NounsLemmaMax)
+            : (SettingsKeys.VerbsLemmaMin, SettingsKeys.VerbsLemmaMax);
+    }
+
+    /// <summary>
+    /// Derives the preset index from min/max values.
+    /// Returns: 0=Top100, 1=Top300, 2=Top500, 3=All, 4=Custom
+    /// </summary>
+    int DerivePresetFromRange(int min, int max)
+    {
+        if (min != 1)
+            return 4; // Custom
+
+        return max switch
+        {
+            100 => 0, // Top 100
+            300 => 1, // Top 300
+            500 => 2, // Top 500
+            _ when max == TotalLemmaCount => 3, // All
+            _ => 4 // Custom
+        };
     }
 
     public ICommand GoBackCommand => new AsyncRelayCommand(() => _navigator.NavigateBackAsync(this));
 
     /// <summary>
     /// Selected preset index: 0=Top100, 1=Top300, 2=Top500, 3=All, 4=Custom.
+    /// Derived from min/max values, not stored separately.
     /// </summary>
     [ObservableProperty]
     int _selectedPreset;
@@ -135,7 +156,11 @@ public partial class LemmaRangeSettingsViewModel : ObservableObject
     [ObservableProperty]
     int _lemmaMin = 1;
 
-    partial void OnLemmaMinChanged(int value) => SaveSettings();
+    partial void OnLemmaMinChanged(int value)
+    {
+        UpdatePresetFromRange();
+        SaveSettings();
+    }
 
     /// <summary>
     /// Maximum lemma rank.
@@ -143,7 +168,28 @@ public partial class LemmaRangeSettingsViewModel : ObservableObject
     [ObservableProperty]
     int _lemmaMax = 100;
 
-    partial void OnLemmaMaxChanged(int value) => SaveSettings();
+    partial void OnLemmaMaxChanged(int value)
+    {
+        UpdatePresetFromRange();
+        SaveSettings();
+    }
+
+    /// <summary>
+    /// Updates the preset selection based on current min/max values.
+    /// Called when min or max changes.
+    /// </summary>
+    void UpdatePresetFromRange()
+    {
+        if (_isLoading) return;
+
+        var derived = DerivePresetFromRange(LemmaMin, LemmaMax);
+        if (derived != _selectedPreset)
+        {
+            _selectedPreset = derived;
+            OnPropertyChanged(nameof(SelectedPreset));
+            OnPropertyChanged(nameof(IsCustomRange));
+        }
+    }
 
     /// <summary>
     /// Validates and corrects the range when a field loses focus.
@@ -197,6 +243,7 @@ public partial class LemmaRangeSettingsViewModel : ObservableObject
             LemmaMin = min;
             LemmaMax = max;
             _isLoading = false;
+            UpdatePresetFromRange();
             SaveSettings();
         }
     }

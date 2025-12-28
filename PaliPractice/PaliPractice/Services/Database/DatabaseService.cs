@@ -80,15 +80,8 @@ public class DatabaseService : IDatabaseService
         }
 
         // Provision user data database (writable)
-        SQLiteConnection userDataDb;
-        try
-        {
-            userDataDb = OpenWritableDatabase(DatabaseFile.UserData);
-        }
-        catch (Exception)
-        {
-            userDataDb = CreateEmptyDatabase(DatabaseFile.UserData);
-        }
+        // No fallback - if this fails, the app cannot function properly
+        var userDataDb = OpenWritableDatabase(DatabaseFile.UserData);
 
         // Create repositories
         Nouns = new NounRepository(trainingDb);
@@ -285,18 +278,27 @@ public class DatabaseService : IDatabaseService
 
     static void InitializeUserDataSchema(SQLiteConnection connection)
     {
-        // Create tables
-        connection.CreateTable<FormMastery>();
-        connection.CreateTable<CombinationDifficulty>();
+        // Create noun-specific tables
+        connection.CreateTable<NounsFormMastery>();
+        connection.CreateTable<NounsCombinationDifficulty>();
+        connection.CreateTable<NounsPracticeHistory>();
+
+        // Create verb-specific tables
+        connection.CreateTable<VerbsFormMastery>();
+        connection.CreateTable<VerbsCombinationDifficulty>();
+        connection.CreateTable<VerbsPracticeHistory>();
+
+        // Create shared tables
         connection.CreateTable<UserSetting>();
         connection.CreateTable<DailyProgress>();
-        connection.CreateTable<PracticeHistory>();
 
         // Create indices for efficient querying
-        connection.Execute("CREATE INDEX IF NOT EXISTS idx_form_mastery_type ON form_mastery(practice_type)");
-        connection.Execute("CREATE INDEX IF NOT EXISTS idx_form_mastery_level ON form_mastery(practice_type, mastery_level)");
-        connection.Execute("CREATE INDEX IF NOT EXISTS idx_combination_difficulty ON combination_difficulty(practice_type, difficulty_score DESC)");
-        connection.Execute("CREATE INDEX IF NOT EXISTS idx_practice_history_date ON practice_history(practice_type, practiced_utc DESC)");
+        connection.Execute("CREATE INDEX IF NOT EXISTS idx_nouns_mastery_level ON nouns_form_mastery(mastery_level)");
+        connection.Execute("CREATE INDEX IF NOT EXISTS idx_verbs_mastery_level ON verbs_form_mastery(mastery_level)");
+        connection.Execute("CREATE INDEX IF NOT EXISTS idx_nouns_difficulty ON nouns_combination_difficulty(difficulty_score DESC)");
+        connection.Execute("CREATE INDEX IF NOT EXISTS idx_verbs_difficulty ON verbs_combination_difficulty(difficulty_score DESC)");
+        connection.Execute("CREATE INDEX IF NOT EXISTS idx_nouns_history_date ON nouns_practice_history(practiced_utc DESC)");
+        connection.Execute("CREATE INDEX IF NOT EXISTS idx_verbs_history_date ON verbs_practice_history(practiced_utc DESC)");
     }
 
     static SQLiteConnection CreateEmptyDatabase(DatabaseFile file)

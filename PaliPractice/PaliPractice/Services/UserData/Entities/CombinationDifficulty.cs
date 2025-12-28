@@ -1,14 +1,14 @@
+using PaliPractice.Models;
 using PaliPractice.Models.Inflection;
 using SQLite;
 
 namespace PaliPractice.Services.UserData.Entities;
 
 /// <summary>
-/// Meta-bucket tracking difficulty of grammatical combinations.
-/// Uses DPD-style key-based storage (e.g., "nom_masc_sg", "pr_1st_sg_reflx").
+/// Base class for tracking difficulty of grammatical combinations.
+/// Uses DPD-style key-based storage and exponential moving average scoring.
 /// </summary>
-[Table("combination_difficulty")]
-public class CombinationDifficulty
+public abstract class CombinationDifficultyBase
 {
     /// <summary>
     /// DPD-style combination key (e.g., "nom_masc_sg", "pr_1st_sg_reflx").
@@ -16,10 +16,6 @@ public class CombinationDifficulty
     [PrimaryKey]
     [Column("combo_key")]
     public string ComboKey { get; set; } = "";
-
-    [Column("practice_type")]
-    [Indexed]
-    public PracticeType PracticeType { get; set; }
 
     /// <summary>
     /// Difficulty score 0.0 (easy) to 1.0 (hard).
@@ -33,30 +29,42 @@ public class CombinationDifficulty
 
     [Column("last_updated_utc")]
     public DateTime LastUpdatedUtc { get; set; }
+}
 
+/// <summary>
+/// Difficulty tracking for noun declension combinations.
+/// </summary>
+[Table("nouns_combination_difficulty")]
+public class NounsCombinationDifficulty : CombinationDifficultyBase
+{
     /// <summary>
     /// Create a new difficulty record for a declension combination.
     /// </summary>
-    public static CombinationDifficulty ForDeclension(Case @case, Gender gender, Number number)
+    public static NounsCombinationDifficulty Create(Case @case, Gender gender, Number number)
     {
-        return new CombinationDifficulty
+        return new NounsCombinationDifficulty
         {
             ComboKey = Declension.ComboKey(@case, gender, number),
-            PracticeType = PracticeType.Declension,
             LastUpdatedUtc = DateTime.UtcNow
         };
     }
+}
 
+/// <summary>
+/// Difficulty tracking for verb conjugation combinations.
+/// </summary>
+[Table("verbs_combination_difficulty")]
+public class VerbsCombinationDifficulty : CombinationDifficultyBase
+{
     /// <summary>
     /// Create a new difficulty record for a conjugation combination.
     /// </summary>
-    public static CombinationDifficulty ForConjugation(Tense tense, Person person, Number number, bool reflexive)
+    public static VerbsCombinationDifficulty Create(Tense tense, Person person, Number number, bool reflexive)
     {
         var voice = reflexive ? Voice.Reflexive : Voice.Normal;
-        return new CombinationDifficulty
+        return new VerbsCombinationDifficulty
         {
             ComboKey = Conjugation.ComboKey(tense, person, number, voice),
-            PracticeType = PracticeType.Conjugation,
             LastUpdatedUtc = DateTime.UtcNow
         };
     }

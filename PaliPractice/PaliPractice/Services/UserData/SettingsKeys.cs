@@ -17,7 +17,6 @@ public static class SettingsKeys
     public const string NounsNumbers = "nouns.numbers";
     public const string NounsLemmaMin = "nouns.lemma_min";
     public const string NounsLemmaMax = "nouns.lemma_max";
-    public const string NounsLemmaPreset = "nouns.lemma_preset";
 
     // Enabled patterns per gender (CSV of NounPattern enum values)
     public const string NounsMascPatterns = "nouns.masc_patterns";
@@ -32,10 +31,9 @@ public static class SettingsKeys
     public const string VerbsTenses = "verbs.tenses";
     public const string VerbsPersons = "verbs.persons";
     public const string VerbsNumbers = "verbs.numbers";
-    public const string VerbsVoices = "verbs.voices";  // Voice enum: Active=0, Reflexive=1
+    public const string VerbsVoices = "verbs.voices";  // Voice enum: Normal=1, Reflexive=2
     public const string VerbsLemmaMin = "verbs.lemma_min";
     public const string VerbsLemmaMax = "verbs.lemma_max";
-    public const string VerbsLemmaPreset = "verbs.lemma_preset";
 
     // Enabled patterns (CSV of VerbPattern enum values)
     public const string VerbsPatterns = "verbs.patterns";
@@ -48,7 +46,6 @@ public static class SettingsKeys
     public const int DefaultDailyGoal = 50;
     public const int DefaultLemmaMin = 1;
     public const int DefaultLemmaMax = 100;
-    public const int DefaultLemmaPreset = 0; // Top 100
 
     // Nouns: All cases except Vocative
     public static readonly Case[] NounsDefaultCases =

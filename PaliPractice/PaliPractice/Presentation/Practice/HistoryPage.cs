@@ -24,7 +24,7 @@ public sealed partial class HistoryPage : Page
                         .MaxWidth(LayoutConstants.ContentMaxWidth)
                         .Grid(row: 1)
                         .ItemsSource(() => vm.Records)
-                        .ItemTemplate<PracticeHistory>(record =>
+                        .ItemTemplate<IPracticeHistory>(record =>
                             new Grid()
                                 .HorizontalAlignment(HorizontalAlignment.Stretch)
                                 .ColumnDefinitions("*,Auto,60")

@@ -3,11 +3,27 @@ using SQLite;
 namespace PaliPractice.Services.UserData.Entities;
 
 /// <summary>
+/// Common interface for practice history records.
+/// Used for type-agnostic display in HistoryPage.
+/// </summary>
+public interface IPracticeHistory
+{
+    int Id { get; }
+    long FormId { get; }
+    string FormText { get; }
+    int OldLevel { get; }
+    int NewLevel { get; }
+    DateTime PracticedUtc { get; }
+    bool IsImproved { get; }
+    int NewLevelPercent { get; }
+}
+
+/// <summary>
+/// Base class for practice history records.
 /// Records each practice session for showing progress in HistoryPage.
 /// Tracks the form, level change, and timestamp.
 /// </summary>
-[Table("practice_history")]
-public class PracticeHistory
+public abstract class PracticeHistoryBase : IPracticeHistory
 {
     [PrimaryKey, AutoIncrement]
     [Column("id")]
@@ -16,10 +32,6 @@ public class PracticeHistory
     [Column("form_id")]
     [Indexed]
     public long FormId { get; set; }
-
-    [Column("practice_type")]
-    [Indexed]
-    public PracticeType PracticeType { get; set; }
 
     /// <summary>
     /// The actual inflected form text (for display in history).
@@ -55,3 +67,15 @@ public class PracticeHistory
     [Ignore]
     public int NewLevelPercent => NewLevel * 10;
 }
+
+/// <summary>
+/// Practice history for noun declensions.
+/// </summary>
+[Table("nouns_practice_history")]
+public class NounsPracticeHistory : PracticeHistoryBase { }
+
+/// <summary>
+/// Practice history for verb conjugations.
+/// </summary>
+[Table("verbs_practice_history")]
+public class VerbsPracticeHistory : PracticeHistoryBase { }

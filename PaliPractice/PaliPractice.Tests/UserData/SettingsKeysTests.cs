@@ -114,12 +114,6 @@ public class SettingsKeysTests
         SettingsKeys.DefaultLemmaMax.Should().BeGreaterThan(SettingsKeys.DefaultLemmaMin);
     }
 
-    [Test]
-    public void DefaultLemmaPreset_ShouldBeNonNegative()
-    {
-        SettingsKeys.DefaultLemmaPreset.Should().BeGreaterThanOrEqualTo(0);
-    }
-
     #endregion
 
     #region Expected Array Sizes

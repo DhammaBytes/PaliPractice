@@ -3,22 +3,19 @@ using SQLite;
 namespace PaliPractice.Services.UserData.Entities;
 
 /// <summary>
-/// Tracks mastery level for an individual form (EndingId=0 FormIds).
+/// Base class for form mastery tracking.
+/// Tracks mastery level for inflected forms (EndingId=0 FormIds).
 /// NextDue is calculated from LastPracticedUtc + cooldown based on MasteryLevel.
 /// </summary>
-[Table("form_mastery")]
-public class FormMastery
+public abstract class FormMasteryBase
 {
     /// <summary>
     /// FormId with EndingId=0 (combination reference).
-    /// Declension: 9-digit int, Conjugation: 10-digit long.
+    /// Declension: 9-digit, Conjugation: 10-digit.
     /// </summary>
     [PrimaryKey]
     [Column("form_id")]
     public long FormId { get; set; }
-
-    [Column("practice_type")]
-    public PracticeType PracticeType { get; set; }
 
     /// <summary>
     /// Mastery level 1-10. Default: 5.
@@ -58,3 +55,15 @@ public class FormMastery
     [Ignore]
     public bool IsImproved => MasteryLevel > PreviousLevel;
 }
+
+/// <summary>
+/// Form mastery for noun declensions.
+/// </summary>
+[Table("nouns_form_mastery")]
+public class NounsFormMastery : FormMasteryBase { }
+
+/// <summary>
+/// Form mastery for verb conjugations.
+/// </summary>
+[Table("verbs_form_mastery")]
+public class VerbsFormMastery : FormMasteryBase { }

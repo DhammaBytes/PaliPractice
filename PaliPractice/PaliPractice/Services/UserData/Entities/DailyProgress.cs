@@ -9,7 +9,13 @@ namespace PaliPractice.Services.UserData.Entities;
 public class DailyProgress
 {
     /// <summary>
-    /// Date in YYYY-MM-DD format.
+    /// Hour at which a new "practice day" begins (local time).
+    /// Using 5am ensures late-night practice counts toward "today's" goal.
+    /// </summary>
+    const int DayStartHour = 5;
+
+    /// <summary>
+    /// Date in YYYY-MM-DD format (based on logical day, not calendar day).
     /// </summary>
     [PrimaryKey]
     [Column("date")]
@@ -22,9 +28,20 @@ public class DailyProgress
     public int ConjugationsCompleted { get; set; }
 
     /// <summary>
-    /// Get today's date key.
+    /// Gets the current "logical day" date key.
+    /// The day resets at 5am local time, so practice between midnight and 5am
+    /// counts toward the previous day's goal.
     /// </summary>
-    public static string TodayKey => DateTime.UtcNow.ToString("yyyy-MM-dd");
+    public static string TodayKey
+    {
+        get
+        {
+            var now = DateTime.Now;
+            // If before 5am, consider it still "yesterday"
+            var logicalDate = now.Hour < DayStartHour ? now.Date.AddDays(-1) : now.Date;
+            return logicalDate.ToString("yyyy-MM-dd");
+        }
+    }
 
     /// <summary>
     /// Create a new progress record for today.

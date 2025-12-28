@@ -4,9 +4,17 @@ using PaliPractice.Models.Words;
 using PaliPractice.Services.Database;
 using PaliPractice.Services.Database.Repositories;
 using PaliPractice.Services.UserData;
-using PaliPractice.Services.UserData.Entities;
 
 namespace PaliPractice.Services.Practice;
+
+/// <summary>
+/// Common data for form mastery used in queue building.
+/// Extracted from type-specific entities (NounsFormMastery, VerbsFormMastery).
+/// </summary>
+record FormMasteryData(long FormId, int MasteryLevel, DateTime NextDueUtc)
+{
+    public bool IsDue => DateTime.UtcNow >= NextDueUtc;
+}
 
 /// <summary>
 /// Builds a practice queue using a three-bucket SRS approach:
@@ -60,29 +68,24 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
             return queue;
         }
 
-        // 2. Get practiced form IDs
-        var practicedIds = _userData.GetPracticedFormIds(type);
+        // 2. Get practiced form IDs (type-specific)
+        var practicedIds = type == PracticeType.Declension
+            ? _userData.GetPracticedNounFormIds()
+            : _userData.GetPracticedVerbFormIds();
 
-        // 3. Categorize into buckets
-        var dueForReview = _userData.GetDueForms(type, limit: 500)
-            .Where(f => eligibleSet.Contains(f.FormId))
-            .ToList();
+        // 3. Categorize into buckets (type-specific)
+        var dueForReview = GetDueForms(type, eligibleSet);
 
         var untriedIds = eligibleFormIds
             .Where(id => !practicedIds.Contains(id))
             .ToList();
 
-        // 4. Get difficulty weights for prioritization
-        var hardCombos = _userData.GetHardestCombinations(type, limit: 20)
-            .ToDictionary(c => c.ComboKey, c => c.DifficultyScore);
+        // 4. Get difficulty weights for prioritization (type-specific)
+        var hardCombos = GetHardestCombinations(type);
 
         // 5. Score and sort due forms by priority
         var scoredDue = dueForReview
-            .Select(f => new
-            {
-                Form = f,
-                Priority = CalculatePriority(f, hardCombos, type)
-            })
+            .Select(f => (Form: f, Priority: CalculatePriority(f, hardCombos, type)))
             .OrderByDescending(x => x.Priority)
             .ToList();
 
@@ -117,16 +120,16 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
             else if (reviewIndex < scoredDue.Count)
             {
                 // Add next highest-priority review
-                var item = scoredDue[reviewIndex];
+                var (form, priority) = scoredDue[reviewIndex];
                 queue.Add(new PracticeItem(
-                    item.Form.FormId,
+                    form.FormId,
                     type,
-                    ExtractLemmaId(item.Form.FormId, type),
-                    item.Priority > 0.7
+                    ExtractLemmaId(form.FormId, type),
+                    priority > 0.7
                         ? PracticeItemSource.DifficultCombo
                         : PracticeItemSource.DueForReview,
-                    item.Priority,
-                    item.Form.MasteryLevel
+                    priority,
+                    form.MasteryLevel
                 ));
                 reviewIndex++;
                 reviewsAdded++;
@@ -169,6 +172,46 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
     }
 
     /// <summary>
+    /// Gets due forms for review, filtered by eligible set.
+    /// Uses type-specific repository methods.
+    /// </summary>
+    List<FormMasteryData> GetDueForms(PracticeType type, HashSet<long> eligibleSet)
+    {
+        if (type == PracticeType.Declension)
+        {
+            return _userData.GetDueNounForms(limit: 500)
+                .Where(f => eligibleSet.Contains(f.FormId))
+                .Select(f => new FormMasteryData(f.FormId, f.MasteryLevel, f.NextDueUtc))
+                .ToList();
+        }
+        else
+        {
+            return _userData.GetDueVerbForms(limit: 500)
+                .Where(f => eligibleSet.Contains(f.FormId))
+                .Select(f => new FormMasteryData(f.FormId, f.MasteryLevel, f.NextDueUtc))
+                .ToList();
+        }
+    }
+
+    /// <summary>
+    /// Gets hardest combinations as a lookup dictionary.
+    /// Uses type-specific repository methods.
+    /// </summary>
+    Dictionary<string, double> GetHardestCombinations(PracticeType type)
+    {
+        if (type == PracticeType.Declension)
+        {
+            return _userData.GetHardestNounCombinations(limit: 20)
+                .ToDictionary(c => c.ComboKey, c => c.DifficultyScore);
+        }
+        else
+        {
+            return _userData.GetHardestVerbCombinations(limit: 20)
+                .ToDictionary(c => c.ComboKey, c => c.DifficultyScore);
+        }
+    }
+
+    /// <summary>
     /// Calculates a 0.0-1.0 priority score for a due form. Higher = more urgent.
     ///
     /// Factors (weighted to sum to ~1.0 max):
@@ -179,7 +222,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
     /// Example: A level-2 form that's 2 days overdue in a hard combo:
     ///   0.2 (overdue) + 0.4 (low mastery) + 0.2 (hard combo) = 0.8
     /// </summary>
-    double CalculatePriority(FormMastery form, Dictionary<string, double> hardCombos, PracticeType type)
+    double CalculatePriority(FormMasteryData form, Dictionary<string, double> hardCombos, PracticeType type)
     {
         double priority = 0.0;
 
@@ -215,29 +258,20 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
     List<long> GetEligibleDeclensionFormIds()
     {
-        // Load settings using new enum-based helpers
-        var casesCsv = _userData.GetSetting(SettingsKeys.NounsCases,
-            SettingsHelpers.ToCsv(SettingsKeys.NounsDefaultCases));
-        var numbersCsv = _userData.GetSetting(SettingsKeys.NounsNumbers,
-            SettingsHelpers.ToCsv(SettingsKeys.DefaultNumbers));
-        var minRank = _userData.GetSetting(SettingsKeys.NounsLemmaMin, SettingsKeys.DefaultLemmaMin);
-        var maxRank = _userData.GetSetting(SettingsKeys.NounsLemmaMax, SettingsKeys.DefaultLemmaMax);
+        // Load settings with self-healing (rewrites defaults if empty/invalid)
+        var enabledCases = _userData.GetEnumListOrResetDefault(SettingsKeys.NounsCases, SettingsKeys.NounsDefaultCases);
+        var enabledNumbers = _userData.GetEnumListOrResetDefault(SettingsKeys.NounsNumbers, SettingsKeys.DefaultNumbers);
 
-        System.Diagnostics.Debug.WriteLine($"[Queue/Decl] casesCsv='{casesCsv}', numbersCsv='{numbersCsv}', rank={minRank}-{maxRank}");
+        // Get total noun count for range validation
+        var totalNouns = _nouns.GetCount();
+        var (minRank, maxRank) = _userData.GetLemmaRangeOrResetDefault(PracticeType.Declension, totalNouns);
 
-        // Load enabled patterns per gender (positive list - only these are allowed)
-        var mascEnabled = SettingsHelpers.FromCsvSet<NounPattern>(
-            _userData.GetSetting(SettingsKeys.NounsMascPatterns,
-                SettingsHelpers.ToCsv(SettingsKeys.NounsDefaultMascPatterns)));
-        var neutEnabled = SettingsHelpers.FromCsvSet<NounPattern>(
-            _userData.GetSetting(SettingsKeys.NounsNeutPatterns,
-                SettingsHelpers.ToCsv(SettingsKeys.NounsDefaultNeutPatterns)));
-        var femEnabled = SettingsHelpers.FromCsvSet<NounPattern>(
-            _userData.GetSetting(SettingsKeys.NounsFemPatterns,
-                SettingsHelpers.ToCsv(SettingsKeys.NounsDefaultFemPatterns)));
+        System.Diagnostics.Debug.WriteLine($"[Queue/Decl] cases={enabledCases.Count}, numbers={enabledNumbers.Count}, rank={minRank}-{maxRank}");
 
-        var enabledCases = SettingsHelpers.FromCsv<Case>(casesCsv);
-        var enabledNumbers = SettingsHelpers.FromCsv<Number>(numbersCsv);
+        // Load enabled patterns per gender with self-healing
+        var mascEnabled = _userData.GetEnumSetOrResetDefault(SettingsKeys.NounsMascPatterns, SettingsKeys.NounsDefaultMascPatterns);
+        var neutEnabled = _userData.GetEnumSetOrResetDefault(SettingsKeys.NounsNeutPatterns, SettingsKeys.NounsDefaultNeutPatterns);
+        var femEnabled = _userData.GetEnumSetOrResetDefault(SettingsKeys.NounsFemPatterns, SettingsKeys.NounsDefaultFemPatterns);
 
         System.Diagnostics.Debug.WriteLine($"[Queue/Decl] enabledCases: {enabledCases.Count} ({string.Join(",", enabledCases)})");
         System.Diagnostics.Debug.WriteLine($"[Queue/Decl] enabledNumbers: {enabledNumbers.Count} ({string.Join(",", enabledNumbers)})");
@@ -314,34 +348,22 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
     List<long> GetEligibleConjugationFormIds()
     {
-        // Load settings using new enum-based helpers
-        var tensesCsv = _userData.GetSetting(SettingsKeys.VerbsTenses,
-            SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultTenses));
-        var personsCsv = _userData.GetSetting(SettingsKeys.VerbsPersons,
-            SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultPersons));
-        var numbersCsv = _userData.GetSetting(SettingsKeys.VerbsNumbers,
-            SettingsHelpers.ToCsv(SettingsKeys.DefaultNumbers));
-        var voicesCsv = _userData.GetSetting(SettingsKeys.VerbsVoices,
-            SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultVoices));
-        var minRank = _userData.GetSetting(SettingsKeys.VerbsLemmaMin, SettingsKeys.DefaultLemmaMin);
-        var maxRank = _userData.GetSetting(SettingsKeys.VerbsLemmaMax, SettingsKeys.DefaultLemmaMax);
+        // Load settings with self-healing (rewrites defaults if empty/invalid)
+        var enabledTenses = _userData.GetEnumListOrResetDefault(SettingsKeys.VerbsTenses, SettingsKeys.VerbsDefaultTenses);
+        var enabledPersons = _userData.GetEnumListOrResetDefault(SettingsKeys.VerbsPersons, SettingsKeys.VerbsDefaultPersons);
+        var enabledNumbers = _userData.GetEnumListOrResetDefault(SettingsKeys.VerbsNumbers, SettingsKeys.DefaultNumbers);
+        var enabledVoices = _userData.GetEnumListOrResetDefault(SettingsKeys.VerbsVoices, SettingsKeys.VerbsDefaultVoices);
+        var enabledPatterns = _userData.GetEnumSetOrResetDefault(SettingsKeys.VerbsPatterns, SettingsKeys.VerbsDefaultPatterns);
 
-        System.Diagnostics.Debug.WriteLine($"[Queue/Conj] tensesCsv='{tensesCsv}', personsCsv='{personsCsv}', rank={minRank}-{maxRank}");
+        // Get total verb count for range validation
+        var totalVerbs = _verbs.GetCount();
+        var (minRank, maxRank) = _userData.GetLemmaRangeOrResetDefault(PracticeType.Conjugation, totalVerbs);
 
-        // Load enabled patterns (positive list - only these are allowed)
-        var enabledPatterns = SettingsHelpers.FromCsvSet<VerbPattern>(
-            _userData.GetSetting(SettingsKeys.VerbsPatterns,
-                SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultPatterns)));
+        System.Diagnostics.Debug.WriteLine($"[Queue/Conj] tenses={enabledTenses.Count}, persons={enabledPersons.Count}, rank={minRank}-{maxRank}");
+        System.Diagnostics.Debug.WriteLine($"[Queue/Conj] enabledNumbers: {enabledNumbers.Count}, voices: {enabledVoices.Count}");
 
-        var enabledTenses = SettingsHelpers.FromCsv<Tense>(tensesCsv);
-        var enabledPersons = SettingsHelpers.FromCsv<Person>(personsCsv);
-        var enabledNumbers = SettingsHelpers.FromCsv<Number>(numbersCsv);
-
-        System.Diagnostics.Debug.WriteLine($"[Queue/Conj] enabledTenses: {enabledTenses.Count}, enabledPersons: {enabledPersons.Count}");
-        System.Diagnostics.Debug.WriteLine($"[Queue/Conj] enabledNumbers: {enabledNumbers.Count}, voicesCsv: '{voicesCsv}'");
-
-        var includeActive = SettingsHelpers.IncludesNormal(voicesCsv);
-        var includeReflexive = SettingsHelpers.IncludesReflexive(voicesCsv);
+        var includeActive = enabledVoices.Contains(Voice.Normal);
+        var includeReflexive = enabledVoices.Contains(Voice.Reflexive);
 
         var formIds = new List<long>();
 

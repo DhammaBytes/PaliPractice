@@ -22,7 +22,7 @@ public partial class HistoryViewModel : ObservableObject
 
         // Load real history from the database
         var history = db.UserData.GetRecentHistory(data.PracticeType, limit: 50);
-        Records = new ObservableCollection<PracticeHistory>(history);
+        Records = new ObservableCollection<IPracticeHistory>(history);
     }
 
     public PracticeType CurrentPracticeType { get; }
@@ -31,7 +31,7 @@ public partial class HistoryViewModel : ObservableObject
         ? "Declension History"
         : "Conjugation History";
 
-    public ObservableCollection<PracticeHistory> Records { get; }
+    public ObservableCollection<IPracticeHistory> Records { get; }
 
     public ICommand GoBackCommand => new AsyncRelayCommand(() => _navigator.NavigateBackAsync(this));
 }

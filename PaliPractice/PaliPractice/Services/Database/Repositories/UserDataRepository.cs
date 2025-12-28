@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using PaliPractice.Models;
 using PaliPractice.Models.Inflection;
@@ -9,6 +10,7 @@ namespace PaliPractice.Services.Database.Repositories;
 
 /// <summary>
 /// Repository for user data access (mastery, difficulty, settings, history).
+/// Uses type-specific tables for nouns and verbs.
 /// </summary>
 public class UserDataRepository
 {
@@ -40,7 +42,6 @@ public class UserDataRepository
         SetSetting(SettingsKeys.NounsDailyGoal, SettingsKeys.DefaultDailyGoal);
         SetSetting(SettingsKeys.NounsLemmaMin, SettingsKeys.DefaultLemmaMin);
         SetSetting(SettingsKeys.NounsLemmaMax, SettingsKeys.DefaultLemmaMax);
-        SetSetting(SettingsKeys.NounsLemmaPreset, SettingsKeys.DefaultLemmaPreset);
         SetSetting(SettingsKeys.NounsCases, SettingsHelpers.ToCsv(SettingsKeys.NounsDefaultCases));
         SetSetting(SettingsKeys.NounsNumbers, SettingsHelpers.ToCsv(SettingsKeys.DefaultNumbers));
         SetSetting(SettingsKeys.NounsMascPatterns, SettingsHelpers.ToCsv(SettingsKeys.NounsDefaultMascPatterns));
@@ -51,7 +52,6 @@ public class UserDataRepository
         SetSetting(SettingsKeys.VerbsDailyGoal, SettingsKeys.DefaultDailyGoal);
         SetSetting(SettingsKeys.VerbsLemmaMin, SettingsKeys.DefaultLemmaMin);
         SetSetting(SettingsKeys.VerbsLemmaMax, SettingsKeys.DefaultLemmaMax);
-        SetSetting(SettingsKeys.VerbsLemmaPreset, SettingsKeys.DefaultLemmaPreset);
         SetSetting(SettingsKeys.VerbsTenses, SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultTenses));
         SetSetting(SettingsKeys.VerbsPersons, SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultPersons));
         SetSetting(SettingsKeys.VerbsNumbers, SettingsHelpers.ToCsv(SettingsKeys.DefaultNumbers));
@@ -63,19 +63,18 @@ public class UserDataRepository
         System.Diagnostics.Debug.WriteLine("[UserData] Default settings initialized");
     }
 
-    // === Form Mastery ===
+    // === Noun Form Mastery ===
 
-    public FormMastery? GetFormMastery(long formId, PracticeType type)
+    public NounsFormMastery? GetNounFormMastery(long formId)
     {
-        return _connection.Table<FormMastery>()
-            .FirstOrDefault(f => f.FormId == formId && f.PracticeType == type);
+        return _connection.Table<NounsFormMastery>()
+            .FirstOrDefault(f => f.FormId == formId);
     }
 
-    public List<FormMastery> GetDueForms(PracticeType type, int limit = 100)
+    public List<NounsFormMastery> GetDueNounForms(int limit = 100)
     {
         // Filter in memory since IsDue is calculated
-        return _connection.Table<FormMastery>()
-            .Where(f => f.PracticeType == type)
+        return _connection.Table<NounsFormMastery>()
             .ToList()
             .Where(f => f.IsDue)
             .OrderBy(f => f.NextDueUtc)
@@ -83,18 +82,17 @@ public class UserDataRepository
             .ToList();
     }
 
-    public HashSet<long> GetPracticedFormIds(PracticeType type)
+    public HashSet<long> GetPracticedNounFormIds()
     {
-        return _connection.Table<FormMastery>()
-            .Where(f => f.PracticeType == type)
+        return _connection.Table<NounsFormMastery>()
             .Select(f => f.FormId)
             .ToList()
             .ToHashSet();
     }
 
-    public void RecordPracticeResult(long formId, PracticeType type, bool wasEasy, string formText)
+    public void RecordNounPracticeResult(long formId, bool wasEasy, string formText)
     {
-        var existing = GetFormMastery(formId, type);
+        var existing = GetNounFormMastery(formId);
         var now = DateTime.UtcNow;
 
         int oldLevel;
@@ -106,10 +104,9 @@ public class UserDataRepository
             oldLevel = CooldownCalculator.DefaultLevel;
             newLevel = CooldownCalculator.AdjustLevel(oldLevel, wasEasy);
 
-            var record = new FormMastery
+            var record = new NounsFormMastery
             {
                 FormId = formId,
-                PracticeType = type,
                 MasteryLevel = newLevel,
                 PreviousLevel = oldLevel,
                 LastPracticedUtc = now,
@@ -131,10 +128,9 @@ public class UserDataRepository
         }
 
         // Record to history
-        var history = new PracticeHistory
+        var history = new NounsPracticeHistory
         {
             FormId = formId,
-            PracticeType = type,
             FormText = formText,
             OldLevel = oldLevel,
             NewLevel = newLevel,
@@ -143,83 +139,152 @@ public class UserDataRepository
         _connection.Insert(history);
     }
 
-    // === Practice History ===
+    // === Verb Form Mastery ===
 
-    public List<PracticeHistory> GetRecentHistory(PracticeType type, int limit = 50)
+    public VerbsFormMastery? GetVerbFormMastery(long formId)
     {
-        return _connection.Table<PracticeHistory>()
-            .Where(h => h.PracticeType == type)
+        return _connection.Table<VerbsFormMastery>()
+            .FirstOrDefault(f => f.FormId == formId);
+    }
+
+    public List<VerbsFormMastery> GetDueVerbForms(int limit = 100)
+    {
+        // Filter in memory since IsDue is calculated
+        return _connection.Table<VerbsFormMastery>()
+            .ToList()
+            .Where(f => f.IsDue)
+            .OrderBy(f => f.NextDueUtc)
+            .Take(limit)
+            .ToList();
+    }
+
+    public HashSet<long> GetPracticedVerbFormIds()
+    {
+        return _connection.Table<VerbsFormMastery>()
+            .Select(f => f.FormId)
+            .ToList()
+            .ToHashSet();
+    }
+
+    public void RecordVerbPracticeResult(long formId, bool wasEasy, string formText)
+    {
+        var existing = GetVerbFormMastery(formId);
+        var now = DateTime.UtcNow;
+
+        int oldLevel;
+        int newLevel;
+
+        if (existing == null)
+        {
+            // First practice of this form
+            oldLevel = CooldownCalculator.DefaultLevel;
+            newLevel = CooldownCalculator.AdjustLevel(oldLevel, wasEasy);
+
+            var record = new VerbsFormMastery
+            {
+                FormId = formId,
+                MasteryLevel = newLevel,
+                PreviousLevel = oldLevel,
+                LastPracticedUtc = now,
+                CreatedUtc = now
+            };
+            _connection.Insert(record);
+        }
+        else
+        {
+            // Update existing record
+            oldLevel = existing.MasteryLevel;
+            newLevel = CooldownCalculator.AdjustLevel(oldLevel, wasEasy);
+
+            existing.PreviousLevel = oldLevel;
+            existing.MasteryLevel = newLevel;
+            existing.LastPracticedUtc = now;
+
+            _connection.Update(existing);
+        }
+
+        // Record to history
+        var history = new VerbsPracticeHistory
+        {
+            FormId = formId,
+            FormText = formText,
+            OldLevel = oldLevel,
+            NewLevel = newLevel,
+            PracticedUtc = now
+        };
+        _connection.Insert(history);
+    }
+
+    // === Noun Practice History ===
+
+    public List<NounsPracticeHistory> GetRecentNounHistory(int limit = 50)
+    {
+        return _connection.Table<NounsPracticeHistory>()
             .OrderByDescending(h => h.PracticedUtc)
             .Take(limit)
             .ToList();
     }
 
-    public List<PracticeHistory> GetTodayHistory(PracticeType type)
+    public List<NounsPracticeHistory> GetTodayNounHistory()
     {
         var todayStart = DateTime.UtcNow.Date;
-        return _connection.Table<PracticeHistory>()
-            .Where(h => h.PracticeType == type && h.PracticedUtc >= todayStart)
+        return _connection.Table<NounsPracticeHistory>()
+            .Where(h => h.PracticedUtc >= todayStart)
             .OrderByDescending(h => h.PracticedUtc)
             .ToList();
     }
 
-    // === Combination Difficulty ===
+    // === Verb Practice History ===
 
-    public CombinationDifficulty? GetDifficulty(string comboKey)
+    public List<VerbsPracticeHistory> GetRecentVerbHistory(int limit = 50)
     {
-        return _connection.Table<CombinationDifficulty>()
+        return _connection.Table<VerbsPracticeHistory>()
+            .OrderByDescending(h => h.PracticedUtc)
+            .Take(limit)
+            .ToList();
+    }
+
+    public List<VerbsPracticeHistory> GetTodayVerbHistory()
+    {
+        var todayStart = DateTime.UtcNow.Date;
+        return _connection.Table<VerbsPracticeHistory>()
+            .Where(h => h.PracticedUtc >= todayStart)
+            .OrderByDescending(h => h.PracticedUtc)
+            .ToList();
+    }
+
+    // === Noun Combination Difficulty ===
+
+    public NounsCombinationDifficulty? GetNounDifficulty(string comboKey)
+    {
+        return _connection.Table<NounsCombinationDifficulty>()
             .FirstOrDefault(c => c.ComboKey == comboKey);
     }
 
-    public CombinationDifficulty? GetDeclensionDifficulty(Case @case, Gender gender, Number number)
+    public NounsCombinationDifficulty? GetDeclensionDifficulty(Case @case, Gender gender, Number number)
     {
-        return GetDifficulty(Declension.ComboKey(@case, gender, number));
-    }
-
-    public CombinationDifficulty? GetConjugationDifficulty(Tense tense, Person person, Number number, bool reflexive)
-    {
-        var voice = reflexive ? Voice.Reflexive : Voice.Normal;
-        return GetDifficulty(Conjugation.ComboKey(tense, person, number, voice));
+        return GetNounDifficulty(Declension.ComboKey(@case, gender, number));
     }
 
     public void UpdateDeclensionDifficulty(Case @case, Gender gender, Number number, bool wasHard)
     {
         var key = Declension.ComboKey(@case, gender, number);
-        var existing = GetDifficulty(key);
+        var existing = GetNounDifficulty(key);
 
         if (existing == null)
         {
-            existing = CombinationDifficulty.ForDeclension(@case, gender, number);
-            UpdateDifficultyScore(existing, wasHard);
+            existing = NounsCombinationDifficulty.Create(@case, gender, number);
+            UpdateNounDifficultyScore(existing, wasHard);
             _connection.Insert(existing);
         }
         else
         {
-            UpdateDifficultyScore(existing, wasHard);
+            UpdateNounDifficultyScore(existing, wasHard);
             _connection.Update(existing);
         }
     }
 
-    public void UpdateConjugationDifficulty(Tense tense, Person person, Number number, bool reflexive, bool wasHard)
-    {
-        var voice = reflexive ? Voice.Reflexive : Voice.Normal;
-        var key = Conjugation.ComboKey(tense, person, number, voice);
-        var existing = GetDifficulty(key);
-
-        if (existing == null)
-        {
-            existing = CombinationDifficulty.ForConjugation(tense, person, number, reflexive);
-            UpdateDifficultyScore(existing, wasHard);
-            _connection.Insert(existing);
-        }
-        else
-        {
-            UpdateDifficultyScore(existing, wasHard);
-            _connection.Update(existing);
-        }
-    }
-
-    void UpdateDifficultyScore(CombinationDifficulty combo, bool wasHard)
+    void UpdateNounDifficultyScore(NounsCombinationDifficulty combo, bool wasHard)
     {
         // Exponential moving average: new_score = alpha * observation + (1-alpha) * old_score
         var observation = wasHard ? 1.0 : 0.0;
@@ -228,13 +293,87 @@ public class UserDataRepository
         combo.LastUpdatedUtc = DateTime.UtcNow;
     }
 
-    public List<CombinationDifficulty> GetHardestCombinations(PracticeType type, int limit = 10)
+    public List<NounsCombinationDifficulty> GetHardestNounCombinations(int limit = 10)
     {
-        return _connection.Table<CombinationDifficulty>()
-            .Where(c => c.PracticeType == type)
+        return _connection.Table<NounsCombinationDifficulty>()
             .OrderByDescending(c => c.DifficultyScore)
             .Take(limit)
             .ToList();
+    }
+
+    // === Verb Combination Difficulty ===
+
+    public VerbsCombinationDifficulty? GetVerbDifficulty(string comboKey)
+    {
+        return _connection.Table<VerbsCombinationDifficulty>()
+            .FirstOrDefault(c => c.ComboKey == comboKey);
+    }
+
+    public VerbsCombinationDifficulty? GetConjugationDifficulty(Tense tense, Person person, Number number, bool reflexive)
+    {
+        var voice = reflexive ? Voice.Reflexive : Voice.Normal;
+        return GetVerbDifficulty(Conjugation.ComboKey(tense, person, number, voice));
+    }
+
+    public void UpdateConjugationDifficulty(Tense tense, Person person, Number number, bool reflexive, bool wasHard)
+    {
+        var voice = reflexive ? Voice.Reflexive : Voice.Normal;
+        var key = Conjugation.ComboKey(tense, person, number, voice);
+        var existing = GetVerbDifficulty(key);
+
+        if (existing == null)
+        {
+            existing = VerbsCombinationDifficulty.Create(tense, person, number, reflexive);
+            UpdateVerbDifficultyScore(existing, wasHard);
+            _connection.Insert(existing);
+        }
+        else
+        {
+            UpdateVerbDifficultyScore(existing, wasHard);
+            _connection.Update(existing);
+        }
+    }
+
+    void UpdateVerbDifficultyScore(VerbsCombinationDifficulty combo, bool wasHard)
+    {
+        // Exponential moving average: new_score = alpha * observation + (1-alpha) * old_score
+        var observation = wasHard ? 1.0 : 0.0;
+        combo.DifficultyScore = DifficultyAlpha * observation + (1 - DifficultyAlpha) * combo.DifficultyScore;
+        combo.TotalAttempts++;
+        combo.LastUpdatedUtc = DateTime.UtcNow;
+    }
+
+    public List<VerbsCombinationDifficulty> GetHardestVerbCombinations(int limit = 10)
+    {
+        return _connection.Table<VerbsCombinationDifficulty>()
+            .OrderByDescending(c => c.DifficultyScore)
+            .Take(limit)
+            .ToList();
+    }
+
+    // === Type-Dispatching Helper Methods ===
+    // These methods dispatch to type-specific implementations for backwards compatibility.
+
+    /// <summary>
+    /// Records a practice result, dispatching to type-specific methods.
+    /// </summary>
+    public void RecordPracticeResult(long formId, PracticeType type, bool wasEasy, string formText)
+    {
+        if (type == PracticeType.Declension)
+            RecordNounPracticeResult(formId, wasEasy, formText);
+        else
+            RecordVerbPracticeResult(formId, wasEasy, formText);
+    }
+
+    /// <summary>
+    /// Gets recent practice history as IPracticeHistory for display.
+    /// </summary>
+    public List<IPracticeHistory> GetRecentHistory(PracticeType type, int limit = 50)
+    {
+        if (type == PracticeType.Declension)
+            return GetRecentNounHistory(limit).Cast<IPracticeHistory>().ToList();
+        else
+            return GetRecentVerbHistory(limit).Cast<IPracticeHistory>().ToList();
     }
 
     // === Settings ===
@@ -253,11 +392,9 @@ public class UserDataRepository
             if (typeof(T) == typeof(string))
                 return (T)(object)setting.Value;
             if (typeof(T) == typeof(int))
-                return (T)(object)int.Parse(setting.Value);
+                return (T)(object)int.Parse(setting.Value, CultureInfo.InvariantCulture);
             if (typeof(T) == typeof(bool))
                 return (T)(object)bool.Parse(setting.Value);
-            if (typeof(T) == typeof(double))
-                return (T)(object)double.Parse(setting.Value);
 
             // For complex types, use JSON
             return JsonSerializer.Deserialize<T>(setting.Value) ?? defaultValue;
@@ -345,5 +482,58 @@ public class UserDataRepository
             : SettingsKeys.VerbsDailyGoal;
 
         return GetSetting(key, SettingsKeys.DefaultDailyGoal);
+    }
+
+    // === Self-Healing Settings Getters ===
+    // These methods read settings and rewrite defaults if the value is invalid/empty.
+    // This ensures corrupted settings don't cause empty practice queues.
+
+    /// <summary>
+    /// Gets an enum list setting. If empty after parsing, rewrites the default and returns it.
+    /// </summary>
+    public List<T> GetEnumListOrResetDefault<T>(string key, T[] defaults) where T : struct, Enum
+    {
+        var csv = GetSetting(key, "");
+        var parsed = SettingsHelpers.FromCsv<T>(csv);
+
+        if (parsed.Count > 0)
+            return parsed;
+
+        // Empty or invalid - rewrite defaults
+        System.Diagnostics.Debug.WriteLine($"[UserData] Setting '{key}' was empty/invalid, resetting to defaults");
+        var defaultCsv = SettingsHelpers.ToCsv(defaults);
+        SetSetting(key, defaultCsv);
+        return defaults.ToList();
+    }
+
+    /// <summary>
+    /// Gets an enum set setting. If empty after parsing, rewrites the default and returns it.
+    /// </summary>
+    public HashSet<T> GetEnumSetOrResetDefault<T>(string key, T[] defaults) where T : struct, Enum
+        => GetEnumListOrResetDefault(key, defaults).ToHashSet();
+
+    /// <summary>
+    /// Gets a validated lemma range. If invalid (min >= max, out of bounds), rewrites defaults.
+    /// </summary>
+    public (int min, int max) GetLemmaRangeOrResetDefault(PracticeType type, int maxAllowed)
+    {
+        var (minKey, maxKey) = type == PracticeType.Declension
+            ? (SettingsKeys.NounsLemmaMin, SettingsKeys.NounsLemmaMax)
+            : (SettingsKeys.VerbsLemmaMin, SettingsKeys.VerbsLemmaMax);
+
+        var min = GetSetting(minKey, SettingsKeys.DefaultLemmaMin);
+        var max = GetSetting(maxKey, SettingsKeys.DefaultLemmaMax);
+
+        var (validMin, validMax) = SettingsHelpers.ValidateRange(min, max, 1, maxAllowed);
+
+        // If validation changed the values, rewrite them
+        if (validMin != min || validMax != max)
+        {
+            System.Diagnostics.Debug.WriteLine($"[UserData] Lemma range for {type} was invalid ({min}-{max}), resetting to ({validMin}-{validMax})");
+            SetSetting(minKey, validMin);
+            SetSetting(maxKey, validMax);
+        }
+
+        return (validMin, validMax);
     }
 }

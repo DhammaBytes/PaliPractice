@@ -76,12 +76,19 @@ public class SettingsHelpersTests
     }
 
     [Test]
-    public void FromCsv_OutOfRangeEnumValue_StillParses()
+    public void FromCsv_OutOfRangeEnumValue_FiltersOut()
     {
-        // Value 99 will parse to an invalid enum value but won't throw
+        // Value 99 is not a defined Number enum value, so it's filtered out
         var result = SettingsHelpers.FromCsv<Number>("99");
-        result.Should().HaveCount(1);
-        // The enum value is technically (Number)99, which is not None/Singular/Plural
+        result.Should().BeEmpty();
+    }
+
+    [Test]
+    public void FromCsv_NoneValue_FiltersOut()
+    {
+        // Value 0 (None) is filtered out
+        var result = SettingsHelpers.FromCsv<Number>("0,1,2");
+        result.Should().Equal(Number.Singular, Number.Plural);
     }
 
     #endregion

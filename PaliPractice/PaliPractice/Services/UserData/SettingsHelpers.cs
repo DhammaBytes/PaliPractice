@@ -94,6 +94,7 @@ public static class SettingsHelpers
 
     /// <summary>
     /// Parses a CSV string of integer values into a list of enum values.
+    /// Filters out None (default) and undefined enum values.
     /// Example: "1,2,3" → [Case.Nominative, Case.Accusative, Case.Instrumental]
     /// </summary>
     public static List<T> FromCsv<T>(string csv) where T : struct, Enum
@@ -101,10 +102,12 @@ public static class SettingsHelpers
         if (string.IsNullOrWhiteSpace(csv))
             return [];
 
+        var defaultValue = default(T);
         return csv.Split(',')
             .Select(s => s.Trim())
             .Where(s => int.TryParse(s, out _))
             .Select(s => (T)Enum.ToObject(typeof(T), int.Parse(s)))
+            .Where(v => Enum.IsDefined(v) && !v.Equals(defaultValue))
             .ToList();
     }
 

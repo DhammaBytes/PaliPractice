@@ -399,9 +399,10 @@ public class VerbDataIntegrityTests
             TestContext.WriteLine($"  {msg}");
         }
 
+        // Tightened from 5% to 2% to catch real data issues
         var discrepancyRate = (double)unexpectedInCorpus.Count / _trainingVerbs!.Count;
-        discrepancyRate.Should().BeLessThan(0.05,
-            "less than 5% of words should have gray forms that appear in wordlists");
+        discrepancyRate.Should().BeLessThan(0.02,
+            "less than 2% of words should have gray forms that appear in wordlists");
     }
 
     [Test]
@@ -435,9 +436,10 @@ public class VerbDataIntegrityTests
             TestContext.WriteLine($"  {msg}");
         }
 
+        // Tightened from 10% to 5%
         var discrepancyRate = (double)missingFromWordlist.Count / _trainingVerbs!.Count;
-        discrepancyRate.Should().BeLessThan(0.10,
-            "less than 10% of words should have non-gray forms missing from wordlists");
+        discrepancyRate.Should().BeLessThan(0.05,
+            "less than 5% of words should have non-gray forms missing from wordlists");
     }
 
     [Test]
@@ -487,8 +489,9 @@ public class VerbDataIntegrityTests
             TestContext.WriteLine($"  {sample}");
         }
 
-        agreementRate.Should().BeGreaterThan(0.85,
-            "at least 85% of forms should have agreement between HTML gray status and wordlist presence");
+        // Tightened from 85% to 90% - if agreement drops below this, investigate
+        agreementRate.Should().BeGreaterThan(0.90,
+            "at least 90% of forms should have agreement between HTML gray status and wordlist presence");
     }
 
     #endregion

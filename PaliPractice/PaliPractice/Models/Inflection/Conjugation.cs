@@ -1,13 +1,13 @@
 namespace PaliPractice.Models.Inflection;
 
 /// <summary>
-/// Represents a grouped verb conjugation for a specific person/number/tense/reflexive combination.
+/// Represents a grouped verb conjugation for a specific person/number/tense/voice combination.
 /// Contains 1-N possible form variants (usually 1-3).
 ///
 /// FormId encoding (10 digits):
-///   LLLLL_T_P_N_R_E  where L=lemmaId, T=tense, P=person, N=number, R=reflexive, E=endingId
-///   Example: lemma 70123, present(0), 3rd(2), singular(0), active(0), ending 0
-///            → 7012320000
+///   LLLLL_T_P_N_V_E  where L=lemmaId, T=tense, P=person, N=number, V=voice, E=endingId
+///   Example: lemma 70123, present(0), 3rd(2), singular(0), normal(1), ending 0
+///            → 7012320010
 ///
 /// EndingId=0 represents the combination itself (used for SRS tracking).
 /// EndingId=1+ represents specific form variants within the combination.
@@ -35,16 +35,16 @@ public class Conjugation
     public Number Number { get; init; }
 
     /// <summary>
-    /// Whether this is a reflexive (middle voice) form.
+    /// Voice: Normal (active) or Reflexive (middle).
     /// </summary>
-    public bool Reflexive { get; init; }
+    public Voice Voice { get; init; }
 
     /// <summary>
     /// Unique ID for this conjugation combination (EndingId=0).
-    /// Format: lemmaId(5) + tense(1) + person(1) + number(1) + reflexive(1) + 0
-    /// Example: 70683_2_3_1_0_0 → 7068323100
+    /// Format: lemmaId(5) + tense(1) + person(1) + number(1) + voice(1) + 0
+    /// Example: 70683_2_3_1_1_0 → 7068323110
     /// </summary>
-    public long FormId => ResolveId(LemmaId, Tense, Person, Number, Reflexive, 0);
+    public long FormId => ResolveId(LemmaId, Tense, Person, Number, Voice, 0);
 
     /// <summary>
     /// All possible form variants for this conjugation (1-N forms).
@@ -55,28 +55,28 @@ public class Conjugation
     /// Computes a unique FormId from conjugation components.
     /// </summary>
     /// <param name="endingId">1-based ending ID. Use 0 for combination reference.</param>
-    public static long ResolveId(int lemmaId, Tense tense, Person person, Number number, bool reflexive, int endingId)
+    public static long ResolveId(int lemmaId, Tense tense, Person person, Number number, Voice voice, int endingId)
     {
         return
             (long)lemmaId * 100_000 +
             (int)tense * 10_000 +
             (int)person * 1_000 +
             (int)number * 100 +
-            (reflexive ? 1 : 0) * 10 +
+            (int)voice * 10 +
             endingId;
     }
 
     /// <summary>
     /// Parses a FormId back into its component parts.
     /// </summary>
-    public static (int LemmaId, Tense Tense, Person Person, Number Number, bool Reflexive, int EndingId) ParseId(long formId)
+    public static (int LemmaId, Tense Tense, Person Person, Number Number, Voice Voice, int EndingId) ParseId(long formId)
     {
         return (
             (int)(formId / 100_000),
             (Tense)(formId % 100_000 / 10_000),
             (Person)(formId % 10_000 / 1_000),
             (Number)(formId % 1_000 / 100),
-            (formId % 100 / 10) == 1,
+            (Voice)(formId % 100 / 10),
             (int)(formId % 10)
         );
     }
@@ -106,13 +106,13 @@ public class Conjugation
     /// <summary>
     /// Generate DPD-style combo key for a conjugation (e.g., "pr_1st_sg" or "opt_3rd_pl_reflx").
     /// </summary>
-    public static string ComboKey(Tense tense, Person person, Number number, bool reflexive)
+    public static string ComboKey(Tense tense, Person person, Number number, Voice voice)
     {
         var t = TenseAbbrev.GetValueOrDefault(tense, tense.ToString().ToLowerInvariant());
         var p = PersonAbbrev.GetValueOrDefault(person, person.ToString().ToLowerInvariant());
         var n = NumberAbbrev.GetValueOrDefault(number, number.ToString().ToLowerInvariant());
         var key = $"{t}_{p}_{n}";
-        return reflexive ? $"{key}_reflx" : key;
+        return voice == Voice.Reflexive ? $"{key}_reflx" : key;
     }
 
     /// <summary>
@@ -121,7 +121,7 @@ public class Conjugation
     public static string ComboKeyFromId(long formId)
     {
         var parsed = ParseId(formId);
-        return ComboKey(parsed.Tense, parsed.Person, parsed.Number, parsed.Reflexive);
+        return ComboKey(parsed.Tense, parsed.Person, parsed.Number, parsed.Voice);
     }
 
     /// <summary>

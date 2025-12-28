@@ -1,5 +1,7 @@
 using PaliPractice.Models;
 using PaliPractice.Models.Inflection;
+using PaliPractice.Services.Database;
+using PaliPractice.Services.Database.Repositories;
 using PaliPractice.Services.Practice;
 using PaliPractice.Services.UserData;
 
@@ -9,7 +11,7 @@ namespace PaliPractice.Presentation.Settings.ViewModels;
 public partial class DeclensionSettingsViewModel : ObservableObject
 {
     readonly INavigator _navigator;
-    readonly IUserDataService _userData;
+    readonly UserDataRepository _userData;
     bool _isLoading = true;
 
     // Pattern labels by gender (derived from enum using breakpoints)
@@ -23,11 +25,10 @@ public partial class DeclensionSettingsViewModel : ObservableObject
         .Where(p => p is > NounPattern._RegularFem and < NounPattern._RegularNeut)
         .Select(p => p.ToDisplayLabel()).ToArray();
 
-    public DeclensionSettingsViewModel(INavigator navigator, IUserDataService userData)
+    public DeclensionSettingsViewModel(INavigator navigator, IDatabaseService db)
     {
         _navigator = navigator;
-        _userData = userData;
-        _userData.Initialize();
+        _userData = db.UserData;
 
         LoadSettings();
         _isLoading = false;
@@ -36,37 +37,46 @@ public partial class DeclensionSettingsViewModel : ObservableObject
     void LoadSettings()
     {
         // Load daily goal
-        DailyGoal = _userData.GetSetting(SettingsKeys.DeclensionDailyGoal, SettingsKeys.DefaultDailyGoal);
+        DailyGoal = _userData.GetSetting(SettingsKeys.NounsDailyGoal, SettingsKeys.DefaultDailyGoal);
 
-        // Load pattern settings (stored as excluded patterns per gender)
-        var mascExcluded = ParsePatternSet(_userData.GetSetting(SettingsKeys.DeclensionMascExcludedPatterns, ""));
-        PatternMascA = !mascExcluded.Contains("a");
-        PatternMascI = !mascExcluded.Contains("i");
-        PatternMascILong = !mascExcluded.Contains("ī");
-        PatternMascU = !mascExcluded.Contains("u");
-        PatternMascULong = !mascExcluded.Contains("ū");
-        PatternMascAs = !mascExcluded.Contains("as");
-        PatternMascAr = !mascExcluded.Contains("ar");
-        PatternMascAnt = !mascExcluded.Contains("ant");
+        // Load enabled patterns per gender (positive list)
+        var mascEnabled = SettingsHelpers.FromCsvSet<NounPattern>(
+            _userData.GetSetting(SettingsKeys.NounsMascPatterns,
+                SettingsHelpers.ToCsv(SettingsKeys.NounsDefaultMascPatterns)));
+        PatternMascA = mascEnabled.Contains(NounPattern.AMasc);
+        PatternMascI = mascEnabled.Contains(NounPattern.IMasc);
+        PatternMascILong = mascEnabled.Contains(NounPattern.ĪMasc);
+        PatternMascU = mascEnabled.Contains(NounPattern.UMasc);
+        PatternMascULong = mascEnabled.Contains(NounPattern.ŪMasc);
+        PatternMascAs = mascEnabled.Contains(NounPattern.AsMasc);
+        PatternMascAr = mascEnabled.Contains(NounPattern.ArMasc);
+        PatternMascAnt = mascEnabled.Contains(NounPattern.AntMasc);
 
-        var ntExcluded = ParsePatternSet(_userData.GetSetting(SettingsKeys.DeclensionNtExcludedPatterns, ""));
-        PatternNtA = !ntExcluded.Contains("a");
-        PatternNtI = !ntExcluded.Contains("i");
-        PatternNtU = !ntExcluded.Contains("u");
+        var neutEnabled = SettingsHelpers.FromCsvSet<NounPattern>(
+            _userData.GetSetting(SettingsKeys.NounsNeutPatterns,
+                SettingsHelpers.ToCsv(SettingsKeys.NounsDefaultNeutPatterns)));
+        PatternNtA = neutEnabled.Contains(NounPattern.ANeut);
+        PatternNtI = neutEnabled.Contains(NounPattern.INeut);
+        PatternNtU = neutEnabled.Contains(NounPattern.UNeut);
 
-        var femExcluded = ParsePatternSet(_userData.GetSetting(SettingsKeys.DeclensionFemExcludedPatterns, ""));
-        PatternFemA = !femExcluded.Contains("ā");
-        PatternFemI = !femExcluded.Contains("i");
-        PatternFemILong = !femExcluded.Contains("ī");
-        PatternFemU = !femExcluded.Contains("u");
-        PatternFemAr = !femExcluded.Contains("ar");
+        var femEnabled = SettingsHelpers.FromCsvSet<NounPattern>(
+            _userData.GetSetting(SettingsKeys.NounsFemPatterns,
+                SettingsHelpers.ToCsv(SettingsKeys.NounsDefaultFemPatterns)));
+        PatternFemA = femEnabled.Contains(NounPattern.ĀFem);
+        PatternFemI = femEnabled.Contains(NounPattern.IFem);
+        PatternFemILong = femEnabled.Contains(NounPattern.ĪFem);
+        PatternFemU = femEnabled.Contains(NounPattern.UFem);
+        PatternFemAr = femEnabled.Contains(NounPattern.ArFem);
 
-        // Load number setting (migrate old values)
-        var numberRaw = _userData.GetSetting(SettingsKeys.DeclensionNumberSetting, "Singular & Plural");
-        NumberSetting = MigrateNumberSetting(numberRaw);
+        // Load number setting (index-based: 0=both, 1=singular, 2=plural)
+        var numbersCsv = _userData.GetSetting(SettingsKeys.NounsNumbers,
+            SettingsHelpers.ToCsv(SettingsKeys.DefaultNumbers));
+        NumberIndex = NumberIndexFromCsv(numbersCsv);
 
         // Load case settings
-        var cases = ParseEnumSet<Case>(_userData.GetSetting(SettingsKeys.DeclensionCases, SettingsKeys.DefaultDeclensionCases));
+        var cases = SettingsHelpers.FromCsvSet<Case>(
+            _userData.GetSetting(SettingsKeys.NounsCases,
+                SettingsHelpers.ToCsv(SettingsKeys.NounsDefaultCases)));
         Nominative = cases.Contains(Case.Nominative);
         Accusative = cases.Contains(Case.Accusative);
         Instrumental = cases.Contains(Case.Instrumental);
@@ -77,8 +87,8 @@ public partial class DeclensionSettingsViewModel : ObservableObject
         Vocative = cases.Contains(Case.Vocative);
 
         // Load lemma range settings
-        LemmaMin = _userData.GetSetting(SettingsKeys.DeclensionLemmaMin, SettingsKeys.DefaultLemmaMin);
-        LemmaMax = _userData.GetSetting(SettingsKeys.DeclensionLemmaMax, SettingsKeys.DefaultLemmaMax);
+        LemmaMin = _userData.GetSetting(SettingsKeys.NounsLemmaMin, SettingsKeys.DefaultLemmaMin);
+        LemmaMax = _userData.GetSetting(SettingsKeys.NounsLemmaMax, SettingsKeys.DefaultLemmaMax);
     }
 
     void SaveSettings()
@@ -86,36 +96,36 @@ public partial class DeclensionSettingsViewModel : ObservableObject
         if (_isLoading) return;
 
         // Save daily goal
-        _userData.SetSetting(SettingsKeys.DeclensionDailyGoal, DailyGoal);
+        _userData.SetSetting(SettingsKeys.NounsDailyGoal, DailyGoal);
 
-        // Save pattern exclusions
-        var mascExcluded = new List<string>();
-        if (!PatternMascA) mascExcluded.Add("a");
-        if (!PatternMascI) mascExcluded.Add("i");
-        if (!PatternMascILong) mascExcluded.Add("ī");
-        if (!PatternMascU) mascExcluded.Add("u");
-        if (!PatternMascULong) mascExcluded.Add("ū");
-        if (!PatternMascAs) mascExcluded.Add("as");
-        if (!PatternMascAr) mascExcluded.Add("ar");
-        if (!PatternMascAnt) mascExcluded.Add("ant");
-        _userData.SetSetting(SettingsKeys.DeclensionMascExcludedPatterns, string.Join(",", mascExcluded));
+        // Save enabled patterns (positive list)
+        var mascEnabled = new List<NounPattern>();
+        if (PatternMascA) mascEnabled.Add(NounPattern.AMasc);
+        if (PatternMascI) mascEnabled.Add(NounPattern.IMasc);
+        if (PatternMascILong) mascEnabled.Add(NounPattern.ĪMasc);
+        if (PatternMascU) mascEnabled.Add(NounPattern.UMasc);
+        if (PatternMascULong) mascEnabled.Add(NounPattern.ŪMasc);
+        if (PatternMascAs) mascEnabled.Add(NounPattern.AsMasc);
+        if (PatternMascAr) mascEnabled.Add(NounPattern.ArMasc);
+        if (PatternMascAnt) mascEnabled.Add(NounPattern.AntMasc);
+        _userData.SetSetting(SettingsKeys.NounsMascPatterns, SettingsHelpers.ToCsv(mascEnabled));
 
-        var ntExcluded = new List<string>();
-        if (!PatternNtA) ntExcluded.Add("a");
-        if (!PatternNtI) ntExcluded.Add("i");
-        if (!PatternNtU) ntExcluded.Add("u");
-        _userData.SetSetting(SettingsKeys.DeclensionNtExcludedPatterns, string.Join(",", ntExcluded));
+        var neutEnabled = new List<NounPattern>();
+        if (PatternNtA) neutEnabled.Add(NounPattern.ANeut);
+        if (PatternNtI) neutEnabled.Add(NounPattern.INeut);
+        if (PatternNtU) neutEnabled.Add(NounPattern.UNeut);
+        _userData.SetSetting(SettingsKeys.NounsNeutPatterns, SettingsHelpers.ToCsv(neutEnabled));
 
-        var femExcluded = new List<string>();
-        if (!PatternFemA) femExcluded.Add("ā");
-        if (!PatternFemI) femExcluded.Add("i");
-        if (!PatternFemILong) femExcluded.Add("ī");
-        if (!PatternFemU) femExcluded.Add("u");
-        if (!PatternFemAr) femExcluded.Add("ar");
-        _userData.SetSetting(SettingsKeys.DeclensionFemExcludedPatterns, string.Join(",", femExcluded));
+        var femEnabled = new List<NounPattern>();
+        if (PatternFemA) femEnabled.Add(NounPattern.ĀFem);
+        if (PatternFemI) femEnabled.Add(NounPattern.IFem);
+        if (PatternFemILong) femEnabled.Add(NounPattern.ĪFem);
+        if (PatternFemU) femEnabled.Add(NounPattern.UFem);
+        if (PatternFemAr) femEnabled.Add(NounPattern.ArFem);
+        _userData.SetSetting(SettingsKeys.NounsFemPatterns, SettingsHelpers.ToCsv(femEnabled));
 
         // Save number setting
-        _userData.SetSetting(SettingsKeys.DeclensionNumberSetting, NumberSetting);
+        _userData.SetSetting(SettingsKeys.NounsNumbers, NumberIndexToCsv(NumberIndex));
 
         // Save cases
         var cases = new List<Case>();
@@ -127,49 +137,12 @@ public partial class DeclensionSettingsViewModel : ObservableObject
         if (Genitive) cases.Add(Case.Genitive);
         if (Locative) cases.Add(Case.Locative);
         if (Vocative) cases.Add(Case.Vocative);
-        _userData.SetSetting(SettingsKeys.DeclensionCases, ToEnumString(cases));
+        _userData.SetSetting(SettingsKeys.NounsCases, SettingsHelpers.ToCsv(cases));
 
         // Save lemma range
-        _userData.SetSetting(SettingsKeys.DeclensionLemmaMin, LemmaMin);
-        _userData.SetSetting(SettingsKeys.DeclensionLemmaMax, LemmaMax);
+        _userData.SetSetting(SettingsKeys.NounsLemmaMin, LemmaMin);
+        _userData.SetSetting(SettingsKeys.NounsLemmaMax, LemmaMax);
     }
-
-    static HashSet<T> ParseEnumSet<T>(string csv) where T : struct, Enum
-    {
-        if (string.IsNullOrWhiteSpace(csv))
-            return [];
-
-        return csv.Split(',')
-            .Select(s => s.Trim())
-            .Where(s => int.TryParse(s, out _))
-            .Select(s => (T)Enum.ToObject(typeof(T), int.Parse(s)))
-            .ToHashSet();
-    }
-
-    static HashSet<string> ParsePatternSet(string csv)
-    {
-        if (string.IsNullOrWhiteSpace(csv))
-            return [];
-
-        return csv.Split(',')
-            .Select(s => s.Trim())
-            .Where(s => !string.IsNullOrEmpty(s))
-            .ToHashSet();
-    }
-
-    /// <summary>
-    /// Migrates old number setting values to new format.
-    /// </summary>
-    static string MigrateNumberSetting(string value) => value switch
-    {
-        "Both" => "Singular & Plural",
-        "Singular" => "Singular only",
-        "Plural" => "Plural only",
-        _ => value
-    };
-
-    static string ToEnumString<T>(IEnumerable<T> values) where T : Enum
-        => string.Join(",", values.Select(v => Convert.ToInt32(v)));
 
     public ICommand GoBackCommand => new AsyncRelayCommand(() => _navigator.NavigateBackAsync(this));
 
@@ -531,17 +504,45 @@ public partial class DeclensionSettingsViewModel : ObservableObject
 
     #region Number settings (dropdown)
 
+    /// <summary>
+    /// Labels for the number dropdown. Index maps to: 0=both, 1=singular only, 2=plural only.
+    /// </summary>
     public static readonly string[] NumberOptions = ["Singular & Plural", "Singular only", "Plural only"];
 
+    /// <summary>
+    /// Index for ComboBox binding. Maps to Number CSV: 0="1,2", 1="1", 2="2".
+    /// </summary>
     [ObservableProperty]
-    string _numberSetting = "Singular & Plural";
-    partial void OnNumberSettingChanged(string value) => SaveSettings();
+    int _numberIndex;
+    partial void OnNumberIndexChanged(int value) => SaveSettings();
 
     /// <summary>Whether to include singular forms in practice.</summary>
-    public bool IncludeSingular => NumberSetting is "Singular & Plural" or "Singular only";
+    public bool IncludeSingular => NumberIndex is 0 or 1;
 
     /// <summary>Whether to include plural forms in practice.</summary>
-    public bool IncludePlural => NumberSetting is "Singular & Plural" or "Plural only";
+    public bool IncludePlural => NumberIndex is 0 or 2;
+
+    /// <summary>Converts dropdown index to CSV for storage.</summary>
+    static string NumberIndexToCsv(int index) => index switch
+    {
+        1 => SettingsHelpers.ToCsv([Number.Singular]),
+        2 => SettingsHelpers.ToCsv([Number.Plural]),
+        _ => SettingsHelpers.ToCsv([Number.Singular, Number.Plural])
+    };
+
+    /// <summary>Converts CSV to dropdown index.</summary>
+    static int NumberIndexFromCsv(string csv)
+    {
+        var singular = SettingsHelpers.IncludesSingular(csv);
+        var plural = SettingsHelpers.IncludesPlural(csv);
+        return (singular, plural) switch
+        {
+            (true, true) => 0,
+            (true, false) => 1,
+            (false, true) => 2,
+            _ => 0
+        };
+    }
 
     #endregion
 
@@ -675,8 +676,8 @@ public partial class DeclensionSettingsViewModel : ObservableObject
     public void RefreshRange()
     {
         _isLoading = true;
-        LemmaMin = _userData.GetSetting(SettingsKeys.DeclensionLemmaMin, SettingsKeys.DefaultLemmaMin);
-        LemmaMax = _userData.GetSetting(SettingsKeys.DeclensionLemmaMax, SettingsKeys.DefaultLemmaMax);
+        LemmaMin = _userData.GetSetting(SettingsKeys.NounsLemmaMin, SettingsKeys.DefaultLemmaMin);
+        LemmaMax = _userData.GetSetting(SettingsKeys.NounsLemmaMax, SettingsKeys.DefaultLemmaMax);
         _isLoading = false;
         OnPropertyChanged(nameof(RangeText));
     }

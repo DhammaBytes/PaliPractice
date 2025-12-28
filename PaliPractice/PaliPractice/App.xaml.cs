@@ -98,9 +98,10 @@ public partial class App : Application
                 .UseLocalization()
                 .ConfigureServices((_, services) =>
                 {
+                    // Database services
+                    services.AddSingleton<IBundledFileProvider, BundledFileProvider>();
                     services.AddSingleton<IDatabaseService, DatabaseService>();
                     services.AddSingleton<IInflectionService, InflectionService>();
-                    services.AddSingleton<IUserDataService, UserDataService>();
                     services.AddTransient<IPracticeQueueBuilder, PracticeQueueBuilder>();
 
                     services.AddTransient<FlashCardViewModel>();

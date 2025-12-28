@@ -1,4 +1,6 @@
 using PaliPractice.Models;
+using PaliPractice.Services.Database;
+using PaliPractice.Services.Database.Repositories;
 using PaliPractice.Services.Practice;
 using PaliPractice.Services.UserData;
 
@@ -8,14 +10,13 @@ namespace PaliPractice.Presentation.Settings.ViewModels;
 public partial class ConjugationSettingsViewModel : ObservableObject
 {
     readonly INavigator _navigator;
-    readonly IUserDataService _userData;
+    readonly UserDataRepository _userData;
     bool _isLoading = true;
 
-    public ConjugationSettingsViewModel(INavigator navigator, IUserDataService userData)
+    public ConjugationSettingsViewModel(INavigator navigator, IDatabaseService db)
     {
         _navigator = navigator;
-        _userData = userData;
-        _userData.Initialize();
+        _userData = db.UserData;
 
         LoadSettings();
         _isLoading = false;
@@ -24,38 +25,47 @@ public partial class ConjugationSettingsViewModel : ObservableObject
     void LoadSettings()
     {
         // Load daily goal
-        DailyGoal = _userData.GetSetting(SettingsKeys.ConjugationDailyGoal, SettingsKeys.DefaultDailyGoal);
+        DailyGoal = _userData.GetSetting(SettingsKeys.VerbsDailyGoal, SettingsKeys.DefaultDailyGoal);
 
         // Load person settings
-        var persons = ParseEnumSet<Person>(_userData.GetSetting(SettingsKeys.ConjugationPersons, SettingsKeys.DefaultConjugationPersons));
+        var persons = SettingsHelpers.FromCsvSet<Person>(
+            _userData.GetSetting(SettingsKeys.VerbsPersons,
+                SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultPersons)));
         FirstPerson = persons.Contains(Person.First);
         SecondPerson = persons.Contains(Person.Second);
         ThirdPerson = persons.Contains(Person.Third);
 
-        // Load number setting (migrate old values)
-        var numberRaw = _userData.GetSetting(SettingsKeys.ConjugationNumberSetting, "Singular & Plural");
-        NumberSetting = MigrateNumberSetting(numberRaw);
+        // Load number setting (index-based: 0=both, 1=singular, 2=plural)
+        var numbersCsv = _userData.GetSetting(SettingsKeys.VerbsNumbers,
+            SettingsHelpers.ToCsv(SettingsKeys.DefaultNumbers));
+        NumberIndex = NumberIndexFromCsv(numbersCsv);
 
-        // Load pattern settings (stored as excluded patterns)
-        var excluded = ParsePatternSet(_userData.GetSetting(SettingsKeys.ConjugationExcludedPatterns, ""));
-        PatternAti = !excluded.Contains("ati");
-        PatternEti = !excluded.Contains("eti");
-        PatternOti = !excluded.Contains("oti");
-        PatternAtiLong = !excluded.Contains("āti");
+        // Load enabled patterns (positive list)
+        var enabled = SettingsHelpers.FromCsvSet<VerbPattern>(
+            _userData.GetSetting(SettingsKeys.VerbsPatterns,
+                SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultPatterns)));
+        PatternAti = enabled.Contains(VerbPattern.Ati);
+        PatternEti = enabled.Contains(VerbPattern.Eti);
+        PatternOti = enabled.Contains(VerbPattern.Oti);
+        PatternAtiLong = enabled.Contains(VerbPattern.Āti);
 
         // Load tense settings
-        var tenses = ParseEnumSet<Tense>(_userData.GetSetting(SettingsKeys.ConjugationTenses, SettingsKeys.DefaultConjugationTenses));
+        var tenses = SettingsHelpers.FromCsvSet<Tense>(
+            _userData.GetSetting(SettingsKeys.VerbsTenses,
+                SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultTenses)));
         Present = tenses.Contains(Tense.Present);
         Imperative = tenses.Contains(Tense.Imperative);
         Optative = tenses.Contains(Tense.Optative);
         Future = tenses.Contains(Tense.Future);
 
-        // Load reflexive setting
-        ReflexiveSetting = _userData.GetSetting(SettingsKeys.ConjugationReflexive, SettingsKeys.DefaultReflexive);
+        // Load voice setting (index-based: 0=both, 1=normal, 2=reflexive)
+        var voicesCsv = _userData.GetSetting(SettingsKeys.VerbsVoices,
+            SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultVoices));
+        VoiceIndex = VoiceIndexFromCsv(voicesCsv);
 
         // Load lemma range settings
-        LemmaMin = _userData.GetSetting(SettingsKeys.ConjugationLemmaMin, SettingsKeys.DefaultLemmaMin);
-        LemmaMax = _userData.GetSetting(SettingsKeys.ConjugationLemmaMax, SettingsKeys.DefaultLemmaMax);
+        LemmaMin = _userData.GetSetting(SettingsKeys.VerbsLemmaMin, SettingsKeys.DefaultLemmaMin);
+        LemmaMax = _userData.GetSetting(SettingsKeys.VerbsLemmaMax, SettingsKeys.DefaultLemmaMax);
     }
 
     void SaveSettings()
@@ -63,25 +73,25 @@ public partial class ConjugationSettingsViewModel : ObservableObject
         if (_isLoading) return;
 
         // Save daily goal
-        _userData.SetSetting(SettingsKeys.ConjugationDailyGoal, DailyGoal);
+        _userData.SetSetting(SettingsKeys.VerbsDailyGoal, DailyGoal);
 
         // Save persons
         var persons = new List<Person>();
         if (FirstPerson) persons.Add(Person.First);
         if (SecondPerson) persons.Add(Person.Second);
         if (ThirdPerson) persons.Add(Person.Third);
-        _userData.SetSetting(SettingsKeys.ConjugationPersons, ToEnumString(persons));
+        _userData.SetSetting(SettingsKeys.VerbsPersons, SettingsHelpers.ToCsv(persons));
 
         // Save number setting
-        _userData.SetSetting(SettingsKeys.ConjugationNumberSetting, NumberSetting);
+        _userData.SetSetting(SettingsKeys.VerbsNumbers, NumberIndexToCsv(NumberIndex));
 
-        // Save pattern exclusions
-        var excluded = new List<string>();
-        if (!PatternAti) excluded.Add("ati");
-        if (!PatternEti) excluded.Add("eti");
-        if (!PatternOti) excluded.Add("oti");
-        if (!PatternAtiLong) excluded.Add("āti");
-        _userData.SetSetting(SettingsKeys.ConjugationExcludedPatterns, string.Join(",", excluded));
+        // Save enabled patterns (positive list)
+        var enabled = new List<VerbPattern>();
+        if (PatternAti) enabled.Add(VerbPattern.Ati);
+        if (PatternEti) enabled.Add(VerbPattern.Eti);
+        if (PatternOti) enabled.Add(VerbPattern.Oti);
+        if (PatternAtiLong) enabled.Add(VerbPattern.Āti);
+        _userData.SetSetting(SettingsKeys.VerbsPatterns, SettingsHelpers.ToCsv(enabled));
 
         // Save tenses
         var tenses = new List<Tense>();
@@ -89,52 +99,15 @@ public partial class ConjugationSettingsViewModel : ObservableObject
         if (Imperative) tenses.Add(Tense.Imperative);
         if (Optative) tenses.Add(Tense.Optative);
         if (Future) tenses.Add(Tense.Future);
-        _userData.SetSetting(SettingsKeys.ConjugationTenses, ToEnumString(tenses));
+        _userData.SetSetting(SettingsKeys.VerbsTenses, SettingsHelpers.ToCsv(tenses));
 
-        // Save reflexive
-        _userData.SetSetting(SettingsKeys.ConjugationReflexive, ReflexiveSetting);
+        // Save voice setting
+        _userData.SetSetting(SettingsKeys.VerbsVoices, VoiceIndexToCsv(VoiceIndex));
 
         // Save lemma range
-        _userData.SetSetting(SettingsKeys.ConjugationLemmaMin, LemmaMin);
-        _userData.SetSetting(SettingsKeys.ConjugationLemmaMax, LemmaMax);
+        _userData.SetSetting(SettingsKeys.VerbsLemmaMin, LemmaMin);
+        _userData.SetSetting(SettingsKeys.VerbsLemmaMax, LemmaMax);
     }
-
-    static HashSet<T> ParseEnumSet<T>(string csv) where T : struct, Enum
-    {
-        if (string.IsNullOrWhiteSpace(csv))
-            return [];
-
-        return csv.Split(',')
-            .Select(s => s.Trim())
-            .Where(s => int.TryParse(s, out _))
-            .Select(s => (T)Enum.ToObject(typeof(T), int.Parse(s)))
-            .ToHashSet();
-    }
-
-    static string ToEnumString<T>(IEnumerable<T> values) where T : Enum
-        => string.Join(",", values.Select(v => Convert.ToInt32(v)));
-
-    static HashSet<string> ParsePatternSet(string csv)
-    {
-        if (string.IsNullOrWhiteSpace(csv))
-            return [];
-
-        return csv.Split(',')
-            .Select(s => s.Trim())
-            .Where(s => !string.IsNullOrEmpty(s))
-            .ToHashSet();
-    }
-
-    /// <summary>
-    /// Migrates old number setting values to new format.
-    /// </summary>
-    static string MigrateNumberSetting(string value) => value switch
-    {
-        "Both" => "Singular & Plural",
-        "Singular" => "Singular only",
-        "Plural" => "Plural only",
-        _ => value
-    };
 
     public ICommand GoBackCommand => new AsyncRelayCommand(() => _navigator.NavigateBackAsync(this));
 
@@ -236,17 +209,45 @@ public partial class ConjugationSettingsViewModel : ObservableObject
 
     #region Number settings (dropdown)
 
+    /// <summary>
+    /// Labels for the number dropdown. Index maps to: 0=both, 1=singular only, 2=plural only.
+    /// </summary>
     public static readonly string[] NumberOptions = ["Singular & Plural", "Singular only", "Plural only"];
 
+    /// <summary>
+    /// Index for ComboBox binding. Maps to Number CSV: 0="1,2", 1="1", 2="2".
+    /// </summary>
     [ObservableProperty]
-    string _numberSetting = "Singular & Plural";
-    partial void OnNumberSettingChanged(string value) => SaveSettings();
+    int _numberIndex;
+    partial void OnNumberIndexChanged(int value) => SaveSettings();
 
     /// <summary>Whether to include singular forms in practice.</summary>
-    public bool IncludeSingular => NumberSetting is "Singular & Plural" or "Singular only";
+    public bool IncludeSingular => NumberIndex is 0 or 1;
 
     /// <summary>Whether to include plural forms in practice.</summary>
-    public bool IncludePlural => NumberSetting is "Singular & Plural" or "Plural only";
+    public bool IncludePlural => NumberIndex is 0 or 2;
+
+    /// <summary>Converts dropdown index to CSV for storage.</summary>
+    static string NumberIndexToCsv(int index) => index switch
+    {
+        1 => SettingsHelpers.ToCsv([Number.Singular]),
+        2 => SettingsHelpers.ToCsv([Number.Plural]),
+        _ => SettingsHelpers.ToCsv([Number.Singular, Number.Plural])
+    };
+
+    /// <summary>Converts CSV to dropdown index.</summary>
+    static int NumberIndexFromCsv(string csv)
+    {
+        var singular = SettingsHelpers.IncludesSingular(csv);
+        var plural = SettingsHelpers.IncludesPlural(csv);
+        return (singular, plural) switch
+        {
+            (true, true) => 0,
+            (true, false) => 1,
+            (false, true) => 2,
+            _ => 0
+        };
+    }
 
     #endregion
 
@@ -293,20 +294,49 @@ public partial class ConjugationSettingsViewModel : ObservableObject
 
     #endregion
 
-    // Reflexive setting: "both", "active", "reflexive"
+    #region Voice settings (dropdown)
+
+    /// <summary>
+    /// Labels for the voice dropdown. Index maps to: 0=both, 1=normal only, 2=reflexive only.
+    /// </summary>
+    public static readonly string[] VoiceOptions = ["Normal & Reflexive", "Normal only", "Reflexive only"];
+
+    /// <summary>
+    /// Index for ComboBox binding. Maps to Voice CSV: 0="1,2", 1="1", 2="2".
+    /// </summary>
     [ObservableProperty]
-    string _reflexiveSetting = SettingsKeys.DefaultReflexive;
-    partial void OnReflexiveSettingChanged(string value) => SaveSettings();
+    int _voiceIndex;
+    partial void OnVoiceIndexChanged(int value) => SaveSettings();
 
-    /// <summary>
-    /// Whether to include active (non-reflexive) forms.
-    /// </summary>
-    public bool IncludeActive => ReflexiveSetting is "both" or "active";
+    /// <summary>Whether to include normal (active) forms.</summary>
+    public bool IncludeNormal => VoiceIndex is 0 or 1;
 
-    /// <summary>
-    /// Whether to include reflexive forms.
-    /// </summary>
-    public bool IncludeReflexive => ReflexiveSetting is "both" or "reflexive";
+    /// <summary>Whether to include reflexive forms.</summary>
+    public bool IncludeReflexive => VoiceIndex is 0 or 2;
+
+    /// <summary>Converts dropdown index to CSV for storage.</summary>
+    static string VoiceIndexToCsv(int index) => index switch
+    {
+        1 => SettingsHelpers.ToCsv([Voice.Normal]),
+        2 => SettingsHelpers.ToCsv([Voice.Reflexive]),
+        _ => SettingsHelpers.ToCsv([Voice.Normal, Voice.Reflexive])
+    };
+
+    /// <summary>Converts CSV to dropdown index.</summary>
+    static int VoiceIndexFromCsv(string csv)
+    {
+        var normal = SettingsHelpers.IncludesNormal(csv);
+        var reflexive = SettingsHelpers.IncludesReflexive(csv);
+        return (normal, reflexive) switch
+        {
+            (true, true) => 0,
+            (true, false) => 1,
+            (false, true) => 2,
+            _ => 0
+        };
+    }
+
+    #endregion
 
     // Lemma range settings
     [ObservableProperty]
@@ -324,8 +354,8 @@ public partial class ConjugationSettingsViewModel : ObservableObject
     public void RefreshRange()
     {
         _isLoading = true;
-        LemmaMin = _userData.GetSetting(SettingsKeys.ConjugationLemmaMin, SettingsKeys.DefaultLemmaMin);
-        LemmaMax = _userData.GetSetting(SettingsKeys.ConjugationLemmaMax, SettingsKeys.DefaultLemmaMax);
+        LemmaMin = _userData.GetSetting(SettingsKeys.VerbsLemmaMin, SettingsKeys.DefaultLemmaMin);
+        LemmaMax = _userData.GetSetting(SettingsKeys.VerbsLemmaMax, SettingsKeys.DefaultLemmaMax);
         _isLoading = false;
         OnPropertyChanged(nameof(RangeText));
     }

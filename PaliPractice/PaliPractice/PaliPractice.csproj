@@ -50,8 +50,25 @@
       <PackageReference Include="sqlite-net-pcl" />
     </ItemGroup>
 
-    <ItemGroup>
-      <EmbeddedResource Include="Data\training.db" />
+    <!-- Desktop and WASM: Content with copy to output -->
+    <ItemGroup Condition="$(TargetFramework.Contains('-desktop')) OR '$(TargetFramework)' == 'net10.0'">
+      <Content Include="Data\training.db">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <!-- iOS: Bundle resource -->
+    <ItemGroup Condition="$(TargetFramework.Contains('-ios'))">
+      <BundleResource Include="Data\training.db">
+        <Link>Data/training.db</Link>
+      </BundleResource>
+    </ItemGroup>
+
+    <!-- Android: Asset -->
+    <ItemGroup Condition="$(TargetFramework.Contains('-android'))">
+      <AndroidAsset Include="Data\training.db">
+        <Link>Data/training.db</Link>
+      </AndroidAsset>
     </ItemGroup>
 
 </Project>

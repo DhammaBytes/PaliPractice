@@ -1,75 +1,80 @@
 using System.Text.Json;
+using PaliPractice.Models;
 using PaliPractice.Models.Inflection;
+using PaliPractice.Services.UserData;
 using PaliPractice.Services.UserData.Entities;
 using SQLite;
 
-namespace PaliPractice.Services.UserData;
+namespace PaliPractice.Services.Database.Repositories;
 
-public class UserDataService : IUserDataService
+/// <summary>
+/// Repository for user data access (mastery, difficulty, settings, history).
+/// </summary>
+public class UserDataRepository
 {
-    SQLiteConnection? _database;
-    readonly Lock _initLock = new();
-    bool _isInitialized;
+    readonly SQLiteConnection _connection;
 
     // Exponential moving average factor for difficulty updates
     const double DifficultyAlpha = 0.3;
 
-    public void Initialize()
+    // Key to track if defaults have been initialized
+    const string SettingsInitializedKey = "system.settings_initialized";
+
+    public UserDataRepository(SQLiteConnection connection)
     {
-        if (_isInitialized) return;
-
-        lock (_initLock)
-        {
-            if (_isInitialized) return;
-
-            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            var appFolder = System.IO.Path.Combine(appDataPath, "PaliPractice");
-
-            if (!Directory.Exists(appFolder))
-            {
-                Directory.CreateDirectory(appFolder);
-            }
-
-            var databasePath = System.IO.Path.Combine(appFolder, "user_data.db");
-            _database = new SQLiteConnection(databasePath);
-
-            // Create tables
-            _database.CreateTable<FormMastery>();
-            _database.CreateTable<CombinationDifficulty>();
-            _database.CreateTable<UserSetting>();
-            _database.CreateTable<DailyProgress>();
-            _database.CreateTable<PracticeHistory>();
-
-            // Create indices for efficient querying
-            _database.Execute("CREATE INDEX IF NOT EXISTS idx_form_mastery_type ON form_mastery(practice_type)");
-            _database.Execute("CREATE INDEX IF NOT EXISTS idx_form_mastery_level ON form_mastery(practice_type, mastery_level)");
-            _database.Execute("CREATE INDEX IF NOT EXISTS idx_combination_difficulty ON combination_difficulty(practice_type, difficulty_score DESC)");
-            _database.Execute("CREATE INDEX IF NOT EXISTS idx_practice_history_date ON practice_history(practice_type, practiced_utc DESC)");
-
-            _isInitialized = true;
-        }
+        _connection = connection;
     }
 
-    void EnsureInitialized()
+    /// <summary>
+    /// Initializes all default settings if not already done.
+    /// Called once on first app launch after database creation.
+    /// </summary>
+    public void InitializeDefaultsIfNeeded()
     {
-        if (!_isInitialized || _database == null)
-            Initialize();
+        if (GetSetting(SettingsInitializedKey, false))
+            return;
+
+        System.Diagnostics.Debug.WriteLine("[UserData] Initializing default settings...");
+
+        // Nouns settings
+        SetSetting(SettingsKeys.NounsDailyGoal, SettingsKeys.DefaultDailyGoal);
+        SetSetting(SettingsKeys.NounsLemmaMin, SettingsKeys.DefaultLemmaMin);
+        SetSetting(SettingsKeys.NounsLemmaMax, SettingsKeys.DefaultLemmaMax);
+        SetSetting(SettingsKeys.NounsLemmaPreset, SettingsKeys.DefaultLemmaPreset);
+        SetSetting(SettingsKeys.NounsCases, SettingsHelpers.ToCsv(SettingsKeys.NounsDefaultCases));
+        SetSetting(SettingsKeys.NounsNumbers, SettingsHelpers.ToCsv(SettingsKeys.DefaultNumbers));
+        SetSetting(SettingsKeys.NounsMascPatterns, SettingsHelpers.ToCsv(SettingsKeys.NounsDefaultMascPatterns));
+        SetSetting(SettingsKeys.NounsFemPatterns, SettingsHelpers.ToCsv(SettingsKeys.NounsDefaultFemPatterns));
+        SetSetting(SettingsKeys.NounsNeutPatterns, SettingsHelpers.ToCsv(SettingsKeys.NounsDefaultNeutPatterns));
+
+        // Verbs settings
+        SetSetting(SettingsKeys.VerbsDailyGoal, SettingsKeys.DefaultDailyGoal);
+        SetSetting(SettingsKeys.VerbsLemmaMin, SettingsKeys.DefaultLemmaMin);
+        SetSetting(SettingsKeys.VerbsLemmaMax, SettingsKeys.DefaultLemmaMax);
+        SetSetting(SettingsKeys.VerbsLemmaPreset, SettingsKeys.DefaultLemmaPreset);
+        SetSetting(SettingsKeys.VerbsTenses, SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultTenses));
+        SetSetting(SettingsKeys.VerbsPersons, SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultPersons));
+        SetSetting(SettingsKeys.VerbsNumbers, SettingsHelpers.ToCsv(SettingsKeys.DefaultNumbers));
+        SetSetting(SettingsKeys.VerbsVoices, SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultVoices));
+        SetSetting(SettingsKeys.VerbsPatterns, SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultPatterns));
+
+        // Mark as initialized
+        SetSetting(SettingsInitializedKey, true);
+        System.Diagnostics.Debug.WriteLine("[UserData] Default settings initialized");
     }
 
     // === Form Mastery ===
 
     public FormMastery? GetFormMastery(long formId, PracticeType type)
     {
-        EnsureInitialized();
-        return _database!.Table<FormMastery>()
+        return _connection.Table<FormMastery>()
             .FirstOrDefault(f => f.FormId == formId && f.PracticeType == type);
     }
 
     public List<FormMastery> GetDueForms(PracticeType type, int limit = 100)
     {
-        EnsureInitialized();
         // Filter in memory since IsDue is calculated
-        return _database!.Table<FormMastery>()
+        return _connection.Table<FormMastery>()
             .Where(f => f.PracticeType == type)
             .ToList()
             .Where(f => f.IsDue)
@@ -80,8 +85,7 @@ public class UserDataService : IUserDataService
 
     public HashSet<long> GetPracticedFormIds(PracticeType type)
     {
-        EnsureInitialized();
-        return _database!.Table<FormMastery>()
+        return _connection.Table<FormMastery>()
             .Where(f => f.PracticeType == type)
             .Select(f => f.FormId)
             .ToList()
@@ -90,7 +94,6 @@ public class UserDataService : IUserDataService
 
     public void RecordPracticeResult(long formId, PracticeType type, bool wasEasy, string formText)
     {
-        EnsureInitialized();
         var existing = GetFormMastery(formId, type);
         var now = DateTime.UtcNow;
 
@@ -112,7 +115,7 @@ public class UserDataService : IUserDataService
                 LastPracticedUtc = now,
                 CreatedUtc = now
             };
-            _database!.Insert(record);
+            _connection.Insert(record);
         }
         else
         {
@@ -124,7 +127,7 @@ public class UserDataService : IUserDataService
             existing.MasteryLevel = newLevel;
             existing.LastPracticedUtc = now;
 
-            _database!.Update(existing);
+            _connection.Update(existing);
         }
 
         // Record to history
@@ -137,15 +140,14 @@ public class UserDataService : IUserDataService
             NewLevel = newLevel,
             PracticedUtc = now
         };
-        _database!.Insert(history);
+        _connection.Insert(history);
     }
 
     // === Practice History ===
 
     public List<PracticeHistory> GetRecentHistory(PracticeType type, int limit = 50)
     {
-        EnsureInitialized();
-        return _database!.Table<PracticeHistory>()
+        return _connection.Table<PracticeHistory>()
             .Where(h => h.PracticeType == type)
             .OrderByDescending(h => h.PracticedUtc)
             .Take(limit)
@@ -154,9 +156,8 @@ public class UserDataService : IUserDataService
 
     public List<PracticeHistory> GetTodayHistory(PracticeType type)
     {
-        EnsureInitialized();
         var todayStart = DateTime.UtcNow.Date;
-        return _database!.Table<PracticeHistory>()
+        return _connection.Table<PracticeHistory>()
             .Where(h => h.PracticeType == type && h.PracticedUtc >= todayStart)
             .OrderByDescending(h => h.PracticedUtc)
             .ToList();
@@ -166,8 +167,7 @@ public class UserDataService : IUserDataService
 
     public CombinationDifficulty? GetDifficulty(string comboKey)
     {
-        EnsureInitialized();
-        return _database!.Table<CombinationDifficulty>()
+        return _connection.Table<CombinationDifficulty>()
             .FirstOrDefault(c => c.ComboKey == comboKey);
     }
 
@@ -178,12 +178,12 @@ public class UserDataService : IUserDataService
 
     public CombinationDifficulty? GetConjugationDifficulty(Tense tense, Person person, Number number, bool reflexive)
     {
-        return GetDifficulty(Conjugation.ComboKey(tense, person, number, reflexive));
+        var voice = reflexive ? Voice.Reflexive : Voice.Normal;
+        return GetDifficulty(Conjugation.ComboKey(tense, person, number, voice));
     }
 
     public void UpdateDeclensionDifficulty(Case @case, Gender gender, Number number, bool wasHard)
     {
-        EnsureInitialized();
         var key = Declension.ComboKey(@case, gender, number);
         var existing = GetDifficulty(key);
 
@@ -191,31 +191,31 @@ public class UserDataService : IUserDataService
         {
             existing = CombinationDifficulty.ForDeclension(@case, gender, number);
             UpdateDifficultyScore(existing, wasHard);
-            _database!.Insert(existing);
+            _connection.Insert(existing);
         }
         else
         {
             UpdateDifficultyScore(existing, wasHard);
-            _database!.Update(existing);
+            _connection.Update(existing);
         }
     }
 
     public void UpdateConjugationDifficulty(Tense tense, Person person, Number number, bool reflexive, bool wasHard)
     {
-        EnsureInitialized();
-        var key = Conjugation.ComboKey(tense, person, number, reflexive);
+        var voice = reflexive ? Voice.Reflexive : Voice.Normal;
+        var key = Conjugation.ComboKey(tense, person, number, voice);
         var existing = GetDifficulty(key);
 
         if (existing == null)
         {
             existing = CombinationDifficulty.ForConjugation(tense, person, number, reflexive);
             UpdateDifficultyScore(existing, wasHard);
-            _database!.Insert(existing);
+            _connection.Insert(existing);
         }
         else
         {
             UpdateDifficultyScore(existing, wasHard);
-            _database!.Update(existing);
+            _connection.Update(existing);
         }
     }
 
@@ -230,8 +230,7 @@ public class UserDataService : IUserDataService
 
     public List<CombinationDifficulty> GetHardestCombinations(PracticeType type, int limit = 10)
     {
-        EnsureInitialized();
-        return _database!.Table<CombinationDifficulty>()
+        return _connection.Table<CombinationDifficulty>()
             .Where(c => c.PracticeType == type)
             .OrderByDescending(c => c.DifficultyScore)
             .Take(limit)
@@ -242,8 +241,7 @@ public class UserDataService : IUserDataService
 
     public T GetSetting<T>(string key, T defaultValue)
     {
-        EnsureInitialized();
-        var setting = _database!.Table<UserSetting>()
+        var setting = _connection.Table<UserSetting>()
             .FirstOrDefault(s => s.Key == key);
 
         if (setting == null)
@@ -272,8 +270,6 @@ public class UserDataService : IUserDataService
 
     public void SetSetting<T>(string key, T value)
     {
-        EnsureInitialized();
-
         string stringValue;
         if (typeof(T) == typeof(string))
             stringValue = (string)(object)value!;
@@ -282,12 +278,12 @@ public class UserDataService : IUserDataService
         else
             stringValue = JsonSerializer.Serialize(value);
 
-        var existing = _database!.Table<UserSetting>()
+        var existing = _connection.Table<UserSetting>()
             .FirstOrDefault(s => s.Key == key);
 
         if (existing == null)
         {
-            _database.Insert(new UserSetting
+            _connection.Insert(new UserSetting
             {
                 Key = key,
                 Value = stringValue,
@@ -298,7 +294,7 @@ public class UserDataService : IUserDataService
         {
             existing.Value = stringValue;
             existing.UpdatedUtc = DateTime.UtcNow;
-            _database.Update(existing);
+            _connection.Update(existing);
         }
     }
 
@@ -306,9 +302,8 @@ public class UserDataService : IUserDataService
 
     public DailyProgress GetTodayProgress()
     {
-        EnsureInitialized();
         var todayKey = DailyProgress.TodayKey;
-        var existing = _database!.Table<DailyProgress>()
+        var existing = _connection.Table<DailyProgress>()
             .FirstOrDefault(p => p.Date == todayKey);
 
         if (existing != null)
@@ -316,13 +311,12 @@ public class UserDataService : IUserDataService
 
         // Create new record for today
         var progress = DailyProgress.CreateForToday();
-        _database.Insert(progress);
+        _connection.Insert(progress);
         return progress;
     }
 
     public void IncrementProgress(PracticeType type)
     {
-        EnsureInitialized();
         var progress = GetTodayProgress();
 
         if (type == PracticeType.Declension)
@@ -330,7 +324,7 @@ public class UserDataService : IUserDataService
         else
             progress.ConjugationsCompleted++;
 
-        _database!.Update(progress);
+        _connection.Update(progress);
     }
 
     public bool IsDailyGoalMet(PracticeType type)
@@ -347,8 +341,8 @@ public class UserDataService : IUserDataService
     public int GetDailyGoal(PracticeType type)
     {
         var key = type == PracticeType.Declension
-            ? SettingsKeys.DeclensionDailyGoal
-            : SettingsKeys.ConjugationDailyGoal;
+            ? SettingsKeys.NounsDailyGoal
+            : SettingsKeys.VerbsDailyGoal;
 
         return GetSetting(key, SettingsKeys.DefaultDailyGoal);
     }

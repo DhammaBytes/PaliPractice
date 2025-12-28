@@ -1,7 +1,7 @@
 using PaliPractice.Models.Words;
 using PaliPractice.Presentation.Practice.Providers;
+using PaliPractice.Services.Database.Repositories;
 using PaliPractice.Services.Practice;
-using PaliPractice.Services.UserData;
 
 namespace PaliPractice.Presentation.Practice.ViewModels.Common;
 
@@ -15,7 +15,7 @@ namespace PaliPractice.Presentation.Practice.ViewModels.Common;
 public abstract partial class PracticeViewModelBase : ObservableObject
 {
     protected readonly ILogger Logger;
-    protected readonly IUserDataService UserData;
+    protected readonly UserDataRepository UserData;
 
     [ObservableProperty] bool _canRateCard;
 
@@ -63,7 +63,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     protected PracticeViewModelBase(
         IPracticeProvider provider,
-        IUserDataService userData,
+        UserDataRepository userData,
         FlashCardViewModel flashCard,
         INavigator navigator,
         ILogger logger)

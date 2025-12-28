@@ -18,6 +18,9 @@ public interface IInflectionService
     /// Generate a grouped verb conjugation for a given verb and grammatical parameters.
     /// Returns a single Conjugation containing 1-N possible form variants.
     /// </summary>
+    /// <param name="reflexive">
+    /// Boolean for API simplicity. Internally converted to Voice enum for FormId encoding.
+    /// </param>
     Conjugation GenerateVerbForms(
         Verb verb,
         Person person,
@@ -89,7 +92,7 @@ public class InflectionService : IInflectionService
             var endingId = EndingIdFromIndex(i);
             var formId = Declension.ResolveId(noun.LemmaId, nounCase, noun.Gender, number, endingId);
 
-            var inCorpus = _databaseService.IsNounFormInCorpus(
+            var inCorpus = _databaseService.Nouns.IsFormInCorpus(
                 noun.LemmaId,
                 nounCase,
                 noun.Gender,
@@ -118,7 +121,7 @@ public class InflectionService : IInflectionService
 
     Declension GenerateIrregularNounForms(Noun noun, Case nounCase, Number number)
     {
-        var irregularForms = _databaseService.GetIrregularNounForms(
+        var irregularForms = _databaseService.Nouns.GetIrregularForms(
             noun.LemmaId, nounCase, noun.Gender, number);
 
         var forms = new List<DeclensionForm>();
@@ -164,7 +167,7 @@ public class InflectionService : IInflectionService
                 Person = person,
                 Number = number,
                 Tense = tense,
-                Reflexive = reflexive,
+                Voice = reflexive ? Voice.Reflexive : Voice.Normal,
                 Forms = []
             };
         }
@@ -184,6 +187,8 @@ public class InflectionService : IInflectionService
             reflexive
         );
 
+        var voice = reflexive ? Voice.Reflexive : Voice.Normal;
+
         if (endings.Length == 0)
         {
             return new Conjugation
@@ -192,22 +197,21 @@ public class InflectionService : IInflectionService
                 Person = person,
                 Number = number,
                 Tense = tense,
-                Reflexive = reflexive,
+                Voice = voice,
                 Forms = []
             };
         }
 
         var forms = new List<ConjugationForm>();
-
         for (int i = 0; i < endings.Length; i++)
         {
             var ending = endings[i];
             var form = verb.Stem + ending;
 
             var endingId = EndingIdFromIndex(i);
-            var formId = Conjugation.ResolveId(verb.LemmaId, tense, person, number, reflexive, endingId);
+            var formId = Conjugation.ResolveId(verb.LemmaId, tense, person, number, voice, endingId);
 
-            var inCorpus = _databaseService.IsVerbFormInCorpus(
+            var inCorpus = _databaseService.Verbs.IsFormInCorpus(
                 verb.LemmaId,
                 tense,
                 person,
@@ -231,7 +235,7 @@ public class InflectionService : IInflectionService
             Person = person,
             Number = number,
             Tense = tense,
-            Reflexive = reflexive,
+            Voice = reflexive ? Voice.Reflexive : Voice.Normal,
             Forms = forms
         };
     }
@@ -243,16 +247,17 @@ public class InflectionService : IInflectionService
         Tense tense,
         bool reflexive)
     {
-        var irregularForms = _databaseService.GetIrregularVerbForms(
+        var irregularForms = _databaseService.Verbs.GetIrregularForms(
             verb.LemmaId, tense, person, number, reflexive);
 
         var forms = new List<ConjugationForm>();
 
+        var voice = reflexive ? Voice.Reflexive : Voice.Normal;
         for (int i = 0; i < irregularForms.Count; i++)
         {
             var form = irregularForms[i];
             var endingId = EndingIdFromIndex(i);
-            var formId = Conjugation.ResolveId(verb.LemmaId, tense, person, number, reflexive, endingId);
+            var formId = Conjugation.ResolveId(verb.LemmaId, tense, person, number, voice, endingId);
 
             // Irregular forms from DB are always corpus-attested
             forms.Add(new ConjugationForm(
@@ -270,7 +275,7 @@ public class InflectionService : IInflectionService
             Person = person,
             Number = number,
             Tense = tense,
-            Reflexive = reflexive,
+            Voice = voice,
             Forms = forms
         };
     }

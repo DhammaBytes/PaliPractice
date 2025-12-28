@@ -2,7 +2,7 @@ using PaliPractice.Models.Inflection;
 using PaliPractice.Models.Words;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Presentation.Practice.ViewModels.Common;
-using PaliPractice.Services.UserData;
+using PaliPractice.Services.Database;
 using PaliPractice.Themes;
 
 namespace PaliPractice.Presentation.Practice.ViewModels;
@@ -41,12 +41,12 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
 
     public DeclensionPracticeViewModel(
         [FromKeyedServices("declension")] IPracticeProvider provider,
-        IUserDataService userData,
+        IDatabaseService db,
         FlashCardViewModel flashCard,
         INavigator navigator,
         ILogger<DeclensionPracticeViewModel> logger,
         IInflectionService inflectionService)
-        : base(provider, userData, flashCard, navigator, logger)
+        : base(provider, db.UserData, flashCard, navigator, logger)
     {
         _inflectionService = inflectionService;
         _ = InitializeAsync();

@@ -144,8 +144,8 @@ public sealed partial class DeclensionSettingsPage : Page
                     "Number",
                     DeclensionSettingsViewModel.NumberOptions,
                     cb => cb.SetBinding(
-                        ComboBox.SelectedItemProperty,
-                        Bind.TwoWayPath<DeclensionSettingsViewModel, string>(v => v.NumberSetting)))
+                        ComboBox.SelectedIndexProperty,
+                        Bind.TwoWayPath<DeclensionSettingsViewModel, int>(v => v.NumberIndex)))
             );
     }
 

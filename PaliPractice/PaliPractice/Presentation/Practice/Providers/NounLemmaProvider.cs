@@ -1,4 +1,5 @@
 using PaliPractice.Models.Words;
+using PaliPractice.Services.Database;
 
 namespace PaliPractice.Presentation.Practice.Providers;
 
@@ -12,11 +13,10 @@ public sealed class NounLemmaProvider : ILemmaProvider
 
     public Task LoadAsync(CancellationToken ct = default)
     {
-        _db.Initialize();
         _lemmas.Clear();
 
         // Get top 100 noun lemmas by rank
-        var lemmas = _db.GetNounLemmasByRank(1, 100);
+        var lemmas = _db.Nouns.GetLemmasByRank(1, 100);
         _lemmas.AddRange(lemmas);
         return Task.CompletedTask;
     }

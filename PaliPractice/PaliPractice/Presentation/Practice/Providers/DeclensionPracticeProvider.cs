@@ -1,7 +1,8 @@
 using PaliPractice.Models.Inflection;
 using PaliPractice.Models.Words;
+using PaliPractice.Services.Database;
+using PaliPractice.Services.Database.Repositories;
 using PaliPractice.Services.Practice;
-using PaliPractice.Services.UserData;
 
 namespace PaliPractice.Presentation.Practice.Providers;
 
@@ -11,20 +12,19 @@ namespace PaliPractice.Presentation.Practice.Providers;
 public sealed class DeclensionPracticeProvider : IPracticeProvider
 {
     readonly IPracticeQueueBuilder _queueBuilder;
-    readonly IUserDataService _userData;
-    readonly IDatabaseService _db;
+    readonly UserDataRepository _userData;
+    readonly NounRepository _nouns;
 
     List<PracticeItem> _queue = [];
     int _currentIndex = -1;
 
     public DeclensionPracticeProvider(
         IPracticeQueueBuilder queueBuilder,
-        IUserDataService userData,
         IDatabaseService db)
     {
         _queueBuilder = queueBuilder;
-        _userData = userData;
-        _db = db;
+        _userData = db.UserData;
+        _nouns = db.Nouns;
     }
 
     public PracticeItem? Current => _currentIndex >= 0 && _currentIndex < _queue.Count
@@ -37,9 +37,6 @@ public sealed class DeclensionPracticeProvider : IPracticeProvider
 
     public Task LoadAsync(CancellationToken ct = default)
     {
-        _db.Initialize();
-        _userData.Initialize();
-
         var dailyGoal = _userData.GetDailyGoal(PracticeType.Declension);
         _queue = _queueBuilder.BuildQueue(PracticeType.Declension, dailyGoal);
         _currentIndex = _queue.Count > 0 ? 0 : -1;
@@ -61,11 +58,11 @@ public sealed class DeclensionPracticeProvider : IPracticeProvider
         var item = Current;
         if (item == null) return null;
 
-        var lemma = _db.GetNounLemma(item.LemmaId);
+        var lemma = _nouns.GetLemma(item.LemmaId);
         if (lemma == null) return null;
 
         // Ensure details are loaded
-        _db.EnsureDetails(lemma);
+        _nouns.EnsureDetails(lemma);
         return lemma;
     }
 

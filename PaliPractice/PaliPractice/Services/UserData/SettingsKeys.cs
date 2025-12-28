@@ -1,81 +1,103 @@
+using PaliPractice.Models;
+
 namespace PaliPractice.Services.UserData;
 
 /// <summary>
 /// Constants for user settings keys stored in user_data.db.
+/// All multi-value settings are stored as CSV of enum integers (e.g., "1,2,3").
 /// </summary>
 public static class SettingsKeys
 {
-    // Daily goals
-    public const string DeclensionDailyGoal = "declension.daily_goal";
-    public const string ConjugationDailyGoal = "conjugation.daily_goal";
+    // ═══════════════════════════════════════════
+    // NOUNS (Declension) Settings
+    // ═══════════════════════════════════════════
 
-    // Declension filters (comma-separated enum values, e.g., "1,2,3")
-    public const string DeclensionCases = "declension.cases";
-    public const string DeclensionNumbers = "declension.numbers";
-    public const string DeclensionLemmaMin = "declension.lemma_min";  // Min rank by EbtCount
-    public const string DeclensionLemmaMax = "declension.lemma_max";  // Max rank by EbtCount
+    public const string NounsDailyGoal = "nouns.daily_goal";
+    public const string NounsCases = "nouns.cases";
+    public const string NounsNumbers = "nouns.numbers";
+    public const string NounsLemmaMin = "nouns.lemma_min";
+    public const string NounsLemmaMax = "nouns.lemma_max";
+    public const string NounsLemmaPreset = "nouns.lemma_preset";
 
-    // Declension pattern exclusions (comma-separated pattern stems, e.g., "ar,ant")
-    public const string DeclensionMascExcludedPatterns = "declension.masc_excluded";
-    public const string DeclensionNtExcludedPatterns = "declension.nt_excluded";
-    public const string DeclensionFemExcludedPatterns = "declension.fem_excluded";
+    // Enabled patterns per gender (CSV of NounPattern enum values)
+    public const string NounsMascPatterns = "nouns.masc_patterns";
+    public const string NounsNeutPatterns = "nouns.neut_patterns";
+    public const string NounsFemPatterns = "nouns.fem_patterns";
 
-    // Declension number setting: "Both", "Singular", "Plural"
-    public const string DeclensionNumberSetting = "declension.number_setting";
+    // ═══════════════════════════════════════════
+    // VERBS (Conjugation) Settings
+    // ═══════════════════════════════════════════
 
-    // Conjugation filters
-    public const string ConjugationTenses = "conjugation.tenses";
-    public const string ConjugationPersons = "conjugation.persons";
-    public const string ConjugationNumbers = "conjugation.numbers";
-    public const string ConjugationReflexive = "conjugation.reflexive";  // "both", "active", "reflexive"
-    public const string ConjugationLemmaMin = "conjugation.lemma_min";
-    public const string ConjugationLemmaMax = "conjugation.lemma_max";
+    public const string VerbsDailyGoal = "verbs.daily_goal";
+    public const string VerbsTenses = "verbs.tenses";
+    public const string VerbsPersons = "verbs.persons";
+    public const string VerbsNumbers = "verbs.numbers";
+    public const string VerbsVoices = "verbs.voices";  // Voice enum: Active=0, Reflexive=1
+    public const string VerbsLemmaMin = "verbs.lemma_min";
+    public const string VerbsLemmaMax = "verbs.lemma_max";
+    public const string VerbsLemmaPreset = "verbs.lemma_preset";
 
-    // Conjugation pattern exclusions (comma-separated pattern stems, e.g., "eti,oti")
-    // ati includes: ati pr, hoti pr, atthi pr
-    // oti includes: oti pr, karoti pr, brūti pr
-    public const string ConjugationExcludedPatterns = "conjugation.excluded_patterns";
+    // Enabled patterns (CSV of VerbPattern enum values)
+    public const string VerbsPatterns = "verbs.patterns";
 
-    // Conjugation number setting: "Both", "Singular", "Plural"
-    public const string ConjugationNumberSetting = "conjugation.number_setting";
+    // ═══════════════════════════════════════════
+    // Default Values (as typed arrays)
+    // Use SettingsHelpers.ToCsv() to convert to strings for storage.
+    // ═══════════════════════════════════════════
 
-    // Lemma range presets (0=Top100, 1=Top300, 2=Top500, 3=Custom)
-    public const string DeclensionLemmaPreset = "declension.lemma_preset";
-    public const string ConjugationLemmaPreset = "conjugation.lemma_preset";
-
-    // Defaults
     public const int DefaultDailyGoal = 50;
     public const int DefaultLemmaMin = 1;
     public const int DefaultLemmaMax = 100;
-    public const int DefaultLemmaPreset = 0;  // Top 100
+    public const int DefaultLemmaPreset = 0; // Top 100
 
-    /// <summary>
-    /// Default declension cases: all except Vocative (1-7).
-    /// </summary>
-    public const string DefaultDeclensionCases = "1,2,3,4,5,6,7";
+    // Nouns: All cases except Vocative
+    public static readonly Case[] NounsDefaultCases =
+    [
+        Case.Nominative, Case.Accusative, Case.Instrumental,
+        Case.Dative, Case.Ablative, Case.Genitive, Case.Locative
+    ];
 
-    /// <summary>
-    /// Default genders: all (1-3).
-    /// </summary>
-    public const string DefaultDeclensionGenders = "1,2,3";
+    // Both singular and plural
+    public static readonly Number[] DefaultNumbers = [Number.Singular, Number.Plural];
 
-    /// <summary>
-    /// Default numbers: both singular and plural.
-    /// </summary>
-    public const string DefaultNumbers = "1,2";
+    // Nouns: All regular masculine patterns (1-8)
+    public static readonly NounPattern[] NounsDefaultMascPatterns =
+    [
+        NounPattern.AMasc, NounPattern.IMasc, NounPattern.ĪMasc, NounPattern.UMasc,
+        NounPattern.ŪMasc, NounPattern.ArMasc, NounPattern.AntMasc, NounPattern.AsMasc
+    ];
 
-    /// <summary>
-    /// Default tenses: all four (Present, Imperative, Optative, Future).
-    /// </summary>
-    public const string DefaultConjugationTenses = "1,2,3,4";
+    // Nouns: All regular feminine patterns
+    public static readonly NounPattern[] NounsDefaultFemPatterns =
+    [
+        NounPattern.ĀFem, NounPattern.IFem, NounPattern.ĪFem,
+        NounPattern.UFem, NounPattern.ArFem
+    ];
 
-    /// <summary>
-    /// Default persons: all three.
-    /// </summary>
-    public const string DefaultConjugationPersons = "1,2,3";
+    // Nouns: All regular neuter patterns
+    public static readonly NounPattern[] NounsDefaultNeutPatterns =
+    [
+        NounPattern.ANeut, NounPattern.INeut, NounPattern.UNeut
+    ];
 
-    /// <summary>
-    /// Default reflexive setting: include both active and reflexive forms.
-    /// </summary>
-    public const string DefaultReflexive = "both";
+    // Verbs: All tenses
+    public static readonly Tense[] VerbsDefaultTenses =
+    [
+        Tense.Present, Tense.Imperative, Tense.Optative, Tense.Future
+    ];
+
+    // Verbs: All persons
+    public static readonly Person[] VerbsDefaultPersons =
+    [
+        Person.First, Person.Second, Person.Third
+    ];
+
+    // Verbs: Both normal (active) and reflexive voices
+    public static readonly Voice[] VerbsDefaultVoices = [Voice.Normal, Voice.Reflexive];
+
+    // Verbs: All regular patterns (1-4)
+    public static readonly VerbPattern[] VerbsDefaultPatterns =
+    [
+        VerbPattern.Ati, VerbPattern.Āti, VerbPattern.Eti, VerbPattern.Oti
+    ];
 }

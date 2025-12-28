@@ -47,6 +47,20 @@ public enum Number
     Plural = 2
 }
 
+/// <summary>
+/// Voice for verb conjugations.
+/// "Normal" is used instead of "Active" because Pali grammar traditionally
+/// distinguishes between active (parasmaipada) and middle/reflexive (attanopada) forms,
+/// and "Normal" avoids conflating with the traditional term.
+/// </summary>
+public enum Voice
+{
+    None,
+    /// <summary>Standard/active voice (parasmaipada).</summary>
+    Normal = 1,
+    /// <summary>Reflexive/middle voice (attanopada).</summary>
+    Reflexive = 2
+}
 
 // Transitivity - not actively used yet
 public enum Transitivity
@@ -67,14 +81,16 @@ public enum Transitivity
 /// </summary>
 public enum VerbPattern
 {
+    // ReSharper disable once UnusedMember.Global
+    None = 0,
     // ═══════════════════════════════════════════
     // REGULAR PATTERNS (pattern < _Irregular)
     // Traditional order: a, ā, e, o
     // ═══════════════════════════════════════════
-    Ati,          // "ati pr"
-    Āti,          // "āti pr"
-    Eti,          // "eti pr"
-    Oti,          // "oti pr"
+    Ati = 1,          // "ati pr"
+    Āti = 2,          // "āti pr"
+    Eti = 3,          // "eti pr"
+    Oti = 4,          // "oti pr"
 
     // ═══ Breakpoint: End of regular patterns ═══
     _Irregular,
@@ -115,18 +131,20 @@ public enum VerbPattern
 /// </summary>
 public enum NounPattern
 {
+    // ReSharper disable once UnusedMember.Global
+    None = 0,
     // ═══════════════════════════════════════════
     // REGULAR MASCULINE (pattern < _RegularFem)
     // Traditional order: a, i, ī, u, ū, ar, ant, as
     // ═══════════════════════════════════════════
-    AMasc,            // "a masc"
-    IMasc,            // "i masc"
-    ĪMasc,            // "ī masc"
-    UMasc,            // "u masc"
-    ŪMasc,            // "ū masc"
-    ArMasc,           // "ar masc"
-    AntMasc,          // "ant masc"
-    AsMasc,           // "as masc"
+    AMasc = 1,            // "a masc"
+    IMasc = 2,            // "i masc"
+    ĪMasc = 3,            // "ī masc"
+    UMasc = 4,            // "u masc"
+    ŪMasc = 5,            // "ū masc"
+    ArMasc = 6,           // "ar masc"
+    AntMasc = 7,          // "ant masc"
+    AsMasc = 8,           // "as masc"
 
     // ═══ Breakpoint: End of regular masculine ═══
     _RegularFem,

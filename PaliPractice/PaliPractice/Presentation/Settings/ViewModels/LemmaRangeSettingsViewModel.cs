@@ -1,3 +1,5 @@
+using PaliPractice.Services.Database;
+using PaliPractice.Services.Database.Repositories;
 using PaliPractice.Services.Practice;
 using PaliPractice.Services.UserData;
 
@@ -17,28 +19,23 @@ public record LemmaRangeNavigationData(PracticeType PracticeType);
 public partial class LemmaRangeSettingsViewModel : ObservableObject
 {
     readonly INavigator _navigator;
-    readonly IUserDataService _userData;
-    readonly IDatabaseService _db;
+    readonly UserDataRepository _userData;
     readonly PracticeType _practiceType;
     bool _isLoading = true;
 
     public LemmaRangeSettingsViewModel(
         INavigator navigator,
-        IUserDataService userData,
         IDatabaseService db,
         LemmaRangeNavigationData data)
     {
         _navigator = navigator;
-        _userData = userData;
-        _db = db;
+        _userData = db.UserData;
         _practiceType = data.PracticeType;
-        _userData.Initialize();
-        _db.Initialize();
 
         // Get total count for "All words" option
         TotalLemmaCount = _practiceType == PracticeType.Declension
-            ? _db.GetNounCount()
-            : _db.GetVerbCount();
+            ? db.Nouns.GetCount()
+            : db.Verbs.GetCount();
 
         LoadSettings();
         _isLoading = false;
@@ -79,8 +76,8 @@ public partial class LemmaRangeSettingsViewModel : ObservableObject
     (string presetKey, string minKey, string maxKey) GetSettingsKeys()
     {
         return _practiceType == PracticeType.Declension
-            ? (SettingsKeys.DeclensionLemmaPreset, SettingsKeys.DeclensionLemmaMin, SettingsKeys.DeclensionLemmaMax)
-            : (SettingsKeys.ConjugationLemmaPreset, SettingsKeys.ConjugationLemmaMin, SettingsKeys.ConjugationLemmaMax);
+            ? (SettingsKeys.NounsLemmaPreset, SettingsKeys.NounsLemmaMin, SettingsKeys.NounsLemmaMax)
+            : (SettingsKeys.VerbsLemmaPreset, SettingsKeys.VerbsLemmaMin, SettingsKeys.VerbsLemmaMax);
     }
 
     public ICommand GoBackCommand => new AsyncRelayCommand(() => _navigator.NavigateBackAsync(this));

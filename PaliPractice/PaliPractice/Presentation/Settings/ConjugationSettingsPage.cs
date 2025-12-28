@@ -89,8 +89,16 @@ public sealed partial class ConjugationSettingsPage : Page
                     "Number",
                     ConjugationSettingsViewModel.NumberOptions,
                     cb => cb.SetBinding(
-                        ComboBox.SelectedItemProperty,
-                        Bind.TwoWayPath<ConjugationSettingsViewModel, string>(v => v.NumberSetting)))
+                        ComboBox.SelectedIndexProperty,
+                        Bind.TwoWayPath<ConjugationSettingsViewModel, int>(v => v.NumberIndex))),
+
+                // Voice dropdown
+                SettingsRow.BuildDropdown(
+                    "Voice",
+                    ConjugationSettingsViewModel.VoiceOptions,
+                    cb => cb.SetBinding(
+                        ComboBox.SelectedIndexProperty,
+                        Bind.TwoWayPath<ConjugationSettingsViewModel, int>(v => v.VoiceIndex)))
             );
     }
 

@@ -52,9 +52,10 @@ public class CombinationDifficulty
     /// </summary>
     public static CombinationDifficulty ForConjugation(Tense tense, Person person, Number number, bool reflexive)
     {
+        var voice = reflexive ? Voice.Reflexive : Voice.Normal;
         return new CombinationDifficulty
         {
-            ComboKey = Conjugation.ComboKey(tense, person, number, reflexive),
+            ComboKey = Conjugation.ComboKey(tense, person, number, voice),
             PracticeType = PracticeType.Conjugation,
             LastUpdatedUtc = DateTime.UtcNow
         };

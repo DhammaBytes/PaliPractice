@@ -225,4 +225,44 @@ public static class SettingsRow
                 comboBox
             );
     }
+
+    /// <summary>
+    /// Builds a settings row with a label and dropdown (ComboBox) for enum options.
+    /// Each option is a tuple of (enum value, display label).
+    /// </summary>
+    public static Grid BuildDropdown<T>(
+        string label,
+        (T Value, string Label)[] options,
+        Action<ComboBox> bindSelectedItem) where T : struct, Enum
+    {
+        var comboBox = new ComboBox()
+            .VerticalAlignment(VerticalAlignment.Center)
+            .MinWidth(160)
+            .Grid(column: 1);
+
+        foreach (var (value, optionLabel) in options)
+        {
+            comboBox.Items.Add(new ComboBoxItem
+            {
+                Tag = value,
+                Content = optionLabel
+            });
+        }
+
+        bindSelectedItem(comboBox);
+
+        return new Grid()
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .ColumnDefinitions("*,Auto")
+            .Padding(16, 12)
+            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .Children(
+                RegularText()
+                    .Text(label)
+                    .FontSize(16)
+                    .VerticalAlignment(VerticalAlignment.Center)
+                    .Grid(column: 0),
+                comboBox
+            );
+    }
 }

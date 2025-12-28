@@ -1,5 +1,8 @@
+using PaliPractice.Models;
 using PaliPractice.Models.Inflection;
 using PaliPractice.Models.Words;
+using PaliPractice.Services.Database;
+using PaliPractice.Services.Database.Repositories;
 using PaliPractice.Services.UserData;
 using PaliPractice.Services.UserData.Entities;
 
@@ -22,8 +25,9 @@ namespace PaliPractice.Services.Practice;
 /// </summary>
 public class PracticeQueueBuilder : IPracticeQueueBuilder
 {
-    readonly IUserDataService _userData;
-    readonly IDatabaseService _trainingDb;
+    readonly UserDataRepository _userData;
+    readonly NounRepository _nouns;
+    readonly VerbRepository _verbs;
     readonly Random _random = new();
 
     // Introduce new forms gradually: 1 new form every 4-6 reviews.
@@ -31,22 +35,30 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
     const int NewFormIntervalMin = 4;
     const int NewFormIntervalMax = 6;
 
-    public PracticeQueueBuilder(IUserDataService userData, IDatabaseService trainingDb)
+    public PracticeQueueBuilder(IDatabaseService db)
     {
-        _userData = userData;
-        _trainingDb = trainingDb;
+        _userData = db.UserData;
+        _nouns = db.Nouns;
+        _verbs = db.Verbs;
     }
 
     public List<PracticeItem> BuildQueue(PracticeType type, int count)
     {
+        System.Diagnostics.Debug.WriteLine($"[Queue] BuildQueue({type}, {count})");
+
         var queue = new List<PracticeItem>();
 
         // 1. Get all eligible form IDs (corpus-attested, matching settings)
         var eligibleFormIds = GetEligibleFormIds(type);
         var eligibleSet = eligibleFormIds.ToHashSet();
 
+        System.Diagnostics.Debug.WriteLine($"[Queue] Eligible form IDs: {eligibleFormIds.Count}");
+
         if (eligibleFormIds.Count == 0)
+        {
+            System.Diagnostics.Debug.WriteLine($"[Queue] WARNING: No eligible forms for {type}!");
             return queue;
+        }
 
         // 2. Get practiced form IDs
         var practicedIds = _userData.GetPracticedFormIds(type);
@@ -203,35 +215,45 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
     List<long> GetEligibleDeclensionFormIds()
     {
-        // Load settings
-        var casesStr = _userData.GetSetting(SettingsKeys.DeclensionCases, SettingsKeys.DefaultDeclensionCases);
-        var numberSetting = _userData.GetSetting(SettingsKeys.DeclensionNumberSetting, "Both");
-        var minRank = _userData.GetSetting(SettingsKeys.DeclensionLemmaMin, SettingsKeys.DefaultLemmaMin);
-        var maxRank = _userData.GetSetting(SettingsKeys.DeclensionLemmaMax, SettingsKeys.DefaultLemmaMax);
+        // Load settings using new enum-based helpers
+        var casesCsv = _userData.GetSetting(SettingsKeys.NounsCases,
+            SettingsHelpers.ToCsv(SettingsKeys.NounsDefaultCases));
+        var numbersCsv = _userData.GetSetting(SettingsKeys.NounsNumbers,
+            SettingsHelpers.ToCsv(SettingsKeys.DefaultNumbers));
+        var minRank = _userData.GetSetting(SettingsKeys.NounsLemmaMin, SettingsKeys.DefaultLemmaMin);
+        var maxRank = _userData.GetSetting(SettingsKeys.NounsLemmaMax, SettingsKeys.DefaultLemmaMax);
 
-        // Load excluded patterns per gender
-        var mascExcluded = ParsePatternSet(_userData.GetSetting(SettingsKeys.DeclensionMascExcludedPatterns, ""));
-        var ntExcluded = ParsePatternSet(_userData.GetSetting(SettingsKeys.DeclensionNtExcludedPatterns, ""));
-        var femExcluded = ParsePatternSet(_userData.GetSetting(SettingsKeys.DeclensionFemExcludedPatterns, ""));
+        System.Diagnostics.Debug.WriteLine($"[Queue/Decl] casesCsv='{casesCsv}', numbersCsv='{numbersCsv}', rank={minRank}-{maxRank}");
 
-        var enabledCases = ParseEnumList<Case>(casesStr);
+        // Load enabled patterns per gender (positive list - only these are allowed)
+        var mascEnabled = SettingsHelpers.FromCsvSet<NounPattern>(
+            _userData.GetSetting(SettingsKeys.NounsMascPatterns,
+                SettingsHelpers.ToCsv(SettingsKeys.NounsDefaultMascPatterns)));
+        var neutEnabled = SettingsHelpers.FromCsvSet<NounPattern>(
+            _userData.GetSetting(SettingsKeys.NounsNeutPatterns,
+                SettingsHelpers.ToCsv(SettingsKeys.NounsDefaultNeutPatterns)));
+        var femEnabled = SettingsHelpers.FromCsvSet<NounPattern>(
+            _userData.GetSetting(SettingsKeys.NounsFemPatterns,
+                SettingsHelpers.ToCsv(SettingsKeys.NounsDefaultFemPatterns)));
 
-        // Parse number setting
-        var enabledNumbers = new List<Number>();
-        if (numberSetting is "Singular & Plural" or "Singular only") enabledNumbers.Add(Number.Singular);
-        if (numberSetting is "Singular & Plural" or "Plural only") enabledNumbers.Add(Number.Plural);
+        var enabledCases = SettingsHelpers.FromCsv<Case>(casesCsv);
+        var enabledNumbers = SettingsHelpers.FromCsv<Number>(numbersCsv);
+
+        System.Diagnostics.Debug.WriteLine($"[Queue/Decl] enabledCases: {enabledCases.Count} ({string.Join(",", enabledCases)})");
+        System.Diagnostics.Debug.WriteLine($"[Queue/Decl] enabledNumbers: {enabledNumbers.Count} ({string.Join(",", enabledNumbers)})");
 
         var formIds = new List<long>();
 
         // Get noun lemmas by rank
-        var lemmas = _trainingDb.GetNounLemmasByRank(minRank, maxRank);
+        var lemmas = _nouns.GetLemmasByRank(minRank, maxRank);
+        System.Diagnostics.Debug.WriteLine($"[Queue/Decl] lemmas in rank range: {lemmas.Count}");
 
         foreach (var lemma in lemmas)
         {
             var noun = (Noun)lemma.Primary;
 
-            // Skip if pattern is excluded for this gender
-            if (IsPatternExcluded(noun.Pattern, noun.Gender, mascExcluded, ntExcluded, femExcluded))
+            // Skip if pattern is not enabled for this gender
+            if (!IsPatternEnabled(noun.Pattern, noun.Gender, mascEnabled, neutEnabled, femEnabled))
                 continue;
 
             foreach (var @case in enabledCases)
@@ -239,7 +261,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                 foreach (var number in enabledNumbers)
                 {
                     // Check if this combination has corpus attestation
-                    if (_trainingDb.HasAttestedNounForm(lemma.LemmaId, @case, noun.Gender, number))
+                    if (_nouns.HasAttestedForm(lemma.LemmaId, @case, noun.Gender, number))
                     {
                         // Use EndingId=0 for combination reference
                         var formId = Declension.ResolveId(lemma.LemmaId, @case, noun.Gender, number, 0);
@@ -249,99 +271,92 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
             }
         }
 
+        System.Diagnostics.Debug.WriteLine($"[Queue/Decl] Generated {formIds.Count} form IDs");
         return formIds;
     }
 
     /// <summary>
-    /// Checks if a noun pattern is excluded based on gender and excluded pattern sets.
+    /// Checks if a noun pattern is enabled based on gender and enabled pattern sets.
     /// Irregular patterns are checked against their parent regular pattern.
     /// </summary>
-    static bool IsPatternExcluded(
+    static bool IsPatternEnabled(
         NounPattern pattern,
         Gender gender,
-        HashSet<string> mascExcluded,
-        HashSet<string> ntExcluded,
-        HashSet<string> femExcluded)
+        HashSet<NounPattern> mascEnabled,
+        HashSet<NounPattern> neutEnabled,
+        HashSet<NounPattern> femEnabled)
     {
-        // Get the label to check: parent regular for irregulars, self for regulars
-        var checkboxLabel = pattern.IsIrregular()
-            ? pattern.ParentRegular().ToDisplayLabel()
-            : pattern.ToDisplayLabel();
+        // For irregulars, check if parent regular pattern is enabled
+        var checkPattern = pattern.IsIrregular() ? pattern.ParentRegular() : pattern;
 
-        // Get the appropriate exclusion set for this gender
-        var excluded = gender switch
+        // Get the appropriate enabled set for this gender
+        var enabled = gender switch
         {
-            Gender.Masculine => mascExcluded,
-            Gender.Neuter => ntExcluded,
-            Gender.Feminine => femExcluded,
+            Gender.Masculine => mascEnabled,
+            Gender.Neuter => neutEnabled,
+            Gender.Feminine => femEnabled,
             _ => []
         };
 
-        return excluded.Contains(checkboxLabel);
-    }
-
-    static HashSet<string> ParsePatternSet(string csv)
-    {
-        if (string.IsNullOrWhiteSpace(csv))
-            return [];
-
-        return csv.Split(',')
-            .Select(s => s.Trim())
-            .Where(s => !string.IsNullOrEmpty(s))
-            .ToHashSet();
+        return enabled.Contains(checkPattern);
     }
 
     /// <summary>
-    /// Checks if a verb pattern is excluded based on excluded pattern set.
+    /// Checks if a verb pattern is enabled based on enabled pattern set.
     /// Irregular patterns are checked against their parent regular pattern.
     /// </summary>
-    static bool IsVerbPatternExcluded(VerbPattern pattern, HashSet<string> excludedPatterns)
+    static bool IsVerbPatternEnabled(VerbPattern pattern, HashSet<VerbPattern> enabledPatterns)
     {
-        // Get the label to check: parent regular for irregulars, self for regulars
-        var checkboxLabel = pattern.IsIrregular()
-            ? pattern.ParentRegular().ToDisplayLabel()
-            : pattern.ToDisplayLabel();
-        return excludedPatterns.Contains(checkboxLabel);
+        // For irregulars, check if parent regular pattern is enabled
+        var checkPattern = pattern.IsIrregular() ? pattern.ParentRegular() : pattern;
+        return enabledPatterns.Contains(checkPattern);
     }
 
     List<long> GetEligibleConjugationFormIds()
     {
-        // Load settings
-        var tensesStr = _userData.GetSetting(SettingsKeys.ConjugationTenses, SettingsKeys.DefaultConjugationTenses);
-        var personsStr = _userData.GetSetting(SettingsKeys.ConjugationPersons, SettingsKeys.DefaultConjugationPersons);
-        var numberSetting = _userData.GetSetting(SettingsKeys.ConjugationNumberSetting, "Singular & Plural");
-        var reflexiveSetting = _userData.GetSetting(SettingsKeys.ConjugationReflexive, SettingsKeys.DefaultReflexive);
-        var minRank = _userData.GetSetting(SettingsKeys.ConjugationLemmaMin, SettingsKeys.DefaultLemmaMin);
-        var maxRank = _userData.GetSetting(SettingsKeys.ConjugationLemmaMax, SettingsKeys.DefaultLemmaMax);
+        // Load settings using new enum-based helpers
+        var tensesCsv = _userData.GetSetting(SettingsKeys.VerbsTenses,
+            SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultTenses));
+        var personsCsv = _userData.GetSetting(SettingsKeys.VerbsPersons,
+            SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultPersons));
+        var numbersCsv = _userData.GetSetting(SettingsKeys.VerbsNumbers,
+            SettingsHelpers.ToCsv(SettingsKeys.DefaultNumbers));
+        var voicesCsv = _userData.GetSetting(SettingsKeys.VerbsVoices,
+            SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultVoices));
+        var minRank = _userData.GetSetting(SettingsKeys.VerbsLemmaMin, SettingsKeys.DefaultLemmaMin);
+        var maxRank = _userData.GetSetting(SettingsKeys.VerbsLemmaMax, SettingsKeys.DefaultLemmaMax);
 
-        // Load excluded patterns
-        var excludedPatterns = ParsePatternSet(_userData.GetSetting(SettingsKeys.ConjugationExcludedPatterns, ""));
+        System.Diagnostics.Debug.WriteLine($"[Queue/Conj] tensesCsv='{tensesCsv}', personsCsv='{personsCsv}', rank={minRank}-{maxRank}");
 
-        var enabledTenses = ParseEnumList<Tense>(tensesStr);
-        var enabledPersons = ParseEnumList<Person>(personsStr);
+        // Load enabled patterns (positive list - only these are allowed)
+        var enabledPatterns = SettingsHelpers.FromCsvSet<VerbPattern>(
+            _userData.GetSetting(SettingsKeys.VerbsPatterns,
+                SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultPatterns)));
 
-        // Parse number setting (dropdown)
-        var enabledNumbers = new List<Number>();
-        if (numberSetting is "Singular & Plural" or "Singular only") enabledNumbers.Add(Number.Singular);
-        if (numberSetting is "Singular & Plural" or "Plural only") enabledNumbers.Add(Number.Plural);
+        var enabledTenses = SettingsHelpers.FromCsv<Tense>(tensesCsv);
+        var enabledPersons = SettingsHelpers.FromCsv<Person>(personsCsv);
+        var enabledNumbers = SettingsHelpers.FromCsv<Number>(numbersCsv);
 
-        var includeActive = reflexiveSetting is "both" or "active";
-        var includeReflexive = reflexiveSetting is "both" or "reflexive";
+        System.Diagnostics.Debug.WriteLine($"[Queue/Conj] enabledTenses: {enabledTenses.Count}, enabledPersons: {enabledPersons.Count}");
+        System.Diagnostics.Debug.WriteLine($"[Queue/Conj] enabledNumbers: {enabledNumbers.Count}, voicesCsv: '{voicesCsv}'");
+
+        var includeActive = SettingsHelpers.IncludesNormal(voicesCsv);
+        var includeReflexive = SettingsHelpers.IncludesReflexive(voicesCsv);
 
         var formIds = new List<long>();
 
         // Get verb lemmas by rank
-        var lemmas = _trainingDb.GetVerbLemmasByRank(minRank, maxRank);
+        var lemmas = _verbs.GetLemmasByRank(minRank, maxRank);
 
         foreach (var lemma in lemmas)
         {
             var verb = (Verb)lemma.Primary;
 
-            // Skip if pattern is excluded
-            if (IsVerbPatternExcluded(verb.Pattern, excludedPatterns))
+            // Skip if pattern is not enabled
+            if (!IsVerbPatternEnabled(verb.Pattern, enabledPatterns))
                 continue;
 
-            var hasReflexive = _trainingDb.VerbHasReflexive(lemma.LemmaId);
+            var hasReflexive = _verbs.HasReflexive(lemma.LemmaId);
 
             foreach (var tense in enabledTenses)
             {
@@ -349,12 +364,12 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                 {
                     foreach (var number in enabledNumbers)
                     {
-                        // Active forms
+                        // Normal (active) forms
                         if (includeActive)
                         {
-                            if (_trainingDb.HasAttestedVerbForm(lemma.LemmaId, tense, person, number, reflexive: false))
+                            if (_verbs.HasAttestedForm(lemma.LemmaId, tense, person, number, reflexive: false))
                             {
-                                var formId = Conjugation.ResolveId(lemma.LemmaId, tense, person, number, reflexive: false, 0);
+                                var formId = Conjugation.ResolveId(lemma.LemmaId, tense, person, number, Voice.Normal, 0);
                                 formIds.Add(formId);
                             }
                         }
@@ -362,9 +377,9 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                         // Reflexive forms
                         if (includeReflexive && hasReflexive)
                         {
-                            if (_trainingDb.HasAttestedVerbForm(lemma.LemmaId, tense, person, number, reflexive: true))
+                            if (_verbs.HasAttestedForm(lemma.LemmaId, tense, person, number, reflexive: true))
                             {
-                                var formId = Conjugation.ResolveId(lemma.LemmaId, tense, person, number, reflexive: true, 0);
+                                var formId = Conjugation.ResolveId(lemma.LemmaId, tense, person, number, Voice.Reflexive, 0);
                                 formIds.Add(formId);
                             }
                         }
@@ -374,18 +389,6 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         }
 
         return formIds;
-    }
-
-    static List<T> ParseEnumList<T>(string csv) where T : struct, Enum
-    {
-        if (string.IsNullOrWhiteSpace(csv))
-            return [];
-
-        return csv.Split(',')
-            .Select(s => s.Trim())
-            .Where(s => int.TryParse(s, out _))
-            .Select(s => (T)Enum.ToObject(typeof(T), int.Parse(s)))
-            .ToList();
     }
 
     static int ExtractLemmaId(long formId, PracticeType type)

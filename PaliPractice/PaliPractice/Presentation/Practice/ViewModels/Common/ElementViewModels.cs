@@ -1,5 +1,5 @@
 using PaliPractice.Models.Words;
-using PaliPractice.Services.UserData;
+using PaliPractice.Services.Database.Repositories;
 
 namespace PaliPractice.Presentation.Practice.ViewModels.Common;
 
@@ -9,13 +9,13 @@ namespace PaliPractice.Presentation.Practice.ViewModels.Common;
 [Bindable]
 public partial class DailyGoalViewModel : ObservableObject
 {
-    readonly IUserDataService _userData;
+    readonly UserDataRepository _userData;
     readonly PracticeType _practiceType;
 
     [ObservableProperty] string _dailyGoalText = "0/50";
     [ObservableProperty] double _dailyProgress = 0.0;
 
-    public DailyGoalViewModel(IUserDataService userData, PracticeType practiceType)
+    public DailyGoalViewModel(UserDataRepository userData, PracticeType practiceType)
     {
         _userData = userData;
         _practiceType = practiceType;

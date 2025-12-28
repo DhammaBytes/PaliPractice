@@ -1,7 +1,9 @@
+using PaliPractice.Models;
 using PaliPractice.Models.Inflection;
 using PaliPractice.Models.Words;
+using PaliPractice.Services.Database;
+using PaliPractice.Services.Database.Repositories;
 using PaliPractice.Services.Practice;
-using PaliPractice.Services.UserData;
 
 namespace PaliPractice.Presentation.Practice.Providers;
 
@@ -11,20 +13,19 @@ namespace PaliPractice.Presentation.Practice.Providers;
 public sealed class ConjugationPracticeProvider : IPracticeProvider
 {
     readonly IPracticeQueueBuilder _queueBuilder;
-    readonly IUserDataService _userData;
-    readonly IDatabaseService _db;
+    readonly UserDataRepository _userData;
+    readonly VerbRepository _verbs;
 
     List<PracticeItem> _queue = [];
     int _currentIndex = -1;
 
     public ConjugationPracticeProvider(
         IPracticeQueueBuilder queueBuilder,
-        IUserDataService userData,
         IDatabaseService db)
     {
         _queueBuilder = queueBuilder;
-        _userData = userData;
-        _db = db;
+        _userData = db.UserData;
+        _verbs = db.Verbs;
     }
 
     public PracticeItem? Current => _currentIndex >= 0 && _currentIndex < _queue.Count
@@ -37,9 +38,6 @@ public sealed class ConjugationPracticeProvider : IPracticeProvider
 
     public Task LoadAsync(CancellationToken ct = default)
     {
-        _db.Initialize();
-        _userData.Initialize();
-
         var dailyGoal = _userData.GetDailyGoal(PracticeType.Conjugation);
         _queue = _queueBuilder.BuildQueue(PracticeType.Conjugation, dailyGoal);
         _currentIndex = _queue.Count > 0 ? 0 : -1;
@@ -61,11 +59,11 @@ public sealed class ConjugationPracticeProvider : IPracticeProvider
         var item = Current;
         if (item == null) return null;
 
-        var lemma = _db.GetVerbLemma(item.LemmaId);
+        var lemma = _verbs.GetLemma(item.LemmaId);
         if (lemma == null) return null;
 
         // Ensure details are loaded
-        _db.EnsureDetails(lemma);
+        _verbs.EnsureDetails(lemma);
         return lemma;
     }
 
@@ -73,10 +71,10 @@ public sealed class ConjugationPracticeProvider : IPracticeProvider
     {
         var item = Current;
         if (item == null)
-            return (Tense.None, Person.None, Number.None, false);
+            return (Tense.None, Person.None, Number.None, Voice.None);
 
         // Parse the FormId to extract grammatical parameters
         var parsed = Conjugation.ParseId(item.FormId);
-        return (parsed.Tense, parsed.Person, parsed.Number, parsed.Reflexive);
+        return (parsed.Tense, parsed.Person, parsed.Number, parsed.Voice);
     }
 }

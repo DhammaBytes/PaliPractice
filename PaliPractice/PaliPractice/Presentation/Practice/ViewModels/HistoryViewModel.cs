@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 using PaliPractice.Presentation.Practice.ViewModels.Common;
-using PaliPractice.Services.UserData;
+using PaliPractice.Services.Database;
 using PaliPractice.Services.UserData.Entities;
 
 namespace PaliPractice.Presentation.Practice.ViewModels;
@@ -15,13 +15,13 @@ public partial class HistoryViewModel : ObservableObject
 {
     readonly INavigator _navigator;
 
-    public HistoryViewModel(INavigator navigator, IUserDataService userData, HistoryNavigationData data)
+    public HistoryViewModel(INavigator navigator, IDatabaseService db, HistoryNavigationData data)
     {
         _navigator = navigator;
         CurrentPracticeType = data.PracticeType;
 
         // Load real history from the database
-        var history = userData.GetRecentHistory(data.PracticeType, limit: 50);
+        var history = db.UserData.GetRecentHistory(data.PracticeType, limit: 50);
         Records = new ObservableCollection<PracticeHistory>(history);
     }
 

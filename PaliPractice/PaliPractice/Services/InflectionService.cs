@@ -58,7 +58,13 @@ public class InflectionService : IInflectionService
             };
         }
 
-        // Get all possible endings for this pattern and grammatical parameters
+        // Irregular patterns: fetch full forms from database
+        if (noun.Irregular)
+        {
+            return GenerateIrregularNounForms(noun, nounCase, number);
+        }
+
+        // Regular patterns: compute stem + ending
         var endings = NounEndings.GetEndings(noun.Pattern, nounCase, number);
 
         if (endings.Length == 0)
@@ -75,19 +81,14 @@ public class InflectionService : IInflectionService
 
         var forms = new List<DeclensionForm>();
 
-        // Generate a form for each possible ending
         for (int i = 0; i < endings.Length; i++)
         {
             var ending = endings[i];
-            // For irregular patterns, endings ARE the full forms
-            // For regular patterns, concatenate stem + ending
-            var form = noun.Irregular ? ending : noun.Stem + ending;
+            var form = noun.Stem + ending;
 
-            // Convert array index to 1-based EndingId
             var endingId = EndingIdFromIndex(i);
             var formId = Declension.ResolveId(noun.LemmaId, nounCase, noun.Gender, number, endingId);
 
-            // Check if this specific form appears in the corpus
             var inCorpus = _databaseService.IsNounFormInCorpus(
                 noun.LemmaId,
                 nounCase,
@@ -102,6 +103,39 @@ public class InflectionService : IInflectionService
                 Ending: ending,
                 EndingId: endingId,
                 InCorpus: inCorpus
+            ));
+        }
+
+        return new Declension
+        {
+            LemmaId = noun.LemmaId,
+            Case = nounCase,
+            Number = number,
+            Gender = noun.Gender,
+            Forms = forms
+        };
+    }
+
+    Declension GenerateIrregularNounForms(Noun noun, Case nounCase, Number number)
+    {
+        var irregularForms = _databaseService.GetIrregularNounForms(
+            noun.LemmaId, nounCase, noun.Gender, number);
+
+        var forms = new List<DeclensionForm>();
+
+        for (int i = 0; i < irregularForms.Count; i++)
+        {
+            var form = irregularForms[i];
+            var endingId = EndingIdFromIndex(i);
+            var formId = Declension.ResolveId(noun.LemmaId, nounCase, noun.Gender, number, endingId);
+
+            // Irregular forms from DB are always corpus-attested
+            forms.Add(new DeclensionForm(
+                FormId: formId,
+                Form: form,
+                Ending: form, // For irregular, ending = full form
+                EndingId: endingId,
+                InCorpus: true
             ));
         }
 
@@ -135,7 +169,13 @@ public class InflectionService : IInflectionService
             };
         }
 
-        // Get all possible endings for this pattern and grammatical parameters
+        // Irregular patterns: fetch full forms from database
+        if (verb.Irregular)
+        {
+            return GenerateIrregularVerbForms(verb, person, number, tense, reflexive);
+        }
+
+        // Regular patterns: compute stem + ending
         var endings = VerbEndings.GetEndings(
             verb.Pattern,
             person,
@@ -159,19 +199,14 @@ public class InflectionService : IInflectionService
 
         var forms = new List<ConjugationForm>();
 
-        // Generate a form for each possible ending
         for (int i = 0; i < endings.Length; i++)
         {
             var ending = endings[i];
-            // For irregular patterns, endings ARE the full forms
-            // For regular patterns, concatenate stem + ending
-            var form = verb.Irregular ? ending : verb.Stem + ending;
+            var form = verb.Stem + ending;
 
-            // Convert array index to 1-based EndingId
             var endingId = EndingIdFromIndex(i);
             var formId = Conjugation.ResolveId(verb.LemmaId, tense, person, number, reflexive, endingId);
 
-            // Check if this specific form appears in the corpus
             var inCorpus = _databaseService.IsVerbFormInCorpus(
                 verb.LemmaId,
                 tense,
@@ -187,6 +222,45 @@ public class InflectionService : IInflectionService
                 Ending: ending,
                 EndingId: endingId,
                 InCorpus: inCorpus
+            ));
+        }
+
+        return new Conjugation
+        {
+            LemmaId = verb.LemmaId,
+            Person = person,
+            Number = number,
+            Tense = tense,
+            Reflexive = reflexive,
+            Forms = forms
+        };
+    }
+
+    Conjugation GenerateIrregularVerbForms(
+        Verb verb,
+        Person person,
+        Number number,
+        Tense tense,
+        bool reflexive)
+    {
+        var irregularForms = _databaseService.GetIrregularVerbForms(
+            verb.LemmaId, tense, person, number, reflexive);
+
+        var forms = new List<ConjugationForm>();
+
+        for (int i = 0; i < irregularForms.Count; i++)
+        {
+            var form = irregularForms[i];
+            var endingId = EndingIdFromIndex(i);
+            var formId = Conjugation.ResolveId(verb.LemmaId, tense, person, number, reflexive, endingId);
+
+            // Irregular forms from DB are always corpus-attested
+            forms.Add(new ConjugationForm(
+                FormId: formId,
+                Form: form,
+                Ending: form, // For irregular, ending = full form
+                EndingId: endingId,
+                InCorpus: true
             ));
         }
 

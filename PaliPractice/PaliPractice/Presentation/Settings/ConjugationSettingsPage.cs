@@ -156,10 +156,11 @@ public sealed partial class ConjugationSettingsPage : Page
         cbAtiLong.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<ConjugationSettingsViewModel, bool>(v => v.PatternAtiLong));
         cbAtiLong.SetBinding(Control.IsEnabledProperty, Bind.Path<ConjugationSettingsViewModel, bool>(v => v.CanDisablePatternAtiLong));
 
+        // Traditional order: a, ā, e, o
         row.Children.Add(cbAti);
+        row.Children.Add(cbAtiLong);
         row.Children.Add(cbEti);
         row.Children.Add(cbOti);
-        row.Children.Add(cbAtiLong);
         checkboxContainer.Children.Add(row);
 
         return new Grid()

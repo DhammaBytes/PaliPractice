@@ -4,7 +4,7 @@ using PaliPractice.Tests.Inflection.Helpers;
 namespace PaliPractice.Tests.Inflection;
 
 /// <summary>
-/// Data-driven tests for VerbPatterns.cs, validating all patterns against DPD database.
+/// Data-driven tests for VerbEndings.cs, validating all patterns against DPD database.
 /// These tests ensure our hardcoded patterns match the DPD source of truth exactly.
 /// </summary>
 [TestFixture]
@@ -17,7 +17,7 @@ public class VerbPatternsTests
     /// Test case data: pattern, word, grammatical parameters, expected endings.
     /// </summary>
     public record VerbTestCase(
-        string Pattern,
+        VerbPattern Pattern,
         string Word,
         Tense Tense,
         Person Person,
@@ -26,7 +26,7 @@ public class VerbPatternsTests
         string[] ExpectedEndings)
     {
         public override string ToString() =>
-            $"{Pattern} | {Word} | {Tense} {(Reflexive ? "Reflexive" : "Active")} {Person} {Number} | [{string.Join(", ", ExpectedEndings)}]";
+            $"{Pattern.ToDbString()} | {Word} | {Tense} {(Reflexive ? "Reflexive" : "Active")} {Person} {Number} | [{string.Join(", ", ExpectedEndings)}]";
     }
 
     [OneTimeSetUp]
@@ -47,21 +47,23 @@ public class VerbPatternsTests
     /// </summary>
     public static IEnumerable<VerbTestCase> GetVerbTestCases()
     {
-        // Regular patterns + key irregular patterns
+        // Regular patterns + key irregular patterns (using enum values)
         var patterns = new[]
         {
             // Regular
-            "ati pr", "eti pr", "oti pr", "āti pr",
+            VerbPattern.Ati, VerbPattern.Eti, VerbPattern.Oti, VerbPattern.Āti,
             // Irregular
-            "hoti pr", "atthi pr", "karoti pr", "brūti pr"
+            VerbPattern.Hoti, VerbPattern.Atthi, VerbPattern.Karoti, VerbPattern.Brūti
         };
 
         using var helper = new DpdTestHelper(DpdDbPath);
 
         foreach (var pattern in patterns)
         {
+            var dbString = pattern.ToDbString();
+
             // Get top 3 words for this pattern
-            var words = helper.GetTopWordsByPattern(pattern, limit: 3);
+            var words = helper.GetTopWordsByPattern(dbString, limit: 3);
 
             foreach (var word in words)
             {
@@ -114,7 +116,7 @@ public class VerbPatternsTests
     public void VerbPattern_ShouldMatchDpdEndings(VerbTestCase testCase)
     {
         // Act: Generate endings using our pattern class
-        var actualEndings = VerbPatterns.GetEndings(
+        var actualEndings = VerbEndings.GetEndings(
             testCase.Pattern,
             testCase.Person,
             testCase.Number,
@@ -124,7 +126,7 @@ public class VerbPatternsTests
 
         // Assert: Should match DPD exactly (including order)
         actualEndings.Should().Equal(testCase.ExpectedEndings,
-            because: $"pattern '{testCase.Pattern}' for {testCase.Tense} {(testCase.Reflexive ? "Reflexive" : "Active")} {testCase.Person} {testCase.Number} should match DPD");
+            because: $"pattern '{testCase.Pattern.ToDbString()}' for {testCase.Tense} {(testCase.Reflexive ? "Reflexive" : "Active")} {testCase.Person} {testCase.Number} should match DPD");
     }
 
     /// <summary>
@@ -164,9 +166,9 @@ public class VerbPatternsTests
         var html = "<td title='pr 3rd sg'>bhav<b>ati</b></td><td title='opt 1st pl'><span class='gray'>bhav<b>ema</b></span><br><span class='gray'>bhav<b>emu</b></span><br><span class='gray'>bhav<b>eyyāma</b></span></td>";
 
         var prEndings = HtmlParser.ParseVerbEndings(html, "pr 3rd sg");
-        prEndings.Should().Equal(new[] { "ati" });
+        prEndings.Should().Equal("ati");
 
         var optEndings = HtmlParser.ParseVerbEndings(html, "opt 1st pl");
-        optEndings.Should().Equal(new[] { "ema", "emu", "eyyāma" });
+        optEndings.Should().Equal("ema", "emu", "eyyāma");
     }
 }

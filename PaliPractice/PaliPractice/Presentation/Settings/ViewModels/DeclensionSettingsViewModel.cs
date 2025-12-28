@@ -1,4 +1,5 @@
 using PaliPractice.Models;
+using PaliPractice.Models.Inflection;
 using PaliPractice.Services.Practice;
 using PaliPractice.Services.UserData;
 
@@ -11,12 +12,15 @@ public partial class DeclensionSettingsViewModel : ObservableObject
     readonly IUserDataService _userData;
     bool _isLoading = true;
 
-    // Pattern labels by gender (derived from NounPattern enum)
-    public static readonly string[] MascPatterns = NounPatternHelper.MasculinePatterns
+    // Pattern labels by gender (derived from enum using breakpoints)
+    public static readonly string[] MascPatterns = Enum.GetValues<NounPattern>()
+        .Where(p => p < NounPattern._RegularFem)
         .Select(p => p.ToDisplayLabel()).ToArray();
-    public static readonly string[] NtPatterns = NounPatternHelper.NeuterPatterns
+    public static readonly string[] NtPatterns = Enum.GetValues<NounPattern>()
+        .Where(p => p > NounPattern._RegularNeut && p < NounPattern._Irregular)
         .Select(p => p.ToDisplayLabel()).ToArray();
-    public static readonly string[] FemPatterns = NounPatternHelper.FemininePatterns
+    public static readonly string[] FemPatterns = Enum.GetValues<NounPattern>()
+        .Where(p => p > NounPattern._RegularFem && p < NounPattern._RegularNeut)
         .Select(p => p.ToDisplayLabel()).ToArray();
 
     public DeclensionSettingsViewModel(INavigator navigator, IUserDataService userData)

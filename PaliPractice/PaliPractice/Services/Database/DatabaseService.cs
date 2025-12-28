@@ -69,6 +69,30 @@ public interface IDatabaseService
     /// O(1) from cache (checks up to 9 ending variants).
     /// </summary>
     bool HasAttestedVerbForm(int lemmaId, Tense tense, Person person, Number number, bool reflexive);
+
+    /// <summary>
+    /// Get all irregular noun forms for a specific grammatical combination.
+    /// Returns empty list if not an irregular pattern or no forms found.
+    /// </summary>
+    List<string> GetIrregularNounForms(int lemmaId, Case @case, Gender gender, Number number);
+
+    /// <summary>
+    /// Get all irregular verb forms for a specific grammatical combination.
+    /// Returns empty list if not an irregular pattern or no forms found.
+    /// </summary>
+    List<string> GetIrregularVerbForms(int lemmaId, Tense tense, Person person, Number number, bool reflexive);
+
+    /// <summary>
+    /// Check if irregular forms exist for this noun grammatical combination.
+    /// Used to determine if a form exists for plural-only nouns, etc.
+    /// </summary>
+    bool HasIrregularNounForm(int lemmaId, Case @case, Gender gender, Number number);
+
+    /// <summary>
+    /// Check if irregular forms exist for this verb grammatical combination.
+    /// Used to determine if a form exists for defective verbs.
+    /// </summary>
+    bool HasIrregularVerbForm(int lemmaId, Tense tense, Person person, Number number, bool reflexive);
 }
 
 public class DatabaseService : IDatabaseService
@@ -85,12 +109,14 @@ public class DatabaseService : IDatabaseService
     HashSet<int>? _attestedDeclensionFormIds;
     Dictionary<int, ILemma>? _nounLemmas;
     List<ILemma>? _nounLemmasByRank;
+    Dictionary<int, string>? _irregularNounForms;  // form_id -> full form
 
     // Verb caches - loaded lazily on first conjugation practice
     HashSet<int>? _nonReflexiveLemmaIds;
     HashSet<long>? _attestedConjugationFormIds;
     Dictionary<int, ILemma>? _verbLemmas;
     List<ILemma>? _verbLemmasByRank;
+    Dictionary<long, string>? _irregularVerbForms;  // form_id -> full form
 
     public void Initialize()
     {
@@ -120,9 +146,14 @@ public class DatabaseService : IDatabaseService
 
             // Pre-cache corpus attestation form_ids for O(1) lookup
             _attestedDeclensionFormIds = _database!
-                .Table<CorpusDeclension>()
+                .Table<NounCorpusForm>()
                 .Select(d => d.FormId)
                 .ToHashSet();
+
+            // Pre-cache irregular noun forms for O(1) lookup
+            _irregularNounForms = _database
+                .Table<NounIrregularForm>()
+                .ToDictionary(f => f.FormId, f => f.Form);
 
             // Build lemma objects grouping all noun variants
             _nounLemmas = _database
@@ -162,9 +193,14 @@ public class DatabaseService : IDatabaseService
 
             // Pre-cache corpus attestation form_ids for O(1) lookup
             _attestedConjugationFormIds = _database
-                .Table<CorpusConjugation>()
+                .Table<VerbCorpusForm>()
                 .Select(c => c.FormId)
                 .ToHashSet();
+
+            // Pre-cache irregular verb forms for O(1) lookup
+            _irregularVerbForms = _database
+                .Table<VerbIrregularForm>()
+                .ToDictionary(f => f.FormId, f => f.Form);
 
             // Build lemma objects grouping all verb variants
             _verbLemmas = _database
@@ -361,6 +397,56 @@ public class DatabaseService : IDatabaseService
         for (int endingId = 1; endingId <= 9; endingId++)
         {
             if (_attestedConjugationFormIds!.Contains(baseFormId + endingId))
+                return true;
+        }
+        return false;
+    }
+
+    public List<string> GetIrregularNounForms(int lemmaId, Case @case, Gender gender, Number number)
+    {
+        EnsureNounCacheLoaded();
+        var forms = new List<string>();
+        var baseFormId = Declension.ResolveId(lemmaId, @case, gender, number, 0);
+        for (int endingId = 1; endingId <= 9; endingId++)
+        {
+            if (_irregularNounForms!.TryGetValue(baseFormId + endingId, out var form))
+                forms.Add(form);
+        }
+        return forms;
+    }
+
+    public List<string> GetIrregularVerbForms(int lemmaId, Tense tense, Person person, Number number, bool reflexive)
+    {
+        EnsureVerbCacheLoaded();
+        var forms = new List<string>();
+        var baseFormId = Conjugation.ResolveId(lemmaId, tense, person, number, reflexive, 0);
+        for (int endingId = 1; endingId <= 9; endingId++)
+        {
+            if (_irregularVerbForms!.TryGetValue(baseFormId + endingId, out var form))
+                forms.Add(form);
+        }
+        return forms;
+    }
+
+    public bool HasIrregularNounForm(int lemmaId, Case @case, Gender gender, Number number)
+    {
+        EnsureNounCacheLoaded();
+        var baseFormId = Declension.ResolveId(lemmaId, @case, gender, number, 0);
+        for (int endingId = 1; endingId <= 9; endingId++)
+        {
+            if (_irregularNounForms!.ContainsKey(baseFormId + endingId))
+                return true;
+        }
+        return false;
+    }
+
+    public bool HasIrregularVerbForm(int lemmaId, Tense tense, Person person, Number number, bool reflexive)
+    {
+        EnsureVerbCacheLoaded();
+        var baseFormId = Conjugation.ResolveId(lemmaId, tense, person, number, reflexive, 0);
+        for (int endingId = 1; endingId <= 9; endingId++)
+        {
+            if (_irregularVerbForms!.ContainsKey(baseFormId + endingId))
                 return true;
         }
         return false;

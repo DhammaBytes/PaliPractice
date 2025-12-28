@@ -4,7 +4,7 @@ using PaliPractice.Tests.Inflection.Helpers;
 namespace PaliPractice.Tests.Inflection;
 
 /// <summary>
-/// Data-driven tests for NounPatterns.cs, validating all patterns against DPD database.
+/// Data-driven tests for NounEndings.cs, validating all patterns against DPD database.
 /// These tests ensure our hardcoded patterns match the DPD source of truth exactly.
 /// </summary>
 [TestFixture]
@@ -17,14 +17,14 @@ public class NounPatternsTests
     /// Test case data: pattern, word, case, number, expected endings.
     /// </summary>
     public record NounTestCase(
-        string Pattern,
+        NounPattern Pattern,
         string Word,
         Case Case,
         Number Number,
         string[] ExpectedEndings)
     {
         public override string ToString() =>
-            $"{Pattern} | {Word} | {Case} {Number} | [{string.Join(", ", ExpectedEndings)}]";
+            $"{Pattern.ToDbString()} | {Word} | {Case} {Number} | [{string.Join(", ", ExpectedEndings)}]";
     }
 
     [OneTimeSetUp]
@@ -45,24 +45,28 @@ public class NounPatternsTests
     /// </summary>
     public static IEnumerable<NounTestCase> GetNounTestCases()
     {
-        // Regular patterns + key irregular patterns
+        // Regular patterns + key irregular patterns (using enum values)
         var patterns = new[]
         {
             // Regular (covers ~94% of nouns)
-            "a masc", "a nt", "ā fem",
-            "i masc", "i fem", "i nt", "ī masc", "ī fem",
-            "u masc", "u nt", "u fem", "ū masc",
-            "as masc", "ar masc", "ant masc",
+            NounPattern.AMasc, NounPattern.ANeut, NounPattern.ĀFem,
+            NounPattern.IMasc, NounPattern.IFem, NounPattern.INeut,
+            NounPattern.ĪMasc, NounPattern.ĪFem,
+            NounPattern.UMasc, NounPattern.UNeut, NounPattern.UFem,
+            NounPattern.ŪMasc,
+            NounPattern.AsMasc, NounPattern.ArMasc, NounPattern.AntMasc,
             // Irregular
-            "rāja masc", "brahma masc", "kamma nt"
+            NounPattern.RājaMasc, NounPattern.BrahmaMasc, NounPattern.KammaNeut
         };
 
         using var helper = new DpdTestHelper(DpdDbPath);
 
         foreach (var pattern in patterns)
         {
+            var dbString = pattern.ToDbString();
+
             // Get top 3 words for this pattern
-            var words = helper.GetTopWordsByPattern(pattern, limit: 3);
+            var words = helper.GetTopWordsByPattern(dbString, limit: 3);
 
             foreach (var word in words)
             {
@@ -76,8 +80,8 @@ public class NounPatternsTests
                         if (number == Number.None) continue;
 
                         // Build the DPD title format
-                        var gender = pattern.Contains("masc") ? "masc" :
-                                   pattern.Contains("nt") ? "nt" : "fem";
+                        var gender = dbString.Contains("masc") ? "masc" :
+                                   dbString.Contains("nt") ? "nt" : "fem";
 
                         var caseStr = nounCase switch
                         {
@@ -122,11 +126,11 @@ public class NounPatternsTests
     public void NounPattern_ShouldMatchDpdEndings(NounTestCase testCase)
     {
         // Act: Generate endings using our pattern class
-        var actualEndings = NounPatterns.GetEndings(testCase.Pattern, testCase.Case, testCase.Number);
+        var actualEndings = NounEndings.GetEndings(testCase.Pattern, testCase.Case, testCase.Number);
 
         // Assert: Should match DPD exactly (including order)
         actualEndings.Should().Equal(testCase.ExpectedEndings,
-            because: $"pattern '{testCase.Pattern}' for {testCase.Case} {testCase.Number} should match DPD");
+            because: $"pattern '{testCase.Pattern.ToDbString()}' for {testCase.Case} {testCase.Number} should match DPD");
     }
 
     /// <summary>
@@ -151,10 +155,10 @@ public class NounPatternsTests
         var html = "<td title='masc nom sg'>dhamm<b>o</b></td><td title='masc nom pl'>dhamm<b>ā</b><br><span class='gray'>dhamm<b>āse</b></span></td>";
 
         var singularEndings = HtmlParser.ParseNounEndings(html, "masc nom sg");
-        singularEndings.Should().Equal(new[] { "o" });
+        singularEndings.Should().Equal("o");
 
         var pluralEndings = HtmlParser.ParseNounEndings(html, "masc nom pl");
-        pluralEndings.Should().Equal(new[] { "ā", "āse" });
+        pluralEndings.Should().Equal("ā", "āse");
     }
 
     /// <summary>

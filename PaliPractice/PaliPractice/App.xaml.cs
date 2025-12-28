@@ -136,11 +136,11 @@ public partial class App : Application
             // var logicalWidth = 800;
             // var logicalHeight = 600;
             
-            MainWindow.AppWindow.Resize(new SizeInt32
-            {
-                Width = 800,//(int)(logicalWidth * scale),
-                Height = 600//(int)(logicalHeight * scale)
-            });
+            // MainWindow.AppWindow.Resize(new SizeInt32
+            // {
+            //     Width = 800,//(int)(logicalWidth * scale),
+            //     Height = 600//(int)(logicalHeight * scale)
+            // });
         }
 
 #if DEBUG

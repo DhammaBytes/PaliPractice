@@ -383,6 +383,163 @@ def clean_stem(stem: Optional[str]) -> str:
     return re.sub(r"[!*]", "", stem)
 
 
+# Irregular patterns that need HTML parsing instead of template-based extraction
+# These match the C# NounPattern and VerbPattern enum irregular values
+IRREGULAR_NOUN_PATTERNS = {
+    "rāja masc", "brahma masc", "kamma nt", "addha masc",
+    "a masc east", "a masc pl", "a2 masc", "go masc", "yuva masc",
+    "ī masc pl", "jantu masc", "u masc pl", "ar2 masc",
+    "anta masc", "arahant masc", "bhavant masc", "santa masc",
+    "parisā fem", "jāti fem", "ratti fem", "nadī fem", "pokkharaṇī fem",
+    "mātar fem", "a nt east", "a nt irreg", "a nt pl"
+}
+
+IRREGULAR_VERB_PATTERNS = {
+    "hoti pr", "atthi pr", "karoti pr", "brūti pr",
+    "dakkhati pr", "dammi pr", "hanati pr", "kubbati pr",
+    "natthi pr", "eti pr 2"
+}
+
+
+def parse_inflections_html(html: str) -> Dict[str, List[str]]:
+    """Parse DPD inflections_html to extract forms by grammatical combination.
+
+    Returns dict mapping title (e.g., "masc nom sg") to list of full forms.
+    Only non-gray forms are included (gray = not in corpus).
+    """
+    if not html:
+        return {}
+
+    results: Dict[str, List[str]] = {}
+
+    # Find all <td title='...'>...</td> elements
+    cell_pattern = r"<td\s+title='([^']+)'[^>]*>(.*?)</td>"
+    for match in re.finditer(cell_pattern, html, re.DOTALL):
+        title = match.group(1)
+        content = match.group(2)
+
+        # Skip empty cells or "in comps"
+        if not content.strip() or title == "in comps" or not title:
+            continue
+
+        forms = []
+
+        # Split by <br> for multiple forms
+        parts = re.split(r"<br\s*/?>", content, flags=re.IGNORECASE)
+
+        for part in parts:
+            part = part.strip()
+            if not part:
+                continue
+
+            # Skip gray forms (not in corpus)
+            if "<span class='gray'>" in part:
+                continue
+
+            # Extract full form: combine non-bold stem + bold ending
+            # Pattern: optional_stem<b>ending</b>
+            # Example: "aṅga<b>rājā</b>" -> "aṅgarājā"
+            form_match = re.search(r"^([^<]*)<b>([^<]+)</b>", part)
+            if form_match:
+                stem_part = form_match.group(1)
+                ending_part = form_match.group(2)
+                full_form = stem_part + ending_part
+                forms.append(full_form)
+
+        if forms:
+            results[title] = forms
+
+    return results
+
+
+def parse_noun_title(title: str) -> Tuple[int, int, int]:
+    """Parse noun HTML title to grammar components.
+
+    Title format: "masc nom sg", "fem acc pl", "nt gen sg", etc.
+    Returns: (case, gender, number) as enum integers.
+    """
+    parts = title.lower().split()
+
+    # Gender
+    gender = GrammarEnums.GENDER_NONE
+    if 'masc' in parts:
+        gender = GrammarEnums.GENDER_MASCULINE
+    elif 'fem' in parts:
+        gender = GrammarEnums.GENDER_FEMININE
+    elif 'nt' in parts:
+        gender = GrammarEnums.GENDER_NEUTER
+
+    # Case
+    case = GrammarEnums.CASE_NONE
+    case_map = {
+        'nom': GrammarEnums.CASE_NOMINATIVE,
+        'acc': GrammarEnums.CASE_ACCUSATIVE,
+        'instr': GrammarEnums.CASE_INSTRUMENTAL,
+        'dat': GrammarEnums.CASE_DATIVE,
+        'abl': GrammarEnums.CASE_ABLATIVE,
+        'gen': GrammarEnums.CASE_GENITIVE,
+        'loc': GrammarEnums.CASE_LOCATIVE,
+        'voc': GrammarEnums.CASE_VOCATIVE
+    }
+    for abbr, val in case_map.items():
+        if abbr in parts:
+            case = val
+            break
+
+    # Number
+    number = GrammarEnums.NUMBER_NONE
+    if 'sg' in parts:
+        number = GrammarEnums.NUMBER_SINGULAR
+    elif 'pl' in parts:
+        number = GrammarEnums.NUMBER_PLURAL
+
+    return (case, gender, number)
+
+
+def parse_verb_title(title: str) -> Tuple[int, int, int, int]:
+    """Parse verb HTML title to grammar components.
+
+    Title format: "pr 3rd sg", "imp 1st pl", "reflx opt 2nd sg", etc.
+    Returns: (tense, person, number, reflexive) as enum integers.
+    """
+    parts = title.lower().split()
+
+    # Reflexive
+    reflexive = GrammarEnums.REFLEXIVE_YES if 'reflx' in parts else GrammarEnums.REFLEXIVE_NO
+
+    # Tense
+    tense = GrammarEnums.TENSE_NONE
+    tense_map = {
+        'pr': GrammarEnums.TENSE_PRESENT,
+        'imp': GrammarEnums.TENSE_IMPERATIVE,
+        'opt': GrammarEnums.TENSE_OPTATIVE,
+        'fut': GrammarEnums.TENSE_FUTURE,
+        'aor': GrammarEnums.TENSE_AORIST
+    }
+    for abbr, val in tense_map.items():
+        if abbr in parts:
+            tense = val
+            break
+
+    # Person
+    person = GrammarEnums.PERSON_NONE
+    if '1st' in parts:
+        person = GrammarEnums.PERSON_FIRST
+    elif '2nd' in parts:
+        person = GrammarEnums.PERSON_SECOND
+    elif '3rd' in parts:
+        person = GrammarEnums.PERSON_THIRD
+
+    # Number
+    number = GrammarEnums.NUMBER_NONE
+    if 'sg' in parts:
+        number = GrammarEnums.NUMBER_SINGULAR
+    elif 'pl' in parts:
+        number = GrammarEnums.NUMBER_PLURAL
+
+    return (tense, person, number, reflexive)
+
+
 class NounVerbExtractor:
     """Extract nouns and verbs with grammatical categorization."""
 
@@ -528,20 +685,38 @@ class NounVerbExtractor:
                 lemma_id INTEGER PRIMARY KEY
             )
         """)
-        
+
         # Corpus attestation for noun declensions (only stores corpus-attested forms)
         # form_id encodes: lemma_id(5) + case(1) + gender(1) + number(1) + ending_index(1)
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS corpus_declensions (
+            CREATE TABLE IF NOT EXISTS nouns_corpus_forms (
                 form_id INTEGER PRIMARY KEY
             )
         """)
 
         # Corpus attestation for verb conjugations (only stores corpus-attested forms)
-        # form_id encodes: lemma_id(5) + tense(1) + person(1) + number(1) + voice(1) + ending_index(1)
+        # form_id encodes: lemma_id(5) + tense(1) + person(1) + number(1) + reflexive(1) + ending_index(1)
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS corpus_conjugations (
+            CREATE TABLE IF NOT EXISTS verbs_corpus_forms (
                 form_id INTEGER PRIMARY KEY
+            )
+        """)
+
+        # Irregular noun forms (full forms, not endings) - parsed from DPD inflections_html
+        # form_id encodes: lemma_id(5) + case(1) + gender(1) + number(1) + ending_index(1)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS nouns_irregular_forms (
+                form_id INTEGER PRIMARY KEY,
+                form TEXT NOT NULL
+            )
+        """)
+
+        # Irregular verb forms (full forms, not endings) - parsed from DPD inflections_html
+        # form_id encodes: lemma_id(5) + tense(1) + person(1) + number(1) + reflexive(1) + ending_index(1)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS verbs_irregular_forms (
+                form_id INTEGER PRIMARY KEY,
+                form TEXT NOT NULL
             )
         """)
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_nouns_gender ON nouns(gender)")
@@ -1017,13 +1192,38 @@ class NounVerbExtractor:
                             )
                             try:
                                 cursor.execute(
-                                    "INSERT INTO corpus_declensions (form_id) VALUES (?)",
+                                    "INSERT INTO nouns_corpus_forms (form_id) VALUES (?)",
                                     (form_id,)
                                 )
                                 total_declensions += 1
                             except sqlite3.IntegrityError:
                                 # Skip duplicates
                                 pass
+
+                    # Extract irregular forms from HTML (if irregular pattern)
+                    if word.pattern in IRREGULAR_NOUN_PATTERNS and word.inflections_html:
+                        html_forms = parse_inflections_html(word.inflections_html)
+                        for title, form_list in html_forms.items():
+                            case_val, gender_val, number_val = parse_noun_title(title)
+                            # Skip if we couldn't parse the grammar
+                            if case_val == GrammarEnums.CASE_NONE:
+                                continue
+                            for idx, full_form in enumerate(form_list):
+                                form_id = compute_declension_form_id(
+                                    lemma_id=lemma_id,
+                                    case=case_val,
+                                    gender=gender,  # Use noun's gender from POS
+                                    number=number_val,
+                                    ending_index=idx + 1  # 1-based
+                                )
+                                try:
+                                    cursor.execute(
+                                        "INSERT INTO nouns_irregular_forms (form_id, form) VALUES (?, ?)",
+                                        (form_id, full_form)
+                                    )
+                                except sqlite3.IntegrityError:
+                                    # Skip duplicates (can happen with multiple headwords for same lemma)
+                                    pass
                 else:
                     nouns_discarded.append(word.lemma_1)
             else:
@@ -1097,13 +1297,39 @@ class NounVerbExtractor:
                         )
                         try:
                             cursor.execute(
-                                "INSERT INTO corpus_conjugations (form_id) VALUES (?)",
+                                "INSERT INTO verbs_corpus_forms (form_id) VALUES (?)",
                                 (form_id,)
                             )
                             total_conjugations += 1
                         except sqlite3.IntegrityError:
                             # Skip duplicates
                             pass
+
+                # Extract irregular forms from HTML (if irregular pattern)
+                if word.pattern in IRREGULAR_VERB_PATTERNS and word.inflections_html:
+                    html_forms = parse_inflections_html(word.inflections_html)
+                    for title, form_list in html_forms.items():
+                        tense_val, person_val, number_val, reflexive_val = parse_verb_title(title)
+                        # Skip if we couldn't parse the grammar
+                        if tense_val == GrammarEnums.TENSE_NONE or person_val == GrammarEnums.PERSON_NONE:
+                            continue
+                        for idx, full_form in enumerate(form_list):
+                            form_id = compute_conjugation_form_id(
+                                lemma_id=lemma_id,
+                                tense=tense_val,
+                                person=person_val,
+                                number=number_val,
+                                reflexive=reflexive_val,
+                                ending_index=idx + 1  # 1-based
+                            )
+                            try:
+                                cursor.execute(
+                                    "INSERT INTO verbs_irregular_forms (form_id, form) VALUES (?, ?)",
+                                    (form_id, full_form)
+                                )
+                            except sqlite3.IntegrityError:
+                                # Skip duplicates (can happen with multiple headwords for same lemma)
+                                pass
 
         # Insert non-reflexive verb lemma_ids (the minority)
         nonreflexive_lemma_ids = all_verb_lemma_ids - reflexive_lemma_ids
@@ -1211,14 +1437,24 @@ class NounVerbExtractor:
         print(f"  verbs: {unique_verb_lemmas} unique lemma_ids")
 
         # Corpus attestation counts
-        cursor.execute("SELECT COUNT(*) FROM corpus_declensions")
+        cursor.execute("SELECT COUNT(*) FROM nouns_corpus_forms")
         decl_count = cursor.fetchone()[0]
-        cursor.execute("SELECT COUNT(*) FROM corpus_conjugations")
+        cursor.execute("SELECT COUNT(*) FROM verbs_corpus_forms")
         conj_count = cursor.fetchone()[0]
         print("\nCorpus Attestation Records:")
         print(f"  Noun forms in corpus: {decl_count}")
         print(f"  Verb forms in corpus: {conj_count}")
         print(f"  Total: {decl_count + conj_count}")
+
+        # Irregular forms counts
+        cursor.execute("SELECT COUNT(*) FROM nouns_irregular_forms")
+        irreg_noun_count = cursor.fetchone()[0]
+        cursor.execute("SELECT COUNT(*) FROM verbs_irregular_forms")
+        irreg_verb_count = cursor.fetchone()[0]
+        print("\nIrregular Forms Records:")
+        print(f"  Irregular noun forms: {irreg_noun_count}")
+        print(f"  Irregular verb forms: {irreg_verb_count}")
+        print(f"  Total: {irreg_noun_count + irreg_verb_count}")
 
         conn.close()
 

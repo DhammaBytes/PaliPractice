@@ -1,10 +1,10 @@
 namespace PaliPractice.Models.Inflection;
 
 /// <summary>
-/// Provides verb conjugation endings for present tense patterns.
-/// Regular patterns return endings; irregular patterns return full forms.
+/// Provides verb conjugation endings for regular patterns.
+/// Irregular patterns are handled via database lookup in InflectionService.
 /// </summary>
-public static partial class VerbEndings
+public static class VerbEndings
 {
     /// <summary>
     /// Get conjugation endings for a verb pattern.
@@ -29,11 +29,7 @@ public static partial class VerbEndings
             VerbPattern.Eti => GetEti_Pr(person, number, tense, reflexive),
             VerbPattern.Oti => GetOti_Pr(person, number, tense, reflexive),
             VerbPattern.Āti => GetAti_Long_Pr(person, number, tense, reflexive),
-            // Irregular patterns (defined in VerbEndingsIrregular.cs)
-            VerbPattern.Hoti => GetHoti_Pr(person, number, tense, reflexive),
-            VerbPattern.Atthi => GetAtthi_Pr(person, number, tense, reflexive),
-            VerbPattern.Karoti => GetKaroti_Pr(person, number, tense, reflexive),
-            VerbPattern.Brūti => GetBruti_Pr(person, number, tense, reflexive),
+            // Irregular patterns are handled via database lookup in InflectionService
             _ => []
         };
     }

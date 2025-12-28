@@ -558,7 +558,7 @@ public class VerbDataIntegrityTests
     public void CorpusConjugations_HasFormIds()
     {
         _corpusConjugationFormIds.Should().NotBeEmpty(
-            "corpus_conjugations should contain form_ids");
+            "verbs_corpus_forms should contain form_ids");
 
         TestContext.WriteLine($"Corpus conjugation form_ids: {_corpusConjugationFormIds!.Count}");
     }

@@ -1,3 +1,4 @@
+using PaliPractice.Models.Inflection;
 using SQLite;
 
 namespace PaliPractice.Models.Words;
@@ -37,6 +38,7 @@ public class Verb : IWord
     /// Typed pattern enum value parsed from RawPattern.
     /// </summary>
     [Ignore]
+    // TODO: assign once
     public VerbPattern Pattern => VerbPatternHelper.Parse(RawPattern);
 
     /// <summary>

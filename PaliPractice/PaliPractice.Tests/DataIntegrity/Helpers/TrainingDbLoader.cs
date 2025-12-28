@@ -225,7 +225,7 @@ public class TrainingDbLoader : IDisposable
     {
         var formIds = new HashSet<long>();
 
-        const string sql = "SELECT form_id FROM corpus_declensions";
+        const string sql = "SELECT form_id FROM nouns_corpus_forms";
 
         using var command = _connection.CreateCommand();
         command.CommandText = sql;
@@ -246,7 +246,7 @@ public class TrainingDbLoader : IDisposable
     {
         var formIds = new HashSet<long>();
 
-        const string sql = "SELECT form_id FROM corpus_conjugations";
+        const string sql = "SELECT form_id FROM verbs_corpus_forms";
 
         using var command = _connection.CreateCommand();
         command.CommandText = sql;

@@ -24,7 +24,7 @@ namespace PaliPractice.Tests.DataIntegrity;
 ///   <item><b>dpd.db</b>: Digital Pāḷi Dictionary - the authoritative source for word properties
 ///     (lemma, stem, pattern, meaning, examples). Gray forms in HTML indicate theoretical inflections.</item>
 ///   <item><b>training.db</b>: App's extracted database. Properties come from dpd.db,
-///     corpus tables (corpus_declensions) come from Tipitaka wordlists.</item>
+///     corpus tables (nouns_corpus_forms) come from Tipitaka wordlists.</item>
 ///   <item><b>Tipitaka wordlists</b>: JSON files (cst, bjt, sya, sc) containing actual words
 ///     found in Pali canon texts. Used by extraction script to determine InCorpus status.</item>
 /// </list>
@@ -520,7 +520,7 @@ public class NounDataIntegrityTests
     public void CorpusDeclensions_HasFormIds()
     {
         _corpusDeclensionFormIds.Should().NotBeEmpty(
-            "corpus_declensions should contain form_ids");
+            "nouns_corpus_forms should contain form_ids");
 
         TestContext.WriteLine($"Corpus declension form_ids: {_corpusDeclensionFormIds!.Count}");
     }

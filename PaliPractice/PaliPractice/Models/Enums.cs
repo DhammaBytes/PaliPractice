@@ -57,158 +57,153 @@ public enum Transitivity
     Ditransitive = 3
 }
 
+// ReSharper disable InconsistentNaming
 /// <summary>
 /// Verb conjugation patterns. All are present tense (pr).
 ///
-/// IMPORTANT: Irregulars MUST be grouped immediately after their parent regular.
-/// This grouping is for code readability only - the actual parent-child relationship
-/// is defined in VerbPatternHelper.ParentRegular() and ChildIrregulars().
-/// When adding new patterns, place them under the correct parent and update the helper.
+/// Structure: Regular patterns → _Irregular → All Irregulars
+/// Traditional order for regulars: a, ā, e, o
+/// Irregulars grouped by parent, alphabetical within groups.
 /// </summary>
 public enum VerbPattern
 {
-    // ═══ Regular: -ati ═══
+    // ═══════════════════════════════════════════
+    // REGULAR PATTERNS (pattern < _Irregular)
+    // Traditional order: a, ā, e, o
+    // ═══════════════════════════════════════════
     Ati,          // "ati pr"
+    Āti,          // "āti pr"
+    Eti,          // "eti pr"
+    Oti,          // "oti pr"
+
+    // ═══ Breakpoint: End of regular patterns ═══
+    _Irregular,
+
+    // ═══════════════════════════════════════════
+    // IRREGULAR PATTERNS (pattern > _Irregular)
+    // Grouped by parent, alphabetical within groups.
+    // ═══════════════════════════════════════════
+
     // Irregulars → Ati
-    Hoti,         // "hoti pr"
     Atthi,        // "atthi pr"
-    Natthi,       // "natthi pr"
     Dakkhati,     // "dakkhati pr"
     Dammi,        // "dammi pr"
     Hanati,       // "hanati pr"
+    Hoti,         // "hoti pr"
+    Kubbati,      // "kubbati pr"
+    Natthi,       // "natthi pr"
 
-    // ═══ Regular: -eti ═══
-    Eti,          // "eti pr"
     // Irregulars → Eti
     Eti2,         // "eti pr 2"
 
-    // ═══ Regular: -oti ═══
-    Oti,          // "oti pr"
     // Irregulars → Oti
-    Karoti,       // "karoti pr"
     Brūti,        // "brūti pr"
-    Kubbati,      // "kubbati pr"
-
-    // ═══ Regular: -āti ═══
-    Āti,          // "āti pr"
-    // (no irregulars)
+    Karoti,       // "karoti pr"
 }
 
 /// <summary>
-/// Noun declension patterns by gender.
+/// Noun declension patterns organized by gender with breakpoint markers.
 ///
-/// IMPORTANT: Irregulars MUST be grouped immediately after their parent regular.
-/// This grouping is for code readability only - the actual parent-child relationship
-/// is defined in NounPatternHelper.ParentRegular() and ChildIrregulars().
-/// When adding new patterns, place them under the correct parent and update the helper.
-/// Special patterns like DviCard (cardinal numbers) have no parent and are always excluded.
+/// Structure: Regular Masculine → _RegularFem → Regular Feminine → _RegularNeut → Regular Neuter → _Irregular → All Irregulars
+///
+/// This ordering enables simple comparisons:
+/// - pattern before _RegularFem means regular masculine
+/// - pattern after _RegularFem and before _RegularNeut means feminine
+/// - pattern after _Irregular means irregular
+///
+/// Irregulars are grouped by their parent regular pattern for readability.
 /// </summary>
 public enum NounPattern
 {
     // ═══════════════════════════════════════════
-    // MASCULINE
+    // REGULAR MASCULINE (pattern < _RegularFem)
+    // Traditional order: a, i, ī, u, ū, ar, ant, as
+    // ═══════════════════════════════════════════
+    AMasc,            // "a masc"
+    IMasc,            // "i masc"
+    ĪMasc,            // "ī masc"
+    UMasc,            // "u masc"
+    ŪMasc,            // "ū masc"
+    ArMasc,           // "ar masc"
+    AntMasc,          // "ant masc"
+    AsMasc,           // "as masc"
+
+    // ═══ Breakpoint: End of regular masculine ═══
+    _RegularFem,
+
+    // ═══════════════════════════════════════════
+    // REGULAR FEMININE (_RegularFem < pattern < _RegularNeut)
+    // Traditional order: ā, i, ī, u, ar
+    // ═══════════════════════════════════════════
+    ĀFem,             // "ā fem"
+    IFem,             // "i fem"
+    ĪFem,             // "ī fem"
+    UFem,             // "u fem"
+    ArFem,            // "ar fem"
+
+    // ═══ Breakpoint: End of regular feminine ═══
+    _RegularNeut,
+
+    // ═══════════════════════════════════════════
+    // REGULAR NEUTER (_RegularNeut < pattern < _Irregular)
+    // Traditional order: a, i, u
+    // ═══════════════════════════════════════════
+    ANeut,            // "a nt"
+    INeut,            // "i nt"
+    UNeut,            // "u nt"
+
+    // ═══ Breakpoint: End of regular patterns ═══
+    _Irregular,
+
+    // ═══════════════════════════════════════════
+    // IRREGULAR PATTERNS (pattern >= _Irregular)
+    // Grouped by parent, alphabetical within groups.
     // ═══════════════════════════════════════════
 
-    // ═══ Regular: -a masc ═══
-    AMasc,            // "a masc"
     // Irregulars → AMasc
-    RājaMasc,         // "rāja masc"
-    BrahmaMasc,       // "brahma masc"
-    A2Masc,           // "a2 masc"
+    AddhaMasc,        // "addha masc"
     AMascEast,        // "a masc east"
     AMascPl,          // "a masc pl"
-    AddhaMasc,        // "addha masc"
+    A2Masc,           // "a2 masc"
+    BrahmaMasc,       // "brahma masc"
     GoMasc,           // "go masc"
+    RājaMasc,         // "rāja masc"
     YuvaMasc,         // "yuva masc"
 
-    // ═══ Regular: -i masc ═══
-    IMasc,            // "i masc"
-    // (no irregulars)
-
-    // ═══ Regular: -ī masc ═══
-    ĪMasc,            // "ī masc"
     // Irregulars → ĪMasc
     ĪMascPl,          // "ī masc pl"
 
-    // ═══ Regular: -u masc ═══
-    UMasc,            // "u masc"
     // Irregulars → UMasc
     JantuMasc,        // "jantu masc"
     UMascPl,          // "u masc pl"
 
-    // ═══ Regular: -ū masc ═══
-    ŪMasc,            // "ū masc"
-    // (no irregulars)
-
-    // ═══ Regular: -as masc ═══
-    AsMasc,           // "as masc"
-    // (no irregulars)
-
-    // ═══ Regular: -ar masc ═══
-    ArMasc,           // "ar masc"
     // Irregulars → ArMasc
     Ar2Masc,          // "ar2 masc"
 
-    // ═══ Regular: -ant masc ═══
-    AntMasc,          // "ant masc"
     // Irregulars → AntMasc
     AntaMasc,         // "anta masc"
     ArahantMasc,      // "arahant masc"
     BhavantMasc,      // "bhavant masc"
     SantaMasc,        // "santa masc"
 
-    // ═══════════════════════════════════════════
-    // NEUTER
-    // ═══════════════════════════════════════════
-
-    // ═══ Regular: -a nt ═══
-    ANeut,            // "a nt"
-    // Irregulars → ANeut
-    KammaNeut,        // "kamma nt"
-    ANeutEast,        // "a nt east"
-    ANeutIrreg,       // "a nt irreg"
-    ANeutPl,          // "a nt pl"
-
-    // ═══ Regular: -i nt ═══
-    INeut,            // "i nt"
-    // (no irregulars)
-
-    // ═══ Regular: -u nt ═══
-    UNeut,            // "u nt"
-    // (no irregulars)
-
-    // ═══════════════════════════════════════════
-    // FEMININE
-    // ═══════════════════════════════════════════
-
-    // ═══ Regular: -ā fem ═══
-    ĀFem,             // "ā fem"
     // Irregulars → ĀFem
     ParisāFem,        // "parisā fem"
 
-    // ═══ Regular: -i fem ═══
-    IFem,             // "i fem"
-    // Irregulars → IFem
+    // Irregulars → IFem — note: jāti ends in short i
+    JātiFem,          // "jāti fem"
     RattiFem,         // "ratti fem"
 
-    // ═══ Regular: -ī fem ═══
-    ĪFem,             // "ī fem"
     // Irregulars → ĪFem
-    JātiFem,          // "jāti fem"
     NadīFem,          // "nadī fem"
     PokkharaṇīFem,    // "pokkharaṇī fem"
 
-    // ═══ Regular: -u fem ═══
-    UFem,             // "u fem"
-    // (no irregulars)
-
-    // ═══ Regular: -ar fem ═══
-    ArFem,            // "ar fem"
     // Irregulars → ArFem
     MātarFem,         // "mātar fem"
 
-    // ═══════════════════════════════════════════
-    // SPECIAL (no parent)
-    // ═══════════════════════════════════════════
-    DviCard,          // "dvi card" - cardinal number
+    // Irregulars → ANeut
+    ANeutEast,        // "a nt east"
+    ANeutIrreg,       // "a nt irreg"
+    ANeutPl,          // "a nt pl"
+    KammaNeut,        // "kamma nt"
 }
+// ReSharper restore InconsistentNaming

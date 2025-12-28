@@ -1,3 +1,4 @@
+using PaliPractice.Models.Inflection;
 using SQLite;
 
 namespace PaliPractice.Models.Words;
@@ -40,6 +41,7 @@ public class Noun : IWord
     /// Typed pattern enum value parsed from RawPattern.
     /// </summary>
     [Ignore]
+    // TODO: assign once
     public NounPattern Pattern => NounPatternHelper.Parse(RawPattern);
 
     /// <summary>

@@ -1,10 +1,10 @@
 namespace PaliPractice.Models.Inflection;
 
 /// <summary>
-/// Provides noun declension endings for patterns.
-/// Regular patterns return endings; irregular patterns return full forms.
+/// Provides noun declension endings for regular patterns.
+/// Irregular patterns are handled via database lookup in InflectionService.
 /// </summary>
-public static partial class NounEndings
+public static class NounEndings
 {
     /// <summary>
     /// Get declension endings for a noun pattern.
@@ -38,11 +38,7 @@ public static partial class NounEndings
             NounPattern.ĪFem => GetI_Long_Fem(nounCase, number),
             NounPattern.UFem => GetU_Fem(nounCase, number),
 
-            // Irregular patterns (defined in NounEndingsIrregular.cs)
-            NounPattern.RājaMasc => GetRaja_Masc(nounCase, number),
-            NounPattern.BrahmaMasc => GetBrahma_Masc(nounCase, number),
-            NounPattern.KammaNeut => GetKamma_Nt(nounCase, number),
-
+            // Irregular patterns are handled via database lookup in InflectionService
             _ => []
         };
     }

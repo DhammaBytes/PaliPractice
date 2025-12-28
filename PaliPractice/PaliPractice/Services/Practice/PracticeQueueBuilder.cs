@@ -260,7 +260,6 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
     /// <summary>
     /// Checks if a noun pattern is excluded based on gender and excluded pattern sets.
     /// Irregular patterns are checked against their parent regular pattern.
-    /// Special patterns like DviCard are always excluded.
     /// </summary>
     static bool IsPatternExcluded(
         NounPattern pattern,
@@ -269,10 +268,6 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         HashSet<string> ntExcluded,
         HashSet<string> femExcluded)
     {
-        // Special patterns (like cardinal numbers) are always excluded
-        if (pattern == NounPattern.DviCard)
-            return true;
-
         // Get the label to check: parent regular for irregulars, self for regulars
         var checkboxLabel = pattern.IsIrregular()
             ? pattern.ParentRegular().ToDisplayLabel()

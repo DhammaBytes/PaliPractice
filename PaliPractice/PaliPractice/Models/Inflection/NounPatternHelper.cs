@@ -189,10 +189,10 @@ public static class NounPatternHelper
             => pattern.ToDbString().Split(' ')[0];
 
         /// <summary>
-        /// Returns true if the pattern is irregular (pattern >= _Irregular).
+        /// Returns true if the pattern is irregular (pattern > _Irregular).
         /// </summary>
         public bool IsIrregular()
-            => pattern >= NounPattern._Irregular;
+            => pattern > NounPattern._Irregular;
 
         /// <summary>
         /// Returns true if the pattern is plural-only (lacks singular forms).
@@ -211,7 +211,7 @@ public static class NounPatternHelper
         public Gender GetGender()
         {
             // For irregulars, get the parent's gender
-            if (pattern >= NounPattern._Irregular)
+            if (pattern > NounPattern._Irregular)
                 return pattern.ParentRegular().GetGender();
 
             // Regular patterns - use breakpoint comparisons

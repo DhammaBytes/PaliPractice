@@ -37,6 +37,7 @@ public static class NounEndings
             NounPattern.IFem => GetI_Fem(nounCase, number),
             NounPattern.ĪFem => GetI_Long_Fem(nounCase, number),
             NounPattern.UFem => GetU_Fem(nounCase, number),
+            NounPattern.ArFem => GetAr_Fem(nounCase, number),
 
             // Irregular patterns are handled via database lookup in InflectionService
             _ => []
@@ -331,6 +332,31 @@ public static class NounEndings
             (Case.Locative, Number.Plural) => ["āresu"],
             (Case.Vocative, Number.Singular) => ["a", "ā", "e"],
             (Case.Vocative, Number.Plural) => ["āro"],
+            _ => []
+        };
+    }
+
+    /// <summary>ar fem - like dhītar</summary>
+    static string[] GetAr_Fem(Case nounCase, Number number)
+    {
+        return (nounCase, number) switch
+        {
+            (Case.Nominative, Number.Singular) => ["ā"],
+            (Case.Nominative, Number.Plural) => ["aro"],
+            (Case.Accusative, Number.Singular) => ["araṃ"],
+            (Case.Accusative, Number.Plural) => ["are", "aro"],
+            (Case.Instrumental, Number.Singular) => ["arā", "āya", "u", "uyā"],
+            (Case.Instrumental, Number.Plural) => ["arehi", "āhi", "ūhi"],
+            (Case.Dative, Number.Singular) => ["āya", "u", "uyā"],
+            (Case.Dative, Number.Plural) => ["arānaṃ", "ānaṃ", "ūnaṃ"],
+            (Case.Ablative, Number.Singular) => ["arā", "āya", "uyā"],
+            (Case.Ablative, Number.Plural) => ["arehi", "āhi", "ūhi"],
+            (Case.Genitive, Number.Singular) => ["āya", "u", "uyā"],
+            (Case.Genitive, Number.Plural) => ["arānaṃ", "ānaṃ", "ūnaṃ"],
+            (Case.Locative, Number.Singular) => ["ari", "uyaṃ", "uyā"],
+            (Case.Locative, Number.Plural) => ["aresu", "ūsu"],
+            (Case.Vocative, Number.Singular) => ["a", "ā", "e"],
+            (Case.Vocative, Number.Plural) => ["aro", "ā"],
             _ => []
         };
     }

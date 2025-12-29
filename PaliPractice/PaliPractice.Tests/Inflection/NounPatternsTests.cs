@@ -40,24 +40,22 @@ public class NounPatternsTests
     }
 
     /// <summary>
-    /// Generate test cases for all noun patterns.
+    /// Generate test cases for all regular noun patterns.
+    /// Irregular patterns are handled via database lookup, not hardcoded endings.
     /// For each pattern, get top 3 words and test all 16 grammatical combinations.
     /// </summary>
     public static IEnumerable<NounTestCase> GetNounTestCases()
     {
-        // Regular patterns + key irregular patterns (using enum values)
-        var patterns = new[]
-        {
-            // Regular (covers ~94% of nouns)
-            NounPattern.AMasc, NounPattern.ANeut, NounPattern.ĀFem,
-            NounPattern.IMasc, NounPattern.IFem, NounPattern.INeut,
-            NounPattern.ĪMasc, NounPattern.ĪFem,
-            NounPattern.UMasc, NounPattern.UNeut, NounPattern.UFem,
-            NounPattern.ŪMasc,
-            NounPattern.AsMasc, NounPattern.ArMasc, NounPattern.AntMasc,
-            // Irregular
-            NounPattern.RājaMasc, NounPattern.BrahmaMasc, NounPattern.KammaNeut
-        };
+        // Get all regular patterns using enum breakpoints:
+        // - Masculine: pattern > None && pattern < _RegularFem
+        // - Feminine: pattern > _RegularFem && pattern < _RegularNeut
+        // - Neuter: pattern > _RegularNeut && pattern < _Irregular
+        var patterns = Enum.GetValues<NounPattern>()
+            .Where(p => p != NounPattern.None &&
+                       p < NounPattern._Irregular &&
+                       p != NounPattern._RegularFem &&
+                       p != NounPattern._RegularNeut)
+            .ToList();
 
         using var helper = new DpdTestHelper(DpdDbPath);
 

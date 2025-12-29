@@ -42,19 +42,16 @@ public class VerbPatternsTests
     }
 
     /// <summary>
-    /// Generate test cases for all verb patterns.
+    /// Generate test cases for all regular verb patterns.
+    /// Irregular patterns are handled via database lookup, not hardcoded endings.
     /// For each pattern, get top 3 words and test all relevant grammatical combinations.
     /// </summary>
     public static IEnumerable<VerbTestCase> GetVerbTestCases()
     {
-        // Regular patterns + key irregular patterns (using enum values)
-        var patterns = new[]
-        {
-            // Regular
-            VerbPattern.Ati, VerbPattern.Eti, VerbPattern.Oti, VerbPattern.Āti,
-            // Irregular
-            VerbPattern.Hoti, VerbPattern.Atthi, VerbPattern.Karoti, VerbPattern.Brūti
-        };
+        // Get all regular patterns: pattern > None && pattern < _Irregular
+        var patterns = Enum.GetValues<VerbPattern>()
+            .Where(p => p != VerbPattern.None && p < VerbPattern._Irregular)
+            .ToList();
 
         using var helper = new DpdTestHelper(DpdDbPath);
 

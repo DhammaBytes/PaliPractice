@@ -38,11 +38,11 @@ public class Noun : IWord
     public string RawPattern { get; set; } = string.Empty;
 
     /// <summary>
-    /// Typed pattern enum value parsed from RawPattern.
+    /// Typed pattern enum value parsed from RawPattern. Cached on first access.
     /// </summary>
     [Ignore]
-    // TODO: assign once
-    public NounPattern Pattern => NounPatternHelper.Parse(RawPattern);
+    public NounPattern Pattern => _pattern ??= NounPatternHelper.Parse(RawPattern);
+    NounPattern? _pattern;
 
     /// <summary>
     /// Whether this noun uses an irregular declension pattern.

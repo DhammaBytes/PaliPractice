@@ -37,9 +37,9 @@ public class VerbPatternHelperTests
     [Test]
     public void Parse_RoundTripsAllUsablePatterns()
     {
-        // Test all patterns except breakpoint marker
+        // Test all patterns except None and breakpoint marker
         var usablePatterns = Enum.GetValues<VerbPattern>()
-            .Where(p => p != VerbPattern._Irregular);
+            .Where(p => p != VerbPattern.None && p != VerbPattern._Irregular);
 
         foreach (var pattern in usablePatterns)
         {

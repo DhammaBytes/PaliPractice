@@ -35,11 +35,11 @@ public class Verb : IWord
     public string RawPattern { get; set; } = string.Empty;
 
     /// <summary>
-    /// Typed pattern enum value parsed from RawPattern.
+    /// Typed pattern enum value parsed from RawPattern. Cached on first access.
     /// </summary>
     [Ignore]
-    // TODO: assign once
-    public VerbPattern Pattern => VerbPatternHelper.Parse(RawPattern);
+    public VerbPattern Pattern => _pattern ??= VerbPatternHelper.Parse(RawPattern);
+    VerbPattern? _pattern;
 
     /// <summary>
     /// Whether this verb uses an irregular conjugation pattern.

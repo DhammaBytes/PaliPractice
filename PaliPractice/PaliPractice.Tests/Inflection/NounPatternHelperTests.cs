@@ -39,9 +39,10 @@ public class NounPatternHelperTests
     [Test]
     public void Parse_RoundTripsAllUsablePatterns()
     {
-        // Test all patterns except breakpoint markers
+        // Test all patterns except None and breakpoint markers
         var usablePatterns = Enum.GetValues<NounPattern>()
-            .Where(p => p != NounPattern._RegularFem &&
+            .Where(p => p != NounPattern.None &&
+                        p != NounPattern._RegularFem &&
                         p != NounPattern._RegularNeut &&
                         p != NounPattern._Irregular);
 
@@ -119,13 +120,13 @@ public class NounPatternHelperTests
     }
 
     [Test]
-    public void IsIrregular_BreakpointMarkers_ReturnsTrue()
+    public void IsIrregular_BreakpointMarkers_ReturnsFalse()
     {
-        // Breakpoint markers are >= _Irregular or are breakpoints themselves
-        // _RegularFem and _RegularNeut are < _Irregular
+        // Breakpoint markers are not real patterns, so IsIrregular returns false
+        // Only actual patterns > _Irregular are considered irregular
         NounPattern._RegularFem.IsIrregular().Should().BeFalse();
         NounPattern._RegularNeut.IsIrregular().Should().BeFalse();
-        NounPattern._Irregular.IsIrregular().Should().BeTrue();
+        NounPattern._Irregular.IsIrregular().Should().BeFalse();
     }
 
     #endregion

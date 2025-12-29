@@ -13,12 +13,9 @@ public class BundledFileProvider : IBundledFileProvider
 
     public BundledFileProvider()
     {
-        // Determine user data directory based on platform
-        var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        _userDataDirectory = IOPath.Combine(appDataPath, "PaliPractice");
-
-        if (!Directory.Exists(_userDataDirectory))
-            Directory.CreateDirectory(_userDataDirectory);
+        // Use Uno's ApplicationData API for consistent cross-platform storage
+        // Note: macOS path override is configured in Program.cs to use ~/Library/Application Support/
+        _userDataDirectory = ApplicationData.Current.LocalFolder.Path;
     }
 
     public string GetUserDataDirectory() => _userDataDirectory;

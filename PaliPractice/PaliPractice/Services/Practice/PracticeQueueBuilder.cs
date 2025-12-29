@@ -54,8 +54,9 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
     const int NewFormIntervalMax = 6;
 
     // Minimum representation floor for category balancing.
-    // Ensures rare patterns (e.g., Masc-ū at 0.3%) appear at least 5% of the time.
-    const double MinCategoryFloor = 0.05;
+    // Boosts rare patterns (e.g., Masc-ū at 0.3%) toward ~3% selection probability.
+    // Note: actual probability depends on category count due to normalization.
+    const double MinCategoryFloor = 0.03;
 
     public PracticeQueueBuilder(IDatabaseService db)
     {
@@ -116,53 +117,125 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         // Track indices for each category's scored due list
         var categoryReviewIndex = categories.Keys.ToDictionary(k => k, _ => 0);
 
-        // 7. Build queue with two-stage selection:
-        //    Stage 1: Select category (weighted + 5% floor)
-        //    Stage 2: Select form from category (SRS priority)
+        // 7. Build queue with three-stage selection:
+        //    Stage 1: Decide globally whether to add new vs review (enforced interval)
+        //    Stage 2: Select category from those that can satisfy the decision (weighted + 3% floor)
+        //    Stage 3: Select form from that category (SRS priority for reviews, random for new)
         int reviewsAdded = 0;
         int newAdded = 0;
         int nextNewInterval = _random.Next(NewFormIntervalMin, NewFormIntervalMax + 1);
+        int lastLemmaId = 0;  // Track to avoid same lemma twice in a row
 
-        while (queue.Count < count && categories.Values.Any(c => c.TotalCount > 0))
+        // Helper: count total available forms across all categories
+        int TotalNewAvailable() => categories.Values.Sum(c => c.UntriedForms.Count);
+        int TotalReviewsAvailable() => categories.Sum(kvp =>
+            scoredByCategory[kvp.Key].Count - categoryReviewIndex[kvp.Key]);
+
+        while (queue.Count < count)
         {
-            // Stage 1: Select category
-            var selectedKey = SelectCategory(categories);
-            if (string.IsNullOrEmpty(selectedKey)) break;
+            var totalNew = TotalNewAvailable();
+            var totalReviews = TotalReviewsAvailable();
+
+            if (totalNew == 0 && totalReviews == 0)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Queue] No more forms available (new={totalNew}, reviews={totalReviews})");
+                break;
+            }
+
+            // Stage 1: Decide globally - new vs review
+            bool wantNew = ShouldAddNew(reviewsAdded, newAdded, totalNew, nextNewInterval);
+            System.Diagnostics.Debug.WriteLine($"[Queue #{queue.Count + 1}] Decision: {(wantNew ? "NEW" : "REVIEW")} " +
+                $"(reviews={reviewsAdded}, new={newAdded}, interval={nextNewInterval}, totalNew={totalNew}, totalReviews={totalReviews})");
+
+            // Stage 2: Select category that can satisfy the decision
+            string selectedKey;
+            if (wantNew && totalNew > 0)
+            {
+                // Select from categories with new forms available
+                var withNew = categories
+                    .Where(kvp => kvp.Value.UntriedForms.Count > 0)
+                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                selectedKey = SelectCategory(withNew);
+            }
+            else if (totalReviews > 0)
+            {
+                // Select from categories with reviews available
+                var withReviews = categories
+                    .Where(kvp => categoryReviewIndex[kvp.Key] < scoredByCategory[kvp.Key].Count)
+                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                selectedKey = SelectCategory(withReviews);
+            }
+            else if (totalNew > 0)
+            {
+                // No reviews left, fall back to new forms
+                var withNew = categories
+                    .Where(kvp => kvp.Value.UntriedForms.Count > 0)
+                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                selectedKey = SelectCategory(withNew);
+                wantNew = true;
+            }
+            else
+            {
+                break;
+            }
+
+            if (string.IsNullOrEmpty(selectedKey))
+            {
+                System.Diagnostics.Debug.WriteLine($"[Queue] No category selected, breaking");
+                break;
+            }
 
             var cat = categories[selectedKey];
-            var scoredDue = scoredByCategory[selectedKey];
-            var reviewIndex = categoryReviewIndex[selectedKey];
+            System.Diagnostics.Debug.WriteLine($"[Queue #{queue.Count + 1}] Category: {selectedKey} " +
+                $"(due={cat.DueForms.Count}, new={cat.UntriedForms.Count})");
 
-            // Stage 2: Decide review vs new, then select form
-            bool hasReviews = reviewIndex < scoredDue.Count;
-            bool hasNew = cat.UntriedForms.Count > 0;
-            bool addNew = ShouldAddNew(reviewsAdded, newAdded, hasNew ? 1 : 0, nextNewInterval);
-
-            if (addNew && hasNew)
+            // Stage 3: Select form from category
+            if (wantNew && cat.UntriedForms.Count > 0)
             {
-                // Add a random new form from this category
-                var newIndex = _random.Next(cat.UntriedForms.Count);
-                var newFormId = cat.UntriedForms[newIndex];
-                cat.UntriedForms.RemoveAt(newIndex);
+                // Pick random new form, avoid same lemma as last if possible
+                var candidates = cat.UntriedForms
+                    .Where(id => ExtractLemmaId(id, type) != lastLemmaId)
+                    .ToList();
+                if (candidates.Count == 0) candidates = cat.UntriedForms;
 
+                var idx = _random.Next(candidates.Count);
+                var newFormId = candidates[idx];
+                cat.UntriedForms.Remove(newFormId);
+
+                lastLemmaId = ExtractLemmaId(newFormId, type);
                 queue.Add(new PracticeItem(
                     newFormId,
                     type,
-                    ExtractLemmaId(newFormId, type),
+                    lastLemmaId,
                     PracticeItemSource.NewForm,
                     0.5,
                     MasteryLevel: 1
                 ));
                 newAdded++;
+                var oldInterval = nextNewInterval;
                 nextNewInterval = _random.Next(NewFormIntervalMin, NewFormIntervalMax + 1);
+                System.Diagnostics.Debug.WriteLine($"[Queue #{queue.Count}] → NEW form {newFormId} (lemma={lastLemmaId}), " +
+                    $"next new in {nextNewInterval} reviews");
             }
-            else if (hasReviews)
+            else
             {
-                // Add next highest-priority review from this category
-                var (form, priority) = scoredDue[reviewIndex];
-                categoryReviewIndex[selectedKey] = reviewIndex + 1;
+                // Pick highest-priority review, avoid same lemma if possible
+                var scoredDue = scoredByCategory[selectedKey];
+                var reviewIndex = categoryReviewIndex[selectedKey];
 
-                // Remove from due list to update category's TotalCount
+                // Find next review that isn't the same lemma (if possible)
+                int selectedIdx = reviewIndex;
+                for (int i = reviewIndex; i < scoredDue.Count; i++)
+                {
+                    if (ExtractLemmaId(scoredDue[i].Form.FormId, type) != lastLemmaId)
+                    {
+                        selectedIdx = i;
+                        break;
+                    }
+                }
+
+                var (form, priority) = scoredDue[selectedIdx];
+                categoryReviewIndex[selectedKey] = selectedIdx + 1;
                 cat.DueForms.Remove(form);
 
                 // Label as DifficultCombo only if this form's grammatical combo is actually in hardCombos
@@ -171,35 +244,22 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                     ? PracticeItemSource.DifficultCombo
                     : PracticeItemSource.DueForReview;
 
+                lastLemmaId = ExtractLemmaId(form.FormId, type);
                 queue.Add(new PracticeItem(
                     form.FormId,
                     type,
-                    ExtractLemmaId(form.FormId, type),
+                    lastLemmaId,
                     source,
                     priority,
                     form.MasteryLevel
                 ));
                 reviewsAdded++;
+                System.Diagnostics.Debug.WriteLine($"[Queue #{queue.Count}] → REVIEW form {form.FormId} (lemma={lastLemmaId}, " +
+                    $"mastery={form.MasteryLevel}, priority={priority:F2}, source={source})");
             }
-            else if (hasNew)
-            {
-                // No reviews in this category, add new form
-                var newIndex = _random.Next(cat.UntriedForms.Count);
-                var newFormId = cat.UntriedForms[newIndex];
-                cat.UntriedForms.RemoveAt(newIndex);
-
-                queue.Add(new PracticeItem(
-                    newFormId,
-                    type,
-                    ExtractLemmaId(newFormId, type),
-                    PracticeItemSource.NewForm,
-                    0.5,
-                    MasteryLevel: 1
-                ));
-                newAdded++;
-            }
-            // else: category exhausted, will be skipped in next iteration
         }
+
+        LogQueueSummary(queue, type);
 
         // 8. Shuffle with priority bias to avoid predictable ordering
         return ShuffleWithPriorityBias(queue);
@@ -547,12 +607,12 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
     /// Selects a category using weighted random selection with minimum floor.
     ///
     /// Each category's weight = max(form count, floor weight).
-    /// Floor weight = 5% of total forms, ensuring rare patterns appear regularly.
+    /// Floor weight = 3% of total forms, ensuring rare patterns appear regularly.
     ///
-    /// Example with 1000 forms, 3% in category A:
-    /// - Natural weight: 30
-    /// - Floor weight: 50 (5% of 1000)
-    /// - Actual weight: 50 (boosted to floor)
+    /// Example with 1000 forms, 2% in category A:
+    /// - Natural weight: 20
+    /// - Floor weight: 30 (3% of 1000)
+    /// - Actual weight: 30 (boosted to floor)
     /// </summary>
     string SelectCategory(Dictionary<string, CategoryForms> categories)
     {
@@ -563,13 +623,14 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         // Use ceiling + min 1 to ensure floor is never 0 for small form counts
         var floorWeight = Math.Max(1, (int)Math.Ceiling(totalForms * MinCategoryFloor));
 
-        // Build weighted list with floor
-        var weights = new List<(string Key, int Weight)>();
+        // Build weighted list with floor, tracking which got boosted
+        var weights = new List<(string Key, int Weight, bool Boosted)>();
         foreach (var (key, cat) in categories)
         {
             if (cat.TotalCount == 0) continue;
-            var weight = Math.Max(cat.TotalCount, floorWeight);
-            weights.Add((key, weight));
+            var natural = cat.TotalCount;
+            var weight = Math.Max(natural, floorWeight);
+            weights.Add((key, weight, weight > natural));
         }
 
         if (weights.Count == 0) return string.Empty;
@@ -579,13 +640,20 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         var roll = _random.Next(total);
         var acc = 0;
 
-        foreach (var (key, weight) in weights)
+        string selected = weights.Last().Key;
+        foreach (var (key, weight, _) in weights)
         {
             acc += weight;
-            if (roll < acc) return key;
+            if (roll < acc)
+            {
+                selected = key;
+                break;
+            }
         }
 
-        return weights.Last().Key;
+        LogFloorBoost(weights, floorWeight, totalForms, selected);
+
+        return selected;
     }
 
     #endregion
@@ -636,4 +704,41 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
         return result;
     }
+
+    #region Debug Logging
+
+    /// <summary>
+    /// Logs queue summary with category distribution. No-op in release builds.
+    /// </summary>
+    void LogQueueSummary(List<PracticeItem> queue, PracticeType type)
+    {
+#if DEBUG
+        var newCount = queue.Count(q => q.Source == PracticeItemSource.NewForm);
+        var reviewCount = queue.Count - newCount;
+        var categoryDist = queue
+            .GroupBy(q => GetCategoryKey(q.FormId, type))
+            .OrderByDescending(g => g.Count())
+            .Select(g => $"{g.Key}:{g.Count()}")
+            .Take(8);
+        System.Diagnostics.Debug.WriteLine($"[Queue] Built {queue.Count} items: {newCount} new, {reviewCount} reviews");
+        System.Diagnostics.Debug.WriteLine($"[Queue] Category distribution: {string.Join(", ", categoryDist)}");
+#endif
+    }
+
+    /// <summary>
+    /// Logs when floor boost is applied to rare categories. No-op in release builds.
+    /// </summary>
+    static void LogFloorBoost(List<(string Key, int Weight, bool Boosted)> weights, int floorWeight, int totalForms, string selected)
+    {
+#if DEBUG
+        var boosted = weights.Where(w => w.Boosted).Select(w => w.Key).ToList();
+        if (boosted.Count > 0)
+        {
+            System.Diagnostics.Debug.WriteLine($"[Queue] Floor boost: {boosted.Count} categories boosted " +
+                $"(floor={floorWeight}, total={totalForms}), selected={selected}");
+        }
+#endif
+    }
+
+    #endregion
 }

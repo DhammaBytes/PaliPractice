@@ -389,6 +389,10 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                         // Normal (active) forms
                         if (includeActive)
                         {
+                            // Skip Present 3rd singular Active - used as a question itself
+                            if (tense == Tense.Present && person == Person.Third && number == Number.Singular)
+                                continue;
+
                             if (_verbs.HasAttestedForm(lemma.LemmaId, tense, person, number, reflexive: false))
                             {
                                 var formId = Conjugation.ResolveId(lemma.LemmaId, tense, person, number, Voice.Active, 0);

@@ -9,6 +9,8 @@ namespace PaliPractice.Presentation.Settings;
 
 public sealed partial class ConjugationSettingsPage : Page
 {
+    ConjugationSettingsViewModel? _viewModel;
+
     static void OnDailyGoalLostFocus(object sender, RoutedEventArgs e)
     {
         if (sender is FrameworkElement { DataContext: ConjugationSettingsViewModel viewModel })
@@ -18,6 +20,8 @@ public sealed partial class ConjugationSettingsPage : Page
     public ConjugationSettingsPage()
     {
         Loaded += OnLoaded;
+        Unloaded += OnUnloaded;
+        DataContextChanged += OnDataContextChanged;
 
         ConjugationSettingsPageMarkup.DataContext<ConjugationSettingsViewModel>(this, (page, vm) => page
             .NavigationCacheMode<ConjugationSettingsPage>(NavigationCacheMode.Required)
@@ -289,5 +293,52 @@ public sealed partial class ConjugationSettingsPage : Page
     {
         if (DataContext is ConjugationSettingsViewModel vm)
             vm.RefreshRange();
+    }
+
+    void OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        if (_viewModel is not null)
+        {
+            _viewModel.CitationFormWarningRequested -= OnCitationFormWarning;
+            _viewModel = null;
+        }
+    }
+
+    void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+    {
+        // Unsubscribe from old ViewModel
+        if (_viewModel is not null)
+        {
+            _viewModel.CitationFormWarningRequested -= OnCitationFormWarning;
+            _viewModel = null;
+        }
+
+        // Subscribe to new ViewModel
+        if (args.NewValue is ConjugationSettingsViewModel vm)
+        {
+            _viewModel = vm;
+            _viewModel.CitationFormWarningRequested += OnCitationFormWarning;
+        }
+    }
+
+    async void OnCitationFormWarning(object? sender, EventArgs e)
+    {
+        try
+        {
+            var dialog = new ContentDialog
+            {
+                Title = "Settings adjusted",
+                Content = "Present tense 3rd person singular is used as the citation form in questions because Pāli doesn't commonly use infinitives. " +
+                          "To ensure you have forms to practice, 1st and 2nd person have been re-enabled.",
+                CloseButtonText = "OK",
+                XamlRoot = XamlRoot
+            };
+
+            await dialog.ShowAsync();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[ConjugationSettings] Failed to show dialog: {ex.Message}");
+        }
     }
 }

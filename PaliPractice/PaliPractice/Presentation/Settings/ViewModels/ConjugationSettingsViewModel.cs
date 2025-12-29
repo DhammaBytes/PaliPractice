@@ -1,3 +1,4 @@
+using Microsoft.UI.Dispatching;
 using PaliPractice.Models;
 using PaliPractice.Services.Database;
 using PaliPractice.Services.Database.Repositories;
@@ -12,6 +13,12 @@ public partial class ConjugationSettingsViewModel : ObservableObject
     readonly INavigator _navigator;
     readonly UserDataRepository _userData;
     bool _isLoading = true;
+
+    /// <summary>
+    /// Raised when settings would result in only Present 3rd singular Active forms,
+    /// which cannot be practiced (used as citation form in questions).
+    /// </summary>
+    public event EventHandler? CitationFormWarningRequested;
 
     public ConjugationSettingsViewModel(INavigator navigator, IDatabaseService db)
     {
@@ -122,21 +129,21 @@ public partial class ConjugationSettingsViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(CanDisableSecondPerson))]
     [NotifyPropertyChangedFor(nameof(CanDisableThirdPerson))]
     bool _firstPerson;
-    partial void OnFirstPersonChanged(bool value) => SaveSettings();
+    partial void OnFirstPersonChanged(bool value) { SaveSettings(); CheckCitationFormConflict(); }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanDisableFirstPerson))]
     [NotifyPropertyChangedFor(nameof(CanDisableSecondPerson))]
     [NotifyPropertyChangedFor(nameof(CanDisableThirdPerson))]
     bool _secondPerson;
-    partial void OnSecondPersonChanged(bool value) => SaveSettings();
+    partial void OnSecondPersonChanged(bool value) { SaveSettings(); CheckCitationFormConflict(); }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanDisableFirstPerson))]
     [NotifyPropertyChangedFor(nameof(CanDisableSecondPerson))]
     [NotifyPropertyChangedFor(nameof(CanDisableThirdPerson))]
     bool _thirdPerson;
-    partial void OnThirdPersonChanged(bool value) => SaveSettings();
+    partial void OnThirdPersonChanged(bool value) { SaveSettings(); CheckCitationFormConflict(); }
 
     public bool CanDisableFirstPerson => SecondPerson || ThirdPerson;
     public bool CanDisableSecondPerson => FirstPerson || ThirdPerson;
@@ -230,7 +237,7 @@ public partial class ConjugationSettingsViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     int _numberIndex;
-    partial void OnNumberIndexChanged(int value) => SaveSettings();
+    partial void OnNumberIndexChanged(int value) { SaveSettings(); CheckCitationFormConflict(); }
 
     /// <summary>Whether to include singular forms in practice.</summary>
     public bool IncludeSingular => NumberIndex is 0 or 1;
@@ -248,7 +255,7 @@ public partial class ConjugationSettingsViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(CanDisableOptative))]
     [NotifyPropertyChangedFor(nameof(CanDisableFuture))]
     bool _present;
-    partial void OnPresentChanged(bool value) => SaveSettings();
+    partial void OnPresentChanged(bool value) { SaveSettings(); CheckCitationFormConflict(); }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanDisablePresent))]
@@ -256,7 +263,7 @@ public partial class ConjugationSettingsViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(CanDisableOptative))]
     [NotifyPropertyChangedFor(nameof(CanDisableFuture))]
     bool _imperative;
-    partial void OnImperativeChanged(bool value) => SaveSettings();
+    partial void OnImperativeChanged(bool value) { SaveSettings(); CheckCitationFormConflict(); }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanDisablePresent))]
@@ -264,7 +271,7 @@ public partial class ConjugationSettingsViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(CanDisableOptative))]
     [NotifyPropertyChangedFor(nameof(CanDisableFuture))]
     bool _optative;
-    partial void OnOptativeChanged(bool value) => SaveSettings();
+    partial void OnOptativeChanged(bool value) { SaveSettings(); CheckCitationFormConflict(); }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanDisablePresent))]
@@ -272,7 +279,7 @@ public partial class ConjugationSettingsViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(CanDisableOptative))]
     [NotifyPropertyChangedFor(nameof(CanDisableFuture))]
     bool _future;
-    partial void OnFutureChanged(bool value) => SaveSettings();
+    partial void OnFutureChanged(bool value) { SaveSettings(); CheckCitationFormConflict(); }
 
     int EnabledTenseCount => (Present ? 1 : 0) + (Imperative ? 1 : 0) + (Optative ? 1 : 0) + (Future ? 1 : 0);
 
@@ -295,7 +302,7 @@ public partial class ConjugationSettingsViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     int _voiceIndex;
-    partial void OnVoiceIndexChanged(int value) => SaveSettings();
+    partial void OnVoiceIndexChanged(int value) { SaveSettings(); CheckCitationFormConflict(); }
 
     /// <summary>Whether to include normal (active) forms.</summary>
     public bool IncludeNormal => VoiceIndex is 0 or 1;
@@ -347,5 +354,42 @@ public partial class ConjugationSettingsViewModel : ObservableObject
         LemmaMax = _userData.GetSetting(SettingsKeys.VerbsLemmaMax, SettingsKeys.DefaultLemmaMax);
         _isLoading = false;
         OnPropertyChanged(nameof(RangeText));
+    }
+
+    /// <summary>
+    /// Checks if the current settings would result in only Present 3rd singular Active forms.
+    /// This combination cannot be practiced because these forms are used as the citation form
+    /// in questions (Pali doesn't use infinitives).
+    /// If detected, forcefully re-enables 1st and 2nd person and raises a warning event.
+    /// </summary>
+    void CheckCitationFormConflict()
+    {
+        if (_isLoading) return;
+
+        // Check all four conditions that create the problematic combination:
+        // 1. Only Present tense selected
+        var onlyPresent = Present && !Imperative && !Optative && !Future;
+        // 2. Only 3rd person selected
+        var onlyThirdPerson = !FirstPerson && !SecondPerson && ThirdPerson;
+        // 3. Only Singular selected (NumberIndex 1 = singular only)
+        var onlySingular = NumberIndex == 1;
+        // 4. Only Active voice selected (VoiceIndex 1 = active only)
+        var onlyActive = VoiceIndex == 1;
+
+        if (onlyPresent && onlyThirdPerson && onlySingular && onlyActive)
+        {
+            // Defer correction to next UI frame to avoid binding reentrancy issues
+            // (setting a property from within its own changed handler doesn't propagate correctly)
+            DispatcherQueue.GetForCurrentThread()?.TryEnqueue(() =>
+            {
+                _isLoading = true;
+                FirstPerson = true;
+                SecondPerson = true;
+                _isLoading = false;
+
+                SaveSettings();
+                CitationFormWarningRequested?.Invoke(this, EventArgs.Empty);
+            });
+        }
     }
 }

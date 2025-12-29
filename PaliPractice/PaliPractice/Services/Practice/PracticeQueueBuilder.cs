@@ -378,8 +378,6 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
             if (!IsVerbPatternEnabled(verb.Pattern, enabledPatterns))
                 continue;
 
-            var hasReflexive = _verbs.HasReflexive(lemma.LemmaId);
-
             foreach (var tense in enabledTenses)
             {
                 foreach (var person in enabledPersons)
@@ -401,7 +399,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                         }
 
                         // Reflexive forms
-                        if (includeReflexive && hasReflexive)
+                        if (includeReflexive && _verbs.HasReflexive(lemma.LemmaId))
                         {
                             if (_verbs.HasAttestedForm(lemma.LemmaId, tense, person, number, reflexive: true))
                             {

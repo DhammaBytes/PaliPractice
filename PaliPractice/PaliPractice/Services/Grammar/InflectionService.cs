@@ -1,7 +1,7 @@
 using PaliPractice.Models.Inflection;
 using PaliPractice.Models.Words;
 
-namespace PaliPractice.Services;
+namespace PaliPractice.Services.Grammar;
 
 public interface IInflectionService
 {

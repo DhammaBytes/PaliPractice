@@ -54,12 +54,14 @@ public class NounDataIntegrityTests
     Dictionary<int, PaliNounDetails>? _nounDetailsById;
     HashSet<long>? _corpusDeclensionFormIds;
     HashSet<string>? _tipitakaWords;
+    CustomTranslationsLoader? _customTranslations;
 
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
         _paliDb = new PaliDbLoader();
         _dpdDb = new DpdWordLoader();
+        _customTranslations = new CustomTranslationsLoader();
 
         // Load all data upfront for performance
         _dpdHeadwords = _dpdDb.GetAllHeadwordsById();
@@ -74,6 +76,7 @@ public class NounDataIntegrityTests
         TestContext.WriteLine($"Loaded {_dpdHeadwords.Count} headwords from dpd.db");
         TestContext.WriteLine($"Loaded {_corpusDeclensionFormIds.Count} corpus declension form_ids");
         TestContext.WriteLine($"Loaded {_tipitakaWords.Count} Tipitaka words");
+        TestContext.WriteLine($"Loaded {_customTranslations.Count} custom translation adjustments");
     }
 
     [OneTimeTearDown]
@@ -233,14 +236,17 @@ public class NounDataIntegrityTests
             if (!_dpdHeadwords!.TryGetValue(details.Id, out var dpd))
                 continue;
 
-            if (details.Meaning != dpd.Meaning1)
+            // Apply custom translation adjustments (same as extraction script)
+            var expectedMeaning = _customTranslations!.Apply(details.Id, dpd.Lemma1, dpd.Meaning1);
+
+            if (details.Meaning != expectedMeaning)
             {
-                mismatches.Add($"id={details.Id}: pali='{Truncate(details.Meaning)}' vs dpd='{Truncate(dpd.Meaning1)}'");
+                mismatches.Add($"id={details.Id}: pali='{Truncate(details.Meaning)}' vs expected='{Truncate(expectedMeaning)}'");
             }
         }
 
         mismatches.Should().BeEmpty(
-            "nouns_details.meaning should match dpd.meaning_1 exactly");
+            "nouns_details.meaning should match dpd.meaning_1 (with custom translation adjustments applied)");
     }
 
     [Test]

@@ -11,6 +11,7 @@ using PaliPractice.Presentation.Settings;
 using PaliPractice.Presentation.Settings.ViewModels;
 using PaliPractice.Services.Database.Providers;
 using PaliPractice.Services.Feedback;
+using PaliPractice.Services.Grammar;
 using PaliPractice.Services.Practice;
 using PaliPractice.Services.UserData;
 using AboutPage = PaliPractice.Presentation.Main.AboutPage;

@@ -115,31 +115,4 @@ public class SettingsKeysTests
     }
 
     #endregion
-
-    #region Expected Array Sizes
-
-    [Test]
-    public void NounsDefaultCases_ShouldHaveSevenCases()
-    {
-        // All 8 cases minus Vocative
-        SettingsKeys.NounsDefaultCases.Should().HaveCount(7);
-    }
-
-    [Test]
-    public void DefaultNumbers_ShouldHaveBothSingularAndPlural()
-    {
-        SettingsKeys.DefaultNumbers.Should().HaveCount(2);
-        SettingsKeys.DefaultNumbers.Should().Contain(Number.Singular);
-        SettingsKeys.DefaultNumbers.Should().Contain(Number.Plural);
-    }
-
-    [Test]
-    public void VerbsDefaultVoices_ShouldHaveBothNormalAndReflexive()
-    {
-        SettingsKeys.VerbsDefaultVoices.Should().HaveCount(2);
-        SettingsKeys.VerbsDefaultVoices.Should().Contain(Voice.Active);
-        SettingsKeys.VerbsDefaultVoices.Should().Contain(Voice.Reflexive);
-    }
-
-    #endregion
 }

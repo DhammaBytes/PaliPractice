@@ -6,11 +6,16 @@ namespace PaliPractice.Presentation.Settings.ViewModels;
 public partial class SettingsViewModel : ObservableObject
 {
     readonly INavigator _navigator;
+    readonly IFeedbackService _feedbackService;
     readonly IStoreReviewService _storeReviewService;
 
-    public SettingsViewModel(INavigator navigator, IStoreReviewService storeReviewService)
+    public SettingsViewModel(
+        INavigator navigator,
+        IFeedbackService feedbackService,
+        IStoreReviewService storeReviewService)
     {
         _navigator = navigator;
+        _feedbackService = feedbackService;
         _storeReviewService = storeReviewService;
     }
 
@@ -22,6 +27,7 @@ public partial class SettingsViewModel : ObservableObject
     public ICommand GoBackCommand => new AsyncRelayCommand(() => _navigator.NavigateBackAsync(this));
     public ICommand GoToConjugationSettingsCommand => new AsyncRelayCommand(GoToConjugationSettings);
     public ICommand GoToDeclensionSettingsCommand => new AsyncRelayCommand(GoToDeclensionSettings);
+    public ICommand ContactUsCommand => new AsyncRelayCommand(ContactUsAsync);
     public ICommand RateAppCommand => new AsyncRelayCommand(RateAppAsync);
 
     async Task GoToConjugationSettings()
@@ -32,6 +38,11 @@ public partial class SettingsViewModel : ObservableObject
     async Task GoToDeclensionSettings()
     {
         await _navigator.NavigateViewModelAsync<DeclensionSettingsViewModel>(this);
+    }
+
+    async Task ContactUsAsync()
+    {
+        await _feedbackService.SendFeedbackAsync();
     }
 
     async Task RateAppAsync()

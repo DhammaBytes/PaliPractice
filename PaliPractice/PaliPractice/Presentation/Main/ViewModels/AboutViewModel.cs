@@ -1,13 +1,17 @@
+using PaliPractice.Services.Feedback;
+
 namespace PaliPractice.Presentation.Main.ViewModels;
 
 [Bindable]
 public partial class AboutViewModel : ObservableObject
 {
     readonly INavigator _navigator;
+    readonly IFeedbackService _feedbackService;
 
-    public AboutViewModel(INavigator navigator)
+    public AboutViewModel(INavigator navigator, IFeedbackService feedbackService)
     {
         _navigator = navigator;
+        _feedbackService = feedbackService;
     }
 
     public string AppName => $"Pāli Practice v{Version}";
@@ -68,4 +72,5 @@ public partial class AboutViewModel : ObservableObject
         """;
 
     public ICommand GoBackCommand => new AsyncRelayCommand(() => _navigator.NavigateBackAsync(this));
+    public ICommand ContactUsCommand => new AsyncRelayCommand(() => _feedbackService.SendFeedbackAsync());
 }

@@ -435,6 +435,15 @@ public class UserDataRepository
         }
     }
 
+    /// <summary>
+    /// Gets all stored settings as key-value pairs.
+    /// </summary>
+    public Dictionary<string, string> GetAllSettings()
+    {
+        return _connection.Table<UserSetting>()
+            .ToDictionary(s => s.Key, s => s.Value);
+    }
+
     // === Daily Progress ===
 
     public DailyProgress GetTodayProgress()

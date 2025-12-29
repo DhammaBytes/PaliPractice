@@ -10,7 +10,7 @@ public sealed partial class AboutPage : Page
 {
     public AboutPage()
     {
-        this.DataContext<AboutViewModel>((page, _) => page
+        this.DataContext<AboutViewModel>((page, vm) => page
             .NavigationCacheMode<AboutPage>(NavigationCacheMode.Required)
             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
             .Content(new Grid()
@@ -49,6 +49,23 @@ public sealed partial class AboutPage : Page
 
                                     // Description section (title-less, with clickable links)
                                     BuildRichSection(null, AboutViewModel.Description),
+
+                                    // Contact button
+                                    new Button()
+                                        .Content(
+                                            new StackPanel()
+                                                .Orientation(Orientation.Horizontal)
+                                                .Spacing(8)
+                                                .Children(
+                                                    new FontIcon()
+                                                        .Glyph("\uE715") // Message
+                                                        .FontSize(16),
+                                                    RegularText()
+                                                        .Text("Contact DhammaBytes")
+                                                        .FontSize(14)
+                                                ))
+                                        .HorizontalAlignment(HorizontalAlignment.Center)
+                                        .Command(() => vm.ContactUsCommand),
 
                                     // App Icon section (with clickable links)
                                     BuildRichSection(AboutViewModel.IconTitle, AboutViewModel.IconDescription),

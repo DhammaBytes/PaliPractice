@@ -36,7 +36,7 @@ public sealed partial class SettingsPage : Page
                                     SettingsSection.Build("Practice",
                                         SettingsRow.BuildNavigation<SettingsViewModel>(
                                             "Declensions",
-                                            "\uE8C8", // Repair/transformation
+                                            "\uE8AB", // Shuffle
                                             v => v.GoToDeclensionSettingsCommand),
                                         SettingsRow.BuildNavigation<SettingsViewModel>(
                                             "Conjugations",
@@ -44,23 +44,29 @@ public sealed partial class SettingsPage : Page
                                             v => v.GoToConjugationSettingsCommand)
                                     ),
 
-                                    // Feedback section (only visible on supported platforms)
-                                    new StackPanel()
+                                    // Feedback section
+                                    SettingsSection.Build("Feedback",
+                                        SettingsRow.BuildAction<SettingsViewModel>(
+                                            "Contact us",
+                                            "\uE715", // Message
+                                            v => v.ContactUsCommand),
+                                        SettingsRow.BuildAction<SettingsViewModel>(
+                                            "Write a review",
+                                            "\uE734", // FavoriteStar outline
+                                            v => v.RateAppCommand)
+                                            .Visibility(Visibility.Collapsed)
+                                            .Visibility(() => vm.IsStoreReviewAvailable)
+                                    ),
+
+                                    // Review explanation (only visible on supported platforms)
+                                    new TextBlock()
+                                        .Text("If you have a minute, please leave a review for Pāli Practice. Even one sentence is valuable feedback and it helps other Pāli learners discover the app on the store.")
+                                        .FontSize(12)
+                                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                                        .TextWrapping(TextWrapping.Wrap)
+                                        .Margin(16, -12, 16, 16)
+                                        .Visibility(Visibility.Collapsed)
                                         .Visibility(() => vm.IsStoreReviewAvailable)
-                                        .Children(
-                                            SettingsSection.Build("Feedback",
-                                                SettingsRow.BuildAction<SettingsViewModel>(
-                                                    "Write a review",
-                                                    "\uE735", // FavoriteStar
-                                                    v => v.RateAppCommand)
-                                            ),
-                                            new TextBlock()
-                                                .Text("If you have a minute, please leave a review for Pāli Practice. Even one sentence is valuable feedback and it helps other Pāli learners discover the app on the store.")
-                                                .FontSize(12)
-                                                .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
-                                                .TextWrapping(TextWrapping.Wrap)
-                                                .Margin(16, -12, 16, 16)
-                                        )
                                 )
                         )
                 )

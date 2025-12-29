@@ -107,6 +107,7 @@ public partial class App : Application
                     services.AddTransient<IPracticeQueueBuilder, PracticeQueueBuilder>();
 
                     // Platform services
+                    services.AddSingleton<IFeedbackService, FeedbackService>();
                     services.AddSingleton<IStoreReviewService, StoreReviewService>();
 
                     services.AddTransient<FlashCardViewModel>();

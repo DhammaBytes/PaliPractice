@@ -17,7 +17,7 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
     Tense _currentTense;
     Person _currentPerson;
     Number _currentNumber;
-    bool _currentReflexive;
+    Voice _currentVoice;
 
     protected override PracticeType CurrentPracticeType => PracticeType.Conjugation;
 
@@ -35,6 +35,12 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
     [ObservableProperty] string _tenseLabel = string.Empty;
     [ObservableProperty] Color _tenseColor = Colors.Transparent;
     [ObservableProperty] string? _tenseGlyph;
+
+    // Badge display properties for Voice (only shown for reflexive)
+    [ObservableProperty] string _voiceLabel = string.Empty;
+    [ObservableProperty] Color _voiceColor = Colors.Transparent;
+    [ObservableProperty] string? _voiceGlyph;
+    [ObservableProperty] bool _isReflexive;
 
     public ConjugationPracticeViewModel(
         [FromKeyedServices("conjugation")] IPracticeProvider provider,
@@ -54,19 +60,20 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
         var verb = (Verb)lemma.Primary;
 
         // Extract grammatical parameters from the SRS queue
-        var (tense, person, number, reflexive) = ((Tense, Person, Number, bool))parameters;
+        var (tense, person, number, voice) = ((Tense, Person, Number, Voice))parameters;
         _currentTense = tense;
         _currentPerson = person;
         _currentNumber = number;
-        _currentReflexive = reflexive;
+        _currentVoice = voice;
 
         // Generate the conjugation for the specified grammatical combination
+        var reflexive = voice == Voice.Reflexive;
         _currentConjugation = _inflectionService.GenerateVerbForms(verb, person, number, tense, reflexive);
 
         if (!_currentConjugation.Primary.HasValue)
         {
-            Logger.LogError("No attested conjugation for verb {Lemma} (id={Id}) tense={Tense} person={Person} number={Number} reflexive={Reflexive}",
-                verb.Lemma, verb.Id, tense, person, number, reflexive);
+            Logger.LogError("No attested conjugation for verb {Lemma} (id={Id}) tense={Tense} person={Person} number={Number} voice={Voice}",
+                verb.Lemma, verb.Id, tense, person, number, voice);
             _currentConjugation = null;
             SetBadgesFallback();
             return;
@@ -78,7 +85,8 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
 
     protected override void RecordCombinationDifficulty(bool wasHard)
     {
-        UserData.UpdateConjugationDifficulty(_currentTense, _currentPerson, _currentNumber, _currentReflexive, wasHard);
+        var reflexive = _currentVoice == Voice.Reflexive;
+        UserData.UpdateConjugationDifficulty(_currentTense, _currentPerson, _currentNumber, reflexive, wasHard);
     }
 
     void UpdateBadges(Conjugation c)
@@ -108,6 +116,12 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
         TenseLabel = c.Tense.ToString();
         TenseColor = OptionPresentation.GetChipColor(c.Tense);
         TenseGlyph = "\uE8C8"; // Placeholder icon (Tag)
+
+        // Voice badge (only visible for reflexive)
+        IsReflexive = c.Voice == Voice.Reflexive;
+        VoiceLabel = "Reflexive";
+        VoiceColor = OptionPresentation.GetChipColor(Voice.Reflexive);
+        VoiceGlyph = OptionPresentation.GetGlyph(Voice.Reflexive);
     }
 
     protected override string GetAlternativeForms()
@@ -135,6 +149,8 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
         TenseLabel = "Present";
         TenseColor = OptionPresentation.GetChipColor(Tense.Present);
         TenseGlyph = "\uE8C8";
+
+        IsReflexive = false;
     }
 
     protected override string GetInflectedForm()

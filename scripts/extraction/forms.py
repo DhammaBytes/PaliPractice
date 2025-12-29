@@ -49,18 +49,20 @@ def compute_conjugation_form_id(lemma_id: int, tense: int, person: int, number: 
     """
     Compute conjugation form_id matching C# Conjugation.ResolveId().
 
-    Format: lemma_id(5) + tense(1) + person(1) + number(1) + reflexive(1) + ending_index(1)
-    Example: 70683_2_3_1_0_3 -> 7068323103
+    Format: lemma_id(5) + tense(1) + person(1) + number(1) + voice(1) + ending_index(1)
+    Example: 70683_2_3_1_1_3 -> 7068323113 (active voice)
 
     Args:
         lemma_id: Stable lemma ID (5 digits, 70001-99999)
         tense: Tense enum value (1-5)
         person: Person enum value (1-3)
         number: Number enum value (1-2)
-        reflexive: 0 (active) or 1 (reflexive)
+        reflexive: 0 (active) or 1 (reflexive) - converted to Voice enum (1=Active, 2=Reflexive)
         ending_index: 1-based index for multiple endings
 
     Returns:
         10-digit form_id encoding all parameters
     """
-    return lemma_id * 100_000 + tense * 10_000 + person * 1_000 + number * 100 + reflexive * 10 + ending_index
+    # Convert reflexive (0/1) to C# Voice enum (Active=1, Reflexive=2)
+    voice = 2 if reflexive else 1
+    return lemma_id * 100_000 + tense * 10_000 + person * 1_000 + number * 100 + voice * 10 + ending_index

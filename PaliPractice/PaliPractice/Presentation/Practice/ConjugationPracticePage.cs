@@ -1,4 +1,6 @@
+using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
+using PaliPractice.Presentation.Common.Squircle;
 
 namespace PaliPractice.Presentation.Practice;
 
@@ -39,13 +41,20 @@ public sealed partial class ConjugationPracticePage : Page
             DailyProgressPath: vm => vm.DailyGoal.DailyProgress
         );
 
+        // Build the 4th (optional) voice badge - only visible for reflexive
+        var voiceBadge = PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(heightClass,
+            vm => vm.VoiceGlyph, vm => vm.VoiceLabel, vm => vm.VoiceColor);
+        voiceBadge.badge.BoolToVisibility<SquircleBorder, ViewModels.ConjugationPracticeViewModel>(
+            vm => vm.IsReflexive);
+
         var badges = PracticePageBuilder.CreateBadgeSet(heightClass,
             PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(heightClass,
                 vm => vm.TenseGlyph, vm => vm.TenseLabel, vm => vm.TenseColor),
             PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(heightClass,
                 vm => vm.PersonGlyph, vm => vm.PersonLabel, vm => vm.PersonColor),
             PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(heightClass,
-                vm => vm.NumberGlyph, vm => vm.NumberLabel, vm => vm.NumberColor)
+                vm => vm.NumberGlyph, vm => vm.NumberLabel, vm => vm.NumberColor),
+            voiceBadge
         );
 
         // No hint for conjugation

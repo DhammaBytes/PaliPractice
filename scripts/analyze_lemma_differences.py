@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Analyze lemmas in training.db to find groups with the same lemma_clean
+Analyze lemmas in pali.db to find groups with the same lemma_clean
 but differences in grammatical properties (not translations/references).
 """
 
@@ -121,7 +121,7 @@ def print_differences(table_name, differences, compare_columns, unique_count):
 
 
 def main():
-    db_path = Path(__file__).parent.parent / "PaliPractice" / "PaliPractice" / "Data" / "training.db"
+    db_path = Path(__file__).parent.parent / "PaliPractice" / "PaliPractice" / "Data" / "pali.db"
 
     if not db_path.exists():
         print(f"Error: Database not found at {db_path}")

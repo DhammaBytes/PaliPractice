@@ -3,9 +3,9 @@ using Microsoft.Data.Sqlite;
 namespace PaliPractice.Tests.DataIntegrity.Helpers;
 
 /// <summary>
-/// Represents a noun from training.db for integrity testing.
+/// Represents a noun from pali.db for integrity testing.
 /// </summary>
-public class TrainingNoun
+public class PaliNoun
 {
     public int Id { get; set; }
     public int EbtCount { get; set; }
@@ -17,9 +17,9 @@ public class TrainingNoun
 }
 
 /// <summary>
-/// Represents noun details from training.db for integrity testing.
+/// Represents noun details from pali.db for integrity testing.
 /// </summary>
-public class TrainingNounDetails
+public class PaliNounDetails
 {
     public int Id { get; set; }
     public int LemmaId { get; set; }
@@ -34,9 +34,9 @@ public class TrainingNounDetails
 }
 
 /// <summary>
-/// Represents a verb from training.db for integrity testing.
+/// Represents a verb from pali.db for integrity testing.
 /// </summary>
-public class TrainingVerb
+public class PaliVerb
 {
     public int Id { get; set; }
     public int EbtCount { get; set; }
@@ -47,9 +47,9 @@ public class TrainingVerb
 }
 
 /// <summary>
-/// Represents verb details from training.db for integrity testing.
+/// Represents verb details from pali.db for integrity testing.
 /// </summary>
-public class TrainingVerbDetails
+public class PaliVerbDetails
 {
     public int Id { get; set; }
     public int LemmaId { get; set; }
@@ -66,29 +66,29 @@ public class TrainingVerbDetails
 }
 
 /// <summary>
-/// Helper class for loading data from training.db for integrity testing.
+/// Helper class for loading data from pali.db for integrity testing.
 /// </summary>
-public class TrainingDbLoader : IDisposable
+public class PaliDbLoader : IDisposable
 {
     readonly SqliteConnection _connection;
     bool _disposed;
 
-    public const string DefaultTrainingDbPath =
-        "/Users/ivm/Sources/PaliPractice/PaliPractice/PaliPractice/Data/training.db";
+    public const string DefaultPaliDbPath =
+        "/Users/ivm/Sources/PaliPractice/PaliPractice/PaliPractice/Data/pali.db";
 
-    public TrainingDbLoader(string? trainingDbPath = null)
+    public PaliDbLoader(string? paliDbPath = null)
     {
-        var path = trainingDbPath ?? DefaultTrainingDbPath;
+        var path = paliDbPath ?? DefaultPaliDbPath;
         _connection = new SqliteConnection($"Data Source={path};Mode=ReadOnly");
         _connection.Open();
     }
 
     /// <summary>
-    /// Load all nouns from training.db.
+    /// Load all nouns from pali.db.
     /// </summary>
-    public List<TrainingNoun> GetAllNouns()
+    public List<PaliNoun> GetAllNouns()
     {
-        var nouns = new List<TrainingNoun>();
+        var nouns = new List<PaliNoun>();
 
         const string sql = "SELECT id, ebt_count, lemma_id, lemma, gender, stem, pattern FROM nouns";
 
@@ -98,7 +98,7 @@ public class TrainingDbLoader : IDisposable
         using var reader = command.ExecuteReader();
         while (reader.Read())
         {
-            nouns.Add(new TrainingNoun
+            nouns.Add(new PaliNoun
             {
                 Id = reader.GetInt32(0),
                 EbtCount = reader.GetInt32(1),
@@ -114,11 +114,11 @@ public class TrainingDbLoader : IDisposable
     }
 
     /// <summary>
-    /// Load all noun details from training.db.
+    /// Load all noun details from pali.db.
     /// </summary>
-    public List<TrainingNounDetails> GetAllNounDetails()
+    public List<PaliNounDetails> GetAllNounDetails()
     {
-        var details = new List<TrainingNounDetails>();
+        var details = new List<PaliNounDetails>();
 
         const string sql = """
             SELECT id, lemma_id, word, meaning, source_1, sutta_1, example_1,
@@ -132,7 +132,7 @@ public class TrainingDbLoader : IDisposable
         using var reader = command.ExecuteReader();
         while (reader.Read())
         {
-            details.Add(new TrainingNounDetails
+            details.Add(new PaliNounDetails
             {
                 Id = reader.GetInt32(0),
                 LemmaId = reader.GetInt32(1),
@@ -151,11 +151,11 @@ public class TrainingDbLoader : IDisposable
     }
 
     /// <summary>
-    /// Load all verbs from training.db.
+    /// Load all verbs from pali.db.
     /// </summary>
-    public List<TrainingVerb> GetAllVerbs()
+    public List<PaliVerb> GetAllVerbs()
     {
-        var verbs = new List<TrainingVerb>();
+        var verbs = new List<PaliVerb>();
 
         const string sql = "SELECT id, ebt_count, lemma_id, lemma, stem, pattern FROM verbs";
 
@@ -165,7 +165,7 @@ public class TrainingDbLoader : IDisposable
         using var reader = command.ExecuteReader();
         while (reader.Read())
         {
-            verbs.Add(new TrainingVerb
+            verbs.Add(new PaliVerb
             {
                 Id = reader.GetInt32(0),
                 EbtCount = reader.GetInt32(1),
@@ -180,11 +180,11 @@ public class TrainingDbLoader : IDisposable
     }
 
     /// <summary>
-    /// Load all verb details from training.db.
+    /// Load all verb details from pali.db.
     /// </summary>
-    public List<TrainingVerbDetails> GetAllVerbDetails()
+    public List<PaliVerbDetails> GetAllVerbDetails()
     {
-        var details = new List<TrainingVerbDetails>();
+        var details = new List<PaliVerbDetails>();
 
         const string sql = """
             SELECT id, lemma_id, word, type, trans, meaning,
@@ -198,7 +198,7 @@ public class TrainingDbLoader : IDisposable
         using var reader = command.ExecuteReader();
         while (reader.Read())
         {
-            details.Add(new TrainingVerbDetails
+            details.Add(new PaliVerbDetails
             {
                 Id = reader.GetInt32(0),
                 LemmaId = reader.GetInt32(1),

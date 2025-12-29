@@ -10,7 +10,7 @@ public interface IBundledFileProvider
     /// If the platform can expose the bundled file through a read-only path
     /// that SQLite can open directly, return it. Otherwise, return null.
     /// </summary>
-    /// <param name="relativePath">Relative path within the app bundle (e.g., "Data/training.db")</param>
+    /// <param name="relativePath">Relative path within the app bundle (e.g., "Data/pali.db")</param>
     /// <returns>Absolute path to the file, or null if copying is required</returns>
     string? TryGetReadOnlyPath(string relativePath);
 

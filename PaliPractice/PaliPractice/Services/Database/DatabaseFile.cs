@@ -33,16 +33,16 @@ public readonly record struct DatabaseFile
     }
 
     /// <summary>
-    /// Training database with nouns, verbs, patterns, and corpus data.
+    /// Pali database with nouns, verbs, patterns, and corpus data.
     /// Bundled read-only - extracted from DPD and embedded in app.
     /// </summary>
-    public static readonly DatabaseFile Training = new("training.db", DatabaseBehavior.BundledReadOnly);
+    public static readonly DatabaseFile Pali = new("pali.db", DatabaseBehavior.BundledReadOnly);
 
     /// <summary>
     /// User data database for mastery tracking, settings, and history.
     /// Created on first use in user's local app data folder.
     /// </summary>
-    public static readonly DatabaseFile UserData = new("user_data.db", DatabaseBehavior.CreatedUserWritable);
+    public static readonly DatabaseFile UserData = new("practice.db", DatabaseBehavior.CreatedUserWritable);
 
     public override string ToString() => Name;
 }

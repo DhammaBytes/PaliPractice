@@ -4,7 +4,7 @@ using PaliPractice.Tests.DataIntegrity.Helpers;
 namespace PaliPractice.Tests.DataIntegrity;
 
 /// <summary>
-/// Data integrity tests for nouns - verifies all noun data in training.db
+/// Data integrity tests for nouns - verifies all noun data in pali.db
 /// matches the source of truth dpd.db.
 /// </summary>
 /// <remarks>
@@ -15,7 +15,7 @@ namespace PaliPractice.Tests.DataIntegrity;
 ///          dpd.db (gray status in inflections_html)
 ///               ↗                    ↘
 ///    App DB ←—————————————————→ Tipitaka wordlists
-///    (training.db)                (source of truth for corpus)
+///    (pali.db)                (source of truth for corpus)
 /// </code>
 /// <para>
 /// <b>What each source provides:</b>
@@ -23,7 +23,7 @@ namespace PaliPractice.Tests.DataIntegrity;
 /// <list type="bullet">
 ///   <item><b>dpd.db</b>: Digital Pāḷi Dictionary - the authoritative source for word properties
 ///     (lemma, stem, pattern, meaning, examples). Gray forms in HTML indicate theoretical inflections.</item>
-///   <item><b>training.db</b>: App's extracted database. Properties come from dpd.db,
+///   <item><b>pali.db</b>: App's extracted database. Properties come from dpd.db,
 ///     corpus tables (nouns_corpus_forms) come from Tipitaka wordlists.</item>
 ///   <item><b>Tipitaka wordlists</b>: JSON files (cst, bjt, sya, sc) containing actual words
 ///     found in Pali canon texts. Used by extraction script to determine InCorpus status.</item>
@@ -32,9 +32,9 @@ namespace PaliPractice.Tests.DataIntegrity;
 /// <b>Key transformations verified:</b>
 /// </para>
 /// <list type="bullet">
-///   <item>dpd.lemma_1 → Regex.Replace(@" \d.*$", "") → training.lemma</item>
-///   <item>dpd.stem → Regex.Replace(@"[!*]", "") → training.stem (removes DPD markers)</item>
-///   <item>dpd.pos → masc=1, nt=2, fem=3 → training.gender</item>
+///   <item>dpd.lemma_1 → Regex.Replace(@" \d.*$", "") → pali.lemma</item>
+///   <item>dpd.stem → Regex.Replace(@"[!*]", "") → pali.stem (removes DPD markers)</item>
+///   <item>dpd.pos → masc=1, nt=2, fem=3 → pali.gender</item>
 /// </list>
 /// <para>
 /// <b>InCorpus cross-validation:</b>
@@ -46,31 +46,31 @@ namespace PaliPractice.Tests.DataIntegrity;
 [TestFixture]
 public class NounDataIntegrityTests
 {
-    TrainingDbLoader? _trainingDb;
+    PaliDbLoader? _paliDb;
     DpdWordLoader? _dpdDb;
     Dictionary<int, DpdHeadword>? _dpdHeadwords;
-    List<TrainingNoun>? _trainingNouns;
-    List<TrainingNounDetails>? _trainingNounDetails;
-    Dictionary<int, TrainingNounDetails>? _nounDetailsById;
+    List<PaliNoun>? _paliNouns;
+    List<PaliNounDetails>? _paliNounDetails;
+    Dictionary<int, PaliNounDetails>? _nounDetailsById;
     HashSet<long>? _corpusDeclensionFormIds;
     HashSet<string>? _tipitakaWords;
 
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
-        _trainingDb = new TrainingDbLoader();
+        _paliDb = new PaliDbLoader();
         _dpdDb = new DpdWordLoader();
 
         // Load all data upfront for performance
         _dpdHeadwords = _dpdDb.GetAllHeadwordsById();
-        _trainingNouns = _trainingDb.GetAllNouns();
-        _trainingNounDetails = _trainingDb.GetAllNounDetails();
-        _nounDetailsById = _trainingNounDetails.ToDictionary(d => d.Id);
-        _corpusDeclensionFormIds = _trainingDb.GetCorpusDeclensionFormIds();
+        _paliNouns = _paliDb.GetAllNouns();
+        _paliNounDetails = _paliDb.GetAllNounDetails();
+        _nounDetailsById = _paliNounDetails.ToDictionary(d => d.Id);
+        _corpusDeclensionFormIds = _paliDb.GetCorpusDeclensionFormIds();
         _tipitakaWords = TipitakaWordlistLoader.GetAllWords();
 
-        TestContext.WriteLine($"Loaded {_trainingNouns.Count} nouns from training.db");
-        TestContext.WriteLine($"Loaded {_trainingNounDetails.Count} noun details from training.db");
+        TestContext.WriteLine($"Loaded {_paliNouns.Count} nouns from pali.db");
+        TestContext.WriteLine($"Loaded {_paliNounDetails.Count} noun details from pali.db");
         TestContext.WriteLine($"Loaded {_dpdHeadwords.Count} headwords from dpd.db");
         TestContext.WriteLine($"Loaded {_corpusDeclensionFormIds.Count} corpus declension form_ids");
         TestContext.WriteLine($"Loaded {_tipitakaWords.Count} Tipitaka words");
@@ -79,7 +79,7 @@ public class NounDataIntegrityTests
     [OneTimeTearDown]
     public void OneTimeTearDown()
     {
-        _trainingDb?.Dispose();
+        _paliDb?.Dispose();
         _dpdDb?.Dispose();
     }
 
@@ -88,13 +88,13 @@ public class NounDataIntegrityTests
     [Test]
     public void AllNouns_ExistInDpd()
     {
-        var missing = _trainingNouns!
+        var missing = _paliNouns!
             .Where(n => !_dpdHeadwords!.ContainsKey(n.Id))
             .Select(n => $"id={n.Id}, lemma={n.Lemma}")
             .ToList();
 
         missing.Should().BeEmpty(
-            "every noun in training.db should exist in dpd.db");
+            "every noun in pali.db should exist in dpd.db");
     }
 
     [Test]
@@ -102,14 +102,14 @@ public class NounDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var noun in _trainingNouns!)
+        foreach (var noun in _paliNouns!)
         {
             if (!_dpdHeadwords!.TryGetValue(noun.Id, out var dpd))
                 continue; // Tested separately in AllNouns_ExistInDpd
 
             if (noun.Lemma != dpd.LemmaClean)
             {
-                mismatches.Add($"id={noun.Id}: training='{noun.Lemma}' vs dpd='{dpd.LemmaClean}'");
+                mismatches.Add($"id={noun.Id}: pali='{noun.Lemma}' vs dpd='{dpd.LemmaClean}'");
             }
         }
 
@@ -122,14 +122,14 @@ public class NounDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var noun in _trainingNouns!)
+        foreach (var noun in _paliNouns!)
         {
             if (!_dpdHeadwords!.TryGetValue(noun.Id, out var dpd))
                 continue;
 
             if (noun.Pattern != dpd.Pattern)
             {
-                mismatches.Add($"id={noun.Id} ({noun.Lemma}): training='{noun.Pattern}' vs dpd='{dpd.Pattern}'");
+                mismatches.Add($"id={noun.Id} ({noun.Lemma}): pali='{noun.Pattern}' vs dpd='{dpd.Pattern}'");
             }
         }
 
@@ -142,14 +142,14 @@ public class NounDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var noun in _trainingNouns!)
+        foreach (var noun in _paliNouns!)
         {
             if (!_dpdHeadwords!.TryGetValue(noun.Id, out var dpd))
                 continue;
 
             if (noun.EbtCount != dpd.EbtCount)
             {
-                mismatches.Add($"id={noun.Id} ({noun.Lemma}): training={noun.EbtCount} vs dpd={dpd.EbtCount}");
+                mismatches.Add($"id={noun.Id} ({noun.Lemma}): pali={noun.EbtCount} vs dpd={dpd.EbtCount}");
             }
         }
 
@@ -162,15 +162,15 @@ public class NounDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var noun in _trainingNouns!)
+        foreach (var noun in _paliNouns!)
         {
             if (!_dpdHeadwords!.TryGetValue(noun.Id, out var dpd))
                 continue;
 
-            // training.db stores stem after removing !* markers
+            // pali.db stores stem after removing !* markers
             if (noun.Stem != dpd.StemClean)
             {
-                mismatches.Add($"id={noun.Id} ({noun.Lemma}): training='{noun.Stem}' vs dpd='{dpd.StemClean}' (raw: '{dpd.Stem}')");
+                mismatches.Add($"id={noun.Id} ({noun.Lemma}): pali='{noun.Stem}' vs dpd='{dpd.StemClean}' (raw: '{dpd.Stem}')");
             }
         }
 
@@ -183,7 +183,7 @@ public class NounDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var noun in _trainingNouns!)
+        foreach (var noun in _paliNouns!)
         {
             if (!_dpdHeadwords!.TryGetValue(noun.Id, out var dpd))
                 continue;
@@ -191,7 +191,7 @@ public class NounDataIntegrityTests
             var expectedGender = PosToGender(dpd.Pos);
             if (noun.Gender != expectedGender)
             {
-                mismatches.Add($"id={noun.Id} ({noun.Lemma}): training={noun.Gender} vs expected={expectedGender} (pos='{dpd.Pos}')");
+                mismatches.Add($"id={noun.Id} ({noun.Lemma}): pali={noun.Gender} vs expected={expectedGender} (pos='{dpd.Pos}')");
             }
         }
 
@@ -214,7 +214,7 @@ public class NounDataIntegrityTests
     [Test]
     public void AllNounDetails_ExistForEachNoun()
     {
-        var missing = _trainingNouns!
+        var missing = _paliNouns!
             .Where(n => !_nounDetailsById!.ContainsKey(n.Id))
             .Select(n => $"id={n.Id}, lemma={n.Lemma}")
             .ToList();
@@ -228,14 +228,14 @@ public class NounDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var details in _trainingNounDetails!)
+        foreach (var details in _paliNounDetails!)
         {
             if (!_dpdHeadwords!.TryGetValue(details.Id, out var dpd))
                 continue;
 
             if (details.Meaning != dpd.Meaning1)
             {
-                mismatches.Add($"id={details.Id}: training='{Truncate(details.Meaning)}' vs dpd='{Truncate(dpd.Meaning1)}'");
+                mismatches.Add($"id={details.Id}: pali='{Truncate(details.Meaning)}' vs dpd='{Truncate(dpd.Meaning1)}'");
             }
         }
 
@@ -248,14 +248,14 @@ public class NounDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var details in _trainingNounDetails!)
+        foreach (var details in _paliNounDetails!)
         {
             if (!_dpdHeadwords!.TryGetValue(details.Id, out var dpd))
                 continue;
 
             if (details.Source1 != dpd.Source1)
             {
-                mismatches.Add($"id={details.Id}: training='{details.Source1}' vs dpd='{dpd.Source1}'");
+                mismatches.Add($"id={details.Id}: pali='{details.Source1}' vs dpd='{dpd.Source1}'");
             }
         }
 
@@ -268,14 +268,14 @@ public class NounDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var details in _trainingNounDetails!)
+        foreach (var details in _paliNounDetails!)
         {
             if (!_dpdHeadwords!.TryGetValue(details.Id, out var dpd))
                 continue;
 
             if (details.Sutta1 != dpd.Sutta1)
             {
-                mismatches.Add($"id={details.Id}: training='{details.Sutta1}' vs dpd='{dpd.Sutta1}'");
+                mismatches.Add($"id={details.Id}: pali='{details.Sutta1}' vs dpd='{dpd.Sutta1}'");
             }
         }
 
@@ -288,14 +288,14 @@ public class NounDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var details in _trainingNounDetails!)
+        foreach (var details in _paliNounDetails!)
         {
             if (!_dpdHeadwords!.TryGetValue(details.Id, out var dpd))
                 continue;
 
             if (details.Example1 != dpd.Example1)
             {
-                mismatches.Add($"id={details.Id}: training='{Truncate(details.Example1)}' vs dpd='{Truncate(dpd.Example1)}'");
+                mismatches.Add($"id={details.Id}: pali='{Truncate(details.Example1)}' vs dpd='{Truncate(dpd.Example1)}'");
             }
         }
 
@@ -308,14 +308,14 @@ public class NounDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var details in _trainingNounDetails!)
+        foreach (var details in _paliNounDetails!)
         {
             if (!_dpdHeadwords!.TryGetValue(details.Id, out var dpd))
                 continue;
 
             if (details.Source2 != dpd.Source2)
             {
-                mismatches.Add($"id={details.Id}: training='{details.Source2}' vs dpd='{dpd.Source2}'");
+                mismatches.Add($"id={details.Id}: pali='{details.Source2}' vs dpd='{dpd.Source2}'");
             }
         }
 
@@ -328,14 +328,14 @@ public class NounDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var details in _trainingNounDetails!)
+        foreach (var details in _paliNounDetails!)
         {
             if (!_dpdHeadwords!.TryGetValue(details.Id, out var dpd))
                 continue;
 
             if (details.Sutta2 != dpd.Sutta2)
             {
-                mismatches.Add($"id={details.Id}: training='{details.Sutta2}' vs dpd='{dpd.Sutta2}'");
+                mismatches.Add($"id={details.Id}: pali='{details.Sutta2}' vs dpd='{dpd.Sutta2}'");
             }
         }
 
@@ -348,14 +348,14 @@ public class NounDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var details in _trainingNounDetails!)
+        foreach (var details in _paliNounDetails!)
         {
             if (!_dpdHeadwords!.TryGetValue(details.Id, out var dpd))
                 continue;
 
             if (details.Example2 != dpd.Example2)
             {
-                mismatches.Add($"id={details.Id}: training='{Truncate(details.Example2)}' vs dpd='{Truncate(dpd.Example2)}'");
+                mismatches.Add($"id={details.Id}: pali='{Truncate(details.Example2)}' vs dpd='{Truncate(dpd.Example2)}'");
             }
         }
 
@@ -372,7 +372,7 @@ public class NounDataIntegrityTests
     {
         var unexpectedInCorpus = new List<string>();
 
-        foreach (var noun in _trainingNouns!)
+        foreach (var noun in _paliNouns!)
         {
             if (!_dpdHeadwords!.TryGetValue(noun.Id, out var dpd))
                 continue;
@@ -400,7 +400,7 @@ public class NounDataIntegrityTests
 
         // Allow some discrepancy (DPD gray marking may differ from wordlist coverage)
         // Tightened from 5% to 2% to catch real data issues
-        var discrepancyRate = (double)unexpectedInCorpus.Count / _trainingNouns!.Count;
+        var discrepancyRate = (double)unexpectedInCorpus.Count / _paliNouns!.Count;
         discrepancyRate.Should().BeLessThan(0.02,
             "less than 2% of words should have gray forms that appear in wordlists");
     }
@@ -410,7 +410,7 @@ public class NounDataIntegrityTests
     {
         var missingFromWordlist = new List<string>();
 
-        foreach (var noun in _trainingNouns!)
+        foreach (var noun in _paliNouns!)
         {
             if (!_dpdHeadwords!.TryGetValue(noun.Id, out var dpd))
                 continue;
@@ -437,7 +437,7 @@ public class NounDataIntegrityTests
         }
 
         // Allow some discrepancy - tightened from 10% to 5%
-        var discrepancyRate = (double)missingFromWordlist.Count / _trainingNouns!.Count;
+        var discrepancyRate = (double)missingFromWordlist.Count / _paliNouns!.Count;
         discrepancyRate.Should().BeLessThan(0.05,
             "less than 5% of words should have non-gray forms missing from wordlists");
     }
@@ -449,7 +449,7 @@ public class NounDataIntegrityTests
         var agreementCount = 0;
         var disagreementSamples = new List<string>();
 
-        foreach (var noun in _trainingNouns!)
+        foreach (var noun in _paliNouns!)
         {
             if (!_dpdHeadwords!.TryGetValue(noun.Id, out var dpd))
                 continue;
@@ -503,7 +503,7 @@ public class NounDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var noun in _trainingNouns!)
+        foreach (var noun in _paliNouns!)
         {
             if (!_nounDetailsById!.TryGetValue(noun.Id, out var details))
                 continue;
@@ -530,7 +530,7 @@ public class NounDataIntegrityTests
     [Test]
     public void AllNouns_HaveValidGender()
     {
-        var invalid = _trainingNouns!
+        var invalid = _paliNouns!
             .Where(n => n.Gender < 1 || n.Gender > 3)
             .Select(n => $"id={n.Id} ({n.Lemma}): gender={n.Gender}")
             .ToList();
@@ -542,7 +542,7 @@ public class NounDataIntegrityTests
     [Test]
     public void AllNouns_HaveNonEmptyPattern()
     {
-        var empty = _trainingNouns!
+        var empty = _paliNouns!
             .Where(n => string.IsNullOrEmpty(n.Pattern))
             .Select(n => $"id={n.Id} ({n.Lemma})")
             .ToList();
@@ -554,7 +554,7 @@ public class NounDataIntegrityTests
     [Test]
     public void AllNounDetails_HaveNonEmptyMeaning()
     {
-        var empty = _trainingNounDetails!
+        var empty = _paliNounDetails!
             .Where(d => string.IsNullOrEmpty(d.Meaning))
             .Select(d => $"id={d.Id}")
             .ToList();

@@ -28,9 +28,9 @@ namespace PaliPractice.Tests.DataIntegrity;
 [TestFixture]
 public class UnicodeNormalizationTests
 {
-    TrainingDbLoader? _trainingDb;
-    List<TrainingNoun>? _nouns;
-    List<TrainingVerb>? _verbs;
+    PaliDbLoader? _paliDb;
+    List<PaliNoun>? _nouns;
+    List<PaliVerb>? _verbs;
     HashSet<string>? _tipitakaWords;
 
     /// <summary>
@@ -47,9 +47,9 @@ public class UnicodeNormalizationTests
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
-        _trainingDb = new TrainingDbLoader();
-        _nouns = _trainingDb.GetAllNouns();
-        _verbs = _trainingDb.GetAllVerbs();
+        _paliDb = new PaliDbLoader();
+        _nouns = _paliDb.GetAllNouns();
+        _verbs = _paliDb.GetAllVerbs();
         _tipitakaWords = TipitakaWordlistLoader.GetAllWords();
 
         TestContext.WriteLine($"Loaded {_nouns.Count} nouns");
@@ -60,7 +60,7 @@ public class UnicodeNormalizationTests
     [OneTimeTearDown]
     public void OneTimeTearDown()
     {
-        _trainingDb?.Dispose();
+        _paliDb?.Dispose();
     }
 
     #region NFC Normalization Tests
@@ -148,9 +148,9 @@ public class UnicodeNormalizationTests
     }
 
     [Test]
-    public void TrainingDb_ContainsPaliDiacriticals()
+    public void PaliDb_ContainsPaliDiacriticals()
     {
-        // Verify that training data actually contains Pali diacriticals
+        // Verify that pali data actually contains Pali diacriticals
         // (sanity check that we're testing real data)
         var diacriticalCounts = new Dictionary<char, int>();
         foreach (var c in PaliDiacriticals)

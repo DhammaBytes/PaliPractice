@@ -59,7 +59,7 @@ def is_plural_only_pattern(pattern: str) -> bool:
 DPD_DB_PATH = Path(__file__).parent.parent.parent / "dpd-db" / "dpd.db"
 
 # Output training database path
-TRAINING_DB_PATH = Path(__file__).parent.parent.parent / "PaliPractice" / "PaliPractice" / "Data" / "training.db"
+TRAINING_DB_PATH = Path(__file__).parent.parent.parent / "PaliPractice" / "PaliPractice" / "Data" / "pali.db"
 
 # Tipitaka wordlist paths for corpus attestation
 TIPITAKA_FREQ_PATH = Path(__file__).parent.parent.parent / "dpd-db" / "shared_data" / "frequency"

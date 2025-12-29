@@ -3,7 +3,7 @@ using PaliPractice.Models;
 namespace PaliPractice.Services.UserData;
 
 /// <summary>
-/// Constants for user settings keys stored in user_data.db.
+/// Constants for user settings keys stored in practice.db
 /// All multi-value settings are stored as CSV of enum integers (e.g., "1,2,3").
 /// </summary>
 public static class SettingsKeys

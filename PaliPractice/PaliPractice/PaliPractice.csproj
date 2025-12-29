@@ -53,22 +53,22 @@
 
     <!-- Desktop and WASM: Content with copy to output -->
     <ItemGroup Condition="$(TargetFramework.Contains('-desktop')) OR '$(TargetFramework)' == 'net10.0'">
-      <Content Include="Data\training.db">
+      <Content Include="Data\pali.db">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
 
     <!-- iOS: Bundle resource -->
     <ItemGroup Condition="$(TargetFramework.Contains('-ios'))">
-      <BundleResource Include="Data\training.db">
-        <Link>Data/training.db</Link>
+      <BundleResource Include="Data\pali.db">
+        <Link>Data/pali.db</Link>
       </BundleResource>
     </ItemGroup>
 
     <!-- Android: Asset -->
     <ItemGroup Condition="$(TargetFramework.Contains('-android'))">
-      <AndroidAsset Include="Data\training.db">
-        <Link>Data/training.db</Link>
+      <AndroidAsset Include="Data\pali.db">
+        <Link>Data/pali.db</Link>
       </AndroidAsset>
     </ItemGroup>
 

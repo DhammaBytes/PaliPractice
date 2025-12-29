@@ -36,7 +36,7 @@ The primary extraction script that:
 - Creates `corpus_conjugations` table tracking which forms appear in Tipitaka
 - Assigns stable `lemma_id` values via `configs/lemma_registry.json`
 - Uses EBT frequency counts for word selection
-- Outputs to `../PaliPractice/PaliPractice/Data/training.db` for the app's consumption
+- Outputs to `../PaliPractice/PaliPractice/Data/pali.db` for the app's consumption
 
 ### `validate_inflections.py`
 Validates inflection completeness during extraction (called automatically by `extract_nouns_and_verbs.py`):
@@ -453,7 +453,7 @@ After successful completion, you should have:
 - **DPD Database**: `dpd-db/dpd.db` (~450MB) with 82,922+ words
 - **Frequency Data**: 53,041+ words with EBT frequency counts > 0
 - **Lemma Registry**: `scripts/configs/lemma_registry.json` with stable IDs for all lemmas
-- **Training Database**: `PaliPractice/PaliPractice/Data/training.db` with:
+- **Training Database**: `PaliPractice/PaliPractice/Data/pali.db` with:
   - 3,000 most frequent noun lemmas (with stable lemma_id 10001-69999)
   - 2,000 most frequent verb lemmas (with stable lemma_id 70001-99999)
   - Corpus-attested declension forms (encoded as form_id)

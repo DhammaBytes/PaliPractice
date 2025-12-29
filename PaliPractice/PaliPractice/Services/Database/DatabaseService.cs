@@ -9,7 +9,7 @@ namespace PaliPractice.Services.Database;
 
 /// <summary>
 /// Unified database service that provisions and provides access to all databases.
-/// Training database uses platform-specific asset types in csproj:
+/// Pali database uses platform-specific asset types in csproj:
 /// - Desktop/WASM: Content with CopyToOutputDirectory
 /// - iOS: BundleResource (read from bundle)
 /// - Android: AndroidAsset (copied to local storage)
@@ -49,7 +49,7 @@ public interface IDatabaseService
 public class DatabaseService : IDatabaseService
 {
     /// <summary>
-    /// Bundle version number. Increment when training.db schema or data changes.
+    /// Bundle version number. Increment when pali.db schema or data changes.
     /// Used to determine if cached database needs replacement.
     /// </summary>
     public const int BundleVersion = 1;
@@ -68,15 +68,15 @@ public class DatabaseService : IDatabaseService
     {
         _bundledFileProvider = bundledFileProvider;
 
-        // Provision training database (read-only)
-        SQLiteConnection trainingDb;
+        // Provision grammar database (read-only)
+        SQLiteConnection paliDb;
         try
         {
-            trainingDb = OpenBundledDatabase(DatabaseFile.Training);
+            paliDb = OpenBundledDatabase(DatabaseFile.Pali);
         }
         catch (Exception)
         {
-            trainingDb = CreateEmptyDatabase(DatabaseFile.Training);
+            paliDb = CreateEmptyDatabase(DatabaseFile.Pali);
         }
 
         // Provision user data database (writable)
@@ -84,15 +84,15 @@ public class DatabaseService : IDatabaseService
         var userDataDb = OpenWritableDatabase(DatabaseFile.UserData);
 
         // Create repositories
-        Nouns = new NounRepository(trainingDb);
-        Verbs = new VerbRepository(trainingDb);
+        Nouns = new NounRepository(paliDb);
+        Verbs = new VerbRepository(paliDb);
         UserData = new UserDataRepository(userDataDb);
 
         // Initialize default settings if first run
         UserData.InitializeDefaultsIfNeeded();
 
         // Log table counts for diagnostics
-        LogTableCounts(trainingDb, "training.db");
+        LogTableCounts(paliDb, "pali.db");
     }
 
     SQLiteConnection OpenWritableDatabase(DatabaseFile file)
@@ -305,12 +305,12 @@ public class DatabaseService : IDatabaseService
     {
         var inMemoryConnection = new SQLiteConnection(":memory:");
 
-        // Initialize appropriate schema based on file type
+        // Initialize the appropriate schema based on a file type
         if (file.Equals(DatabaseFile.UserData))
         {
             InitializeUserDataSchema(inMemoryConnection);
         }
-        // Training database tables would be empty, but that's acceptable for graceful degradation
+        // Pali database tables would be empty, but that's acceptable for graceful degradation
 
         return inMemoryConnection;
     }

@@ -4,7 +4,7 @@ using PaliPractice.Tests.DataIntegrity.Helpers;
 namespace PaliPractice.Tests.DataIntegrity;
 
 /// <summary>
-/// Data integrity tests for verbs - verifies all verb data in training.db
+/// Data integrity tests for verbs - verifies all verb data in pali.db
 /// matches the source of truth dpd.db.
 /// </summary>
 /// <remarks>
@@ -15,7 +15,7 @@ namespace PaliPractice.Tests.DataIntegrity;
 ///          dpd.db (gray status in inflections_html)
 ///               ↗                    ↘
 ///    App DB ←—————————————————→ Tipitaka wordlists
-///    (training.db)                (source of truth for corpus)
+///    (pali.db)                  (source of truth for corpus)
 /// </code>
 /// <para>
 /// See <see cref="NounDataIntegrityTests"/> for detailed documentation of the validation approach.
@@ -33,12 +33,12 @@ namespace PaliPractice.Tests.DataIntegrity;
 [TestFixture]
 public class VerbDataIntegrityTests
 {
-    TrainingDbLoader? _trainingDb;
+    PaliDbLoader? _paliDb;
     DpdWordLoader? _dpdDb;
     Dictionary<int, DpdHeadword>? _dpdHeadwords;
-    List<TrainingVerb>? _trainingVerbs;
-    List<TrainingVerbDetails>? _trainingVerbDetails;
-    Dictionary<int, TrainingVerbDetails>? _verbDetailsById;
+    List<PaliVerb>? _paliVerbs;
+    List<PaliVerbDetails>? _paliVerbDetails;
+    Dictionary<int, PaliVerbDetails>? _verbDetailsById;
     HashSet<long>? _corpusConjugationFormIds;
     HashSet<int>? _nonReflexiveLemmaIds;
     HashSet<string>? _tipitakaWords;
@@ -46,20 +46,20 @@ public class VerbDataIntegrityTests
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
-        _trainingDb = new TrainingDbLoader();
+        _paliDb = new PaliDbLoader();
         _dpdDb = new DpdWordLoader();
 
         // Load all data upfront for performance
         _dpdHeadwords = _dpdDb.GetAllHeadwordsById();
-        _trainingVerbs = _trainingDb.GetAllVerbs();
-        _trainingVerbDetails = _trainingDb.GetAllVerbDetails();
-        _verbDetailsById = _trainingVerbDetails.ToDictionary(d => d.Id);
-        _corpusConjugationFormIds = _trainingDb.GetCorpusConjugationFormIds();
-        _nonReflexiveLemmaIds = _trainingDb.GetNonReflexiveLemmaIds();
+        _paliVerbs = _paliDb.GetAllVerbs();
+        _paliVerbDetails = _paliDb.GetAllVerbDetails();
+        _verbDetailsById = _paliVerbDetails.ToDictionary(d => d.Id);
+        _corpusConjugationFormIds = _paliDb.GetCorpusConjugationFormIds();
+        _nonReflexiveLemmaIds = _paliDb.GetNonReflexiveLemmaIds();
         _tipitakaWords = TipitakaWordlistLoader.GetAllWords();
 
-        TestContext.WriteLine($"Loaded {_trainingVerbs.Count} verbs from training.db");
-        TestContext.WriteLine($"Loaded {_trainingVerbDetails.Count} verb details from training.db");
+        TestContext.WriteLine($"Loaded {_paliVerbs.Count} verbs from pali.db");
+        TestContext.WriteLine($"Loaded {_paliVerbDetails.Count} verb details from pali.db");
         TestContext.WriteLine($"Loaded {_dpdHeadwords.Count} headwords from dpd.db");
         TestContext.WriteLine($"Loaded {_corpusConjugationFormIds.Count} corpus conjugation form_ids");
         TestContext.WriteLine($"Loaded {_nonReflexiveLemmaIds.Count} non-reflexive verb lemma_ids");
@@ -69,7 +69,7 @@ public class VerbDataIntegrityTests
     [OneTimeTearDown]
     public void OneTimeTearDown()
     {
-        _trainingDb?.Dispose();
+        _paliDb?.Dispose();
         _dpdDb?.Dispose();
     }
 
@@ -78,13 +78,13 @@ public class VerbDataIntegrityTests
     [Test]
     public void AllVerbs_ExistInDpd()
     {
-        var missing = _trainingVerbs!
+        var missing = _paliVerbs!
             .Where(v => !_dpdHeadwords!.ContainsKey(v.Id))
             .Select(v => $"id={v.Id}, lemma={v.Lemma}")
             .ToList();
 
         missing.Should().BeEmpty(
-            "every verb in training.db should exist in dpd.db");
+            "every verb in pali.db should exist in dpd.db");
     }
 
     [Test]
@@ -92,14 +92,14 @@ public class VerbDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var verb in _trainingVerbs!)
+        foreach (var verb in _paliVerbs!)
         {
             if (!_dpdHeadwords!.TryGetValue(verb.Id, out var dpd))
                 continue;
 
             if (verb.Lemma != dpd.LemmaClean)
             {
-                mismatches.Add($"id={verb.Id}: training='{verb.Lemma}' vs dpd='{dpd.LemmaClean}'");
+                mismatches.Add($"id={verb.Id}: pali='{verb.Lemma}' vs dpd='{dpd.LemmaClean}'");
             }
         }
 
@@ -112,14 +112,14 @@ public class VerbDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var verb in _trainingVerbs!)
+        foreach (var verb in _paliVerbs!)
         {
             if (!_dpdHeadwords!.TryGetValue(verb.Id, out var dpd))
                 continue;
 
             if (verb.Pattern != dpd.Pattern)
             {
-                mismatches.Add($"id={verb.Id} ({verb.Lemma}): training='{verb.Pattern}' vs dpd='{dpd.Pattern}'");
+                mismatches.Add($"id={verb.Id} ({verb.Lemma}): pali='{verb.Pattern}' vs dpd='{dpd.Pattern}'");
             }
         }
 
@@ -132,14 +132,14 @@ public class VerbDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var verb in _trainingVerbs!)
+        foreach (var verb in _paliVerbs!)
         {
             if (!_dpdHeadwords!.TryGetValue(verb.Id, out var dpd))
                 continue;
 
             if (verb.EbtCount != dpd.EbtCount)
             {
-                mismatches.Add($"id={verb.Id} ({verb.Lemma}): training={verb.EbtCount} vs dpd={dpd.EbtCount}");
+                mismatches.Add($"id={verb.Id} ({verb.Lemma}): pali={verb.EbtCount} vs dpd={dpd.EbtCount}");
             }
         }
 
@@ -152,15 +152,15 @@ public class VerbDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var verb in _trainingVerbs!)
+        foreach (var verb in _paliVerbs!)
         {
             if (!_dpdHeadwords!.TryGetValue(verb.Id, out var dpd))
                 continue;
 
-            // training.db stores stem after removing !* markers
+            // pali.db stores stem after removing !* markers
             if (verb.Stem != dpd.StemClean)
             {
-                mismatches.Add($"id={verb.Id} ({verb.Lemma}): training='{verb.Stem}' vs dpd='{dpd.StemClean}' (raw: '{dpd.Stem}')");
+                mismatches.Add($"id={verb.Id} ({verb.Lemma}): pali='{verb.Stem}' vs dpd='{dpd.StemClean}' (raw: '{dpd.Stem}')");
             }
         }
 
@@ -175,7 +175,7 @@ public class VerbDataIntegrityTests
     [Test]
     public void AllVerbDetails_ExistForEachVerb()
     {
-        var missing = _trainingVerbs!
+        var missing = _paliVerbs!
             .Where(v => !_verbDetailsById!.ContainsKey(v.Id))
             .Select(v => $"id={v.Id}, lemma={v.Lemma}")
             .ToList();
@@ -189,14 +189,14 @@ public class VerbDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var details in _trainingVerbDetails!)
+        foreach (var details in _paliVerbDetails!)
         {
             if (!_dpdHeadwords!.TryGetValue(details.Id, out var dpd))
                 continue;
 
             if (details.Meaning != dpd.Meaning1)
             {
-                mismatches.Add($"id={details.Id}: training='{Truncate(details.Meaning)}' vs dpd='{Truncate(dpd.Meaning1)}'");
+                mismatches.Add($"id={details.Id}: pali='{Truncate(details.Meaning)}' vs dpd='{Truncate(dpd.Meaning1)}'");
             }
         }
 
@@ -209,14 +209,14 @@ public class VerbDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var details in _trainingVerbDetails!)
+        foreach (var details in _paliVerbDetails!)
         {
             if (!_dpdHeadwords!.TryGetValue(details.Id, out var dpd))
                 continue;
 
             if (details.Source1 != dpd.Source1)
             {
-                mismatches.Add($"id={details.Id}: training='{details.Source1}' vs dpd='{dpd.Source1}'");
+                mismatches.Add($"id={details.Id}: pali='{details.Source1}' vs dpd='{dpd.Source1}'");
             }
         }
 
@@ -229,14 +229,14 @@ public class VerbDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var details in _trainingVerbDetails!)
+        foreach (var details in _paliVerbDetails!)
         {
             if (!_dpdHeadwords!.TryGetValue(details.Id, out var dpd))
                 continue;
 
             if (details.Sutta1 != dpd.Sutta1)
             {
-                mismatches.Add($"id={details.Id}: training='{details.Sutta1}' vs dpd='{dpd.Sutta1}'");
+                mismatches.Add($"id={details.Id}: pali='{details.Sutta1}' vs dpd='{dpd.Sutta1}'");
             }
         }
 
@@ -249,14 +249,14 @@ public class VerbDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var details in _trainingVerbDetails!)
+        foreach (var details in _paliVerbDetails!)
         {
             if (!_dpdHeadwords!.TryGetValue(details.Id, out var dpd))
                 continue;
 
             if (details.Example1 != dpd.Example1)
             {
-                mismatches.Add($"id={details.Id}: training='{Truncate(details.Example1)}' vs dpd='{Truncate(dpd.Example1)}'");
+                mismatches.Add($"id={details.Id}: pali='{Truncate(details.Example1)}' vs dpd='{Truncate(dpd.Example1)}'");
             }
         }
 
@@ -269,14 +269,14 @@ public class VerbDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var details in _trainingVerbDetails!)
+        foreach (var details in _paliVerbDetails!)
         {
             if (!_dpdHeadwords!.TryGetValue(details.Id, out var dpd))
                 continue;
 
             if (details.Source2 != dpd.Source2)
             {
-                mismatches.Add($"id={details.Id}: training='{details.Source2}' vs dpd='{dpd.Source2}'");
+                mismatches.Add($"id={details.Id}: pali='{details.Source2}' vs dpd='{dpd.Source2}'");
             }
         }
 
@@ -289,14 +289,14 @@ public class VerbDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var details in _trainingVerbDetails!)
+        foreach (var details in _paliVerbDetails!)
         {
             if (!_dpdHeadwords!.TryGetValue(details.Id, out var dpd))
                 continue;
 
             if (details.Sutta2 != dpd.Sutta2)
             {
-                mismatches.Add($"id={details.Id}: training='{details.Sutta2}' vs dpd='{dpd.Sutta2}'");
+                mismatches.Add($"id={details.Id}: pali='{details.Sutta2}' vs dpd='{dpd.Sutta2}'");
             }
         }
 
@@ -309,14 +309,14 @@ public class VerbDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var details in _trainingVerbDetails!)
+        foreach (var details in _paliVerbDetails!)
         {
             if (!_dpdHeadwords!.TryGetValue(details.Id, out var dpd))
                 continue;
 
             if (details.Example2 != dpd.Example2)
             {
-                mismatches.Add($"id={details.Id}: training='{Truncate(details.Example2)}' vs dpd='{Truncate(dpd.Example2)}'");
+                mismatches.Add($"id={details.Id}: pali='{Truncate(details.Example2)}' vs dpd='{Truncate(dpd.Example2)}'");
             }
         }
 
@@ -329,14 +329,14 @@ public class VerbDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var details in _trainingVerbDetails!)
+        foreach (var details in _paliVerbDetails!)
         {
             if (!_dpdHeadwords!.TryGetValue(details.Id, out var dpd))
                 continue;
 
             if (details.VerbType != dpd.Verb)
             {
-                mismatches.Add($"id={details.Id}: training='{details.VerbType}' vs dpd='{dpd.Verb}'");
+                mismatches.Add($"id={details.Id}: pali='{details.VerbType}' vs dpd='{dpd.Verb}'");
             }
         }
 
@@ -349,14 +349,14 @@ public class VerbDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var details in _trainingVerbDetails!)
+        foreach (var details in _paliVerbDetails!)
         {
             if (!_dpdHeadwords!.TryGetValue(details.Id, out var dpd))
                 continue;
 
             if (details.Trans != dpd.Trans)
             {
-                mismatches.Add($"id={details.Id}: training='{details.Trans}' vs dpd='{dpd.Trans}'");
+                mismatches.Add($"id={details.Id}: pali='{details.Trans}' vs dpd='{dpd.Trans}'");
             }
         }
 
@@ -373,7 +373,7 @@ public class VerbDataIntegrityTests
     {
         var unexpectedInCorpus = new List<string>();
 
-        foreach (var verb in _trainingVerbs!)
+        foreach (var verb in _paliVerbs!)
         {
             if (!_dpdHeadwords!.TryGetValue(verb.Id, out var dpd))
                 continue;
@@ -400,7 +400,7 @@ public class VerbDataIntegrityTests
         }
 
         // Tightened from 5% to 2% to catch real data issues
-        var discrepancyRate = (double)unexpectedInCorpus.Count / _trainingVerbs!.Count;
+        var discrepancyRate = (double)unexpectedInCorpus.Count / _paliVerbs!.Count;
         discrepancyRate.Should().BeLessThan(0.02,
             "less than 2% of words should have gray forms that appear in wordlists");
     }
@@ -410,7 +410,7 @@ public class VerbDataIntegrityTests
     {
         var missingFromWordlist = new List<string>();
 
-        foreach (var verb in _trainingVerbs!)
+        foreach (var verb in _paliVerbs!)
         {
             if (!_dpdHeadwords!.TryGetValue(verb.Id, out var dpd))
                 continue;
@@ -437,7 +437,7 @@ public class VerbDataIntegrityTests
         }
 
         // Tightened from 10% to 5%
-        var discrepancyRate = (double)missingFromWordlist.Count / _trainingVerbs!.Count;
+        var discrepancyRate = (double)missingFromWordlist.Count / _paliVerbs!.Count;
         discrepancyRate.Should().BeLessThan(0.05,
             "less than 5% of words should have non-gray forms missing from wordlists");
     }
@@ -449,7 +449,7 @@ public class VerbDataIntegrityTests
         var agreementCount = 0;
         var disagreementSamples = new List<string>();
 
-        foreach (var verb in _trainingVerbs!)
+        foreach (var verb in _paliVerbs!)
         {
             if (!_dpdHeadwords!.TryGetValue(verb.Id, out var dpd))
                 continue;
@@ -504,7 +504,7 @@ public class VerbDataIntegrityTests
         var verbsWithReflexive = new List<string>();
 
         // Group verbs by lemma_id to check each unique lemma
-        var verbsByLemmaId = _trainingVerbs!.GroupBy(v => v.LemmaId);
+        var verbsByLemmaId = _paliVerbs!.GroupBy(v => v.LemmaId);
 
         foreach (var group in verbsByLemmaId)
         {
@@ -542,7 +542,7 @@ public class VerbDataIntegrityTests
     {
         var mismatches = new List<string>();
 
-        foreach (var verb in _trainingVerbs!)
+        foreach (var verb in _paliVerbs!)
         {
             if (!_verbDetailsById!.TryGetValue(verb.Id, out var details))
                 continue;
@@ -569,7 +569,7 @@ public class VerbDataIntegrityTests
     [Test]
     public void AllVerbs_HaveNonEmptyPattern()
     {
-        var empty = _trainingVerbs!
+        var empty = _paliVerbs!
             .Where(v => string.IsNullOrEmpty(v.Pattern))
             .Select(v => $"id={v.Id} ({v.Lemma})")
             .ToList();
@@ -581,7 +581,7 @@ public class VerbDataIntegrityTests
     [Test]
     public void AllVerbDetails_HaveNonEmptyMeaning()
     {
-        var empty = _trainingVerbDetails!
+        var empty = _paliVerbDetails!
             .Where(d => string.IsNullOrEmpty(d.Meaning))
             .Select(d => $"id={d.Id}")
             .ToList();
@@ -594,7 +594,7 @@ public class VerbDataIntegrityTests
     public void AllVerbLemmaIds_AreInExpectedRange()
     {
         // Verb lemma IDs should be in range 70001-99999
-        var outOfRange = _trainingVerbs!
+        var outOfRange = _paliVerbs!
             .Where(v => v.LemmaId < 70001 || v.LemmaId > 99999)
             .Select(v => $"id={v.Id} ({v.Lemma}): lemma_id={v.LemmaId}")
             .ToList();

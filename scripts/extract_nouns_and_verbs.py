@@ -172,7 +172,7 @@ def populate_all_lemmas_to_registry():
 class NounVerbExtractor:
     """Extract nouns and verbs with grammatical categorization."""
 
-    def __init__(self, output_db_path: str = "../PaliPractice/PaliPractice/Data/training.db",
+    def __init__(self, output_db_path: str = "../PaliPractice/PaliPractice/Data/pali.db",
                  noun_limit: int = 3000, verb_limit: int = 2000):
         self.output_db_path = output_db_path
         self.noun_limit = noun_limit
@@ -968,7 +968,7 @@ Examples:
   # First time: populate registry with ALL lemmas (run once, commit result)
   python extract_nouns_and_verbs.py --populate-registry
 
-  # Normal extraction: create training.db with top N lemmas
+  # Normal extraction: create pali.db with top N lemmas
   python extract_nouns_and_verbs.py --nouns 3000 --verbs 2000
         """
     )

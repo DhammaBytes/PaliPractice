@@ -50,7 +50,7 @@ def parse_conjugation_form_id(form_id: int) -> dict:
     }
 
 
-def validate_database(db_path: str = "../PaliPractice/PaliPractice/Data/training.db"):
+def validate_database(db_path: str = "../PaliPractice/PaliPractice/Data/pali.db"):
     """Validate the training database structure and content."""
     if not Path(db_path).exists():
         print(f"❌ Database {db_path} does not exist")

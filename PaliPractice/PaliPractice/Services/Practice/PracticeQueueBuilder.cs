@@ -17,6 +17,16 @@ record FormMasteryData(long FormId, int MasteryLevel, DateTime NextDueUtc)
 }
 
 /// <summary>
+/// Groups forms by grammatical category for balanced selection.
+/// Categories are NounPattern for nouns, (Tense, Voice) for verbs.
+/// </summary>
+partial record CategoryForms(string Key, List<FormMasteryData> DueForms, List<long> UntriedForms)
+{
+    /// <summary>Total forms available in this category (due + untried).</summary>
+    public int TotalCount => DueForms.Count + UntriedForms.Count;
+}
+
+/// <summary>
 /// Builds a practice queue using a three-bucket SRS approach:
 ///
 /// 1. DUE REVIEWS: Forms whose cooldown has expired (LastPracticedUtc + cooldown &lt; now).
@@ -42,6 +52,10 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
     // Randomized interval prevents predictable patterns.
     const int NewFormIntervalMin = 4;
     const int NewFormIntervalMax = 6;
+
+    // Minimum representation floor for category balancing.
+    // Ensures rare patterns (e.g., Masc-ū at 0.3%) appear at least 5% of the time.
+    const double MinCategoryFloor = 0.05;
 
     public PracticeQueueBuilder(IDatabaseService db)
     {
@@ -83,44 +97,74 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         // 4. Get difficulty weights for prioritization (type-specific)
         var hardCombos = GetHardestCombinations(type);
 
-        // 5. Score and sort due forms by priority
-        var scoredDue = dueForReview
-            .Select(f => (Form: f, Priority: CalculatePriority(f, hardCombos, type)))
-            .OrderByDescending(x => x.Priority)
-            .ToList();
+        // 5. Group forms by category for balanced selection
+        var categories = GroupFormsByCategory(type, dueForReview, untriedIds);
 
-        // 6. Build queue with review-to-new ratio
+        System.Diagnostics.Debug.WriteLine($"[Queue] Categories: {categories.Count} " +
+            $"({string.Join(", ", categories.Select(c => $"{c.Key}:{c.Value.TotalCount}"))})");
+
+        // 6. Score due forms within each category by priority
+        var scoredByCategory = new Dictionary<string, List<(FormMasteryData Form, double Priority)>>();
+        foreach (var (key, cat) in categories)
+        {
+            scoredByCategory[key] = cat.DueForms
+                .Select(f => (Form: f, Priority: CalculatePriority(f, hardCombos, type)))
+                .OrderByDescending(x => x.Priority)
+                .ToList();
+        }
+
+        // Track indices for each category's scored due list
+        var categoryReviewIndex = categories.Keys.ToDictionary(k => k, _ => 0);
+
+        // 7. Build queue with two-stage selection:
+        //    Stage 1: Select category (weighted + 5% floor)
+        //    Stage 2: Select form from category (SRS priority)
         int reviewsAdded = 0;
         int newAdded = 0;
-        int reviewIndex = 0;
         int nextNewInterval = _random.Next(NewFormIntervalMin, NewFormIntervalMax + 1);
 
-        while (queue.Count < count)
+        while (queue.Count < count && categories.Values.Any(c => c.TotalCount > 0))
         {
-            bool addNew = ShouldAddNew(reviewsAdded, newAdded, untriedIds.Count, nextNewInterval);
+            // Stage 1: Select category
+            var selectedKey = SelectCategory(categories);
+            if (string.IsNullOrEmpty(selectedKey)) break;
 
-            if (addNew && newAdded < untriedIds.Count)
+            var cat = categories[selectedKey];
+            var scoredDue = scoredByCategory[selectedKey];
+            var reviewIndex = categoryReviewIndex[selectedKey];
+
+            // Stage 2: Decide review vs new, then select form
+            bool hasReviews = reviewIndex < scoredDue.Count;
+            bool hasNew = cat.UntriedForms.Count > 0;
+            bool addNew = ShouldAddNew(reviewsAdded, newAdded, hasNew ? 1 : 0, nextNewInterval);
+
+            if (addNew && hasNew)
             {
-                // Add a random new form
-                var newIndex = _random.Next(untriedIds.Count);
-                var newFormId = untriedIds[newIndex];
-                untriedIds.RemoveAt(newIndex);  // Don't repeat
+                // Add a random new form from this category
+                var newIndex = _random.Next(cat.UntriedForms.Count);
+                var newFormId = cat.UntriedForms[newIndex];
+                cat.UntriedForms.RemoveAt(newIndex);
 
                 queue.Add(new PracticeItem(
                     newFormId,
                     type,
                     ExtractLemmaId(newFormId, type),
                     PracticeItemSource.NewForm,
-                    0.5,  // Neutral priority for new forms
-                    MasteryLevel: 1  // New form starts at level 1
+                    0.5,
+                    MasteryLevel: 1
                 ));
                 newAdded++;
                 nextNewInterval = _random.Next(NewFormIntervalMin, NewFormIntervalMax + 1);
             }
-            else if (reviewIndex < scoredDue.Count)
+            else if (hasReviews)
             {
-                // Add next highest-priority review
+                // Add next highest-priority review from this category
                 var (form, priority) = scoredDue[reviewIndex];
+                categoryReviewIndex[selectedKey] = reviewIndex + 1;
+
+                // Remove from due list to update category's TotalCount
+                cat.DueForms.Remove(form);
+
                 queue.Add(new PracticeItem(
                     form.FormId,
                     type,
@@ -131,15 +175,14 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                     priority,
                     form.MasteryLevel
                 ));
-                reviewIndex++;
                 reviewsAdded++;
             }
-            else if (newAdded < untriedIds.Count)
+            else if (hasNew)
             {
-                // No more reviews, add new forms
-                var newIndex = _random.Next(untriedIds.Count);
-                var newFormId = untriedIds[newIndex];
-                untriedIds.RemoveAt(newIndex);
+                // No reviews in this category, add new form
+                var newIndex = _random.Next(cat.UntriedForms.Count);
+                var newFormId = cat.UntriedForms[newIndex];
+                cat.UntriedForms.RemoveAt(newIndex);
 
                 queue.Add(new PracticeItem(
                     newFormId,
@@ -151,14 +194,10 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                 ));
                 newAdded++;
             }
-            else
-            {
-                // No more forms available
-                break;
-            }
+            // else: category exhausted, will be skipped in next iteration
         }
 
-        // 7. Shuffle with priority bias to avoid predictable ordering
+        // 8. Shuffle with priority bias to avoid predictable ordering
         return ShuffleWithPriorityBias(queue);
     }
 
@@ -435,6 +474,116 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
             ? Declension.ComboKeyFromId((int)formId)
             : Conjugation.ComboKeyFromId(formId);
     }
+
+    #region Category Balancing
+
+    /// <summary>
+    /// Gets the category key for a form ID.
+    /// - Nouns: NounPattern name (e.g., "AMasc", "ĀFem")
+    /// - Verbs: "Tense_Voice" (e.g., "Present_Active", "Future_Reflexive")
+    /// </summary>
+    string GetCategoryKey(long formId, PracticeType type)
+    {
+        if (type == PracticeType.Declension)
+        {
+            var lemmaId = ExtractLemmaId(formId, type);
+            var lemma = _nouns.GetLemma(lemmaId);
+            if (lemma == null) return "Unknown";
+
+            var noun = (Noun)lemma.Primary;
+            // Use parent regular pattern for irregulars to group them together
+            var pattern = noun.Pattern.IsIrregular() ? noun.Pattern.ParentRegular() : noun.Pattern;
+            return pattern.ToString();
+        }
+        else
+        {
+            var parsed = Conjugation.ParseId(formId);
+            return $"{parsed.Tense}_{parsed.Voice}";
+        }
+    }
+
+    /// <summary>
+    /// Groups forms by grammatical category for balanced selection.
+    /// </summary>
+    Dictionary<string, CategoryForms> GroupFormsByCategory(
+        PracticeType type,
+        List<FormMasteryData> dueForms,
+        List<long> untriedIds)
+    {
+        var categories = new Dictionary<string, CategoryForms>();
+
+        // Group due forms by category
+        foreach (var form in dueForms)
+        {
+            var key = GetCategoryKey(form.FormId, type);
+            if (!categories.TryGetValue(key, out var cat))
+            {
+                cat = new CategoryForms(key, [], []);
+                categories[key] = cat;
+            }
+            cat.DueForms.Add(form);
+        }
+
+        // Group untried forms by category
+        foreach (var formId in untriedIds)
+        {
+            var key = GetCategoryKey(formId, type);
+            if (!categories.TryGetValue(key, out var cat))
+            {
+                cat = new CategoryForms(key, [], []);
+                categories[key] = cat;
+            }
+            cat.UntriedForms.Add(formId);
+        }
+
+        return categories;
+    }
+
+    /// <summary>
+    /// Selects a category using weighted random selection with minimum floor.
+    ///
+    /// Each category's weight = max(form count, floor weight).
+    /// Floor weight = 5% of total forms, ensuring rare patterns appear regularly.
+    ///
+    /// Example with 1000 forms, 3% in category A:
+    /// - Natural weight: 30
+    /// - Floor weight: 50 (5% of 1000)
+    /// - Actual weight: 50 (boosted to floor)
+    /// </summary>
+    string SelectCategory(Dictionary<string, CategoryForms> categories)
+    {
+        if (categories.Count == 0) return string.Empty;
+        if (categories.Count == 1) return categories.Keys.First();
+
+        var totalForms = categories.Values.Sum(c => c.TotalCount);
+        var floorWeight = (int)(totalForms * MinCategoryFloor);
+
+        // Build weighted list with floor
+        var weights = new List<(string Key, int Weight)>();
+        foreach (var (key, cat) in categories)
+        {
+            if (cat.TotalCount == 0) continue;
+            var weight = Math.Max(cat.TotalCount, floorWeight);
+            weights.Add((key, weight));
+        }
+
+        if (weights.Count == 0) return string.Empty;
+
+        // Weighted random selection
+        var total = weights.Sum(w => w.Weight);
+        var roll = _random.Next(total);
+        var acc = 0;
+
+        foreach (var (key, weight) in weights)
+        {
+            acc += weight;
+            if (roll < acc) return key;
+        }
+
+        return weights.Last().Key;
+    }
+
+    #endregion
 
     /// <summary>
     /// Shuffles the queue while maintaining priority ordering.

@@ -22,22 +22,19 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
 
     // Badge display properties for Gender
     [ObservableProperty] string _genderLabel = string.Empty;
-    [ObservableProperty] SolidColorBrush _genderBrush = new(Colors.Transparent);
+    [ObservableProperty] Color _genderColor = Colors.Transparent;
     [ObservableProperty] string? _genderGlyph;
 
     // Badge display properties for Number
     [ObservableProperty] string _numberLabel = string.Empty;
-    [ObservableProperty] SolidColorBrush _numberBrush = new(Colors.Transparent);
+    [ObservableProperty] Color _numberColor = Colors.Transparent;
     [ObservableProperty] string? _numberGlyph;
 
     // Badge display properties for Case
     [ObservableProperty] string _caseLabel = string.Empty;
-    [ObservableProperty] SolidColorBrush _caseBrush = new(Colors.Transparent);
+    [ObservableProperty] Color _caseColor = Colors.Transparent;
     [ObservableProperty] string? _caseGlyph;
     [ObservableProperty] string _caseHint = string.Empty;
-
-    // Alternative forms (other InCorpus forms besides Primary)
-    [ObservableProperty] string _alternativeForms = string.Empty;
 
     public DeclensionPracticeViewModel(
         [FromKeyedServices("declension")] IPracticeProvider provider,
@@ -93,7 +90,7 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
             Gender.Feminine => "Feminine",
             _ => d.Gender.ToString()
         };
-        GenderBrush = OptionPresentation.GetChipBrush(d.Gender);
+        GenderColor = OptionPresentation.GetChipColor(d.Gender);
         GenderGlyph = OptionPresentation.GetGlyph(d.Gender);
 
         // Number badge
@@ -103,12 +100,12 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
             Number.Plural => "Plural",
             _ => d.Number.ToString()
         };
-        NumberBrush = OptionPresentation.GetChipBrush(d.Number);
+        NumberColor = OptionPresentation.GetChipColor(d.Number);
         NumberGlyph = OptionPresentation.GetGlyph(d.Number);
 
         // Case badge
         CaseLabel = d.Case.ToString();
-        CaseBrush = OptionPresentation.GetChipBrush(d.Case);
+        CaseColor = OptionPresentation.GetChipColor(d.Case);
         CaseGlyph = "\uE8C8"; // Placeholder icon (Tag)
         CaseHint = d.Case switch
         {
@@ -122,32 +119,34 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
             Case.Vocative => "O, …! (direct address)",
             _ => string.Empty
         };
+    }
 
-        // Alternative forms (other InCorpus forms besides Primary)
-        var primary = d.Primary;
-        var alternatives = d.Forms
+    protected override string GetAlternativeForms()
+    {
+        if (_currentDeclension == null) return string.Empty;
+
+        var primary = _currentDeclension.Primary;
+        var alternatives = _currentDeclension.Forms
             .Where(f => f.InCorpus && (!primary.HasValue || f.EndingId != primary.Value.EndingId))
             .Select(f => f.Form)
             .ToList();
-        AlternativeForms = alternatives.Count > 0 ? string.Join(", ", alternatives) : string.Empty;
+        return alternatives.Count > 0 ? string.Join(", ", alternatives) : string.Empty;
     }
 
     void SetBadgesFallback(Noun noun)
     {
         GenderLabel = noun.Gender.ToString();
-        GenderBrush = OptionPresentation.GetChipBrush(noun.Gender);
+        GenderColor = OptionPresentation.GetChipColor(noun.Gender);
         GenderGlyph = OptionPresentation.GetGlyph(noun.Gender);
 
         NumberLabel = "Singular";
-        NumberBrush = OptionPresentation.GetChipBrush(Number.Singular);
+        NumberColor = OptionPresentation.GetChipColor(Number.Singular);
         NumberGlyph = OptionPresentation.GetGlyph(Number.Singular);
 
         CaseLabel = "Nominative";
-        CaseBrush = OptionPresentation.GetChipBrush(Case.Nominative);
+        CaseColor = OptionPresentation.GetChipColor(Case.Nominative);
         CaseGlyph = "\uE8C8";
         CaseHint = "who? what? (subject)";
-
-        AlternativeForms = string.Empty;
     }
 
     protected override string GetInflectedForm()

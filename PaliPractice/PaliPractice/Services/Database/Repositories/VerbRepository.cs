@@ -27,7 +27,7 @@ public class VerbRepository
 
     // Caches - loaded on first access
     HashSet<int>? _nonReflexiveLemmaIds;
-    HashSet<long>? _attestedFormIds;
+    HashSet<long>? _corpusFormIds;
     Dictionary<int, ILemma>? _lemmas;
     List<ILemma>? _lemmasByRank;
     Dictionary<long, string>? _irregularForms;
@@ -60,11 +60,11 @@ public class VerbRepository
                 System.Diagnostics.Debug.WriteLine($"[VerbRepo] Loaded {_nonReflexiveLemmaIds.Count} non-reflexive lemma IDs");
 
                 // Pre-cache corpus attestation form_ids for O(1) lookup
-                _attestedFormIds = _connection
+                _corpusFormIds = _connection
                     .Table<VerbCorpusForm>()
                     .Select(c => c.FormId)
                     .ToHashSet();
-                System.Diagnostics.Debug.WriteLine($"[VerbRepo] Loaded {_attestedFormIds.Count} attested form IDs");
+                System.Diagnostics.Debug.WriteLine($"[VerbRepo] Loaded {_corpusFormIds.Count} corpus form IDs");
 
                 // Pre-cache irregular verb forms for O(1) lookup
                 _irregularForms = _connection
@@ -150,21 +150,21 @@ public class VerbRepository
         EnsureCacheLoaded();
         var voice = reflexive ? Voice.Reflexive : Voice.Active;
         var formId = Conjugation.ResolveId(lemmaId, tense, person, number, voice, endingIndex);
-        return _attestedFormIds!.Contains(formId);
+        return _corpusFormIds!.Contains(formId);
     }
 
     /// <summary>
-    /// Check if any ending variant is attested for this verb form.
-    /// O(1) from cache (checks up to 9 ending variants).
+    /// Check if any ending variant is in corpus for this verb form.
+    /// O(1) from cache (checks up to 7 ending variants because of "atthi", though only 5 of them are in the corpus).
     /// </summary>
     public bool HasAttestedForm(int lemmaId, Tense tense, Person person, Number number, bool reflexive)
     {
         EnsureCacheLoaded();
         var voice = reflexive ? Voice.Reflexive : Voice.Active;
         var baseFormId = Conjugation.ResolveId(lemmaId, tense, person, number, voice, 0);
-        for (int endingId = 1; endingId <= 9; endingId++)
+        for (int endingId = 1; endingId <= 7; endingId++)
         {
-            if (_attestedFormIds!.Contains(baseFormId + endingId))
+            if (_corpusFormIds!.Contains(baseFormId + endingId))
                 return true;
         }
         return false;

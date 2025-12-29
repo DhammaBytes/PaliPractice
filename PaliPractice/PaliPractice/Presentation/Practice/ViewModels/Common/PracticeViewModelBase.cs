@@ -18,9 +18,9 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     protected readonly UserDataRepository UserData;
 
     [ObservableProperty] bool _canRateCard;
+    [ObservableProperty] string _alternativeForms = string.Empty;
 
     public FlashCardViewModel FlashCard { get; }
-    public FlashcardStateViewModel Flashcard { get; }
     public DailyGoalViewModel DailyGoal { get; }
     public ExampleCarouselViewModel ExampleCarousel { get; }
 
@@ -56,6 +56,11 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     protected abstract IReadOnlyList<string> GetAllInflectedForms();
 
     /// <summary>
+    /// Returns formatted alternative forms string (other InCorpus forms besides Primary).
+    /// </summary>
+    protected abstract string GetAlternativeForms();
+
+    /// <summary>
     /// Returns the practice type (Declension or Conjugation) for history navigation.
     /// </summary>
     protected abstract PracticeType CurrentPracticeType { get; }
@@ -78,19 +83,18 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         FlashCard = flashCard;
         _navigator = navigator;
         Logger = logger;
-        Flashcard = new FlashcardStateViewModel();
         DailyGoal = new DailyGoalViewModel(userData, CurrentPracticeType);
         ExampleCarousel = new ExampleCarouselViewModel();
 
         // Initialize commands with CanExecute predicates
         _hardCommand = new RelayCommand(MarkAsHard, () => CanRateCard);
         _easyCommand = new RelayCommand(MarkAsEasy, () => CanRateCard);
-        _revealCommand = new RelayCommand(RevealAnswer, () => !Flashcard.IsRevealed);
+        _revealCommand = new RelayCommand(RevealAnswer, () => !FlashCard.IsRevealed);
 
         // Subscribe to flashcard state changes to update navigation
-        Flashcard.PropertyChanged += (_, e) =>
+        FlashCard.PropertyChanged += (_, e) =>
         {
-            if (e.PropertyName == nameof(FlashcardStateViewModel.IsRevealed))
+            if (e.PropertyName == nameof(FlashCardViewModel.IsRevealed))
             {
                 UpdateNavigationState();
             }
@@ -145,7 +149,8 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
         var parameters = _provider.GetCurrentParameters();
         PrepareCardAnswer(lemma, parameters);
-        Flashcard.SetAnswer(GetInflectedForm(), GetInflectedEnding());
+        FlashCard.SetAnswer(GetInflectedForm(), GetInflectedEnding());
+        AlternativeForms = GetAlternativeForms();
 
         // Filter examples to avoid those containing answer forms
         ExampleCarousel.SetFormsToAvoid(GetAllInflectedForms());
@@ -153,15 +158,15 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     void RevealAnswer()
     {
-        Flashcard.Reveal();
+        FlashCard.Reveal();
         ExampleCarousel.IsRevealed = true;
-        Logger.LogDebug("Answer revealed: {Form}", Flashcard.Answer);
+        Logger.LogDebug("Answer revealed: {Form}", FlashCard.Answer);
     }
 
     void UpdateNavigationState()
     {
         var hasNext = _provider.HasNext;
-        var isRevealed = Flashcard.IsRevealed;
+        var isRevealed = FlashCard.IsRevealed;
         CanRateCard = isRevealed;
 
         Logger.LogDebug("UpdateNavigationState: hasNext={HasNext}, isRevealed={IsRevealed}, CanRateCard={CanRate}",
@@ -227,7 +232,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
             return;
         }
 
-        Flashcard.Reset();
+        FlashCard.Reset();
         ExampleCarousel.Reset();
         DisplayCurrentCard();
         UpdateNavigationState();

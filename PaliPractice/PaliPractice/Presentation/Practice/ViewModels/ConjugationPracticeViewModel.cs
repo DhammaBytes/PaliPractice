@@ -23,21 +23,18 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
 
     // Badge display properties for Person
     [ObservableProperty] string _personLabel = string.Empty;
-    [ObservableProperty] SolidColorBrush _personBrush = new(Colors.Transparent);
+    [ObservableProperty] Color _personColor = Colors.Transparent;
     [ObservableProperty] string? _personGlyph;
 
     // Badge display properties for Number
     [ObservableProperty] string _numberLabel = string.Empty;
-    [ObservableProperty] SolidColorBrush _numberBrush = new(Colors.Transparent);
+    [ObservableProperty] Color _numberColor = Colors.Transparent;
     [ObservableProperty] string? _numberGlyph;
 
     // Badge display properties for Tense
     [ObservableProperty] string _tenseLabel = string.Empty;
-    [ObservableProperty] SolidColorBrush _tenseBrush = new(Colors.Transparent);
+    [ObservableProperty] Color _tenseColor = Colors.Transparent;
     [ObservableProperty] string? _tenseGlyph;
-
-    // Alternative forms (other InCorpus forms besides Primary)
-    [ObservableProperty] string _alternativeForms = string.Empty;
 
     public ConjugationPracticeViewModel(
         [FromKeyedServices("conjugation")] IPracticeProvider provider,
@@ -94,7 +91,7 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
             Person.Third => "3rd",
             _ => c.Person.ToString()
         };
-        PersonBrush = OptionPresentation.GetChipBrush(c.Person);
+        PersonColor = OptionPresentation.GetChipColor(c.Person);
         PersonGlyph = OptionPresentation.GetGlyph(c.Person);
 
         // Number badge
@@ -104,38 +101,40 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
             Number.Plural => "Plural",
             _ => c.Number.ToString()
         };
-        NumberBrush = OptionPresentation.GetChipBrush(c.Number);
+        NumberColor = OptionPresentation.GetChipColor(c.Number);
         NumberGlyph = OptionPresentation.GetGlyph(c.Number);
 
         // Tense badge
         TenseLabel = c.Tense.ToString();
-        TenseBrush = OptionPresentation.GetChipBrush(c.Tense);
+        TenseColor = OptionPresentation.GetChipColor(c.Tense);
         TenseGlyph = "\uE8C8"; // Placeholder icon (Tag)
+    }
 
-        // Alternative forms (other InCorpus forms besides Primary)
-        var primary = c.Primary;
-        var alternatives = c.Forms
+    protected override string GetAlternativeForms()
+    {
+        if (_currentConjugation == null) return string.Empty;
+
+        var primary = _currentConjugation.Primary;
+        var alternatives = _currentConjugation.Forms
             .Where(f => f.InCorpus && (!primary.HasValue || f.EndingId != primary.Value.EndingId))
             .Select(f => f.Form)
             .ToList();
-        AlternativeForms = alternatives.Count > 0 ? string.Join(", ", alternatives) : string.Empty;
+        return alternatives.Count > 0 ? string.Join(", ", alternatives) : string.Empty;
     }
 
     void SetBadgesFallback()
     {
         PersonLabel = "3rd";
-        PersonBrush = OptionPresentation.GetChipBrush(Person.Third);
+        PersonColor = OptionPresentation.GetChipColor(Person.Third);
         PersonGlyph = OptionPresentation.GetGlyph(Person.Third);
 
         NumberLabel = "Singular";
-        NumberBrush = OptionPresentation.GetChipBrush(Number.Singular);
+        NumberColor = OptionPresentation.GetChipColor(Number.Singular);
         NumberGlyph = OptionPresentation.GetGlyph(Number.Singular);
 
         TenseLabel = "Present";
-        TenseBrush = OptionPresentation.GetChipBrush(Tense.Present);
+        TenseColor = OptionPresentation.GetChipColor(Tense.Present);
         TenseGlyph = "\uE8C8";
-
-        AlternativeForms = string.Empty;
     }
 
     protected override string GetInflectedForm()

@@ -25,10 +25,10 @@ public sealed partial class ConjugationPracticePage : Page
             Title: "Conjugation Practice",
             RankPrefix: "V",
             FlashCardPath: vm => vm.FlashCard,
-            AnswerStemPath: vm => vm.Flashcard.AnswerStem,
-            AnswerEndingPath: vm => vm.Flashcard.AnswerEnding,
+            AnswerStemPath: vm => vm.FlashCard.AnswerStem,
+            AnswerEndingPath: vm => vm.FlashCard.AnswerEnding,
             AlternativeFormsPath: vm => vm.AlternativeForms,
-            IsRevealedPath: vm => vm.Flashcard.IsRevealed,
+            IsRevealedPath: vm => vm.FlashCard.IsRevealed,
             CarouselPath: vm => vm.ExampleCarousel,
             GoBackCommandPath: vm => vm.GoBackCommand,
             GoToHistoryCommandPath: vm => vm.GoToHistoryCommand,
@@ -41,11 +41,11 @@ public sealed partial class ConjugationPracticePage : Page
 
         var badges = PracticePageBuilder.CreateBadgeSet(heightClass,
             PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(heightClass,
-                vm => vm.TenseGlyph, vm => vm.TenseLabel, vm => vm.TenseBrush),
+                vm => vm.TenseGlyph, vm => vm.TenseLabel, vm => vm.TenseColor),
             PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(heightClass,
-                vm => vm.PersonGlyph, vm => vm.PersonLabel, vm => vm.PersonBrush),
+                vm => vm.PersonGlyph, vm => vm.PersonLabel, vm => vm.PersonColor),
             PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(heightClass,
-                vm => vm.NumberGlyph, vm => vm.NumberLabel, vm => vm.NumberBrush)
+                vm => vm.NumberGlyph, vm => vm.NumberLabel, vm => vm.NumberColor)
         );
 
         // No hint for conjugation

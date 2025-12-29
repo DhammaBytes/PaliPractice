@@ -186,7 +186,7 @@ public static class PracticePageBuilder
         exampleContainer.SizeChanged += (s, e) => UpdateFadeOverlay();
         exampleScrollViewer.ViewChanged += (s, e) => UpdateFadeOverlay();
 
-        // Container that fills available space, with ScrollViewer and fade overlay
+        // Container that fills available space with ScrollViewer and fade overlay
         var exampleArea = new Grid()
             .VerticalAlignment(VerticalAlignment.Stretch)
             .Children(exampleScrollViewer, fadeOverlay);
@@ -429,7 +429,7 @@ public static class PracticePageBuilder
         HeightClass heightClass,
         Expression<Func<TVM, string?>> glyphPath,
         Expression<Func<TVM, string>> labelPath,
-        Expression<Func<TVM, Brush>> brushPath)
+        Expression<Func<TVM, Color>> colorPath)
     {
         var fonts = LayoutConstants.PracticeFontSizes.Get(heightClass);
 
@@ -449,7 +449,7 @@ public static class PracticePageBuilder
 
         var badge = new SquircleBorder()
             .RadiusMode(SquircleRadiusMode.Pill)
-            .Fill<TVM>(brushPath)
+            .FillColor<TVM>(colorPath)
             .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)
                 .Spacing(LayoutConstants.Gaps.BadgeInternal)
@@ -509,7 +509,7 @@ public static class PracticePageBuilder
             .IsHitTestVisible(false)
             .Children(
                 RegularText()
-                    .Text("M") // Single character to get one-line height
+                    .Text("X") // Single character to get one-line height
                     .FontSize(fonts.Translation)
                     .TextAlignment(TextAlignment.Center),
                 RegularText()
@@ -840,14 +840,11 @@ public static class PracticePageBuilder
         elements.BadgesPanel?.Spacing = LayoutConstants.Gaps.BadgeSpacing(heightClass);
 
         // Word Viewbox max height (controls shrinking threshold)
-        if (elements.WordViewbox is not null)
-            elements.WordViewbox.MaxHeight = fonts.Word * 1.5;
+        elements.WordViewbox?.MaxHeight = fonts.Word * 1.5;
 
         // Answer Viewbox max heights
-        if (elements.AnswerViewbox is not null)
-            elements.AnswerViewbox.MaxHeight = fonts.Answer * 1.5;
-        if (elements.AnswerSecondaryViewbox is not null)
-            elements.AnswerSecondaryViewbox.MaxHeight = fonts.AnswerSecondary * 1.5;
+        elements.AnswerViewbox?.MaxHeight = fonts.Answer * 1.5;
+        elements.AnswerSecondaryViewbox?.MaxHeight = fonts.AnswerSecondary * 1.5;
 
         // Badge fonts and padding
         var badgePadding = LayoutConstants.Gaps.Badge(heightClass);

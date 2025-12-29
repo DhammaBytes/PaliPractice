@@ -39,12 +39,21 @@ public partial class DailyGoalViewModel : ObservableObject
 }
 
 /// <summary>
-/// Manages flashcard reveal state for practice screens.
-/// Controls when the answer is shown and tracks the current inflected form.
+/// Unified flashcard view model for practice screens.
+/// Manages the question display, answer reveal state, and card metadata.
 /// </summary>
 [Bindable]
-public partial class FlashcardStateViewModel : ObservableObject
+public partial class FlashCardViewModel : ObservableObject
 {
+    // Question side
+    [ObservableProperty] string _question = string.Empty;
+    [ObservableProperty] string _rankText = "Top-100";
+    [ObservableProperty] string _progressText = "1/50";
+    [ObservableProperty] string _masteryText = "Progress: 1/10";
+    [ObservableProperty] bool _isLoading = true;
+    [ObservableProperty] string _errorMessage = string.Empty;
+
+    // Answer side
     [ObservableProperty] bool _isRevealed;
     [ObservableProperty] string _answer = string.Empty;
     [ObservableProperty] string _answerStem = string.Empty;
@@ -52,6 +61,20 @@ public partial class FlashcardStateViewModel : ObservableObject
 
     string _inflectedForm = string.Empty;
     string _inflectedEnding = string.Empty;
+
+    public void DisplayWord(IWord word, int currentIndex, int totalCount, int masteryLevel)
+    {
+        Question = word.Lemma;
+        ProgressText = $"{currentIndex + 1}/{totalCount}";
+        MasteryText = $"Progress: {masteryLevel}/10";
+        RankText = word.EbtCount switch
+        {
+            > 1000 => "Top-100",
+            > 500 => "Top-300",
+            > 200 => "Top-500",
+            _ => "Top-1000"
+        };
+    }
 
     /// <summary>
     /// Sets the inflected form and ending that will be shown when revealed.
@@ -87,33 +110,5 @@ public partial class FlashcardStateViewModel : ObservableObject
         AnswerEnding = string.Empty;
         _inflectedForm = string.Empty;
         _inflectedEnding = string.Empty;
-    }
-}
-
-/// <summary>
-/// Displays the current word being practiced.
-/// </summary>
-[Bindable]
-public partial class FlashCardViewModel : ObservableObject
-{
-    [ObservableProperty] string _question = string.Empty;
-    [ObservableProperty] string _rankText = "Top-100";
-    [ObservableProperty] string _progressText = "1/50";
-    [ObservableProperty] string _masteryText = "Progress: 1/10";
-    [ObservableProperty] bool _isLoading = true;
-    [ObservableProperty] string _errorMessage = string.Empty;
-
-    public void DisplayWord(IWord word, int currentIndex, int totalCount, int masteryLevel)
-    {
-        Question = word.Lemma;
-        ProgressText = $"{currentIndex + 1}/{totalCount}";
-        MasteryText = $"Progress: {masteryLevel}/10";
-        RankText = word.EbtCount switch
-        {
-            > 1000 => "Top-100",
-            > 500 => "Top-300",
-            > 200 => "Top-500",
-            _ => "Top-1000"
-        };
     }
 }

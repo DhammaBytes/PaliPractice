@@ -27,10 +27,10 @@ public sealed partial class DeclensionPracticePage : Page
             Title: "Declension Practice",
             RankPrefix: "N",
             FlashCardPath: vm => vm.FlashCard,
-            AnswerStemPath: vm => vm.Flashcard.AnswerStem,
-            AnswerEndingPath: vm => vm.Flashcard.AnswerEnding,
+            AnswerStemPath: vm => vm.FlashCard.AnswerStem,
+            AnswerEndingPath: vm => vm.FlashCard.AnswerEnding,
             AlternativeFormsPath: vm => vm.AlternativeForms,
-            IsRevealedPath: vm => vm.Flashcard.IsRevealed,
+            IsRevealedPath: vm => vm.FlashCard.IsRevealed,
             CarouselPath: vm => vm.ExampleCarousel,
             GoBackCommandPath: vm => vm.GoBackCommand,
             GoToHistoryCommandPath: vm => vm.GoToHistoryCommand,
@@ -43,11 +43,11 @@ public sealed partial class DeclensionPracticePage : Page
 
         var badges = PracticePageBuilder.CreateBadgeSet(heightClass,
             PracticePageBuilder.BuildBadge<ViewModels.DeclensionPracticeViewModel>(heightClass,
-                vm => vm.CaseGlyph, vm => vm.CaseLabel, vm => vm.CaseBrush),
+                vm => vm.CaseGlyph, vm => vm.CaseLabel, vm => vm.CaseColor),
             PracticePageBuilder.BuildBadge<ViewModels.DeclensionPracticeViewModel>(heightClass,
-                vm => vm.GenderGlyph, vm => vm.GenderLabel, vm => vm.GenderBrush),
+                vm => vm.GenderGlyph, vm => vm.GenderLabel, vm => vm.GenderColor),
             PracticePageBuilder.BuildBadge<ViewModels.DeclensionPracticeViewModel>(heightClass,
-                vm => vm.NumberGlyph, vm => vm.NumberLabel, vm => vm.NumberBrush)
+                vm => vm.NumberGlyph, vm => vm.NumberLabel, vm => vm.NumberColor)
         );
 
         var fonts = LayoutConstants.PracticeFontSizes.Get(heightClass);

@@ -16,7 +16,7 @@ public class NounRepository
     bool _isCacheLoaded;
 
     // Caches - loaded on first access
-    HashSet<int>? _attestedFormIds;
+    HashSet<int>? _corpusFormIds;
     Dictionary<int, ILemma>? _lemmas;
     List<ILemma>? _lemmasByRank;
     Dictionary<int, string>? _irregularForms;
@@ -42,11 +42,11 @@ public class NounRepository
                 System.Diagnostics.Debug.WriteLine("[NounRepo] Loading caches...");
 
                 // Pre-cache corpus attestation form_ids for O(1) lookup
-                _attestedFormIds = _connection
+                _corpusFormIds = _connection
                     .Table<NounCorpusForm>()
                     .Select(d => d.FormId)
                     .ToHashSet();
-                System.Diagnostics.Debug.WriteLine($"[NounRepo] Loaded {_attestedFormIds.Count} attested form IDs");
+                System.Diagnostics.Debug.WriteLine($"[NounRepo] Loaded {_corpusFormIds.Count} corpus form IDs");
 
                 // Pre-cache irregular noun forms for O(1) lookup
                 _irregularForms = _connection
@@ -121,20 +121,20 @@ public class NounRepository
     {
         EnsureCacheLoaded();
         var formId = Declension.ResolveId(lemmaId, @case, gender, number, endingIndex);
-        return _attestedFormIds!.Contains(formId);
+        return _corpusFormIds!.Contains(formId);
     }
 
     /// <summary>
     /// Check if any ending variant is attested for this noun form.
-    /// O(1) from cache (checks up to 9 ending variants).
+    /// O(1) from cache (checks up to 6 ending variants).
     /// </summary>
     public bool HasAttestedForm(int lemmaId, Case @case, Gender gender, Number number)
     {
         EnsureCacheLoaded();
         var baseFormId = Declension.ResolveId(lemmaId, @case, gender, number, 0);
-        for (int endingId = 1; endingId <= 9; endingId++)
+        for (int endingId = 1; endingId <= 6; endingId++)
         {
-            if (_attestedFormIds!.Contains(baseFormId + endingId))
+            if (_corpusFormIds!.Contains(baseFormId + endingId))
                 return true;
         }
         return false;

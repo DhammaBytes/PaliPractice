@@ -362,7 +362,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         System.Diagnostics.Debug.WriteLine($"[Queue/Conj] tenses={enabledTenses.Count}, persons={enabledPersons.Count}, rank={minRank}-{maxRank}");
         System.Diagnostics.Debug.WriteLine($"[Queue/Conj] enabledNumbers: {enabledNumbers.Count}, voices: {enabledVoices.Count}");
 
-        var includeActive = enabledVoices.Contains(Voice.Normal);
+        var includeActive = enabledVoices.Contains(Voice.Active);
         var includeReflexive = enabledVoices.Contains(Voice.Reflexive);
 
         var formIds = new List<long>();
@@ -391,7 +391,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                         {
                             if (_verbs.HasAttestedForm(lemma.LemmaId, tense, person, number, reflexive: false))
                             {
-                                var formId = Conjugation.ResolveId(lemma.LemmaId, tense, person, number, Voice.Normal, 0);
+                                var formId = Conjugation.ResolveId(lemma.LemmaId, tense, person, number, Voice.Active, 0);
                                 formIds.Add(formId);
                             }
                         }

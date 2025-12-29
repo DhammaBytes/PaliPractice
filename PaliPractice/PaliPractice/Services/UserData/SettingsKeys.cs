@@ -47,11 +47,10 @@ public static class SettingsKeys
     public const int DefaultLemmaMin = 1;
     public const int DefaultLemmaMax = 100;
 
-    // Nouns: All cases except Vocative
+    // Nouns: Beginner cases
     public static readonly Case[] NounsDefaultCases =
     [
-        Case.Nominative, Case.Accusative, Case.Instrumental,
-        Case.Dative, Case.Ablative, Case.Genitive, Case.Locative
+        Case.Nominative, Case.Accusative
     ];
 
     // Both singular and plural
@@ -80,7 +79,7 @@ public static class SettingsKeys
     // Verbs: All tenses
     public static readonly Tense[] VerbsDefaultTenses =
     [
-        Tense.Present, Tense.Imperative, Tense.Optative, Tense.Future
+        Tense.Present
     ];
 
     // Verbs: All persons
@@ -89,8 +88,8 @@ public static class SettingsKeys
         Person.First, Person.Second, Person.Third
     ];
 
-    // Verbs: Both normal (active) and reflexive voices
-    public static readonly Voice[] VerbsDefaultVoices = [Voice.Normal, Voice.Reflexive];
+    // Verbs: Only active voice, reflexive is advanced
+    public static readonly Voice[] VerbsDefaultVoices = [Voice.Active];
 
     // Verbs: All regular patterns (1-4)
     public static readonly VerbPattern[] VerbsDefaultPatterns =

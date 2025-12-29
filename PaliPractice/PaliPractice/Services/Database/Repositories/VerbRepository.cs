@@ -148,7 +148,7 @@ public class VerbRepository
     public bool IsFormInCorpus(int lemmaId, Tense tense, Person person, Number number, bool reflexive, int endingIndex)
     {
         EnsureCacheLoaded();
-        var voice = reflexive ? Voice.Reflexive : Voice.Normal;
+        var voice = reflexive ? Voice.Reflexive : Voice.Active;
         var formId = Conjugation.ResolveId(lemmaId, tense, person, number, voice, endingIndex);
         return _attestedFormIds!.Contains(formId);
     }
@@ -160,7 +160,7 @@ public class VerbRepository
     public bool HasAttestedForm(int lemmaId, Tense tense, Person person, Number number, bool reflexive)
     {
         EnsureCacheLoaded();
-        var voice = reflexive ? Voice.Reflexive : Voice.Normal;
+        var voice = reflexive ? Voice.Reflexive : Voice.Active;
         var baseFormId = Conjugation.ResolveId(lemmaId, tense, person, number, voice, 0);
         for (int endingId = 1; endingId <= 9; endingId++)
         {
@@ -178,7 +178,7 @@ public class VerbRepository
     {
         EnsureCacheLoaded();
         var forms = new List<string>();
-        var voice = reflexive ? Voice.Reflexive : Voice.Normal;
+        var voice = reflexive ? Voice.Reflexive : Voice.Active;
         var baseFormId = Conjugation.ResolveId(lemmaId, tense, person, number, voice, 0);
         for (int endingId = 1; endingId <= 9; endingId++)
         {
@@ -195,7 +195,7 @@ public class VerbRepository
     public bool HasIrregularForm(int lemmaId, Tense tense, Person person, Number number, bool reflexive)
     {
         EnsureCacheLoaded();
-        var voice = reflexive ? Voice.Reflexive : Voice.Normal;
+        var voice = reflexive ? Voice.Reflexive : Voice.Active;
         var baseFormId = Conjugation.ResolveId(lemmaId, tense, person, number, voice, 0);
         for (int endingId = 1; endingId <= 9; endingId++)
         {

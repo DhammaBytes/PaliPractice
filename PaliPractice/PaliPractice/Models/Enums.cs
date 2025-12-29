@@ -49,15 +49,14 @@ public enum Number
 
 /// <summary>
 /// Voice for verb conjugations.
-/// "Normal" is used instead of "Active" because Pali grammar traditionally
-/// distinguishes between active (parasmaipada) and middle/reflexive (attanopada) forms,
-/// and "Normal" avoids conflating with the traditional term.
+/// Pali grammar traditionally distinguishes between active (parassapada)
+/// and middle/reflexive (attanopada) forms
 /// </summary>
 public enum Voice
 {
     None,
-    /// <summary>Standard/active voice (parasmaipada).</summary>
-    Normal = 1,
+    /// <summary>Standard/active voice (parassapada).</summary>
+    Active = 1,
     /// <summary>Reflexive/middle voice (attanopada).</summary>
     Reflexive = 2
 }

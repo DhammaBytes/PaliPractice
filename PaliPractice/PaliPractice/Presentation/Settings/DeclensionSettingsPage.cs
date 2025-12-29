@@ -60,22 +60,30 @@ public sealed partial class DeclensionSettingsPage : Page
 
                                     // Case section
                                     SettingsSection.Build("Case",
-                                        SettingsRow.BuildToggle<DeclensionSettingsViewModel>(
-                                            "Nominative", v => v.Nominative, v => v.CanDisableNominative),
-                                        SettingsRow.BuildToggle<DeclensionSettingsViewModel>(
-                                            "Accusative", v => v.Accusative, v => v.CanDisableAccusative),
-                                        SettingsRow.BuildToggle<DeclensionSettingsViewModel>(
-                                            "Instrumental", v => v.Instrumental, v => v.CanDisableInstrumental),
-                                        SettingsRow.BuildToggle<DeclensionSettingsViewModel>(
-                                            "Dative", v => v.Dative, v => v.CanDisableDative),
-                                        SettingsRow.BuildToggle<DeclensionSettingsViewModel>(
-                                            "Ablative", v => v.Ablative, v => v.CanDisableAblative),
-                                        SettingsRow.BuildToggle<DeclensionSettingsViewModel>(
-                                            "Genitive", v => v.Genitive, v => v.CanDisableGenitive),
-                                        SettingsRow.BuildToggle<DeclensionSettingsViewModel>(
-                                            "Locative", v => v.Locative, v => v.CanDisableLocative),
-                                        SettingsRow.BuildToggle<DeclensionSettingsViewModel>(
-                                            "Vocative", v => v.Vocative, v => v.CanDisableVocative)
+                                        SettingsRow.BuildToggleWithHint<DeclensionSettingsViewModel>(
+                                            "Nominative", "who? what? (subject)",
+                                            v => v.Nominative, v => v.CanDisableNominative),
+                                        SettingsRow.BuildToggleWithHint<DeclensionSettingsViewModel>(
+                                            "Accusative", "whom? what? (object, destination of action)",
+                                            v => v.Accusative, v => v.CanDisableAccusative),
+                                        SettingsRow.BuildToggleWithHint<DeclensionSettingsViewModel>(
+                                            "Instrumental", "with whom? by whom? by what means? (passive, association)",
+                                            v => v.Instrumental, v => v.CanDisableInstrumental),
+                                        SettingsRow.BuildToggleWithHint<DeclensionSettingsViewModel>(
+                                            "Dative", "for whom? to whom? to what? (purpose, recipient)",
+                                            v => v.Dative, v => v.CanDisableDative),
+                                        SettingsRow.BuildToggleWithHint<DeclensionSettingsViewModel>(
+                                            "Ablative", "from whom? from where? from what? (cause, origin)",
+                                            v => v.Ablative, v => v.CanDisableAblative),
+                                        SettingsRow.BuildToggleWithHint<DeclensionSettingsViewModel>(
+                                            "Genitive", "whose? of whom? of what? (possession)",
+                                            v => v.Genitive, v => v.CanDisableGenitive),
+                                        SettingsRow.BuildToggleWithHint<DeclensionSettingsViewModel>(
+                                            "Locative", "in whom? where? when? (position, relation, time)",
+                                            v => v.Locative, v => v.CanDisableLocative),
+                                        SettingsRow.BuildToggleWithHint<DeclensionSettingsViewModel>(
+                                            "Vocative", "O, …! (direct address)",
+                                            v => v.Vocative, v => v.CanDisableVocative)
                                     )
                                 )
                         )
@@ -124,7 +132,7 @@ public sealed partial class DeclensionSettingsPage : Page
                 GenderPatternSection.Build(
                     "Feminine",
                     [
-                        ("ā", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternFemA)),
+                        ("ā", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternFemALong)),
                               cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternFemA))),
                         ("i", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternFemI)),
                               cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternFemI))),

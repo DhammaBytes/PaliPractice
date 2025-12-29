@@ -167,7 +167,7 @@ public class InflectionService : IInflectionService
                 Person = person,
                 Number = number,
                 Tense = tense,
-                Voice = reflexive ? Voice.Reflexive : Voice.Normal,
+                Voice = reflexive ? Voice.Reflexive : Voice.Active,
                 Forms = []
             };
         }
@@ -187,7 +187,7 @@ public class InflectionService : IInflectionService
             reflexive
         );
 
-        var voice = reflexive ? Voice.Reflexive : Voice.Normal;
+        var voice = reflexive ? Voice.Reflexive : Voice.Active;
 
         if (endings.Length == 0)
         {
@@ -235,7 +235,7 @@ public class InflectionService : IInflectionService
             Person = person,
             Number = number,
             Tense = tense,
-            Voice = reflexive ? Voice.Reflexive : Voice.Normal,
+            Voice = reflexive ? Voice.Reflexive : Voice.Active,
             Forms = forms
         };
     }
@@ -252,7 +252,7 @@ public class InflectionService : IInflectionService
 
         var forms = new List<ConjugationForm>();
 
-        var voice = reflexive ? Voice.Reflexive : Voice.Normal;
+        var voice = reflexive ? Voice.Reflexive : Voice.Active;
         for (int i = 0; i < irregularForms.Count; i++)
         {
             var form = irregularForms[i];

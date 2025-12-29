@@ -311,13 +311,13 @@ public class UserDataRepository
 
     public VerbsCombinationDifficulty? GetConjugationDifficulty(Tense tense, Person person, Number number, bool reflexive)
     {
-        var voice = reflexive ? Voice.Reflexive : Voice.Normal;
+        var voice = reflexive ? Voice.Reflexive : Voice.Active;
         return GetVerbDifficulty(Conjugation.ComboKey(tense, person, number, voice));
     }
 
     public void UpdateConjugationDifficulty(Tense tense, Person person, Number number, bool reflexive, bool wasHard)
     {
-        var voice = reflexive ? Voice.Reflexive : Voice.Normal;
+        var voice = reflexive ? Voice.Reflexive : Voice.Active;
         var key = Conjugation.ComboKey(tense, person, number, voice);
         var existing = GetVerbDifficulty(key);
 

@@ -14,15 +14,15 @@ public partial class DeclensionSettingsViewModel : ObservableObject
     readonly UserDataRepository _userData;
     bool _isLoading = true;
 
-    // Pattern labels by gender (derived from enum using breakpoints)
+    // Pattern labels by gender (derived from enum using breakpoints, excluding None)
     public static readonly string[] MascPatterns = Enum.GetValues<NounPattern>()
-        .Where(p => p < NounPattern._RegularFem)
-        .Select(p => p.ToDisplayLabel()).ToArray();
-    public static readonly string[] NtPatterns = Enum.GetValues<NounPattern>()
-        .Where(p => p is > NounPattern._RegularNeut and < NounPattern._Irregular)
+        .Where(p => p is > NounPattern.None and < NounPattern._RegularFem)
         .Select(p => p.ToDisplayLabel()).ToArray();
     public static readonly string[] FemPatterns = Enum.GetValues<NounPattern>()
         .Where(p => p is > NounPattern._RegularFem and < NounPattern._RegularNeut)
+        .Select(p => p.ToDisplayLabel()).ToArray();
+    public static readonly string[] NtPatterns = Enum.GetValues<NounPattern>()
+        .Where(p => p is > NounPattern._RegularNeut and < NounPattern._Irregular)
         .Select(p => p.ToDisplayLabel()).ToArray();
 
     public DeclensionSettingsViewModel(INavigator navigator, IDatabaseService db)
@@ -51,28 +51,28 @@ public partial class DeclensionSettingsViewModel : ObservableObject
         PatternMascAs = mascEnabled.Contains(NounPattern.AsMasc);
         PatternMascAr = mascEnabled.Contains(NounPattern.ArMasc);
         PatternMascAnt = mascEnabled.Contains(NounPattern.AntMasc);
-
+        
         var neutEnabled = SettingsHelpers.FromCsvSet<NounPattern>(
             _userData.GetSetting(SettingsKeys.NounsNeutPatterns,
                 SettingsHelpers.ToCsv(SettingsKeys.NounsDefaultNeutPatterns)));
         PatternNtA = neutEnabled.Contains(NounPattern.ANeut);
         PatternNtI = neutEnabled.Contains(NounPattern.INeut);
         PatternNtU = neutEnabled.Contains(NounPattern.UNeut);
-
+        
         var femEnabled = SettingsHelpers.FromCsvSet<NounPattern>(
             _userData.GetSetting(SettingsKeys.NounsFemPatterns,
                 SettingsHelpers.ToCsv(SettingsKeys.NounsDefaultFemPatterns)));
-        PatternFemA = femEnabled.Contains(NounPattern.ĀFem);
+        PatternFemALong = femEnabled.Contains(NounPattern.ĀFem);
         PatternFemI = femEnabled.Contains(NounPattern.IFem);
         PatternFemILong = femEnabled.Contains(NounPattern.ĪFem);
         PatternFemU = femEnabled.Contains(NounPattern.UFem);
         PatternFemAr = femEnabled.Contains(NounPattern.ArFem);
-
+        
         // Load number setting (index-based: 0=both, 1=singular, 2=plural)
         var numbersCsv = _userData.GetSetting(SettingsKeys.NounsNumbers,
             SettingsHelpers.ToCsv(SettingsKeys.DefaultNumbers));
         NumberIndex = SettingsHelpers.NumberIndexFromCsv(numbersCsv);
-
+        
         // Load case settings
         var cases = SettingsHelpers.FromCsvSet<Case>(
             _userData.GetSetting(SettingsKeys.NounsCases,
@@ -85,7 +85,7 @@ public partial class DeclensionSettingsViewModel : ObservableObject
         Genitive = cases.Contains(Case.Genitive);
         Locative = cases.Contains(Case.Locative);
         Vocative = cases.Contains(Case.Vocative);
-
+        
         // Load lemma range settings
         LemmaMin = _userData.GetSetting(SettingsKeys.NounsLemmaMin, SettingsKeys.DefaultLemmaMin);
         LemmaMax = _userData.GetSetting(SettingsKeys.NounsLemmaMax, SettingsKeys.DefaultLemmaMax);
@@ -109,24 +109,24 @@ public partial class DeclensionSettingsViewModel : ObservableObject
         if (PatternMascAr) mascEnabled.Add(NounPattern.ArMasc);
         if (PatternMascAnt) mascEnabled.Add(NounPattern.AntMasc);
         _userData.SetSetting(SettingsKeys.NounsMascPatterns, SettingsHelpers.ToCsv(mascEnabled));
-
+        
         var neutEnabled = new List<NounPattern>();
         if (PatternNtA) neutEnabled.Add(NounPattern.ANeut);
         if (PatternNtI) neutEnabled.Add(NounPattern.INeut);
         if (PatternNtU) neutEnabled.Add(NounPattern.UNeut);
         _userData.SetSetting(SettingsKeys.NounsNeutPatterns, SettingsHelpers.ToCsv(neutEnabled));
-
+        
         var femEnabled = new List<NounPattern>();
-        if (PatternFemA) femEnabled.Add(NounPattern.ĀFem);
+        if (PatternFemALong) femEnabled.Add(NounPattern.ĀFem);
         if (PatternFemI) femEnabled.Add(NounPattern.IFem);
         if (PatternFemILong) femEnabled.Add(NounPattern.ĪFem);
         if (PatternFemU) femEnabled.Add(NounPattern.UFem);
         if (PatternFemAr) femEnabled.Add(NounPattern.ArFem);
         _userData.SetSetting(SettingsKeys.NounsFemPatterns, SettingsHelpers.ToCsv(femEnabled));
-
+        
         // Save number setting
         _userData.SetSetting(SettingsKeys.NounsNumbers, SettingsHelpers.NumberIndexToCsv(NumberIndex));
-
+        
         // Save cases
         var cases = new List<Case>();
         if (Nominative) cases.Add(Case.Nominative);
@@ -138,7 +138,7 @@ public partial class DeclensionSettingsViewModel : ObservableObject
         if (Locative) cases.Add(Case.Locative);
         if (Vocative) cases.Add(Case.Vocative);
         _userData.SetSetting(SettingsKeys.NounsCases, SettingsHelpers.ToCsv(cases));
-
+        
         // Save lemma range
         _userData.SetSetting(SettingsKeys.NounsLemmaMin, LemmaMin);
         _userData.SetSetting(SettingsKeys.NounsLemmaMax, LemmaMax);
@@ -161,7 +161,7 @@ public partial class DeclensionSettingsViewModel : ObservableObject
         (PatternMascU ? 1 : 0) + (PatternMascULong ? 1 : 0) + (PatternMascAs ? 1 : 0) +
         (PatternMascAr ? 1 : 0) + (PatternMascAnt ? 1 : 0) +
         (PatternNtA ? 1 : 0) + (PatternNtI ? 1 : 0) + (PatternNtU ? 1 : 0) +
-        (PatternFemA ? 1 : 0) + (PatternFemI ? 1 : 0) + (PatternFemILong ? 1 : 0) +
+        (PatternFemALong ? 1 : 0) + (PatternFemI ? 1 : 0) + (PatternFemILong ? 1 : 0) +
         (PatternFemU ? 1 : 0) + (PatternFemAr ? 1 : 0);
 
     // Masculine patterns
@@ -392,8 +392,8 @@ public partial class DeclensionSettingsViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(CanDisablePatternFemI))]
     [NotifyPropertyChangedFor(nameof(CanDisablePatternFemILong))]
     [NotifyPropertyChangedFor(nameof(CanDisablePatternFemU))]
-    bool _patternFemA = true;
-    partial void OnPatternFemAChanged(bool value) => SaveSettings();
+    bool _patternFemALong = true;
+    partial void OnPatternFemALongChanged(bool value) => SaveSettings();
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanDisablePatternMascA))]
@@ -485,7 +485,7 @@ public partial class DeclensionSettingsViewModel : ObservableObject
     public bool CanDisablePatternNtA => EnabledPatternCount > 1 || !PatternNtA;
     public bool CanDisablePatternNtI => EnabledPatternCount > 1 || !PatternNtI;
     public bool CanDisablePatternNtU => EnabledPatternCount > 1 || !PatternNtU;
-    public bool CanDisablePatternFemA => EnabledPatternCount > 1 || !PatternFemA;
+    public bool CanDisablePatternFemA => EnabledPatternCount > 1 || !PatternFemALong;
     public bool CanDisablePatternFemI => EnabledPatternCount > 1 || !PatternFemI;
     public bool CanDisablePatternFemILong => EnabledPatternCount > 1 || !PatternFemILong;
     public bool CanDisablePatternFemU => EnabledPatternCount > 1 || !PatternFemU;

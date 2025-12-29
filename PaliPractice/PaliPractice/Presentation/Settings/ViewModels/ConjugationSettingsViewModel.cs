@@ -288,7 +288,7 @@ public partial class ConjugationSettingsViewModel : ObservableObject
     /// <summary>
     /// Labels for the voice dropdown. Index maps to: 0=both, 1=normal only, 2=reflexive only.
     /// </summary>
-    public static readonly string[] VoiceOptions = ["Normal & Reflexive", "Normal only", "Reflexive only"];
+    public static readonly string[] VoiceOptions = ["Active & Reflexive", "Active only", "Reflexive only"];
 
     /// <summary>
     /// Index for ComboBox binding. Maps to Voice CSV: 0="1,2", 1="1", 2="2".
@@ -306,9 +306,9 @@ public partial class ConjugationSettingsViewModel : ObservableObject
     /// <summary>Converts dropdown index to CSV for storage.</summary>
     static string VoiceIndexToCsv(int index) => index switch
     {
-        1 => SettingsHelpers.ToCsv([Voice.Normal]),
+        1 => SettingsHelpers.ToCsv([Voice.Active]),
         2 => SettingsHelpers.ToCsv([Voice.Reflexive]),
-        _ => SettingsHelpers.ToCsv([Voice.Normal, Voice.Reflexive])
+        _ => SettingsHelpers.ToCsv([Voice.Active, Voice.Reflexive])
     };
 
     /// <summary>Converts CSV to dropdown index.</summary>

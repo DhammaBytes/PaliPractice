@@ -60,15 +60,27 @@ public sealed partial class ConjugationSettingsPage : Page
 
                                     // Tense section
                                     SettingsSection.Build("Tense",
-                                        SettingsRow.BuildToggle<ConjugationSettingsViewModel>(
-                                            "Present", v => v.Present, v => v.CanDisablePresent),
-                                        SettingsRow.BuildToggle<ConjugationSettingsViewModel>(
-                                            "Imperative", v => v.Imperative, v => v.CanDisableImperative),
-                                        SettingsRow.BuildToggle<ConjugationSettingsViewModel>(
-                                            "Optative", v => v.Optative, v => v.CanDisableOptative),
-                                        SettingsRow.BuildToggle<ConjugationSettingsViewModel>(
-                                            "Future", v => v.Future, v => v.CanDisableFuture)
-                                    )
+                                        SettingsRow.BuildToggleWithHint<ConjugationSettingsViewModel>(
+                                            "Present", "present/habitual actions; general truths",
+                                            v => v.Present, v => v.CanDisablePresent),
+                                        SettingsRow.BuildToggleWithHint<ConjugationSettingsViewModel>(
+                                            "Imperative", "commands, requests, encouragements",
+                                            v => v.Imperative, v => v.CanDisableImperative),
+                                        SettingsRow.BuildToggleWithHint<ConjugationSettingsViewModel>(
+                                            "Optative", "wishes; ‘may/might’; ‘should/ought to’",
+                                            v => v.Optative, v => v.CanDisableOptative),
+                                        SettingsRow.BuildToggleWithHint<ConjugationSettingsViewModel>(
+                                            "Future", "actions yet to happen; predictions",
+                                            v => v.Future, v => v.CanDisableFuture)
+                                    ),
+
+                                    // Tense section footer
+                                    TextHelpers.RegularText()
+                                        .Text("Aorist (past narrative tense) is not included: its forms vary a lot across verbs and often need verb-by-verb learning. A dedicated aorist trainer may be added later.")
+                                        .FontSize(12)
+                                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                                        .TextWrapping(TextWrapping.Wrap)
+                                        .Margin(16, 4, 16, 16)
                                 )
                         )
                 )
@@ -104,8 +116,9 @@ public sealed partial class ConjugationSettingsPage : Page
                         Bind.TwoWayPath<ConjugationSettingsViewModel, int>(v => v.NumberIndex))),
 
                 // Voice dropdown
-                SettingsRow.BuildDropdown(
+                SettingsRow.BuildDropdownWithHint(
                     "Voice",
+                    "Active (parassapada) is common, while Reflexive (attanopada) mostly appears in poetic verses",
                     ConjugationSettingsViewModel.VoiceOptions,
                     cb => cb.SetBinding(
                         ComboBox.SelectedIndexProperty,

@@ -61,7 +61,7 @@ public class VerbsCombinationDifficulty : CombinationDifficultyBase
     /// </summary>
     public static VerbsCombinationDifficulty Create(Tense tense, Person person, Number number, bool reflexive)
     {
-        var voice = reflexive ? Voice.Reflexive : Voice.Normal;
+        var voice = reflexive ? Voice.Reflexive : Voice.Active;
         return new VerbsCombinationDifficulty
         {
             ComboKey = Conjugation.ComboKey(tense, person, number, voice),

@@ -125,7 +125,7 @@ public class FormIdTests
         foreach (Tense t in Enum.GetValues<Tense>().Where(t => t != Tense.None))
         foreach (Person p in Enum.GetValues<Person>().Where(p => p != Person.None))
         foreach (Number n in Enum.GetValues<Number>().Where(n => n != Number.None))
-        foreach (Voice v in new[] { Voice.Normal, Voice.Reflexive })
+        foreach (Voice v in new[] { Voice.Active, Voice.Reflexive })
         for (int e = 0; e <= 4; e++)
         {
             var lemmaId = 75000;
@@ -144,7 +144,7 @@ public class FormIdTests
     [Test]
     public void Conjugation_FormId_ZeroEndingId_IndicatesCombination()
     {
-        var formId = Conjugation.ResolveId(70001, Tense.Present, Person.First, Number.Singular, Voice.Normal, 0);
+        var formId = Conjugation.ResolveId(70001, Tense.Present, Person.First, Number.Singular, Voice.Active, 0);
 
         var parsed = Conjugation.ParseId(formId);
         parsed.EndingId.Should().Be(0, "EndingId=0 indicates a combination, not a specific ending");
@@ -159,11 +159,11 @@ public class FormIdTests
             Tense = Tense.Present,
             Person = Person.First,
             Number = Number.Singular,
-            Voice = Voice.Normal,
+            Voice = Voice.Active,
             Forms = []
         };
 
-        var expected = Conjugation.ResolveId(70001, Tense.Present, Person.First, Number.Singular, Voice.Normal, 0);
+        var expected = Conjugation.ResolveId(70001, Tense.Present, Person.First, Number.Singular, Voice.Active, 0);
         conjugation.FormId.Should().Be(expected);
     }
 
@@ -171,7 +171,7 @@ public class FormIdTests
     [TestCase(99999, 9999911110L, Description = "Last verb ID boundary")]
     public void Conjugation_BoundaryLemmaIds(int lemmaId, long expectedFormId)
     {
-        var formId = Conjugation.ResolveId(lemmaId, Tense.Present, Person.First, Number.Singular, Voice.Normal, 0);
+        var formId = Conjugation.ResolveId(lemmaId, Tense.Present, Person.First, Number.Singular, Voice.Active, 0);
         formId.Should().Be(expectedFormId);
     }
 
@@ -195,7 +195,7 @@ public class FormIdTests
         // Verb range: 70001-99999 → FormIds start at 7000100000
 
         var maxNounFormId = Declension.ResolveId(69999, Case.Vocative, Gender.Feminine, Number.Plural, 4);
-        var minVerbFormId = Conjugation.ResolveId(70001, Tense.Present, Person.First, Number.Singular, Voice.Normal, 0);
+        var minVerbFormId = Conjugation.ResolveId(70001, Tense.Present, Person.First, Number.Singular, Voice.Active, 0);
 
         ((long)maxNounFormId).Should().BeLessThan(minVerbFormId,
             "Noun FormIds should never overlap with Verb FormIds");

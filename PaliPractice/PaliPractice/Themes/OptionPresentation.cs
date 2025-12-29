@@ -8,6 +8,7 @@ public static class OptionPresentation
     // Pre-defined color constants
     static readonly Color NumberColor = Color.FromArgb(255, 230, 230, 255);
     static readonly Color PersonColor = Color.FromArgb(255, 230, 255, 230);
+    static readonly Color ActiveVoiceColor = Color.FromArgb(255, 230, 245, 255);
     static readonly Color ReflexiveColor = Color.FromArgb(255, 255, 230, 230);
     static readonly Color TenseColor = Color.FromArgb(255, 240, 240, 255);
     static readonly Color GenderColor = Color.FromArgb(255, 220, 255, 220);
@@ -26,6 +27,9 @@ public static class OptionPresentation
         Gender.Masculine => "\uE71A",
         Gender.Neuter => "\uE734",
         Gender.Feminine => "\uE716",
+
+        Voice.Active => "\uE768",     // Arrow pointing out (action directed outward)
+        Voice.Reflexive => "\uE74C",  // Arrow pointing back (action on self)
 
         _ => null
     };
@@ -63,6 +67,9 @@ public static class OptionPresentation
         Case.Genitive => CaseColor,
         Case.Locative => CaseColor,
         Case.Vocative => CaseColor,
+
+        Voice.Active => ActiveVoiceColor,
+        Voice.Reflexive => ReflexiveColor,
 
         _ => DefaultColor
     };

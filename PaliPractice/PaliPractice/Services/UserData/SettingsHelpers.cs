@@ -140,7 +140,7 @@ public static class SettingsHelpers
     /// Checks if the voices CSV includes Normal (active).
     /// </summary>
     public static bool IncludesNormal(string voicesCsv)
-        => Contains(voicesCsv, Voice.Normal);
+        => Contains(voicesCsv, Voice.Active);
 
     /// <summary>
     /// Checks if the voices CSV includes Reflexive.

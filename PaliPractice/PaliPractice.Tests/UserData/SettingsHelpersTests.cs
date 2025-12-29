@@ -116,7 +116,7 @@ public class SettingsHelpersTests
     [Test]
     public void Roundtrip_Voice_PreservesValues()
     {
-        var original = new[] { Voice.Normal, Voice.Reflexive };
+        var original = new[] { Voice.Active, Voice.Reflexive };
         var csv = SettingsHelpers.ToCsv(original);
         var restored = SettingsHelpers.FromCsv<Voice>(csv);
         restored.Should().Equal(original);

@@ -114,12 +114,12 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
         {
             Case.Nominative => "who? what? (subject)",
             Case.Accusative => "whom? what? (object)",
-            Case.Instrumental => "with whom? with what? by what means?",
-            Case.Dative => "to whom? to what? for whom?",
-            Case.Ablative => "from whom? from what?",
+            Case.Instrumental => "with whom? by whom? by what means?",
+            Case.Dative => "for whom? to whom? to what?",
+            Case.Ablative => "from whom? from where? from what?",
             Case.Genitive => "whose? of whom? of what?",
-            Case.Locative => "in/at/on whom? where?",
-            Case.Vocative => "O...! (direct address)",
+            Case.Locative => "in whom? where? when?",
+            Case.Vocative => "O, …! (direct address)",
             _ => string.Empty
         };
 

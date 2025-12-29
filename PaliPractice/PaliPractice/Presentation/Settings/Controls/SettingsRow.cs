@@ -170,7 +170,6 @@ public static class SettingsRow
     {
         var comboBox = new ComboBox()
             .VerticalAlignment(VerticalAlignment.Center)
-            .MinWidth(160)
             .Grid(column: 1);
 
         foreach (var option in options)
@@ -203,7 +202,6 @@ public static class SettingsRow
     {
         var comboBox = new ComboBox()
             .VerticalAlignment(VerticalAlignment.Center)
-            .MinWidth(160)
             .Grid(column: 1);
 
         foreach (var option in options)
@@ -237,7 +235,6 @@ public static class SettingsRow
     {
         var comboBox = new ComboBox()
             .VerticalAlignment(VerticalAlignment.Center)
-            .MinWidth(160)
             .Grid(column: 1);
 
         foreach (var (value, optionLabel) in options)
@@ -283,7 +280,7 @@ public static class SettingsRow
             .LargeChange(50)
             .SpinButtonPlacementMode(NumberBoxSpinButtonPlacementMode.Compact)
             .ValidationMode(NumberBoxValidationMode.InvalidInputOverwritten)
-            .MinWidth(120)
+            .MinWidth(72)
             .VerticalAlignment(VerticalAlignment.Center)
             .Grid(column: 1);
 
@@ -302,6 +299,94 @@ public static class SettingsRow
                     .VerticalAlignment(VerticalAlignment.Center)
                     .Grid(column: 0),
                 numberBox
+            );
+    }
+
+    /// <summary>
+    /// Builds a settings row with a label, hint, and toggle switch.
+    /// </summary>
+    public static Grid BuildToggleWithHint<TDC>(
+        string label,
+        string hint,
+        Expression<Func<TDC, bool>> isOnExpr,
+        Expression<Func<TDC, bool>> isEnabledExpr)
+    {
+        var toggle = new ToggleSwitch()
+            .OnContent("")
+            .OffContent("")
+            .MinWidth(0)
+            .VerticalAlignment(VerticalAlignment.Center)
+            .Grid(column: 1);
+        toggle.IsOn<TDC>(isOnExpr);
+        toggle.SetBinding(Control.IsEnabledProperty, Bind.Path(isEnabledExpr));
+
+        return new Grid()
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .ColumnDefinitions("*,Auto")
+            .Padding(16, 12)
+            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .Children(
+                new StackPanel()
+                    .Spacing(2)
+                    .VerticalAlignment(VerticalAlignment.Center)
+                    .HorizontalAlignment(HorizontalAlignment.Left)
+                    .Grid(column: 0)
+                    .Margin(0, 0, 12, 0)
+                    .Children(
+                        RegularText()
+                            .Text(label)
+                            .FontSize(16),
+                        RegularText()
+                            .Text(hint)
+                            .FontSize(12)
+                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                            .TextWrapping(TextWrapping.Wrap)
+                    ),
+                toggle
+            );
+    }
+
+    /// <summary>
+    /// Builds a settings row with a label, hint, and dropdown (ComboBox).
+    /// </summary>
+    public static Grid BuildDropdownWithHint(
+        string label,
+        string hint,
+        string[] options,
+        Action<ComboBox> bindSelectedItem)
+    {
+        var comboBox = new ComboBox()
+            .VerticalAlignment(VerticalAlignment.Center)
+            .Grid(column: 1);
+
+        foreach (var option in options)
+            comboBox.Items.Add(option);
+
+        bindSelectedItem(comboBox);
+
+        return new Grid()
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .ColumnDefinitions("*,Auto")
+            .Padding(16, 12)
+            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .Children(
+                new StackPanel()
+                    .Spacing(2)
+                    .VerticalAlignment(VerticalAlignment.Center)
+                    .HorizontalAlignment(HorizontalAlignment.Left)
+                    .Grid(column: 0)
+                    .Margin(0, 0, 12, 0)
+                    .Children(
+                        RegularText()
+                            .Text(label)
+                            .FontSize(16),
+                        RegularText()
+                            .Text(hint)
+                            .FontSize(12)
+                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                            .TextWrapping(TextWrapping.Wrap)
+                    ),
+                comboBox
             );
     }
 }

@@ -65,11 +65,11 @@ public sealed partial class StartPage : Page
                                                         new StackPanel()
                                                             .Children(
                                                                 RegularText()
-                                                                    .Text("Declension Practice")
+                                                                    .Text("Nouns & Cases")
                                                                     .FontSize(18)
                                                                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold),
                                                                 RegularText()
-                                                                    .Text("Nouns and cases")
+                                                                    .Text("Declension Practice")
                                                                     .FontSize(14)
                                                                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                                                             )
@@ -93,11 +93,11 @@ public sealed partial class StartPage : Page
                                                         new StackPanel()
                                                             .Children(
                                                                 RegularText()
-                                                                    .Text("Conjugation Practice")
+                                                                    .Text("Verbs & Tenses")
                                                                     .FontSize(18)
                                                                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold),
                                                                 RegularText()
-                                                                    .Text("Verbs and tenses")
+                                                                    .Text("Conjugation Practice")
                                                                     .FontSize(14)
                                                                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                                                             )

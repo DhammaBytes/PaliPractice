@@ -137,7 +137,7 @@ public class SettingsKeysTests
     public void VerbsDefaultVoices_ShouldHaveBothNormalAndReflexive()
     {
         SettingsKeys.VerbsDefaultVoices.Should().HaveCount(2);
-        SettingsKeys.VerbsDefaultVoices.Should().Contain(Voice.Normal);
+        SettingsKeys.VerbsDefaultVoices.Should().Contain(Voice.Active);
         SettingsKeys.VerbsDefaultVoices.Should().Contain(Voice.Reflexive);
     }
 

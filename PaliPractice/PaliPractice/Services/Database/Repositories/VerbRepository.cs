@@ -79,8 +79,7 @@ public class VerbRepository
                 _lemmas = verbs
                     .GroupBy(v => v.LemmaId)
                     .ToDictionary(
-                        g => g.Key,
-                        g => (ILemma)new Lemma(g.First().Lemma, g.Cast<IWord>()));
+                        g => g.Key, ILemma (g) => new Lemma(g.First().Lemma, g));
                 System.Diagnostics.Debug.WriteLine($"[VerbRepo] Built {_lemmas.Count} lemmas");
 
                 // Pre-sort for rank-based queries
@@ -188,22 +187,22 @@ public class VerbRepository
         return forms;
     }
 
-    /// <summary>
-    /// Check if irregular forms exist for this verb grammatical combination.
-    /// Used to determine if a form exists for defective verbs.
-    /// </summary>
-    public bool HasIrregularForm(int lemmaId, Tense tense, Person person, Number number, bool reflexive)
-    {
-        EnsureCacheLoaded();
-        var voice = reflexive ? Voice.Reflexive : Voice.Active;
-        var baseFormId = Conjugation.ResolveId(lemmaId, tense, person, number, voice, 0);
-        for (int endingId = 1; endingId <= 9; endingId++)
-        {
-            if (_irregularForms!.ContainsKey(baseFormId + endingId))
-                return true;
-        }
-        return false;
-    }
+    // /// <summary>
+    // /// Check if irregular forms exist for this verb grammatical combination.
+    // /// Used to determine if a form exists for defective verbs.
+    // /// </summary>
+    // public bool HasIrregularForm(int lemmaId, Tense tense, Person person, Number number, bool reflexive)
+    // {
+    //     EnsureCacheLoaded();
+    //     var voice = reflexive ? Voice.Reflexive : Voice.Active;
+    //     var baseFormId = Conjugation.ResolveId(lemmaId, tense, person, number, voice, 0);
+    //     for (int endingId = 1; endingId <= 9; endingId++)
+    //     {
+    //         if (_irregularForms!.ContainsKey(baseFormId + endingId))
+    //             return true;
+    //     }
+    //     return false;
+    // }
 
     /// <summary>
     /// Ensure details are loaded for the lemma.

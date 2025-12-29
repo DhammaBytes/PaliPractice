@@ -10,7 +10,10 @@ public interface IPracticeHistory
 {
     int Id { get; }
     long FormId { get; }
-    string FormText { get; }
+    /// <summary>
+    /// The inflected form text. Resolved from FormId on load, not stored in database.
+    /// </summary>
+    string FormText { get; set; }
     int OldLevel { get; }
     int NewLevel { get; }
     DateTime PracticedUtc { get; }
@@ -35,8 +38,9 @@ public abstract class PracticeHistoryBase : IPracticeHistory
 
     /// <summary>
     /// The actual inflected form text (for display in history).
+    /// Resolved from FormId when loading, not stored in database.
     /// </summary>
-    [Column("form_text")]
+    [Ignore]
     public string FormText { get; set; } = "";
 
     /// <summary>

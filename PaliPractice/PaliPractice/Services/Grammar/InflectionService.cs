@@ -1,3 +1,4 @@
+using PaliPractice.Models;
 using PaliPractice.Models.Inflection;
 using PaliPractice.Models.Words;
 
@@ -27,6 +28,12 @@ public interface IInflectionService
         Number number,
         Tense tense,
         bool reflexive);
+
+    /// <summary>
+    /// Resolves form text from a FormId by looking up the lemma and generating the inflected form.
+    /// Returns the first corpus-attested form variant, or the first form if none attested.
+    /// </summary>
+    string? ResolveFormText(long formId, PracticeType type);
 }
 
 public class InflectionService : IInflectionService
@@ -278,5 +285,41 @@ public class InflectionService : IInflectionService
             Voice = voice,
             Forms = forms
         };
+    }
+
+    public string? ResolveFormText(long formId, PracticeType type)
+    {
+        return type == PracticeType.Declension 
+            ? ResolveNounFormText((int)formId) 
+            : ResolveVerbFormText(formId);
+    }
+
+    string? ResolveNounFormText(int formId)
+    {
+        var parsed = Declension.ParseId(formId);
+        var lemma = _databaseService.Nouns.GetLemma(parsed.LemmaId);
+        if (lemma?.Primary is not Noun noun)
+            return null;
+
+        var declension = GenerateNounForms(noun, parsed.Case, parsed.Number);
+
+        // Return first corpus-attested form, or first form if none attested
+        var attestedForm = declension.Forms.FirstOrDefault(f => f.InCorpus);
+        return attestedForm.Form ?? declension.Forms.FirstOrDefault().Form;
+    }
+
+    string? ResolveVerbFormText(long formId)
+    {
+        var parsed = Conjugation.ParseId(formId);
+        var lemma = _databaseService.Verbs.GetLemma(parsed.LemmaId);
+        if (lemma?.Primary is not Verb verb)
+            return null;
+
+        var reflexive = parsed.Voice == Voice.Reflexive;
+        var conjugation = GenerateVerbForms(verb, parsed.Person, parsed.Number, parsed.Tense, reflexive);
+
+        // Return first corpus-attested form, or first form if none attested
+        var attestedForm = conjugation.Forms.FirstOrDefault(f => f.InCorpus);
+        return attestedForm.Form ?? conjugation.Forms.FirstOrDefault().Form;
     }
 }

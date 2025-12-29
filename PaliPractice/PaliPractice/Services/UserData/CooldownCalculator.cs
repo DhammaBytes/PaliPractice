@@ -28,6 +28,20 @@ public static class CooldownCalculator
     public const int DefaultLevel = 5;
 
     /// <summary>
+    /// Pre-calculated cooldown hours for each level (index 0 = level 1).
+    /// Used for efficient SQL queries without requiring POWER function.
+    /// </summary>
+    static readonly double[] CooldownHoursLookup = Enumerable.Range(MinLevel, MaxLevel)
+        .Select(level => BaseHours * Math.Pow(Multiplier, level - 1))
+        .ToArray();
+
+    /// <summary>
+    /// Get pre-calculated cooldown hours array for SQL query optimization.
+    /// Returns array where index 0 = level 1 cooldown, index 9 = level 10 cooldown.
+    /// </summary>
+    public static double[] GetCooldownHoursLookup() => CooldownHoursLookup;
+
+    /// <summary>
     /// Get cooldown duration in hours for a given level.
     /// </summary>
     public static double GetCooldownHours(int level)

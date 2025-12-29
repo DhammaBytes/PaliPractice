@@ -8,15 +8,19 @@ namespace PaliPractice.Presentation.Practice.Providers;
 
 /// <summary>
 /// Provides declension practice items using the SRS queue.
+/// Includes staleness detection to rebuild queue when SRS data becomes stale.
 /// </summary>
 public sealed class DeclensionPracticeProvider : IPracticeProvider
 {
+    static readonly TimeSpan StalenessThreshold = TimeSpan.FromHours(1);
+
     readonly IPracticeQueueBuilder _queueBuilder;
     readonly UserDataRepository _userData;
     readonly NounRepository _nouns;
 
     List<PracticeItem> _queue = [];
     int _currentIndex = -1;
+    DateTime _queueBuiltUtc;
 
     public DeclensionPracticeProvider(
         IPracticeQueueBuilder queueBuilder,
@@ -40,6 +44,7 @@ public sealed class DeclensionPracticeProvider : IPracticeProvider
         var dailyGoal = _userData.GetDailyGoal(PracticeType.Declension);
         _queue = _queueBuilder.BuildQueue(PracticeType.Declension, dailyGoal);
         _currentIndex = _queue.Count > 0 ? 0 : -1;
+        _queueBuiltUtc = DateTime.UtcNow;
 
         return Task.CompletedTask;
     }
@@ -47,7 +52,16 @@ public sealed class DeclensionPracticeProvider : IPracticeProvider
     public bool MoveNext()
     {
         if (_currentIndex >= _queue.Count - 1)
+        {
+            // Queue exhausted - check if we should rebuild due to staleness
+            if (DateTime.UtcNow - _queueBuiltUtc > StalenessThreshold)
+            {
+                System.Diagnostics.Debug.WriteLine("[DeclensionProvider] Queue stale, rebuilding...");
+                LoadAsync().GetAwaiter().GetResult();
+                return _queue.Count > 0;
+            }
             return false;
+        }
 
         _currentIndex++;
         return true;

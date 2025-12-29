@@ -28,6 +28,40 @@ public class UserDataRepository
     }
 
     /// <summary>
+    /// Builds a SQL query for due forms with pre-calculated cutoff dates for each mastery level.
+    /// Uses 10 OR conditions to filter forms without loading all into memory.
+    /// </summary>
+    List<T> QueryDueForms<T>(string tableName, int limit) where T : new()
+    {
+        var now = DateTime.UtcNow;
+        var cooldowns = CooldownCalculator.GetCooldownHoursLookup();
+
+        // Build 10 OR conditions, one per mastery level
+        var sql = $@"
+            SELECT * FROM {tableName}
+            WHERE (mastery_level = 1 AND last_practiced_utc <= ?)
+               OR (mastery_level = 2 AND last_practiced_utc <= ?)
+               OR (mastery_level = 3 AND last_practiced_utc <= ?)
+               OR (mastery_level = 4 AND last_practiced_utc <= ?)
+               OR (mastery_level = 5 AND last_practiced_utc <= ?)
+               OR (mastery_level = 6 AND last_practiced_utc <= ?)
+               OR (mastery_level = 7 AND last_practiced_utc <= ?)
+               OR (mastery_level = 8 AND last_practiced_utc <= ?)
+               OR (mastery_level = 9 AND last_practiced_utc <= ?)
+               OR (mastery_level = 10 AND last_practiced_utc <= ?)
+            ORDER BY last_practiced_utc
+            LIMIT ?";
+
+        // Calculate cutoff date for each level: form is due when last_practiced + cooldown <= now
+        var cutoffs = cooldowns.Select(hours => now.AddHours(-hours)).ToArray();
+
+        return _connection.Query<T>(sql,
+            cutoffs[0], cutoffs[1], cutoffs[2], cutoffs[3], cutoffs[4],
+            cutoffs[5], cutoffs[6], cutoffs[7], cutoffs[8], cutoffs[9],
+            limit);
+    }
+
+    /// <summary>
     /// Initializes all default settings if not already done.
     /// Called once on first app launch after database creation.
     /// </summary>
@@ -72,15 +106,7 @@ public class UserDataRepository
     }
 
     public List<NounsFormMastery> GetDueNounForms(int limit = 100)
-    {
-        // Filter in memory since IsDue is calculated
-        return _connection.Table<NounsFormMastery>()
-            .ToList()
-            .Where(f => f.IsDue)
-            .OrderBy(f => f.NextDueUtc)
-            .Take(limit)
-            .ToList();
-    }
+        => QueryDueForms<NounsFormMastery>("nouns_form_mastery", limit);
 
     public HashSet<long> GetPracticedNounFormIds()
     {
@@ -90,7 +116,7 @@ public class UserDataRepository
             .ToHashSet();
     }
 
-    public void RecordNounPracticeResult(long formId, bool wasEasy, string formText)
+    public void RecordNounPracticeResult(long formId, bool wasEasy)
     {
         var existing = GetNounFormMastery(formId);
         var now = DateTime.UtcNow;
@@ -109,8 +135,7 @@ public class UserDataRepository
                 FormId = formId,
                 MasteryLevel = newLevel,
                 PreviousLevel = oldLevel,
-                LastPracticedUtc = now,
-                CreatedUtc = now
+                LastPracticedUtc = now
             };
             _connection.Insert(record);
         }
@@ -127,11 +152,10 @@ public class UserDataRepository
             _connection.Update(existing);
         }
 
-        // Record to history
+        // Record to history (FormText resolved on load, not stored)
         var history = new NounsPracticeHistory
         {
             FormId = formId,
-            FormText = formText,
             OldLevel = oldLevel,
             NewLevel = newLevel,
             PracticedUtc = now
@@ -148,15 +172,7 @@ public class UserDataRepository
     }
 
     public List<VerbsFormMastery> GetDueVerbForms(int limit = 100)
-    {
-        // Filter in memory since IsDue is calculated
-        return _connection.Table<VerbsFormMastery>()
-            .ToList()
-            .Where(f => f.IsDue)
-            .OrderBy(f => f.NextDueUtc)
-            .Take(limit)
-            .ToList();
-    }
+        => QueryDueForms<VerbsFormMastery>("verbs_form_mastery", limit);
 
     public HashSet<long> GetPracticedVerbFormIds()
     {
@@ -166,7 +182,7 @@ public class UserDataRepository
             .ToHashSet();
     }
 
-    public void RecordVerbPracticeResult(long formId, bool wasEasy, string formText)
+    public void RecordVerbPracticeResult(long formId, bool wasEasy)
     {
         var existing = GetVerbFormMastery(formId);
         var now = DateTime.UtcNow;
@@ -185,8 +201,7 @@ public class UserDataRepository
                 FormId = formId,
                 MasteryLevel = newLevel,
                 PreviousLevel = oldLevel,
-                LastPracticedUtc = now,
-                CreatedUtc = now
+                LastPracticedUtc = now
             };
             _connection.Insert(record);
         }
@@ -203,11 +218,10 @@ public class UserDataRepository
             _connection.Update(existing);
         }
 
-        // Record to history
+        // Record to history (FormText resolved on load, not stored)
         var history = new VerbsPracticeHistory
         {
             FormId = formId,
-            FormText = formText,
             OldLevel = oldLevel,
             NewLevel = newLevel,
             PracticedUtc = now
@@ -357,12 +371,12 @@ public class UserDataRepository
     /// <summary>
     /// Records a practice result, dispatching to type-specific methods.
     /// </summary>
-    public void RecordPracticeResult(long formId, PracticeType type, bool wasEasy, string formText)
+    public void RecordPracticeResult(long formId, PracticeType type, bool wasEasy)
     {
         if (type == PracticeType.Declension)
-            RecordNounPracticeResult(formId, wasEasy, formText);
+            RecordNounPracticeResult(formId, wasEasy);
         else
-            RecordVerbPracticeResult(formId, wasEasy, formText);
+            RecordVerbPracticeResult(formId, wasEasy);
     }
 
     /// <summary>

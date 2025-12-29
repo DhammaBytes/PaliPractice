@@ -34,9 +34,6 @@ public abstract class FormMasteryBase
     [Column("last_practiced_utc")]
     public DateTime LastPracticedUtc { get; set; }
 
-    [Column("created_utc")]
-    public DateTime CreatedUtc { get; set; }
-
     /// <summary>
     /// Calculated next due time based on LastPracticedUtc and MasteryLevel.
     /// </summary>

@@ -9,15 +9,19 @@ namespace PaliPractice.Presentation.Practice.Providers;
 
 /// <summary>
 /// Provides conjugation practice items using the SRS queue.
+/// Includes staleness detection to rebuild queue when SRS data becomes stale.
 /// </summary>
 public sealed class ConjugationPracticeProvider : IPracticeProvider
 {
+    static readonly TimeSpan StalenessThreshold = TimeSpan.FromHours(1);
+
     readonly IPracticeQueueBuilder _queueBuilder;
     readonly UserDataRepository _userData;
     readonly VerbRepository _verbs;
 
     List<PracticeItem> _queue = [];
     int _currentIndex = -1;
+    DateTime _queueBuiltUtc;
 
     public ConjugationPracticeProvider(
         IPracticeQueueBuilder queueBuilder,
@@ -41,6 +45,7 @@ public sealed class ConjugationPracticeProvider : IPracticeProvider
         var dailyGoal = _userData.GetDailyGoal(PracticeType.Conjugation);
         _queue = _queueBuilder.BuildQueue(PracticeType.Conjugation, dailyGoal);
         _currentIndex = _queue.Count > 0 ? 0 : -1;
+        _queueBuiltUtc = DateTime.UtcNow;
 
         return Task.CompletedTask;
     }
@@ -48,7 +53,16 @@ public sealed class ConjugationPracticeProvider : IPracticeProvider
     public bool MoveNext()
     {
         if (_currentIndex >= _queue.Count - 1)
+        {
+            // Queue exhausted - check if we should rebuild due to staleness
+            if (DateTime.UtcNow - _queueBuiltUtc > StalenessThreshold)
+            {
+                System.Diagnostics.Debug.WriteLine("[ConjugationProvider] Queue stale, rebuilding...");
+                LoadAsync().GetAwaiter().GetResult();
+                return _queue.Count > 0;
+            }
             return false;
+        }
 
         _currentIndex++;
         return true;

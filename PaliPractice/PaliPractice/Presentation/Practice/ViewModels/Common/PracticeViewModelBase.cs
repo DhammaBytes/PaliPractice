@@ -205,12 +205,11 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         var current = _provider.Current;
         if (current == null) return;
 
-        var formText = GetInflectedForm();
-        Logger.LogInformation("Marked {Result}: {Form} (FormId={FormId})",
-            wasEasy ? "easy" : "hard", formText, current.FormId);
+        Logger.LogInformation("Marked {Result}: FormId={FormId}",
+            wasEasy ? "easy" : "hard", current.FormId);
 
-        // Record to SRS system
-        UserData.RecordPracticeResult(current.FormId, CurrentPracticeType, wasEasy, formText);
+        // Record to SRS system (FormText resolved on history load, not stored)
+        UserData.RecordPracticeResult(current.FormId, CurrentPracticeType, wasEasy);
 
         // Update combination difficulty
         RecordCombinationDifficulty(wasHard: !wasEasy);

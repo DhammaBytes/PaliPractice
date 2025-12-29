@@ -49,7 +49,7 @@ public class UserDataRepositoryTests
     {
         var formId = 123456789L;
 
-        _repository.RecordNounPracticeResult(formId, wasEasy: true, "buddhassa");
+        _repository.RecordNounPracticeResult(formId, wasEasy: true);
 
         var mastery = _repository.GetNounFormMastery(formId);
         mastery.Should().NotBeNull();
@@ -63,11 +63,11 @@ public class UserDataRepositoryTests
         var formId = 123456789L;
 
         // First practice (easy)
-        _repository.RecordNounPracticeResult(formId, wasEasy: true, "buddhassa");
+        _repository.RecordNounPracticeResult(formId, wasEasy: true);
         var firstLevel = _repository.GetNounFormMastery(formId)!.MasteryLevel;
 
         // Second practice (hard)
-        _repository.RecordNounPracticeResult(formId, wasEasy: false, "buddhassa");
+        _repository.RecordNounPracticeResult(formId, wasEasy: false);
         var secondLevel = _repository.GetNounFormMastery(formId)!.MasteryLevel;
 
         secondLevel.Should().BeLessThan(firstLevel);
@@ -78,22 +78,22 @@ public class UserDataRepositoryTests
     {
         var formId = 123456789L;
 
-        _repository.RecordNounPracticeResult(formId, wasEasy: true, "buddhassa");
+        _repository.RecordNounPracticeResult(formId, wasEasy: true);
 
         var history = _repository.GetRecentNounHistory(limit: 10);
         history.Should().HaveCount(1);
         history[0].FormId.Should().Be(formId);
-        history[0].FormText.Should().Be("buddhassa");
+        // FormText is resolved on load via InflectionService, not stored in DB
     }
 
     [Test]
     public void GetPracticedNounFormIds_ReturnsOnlyNounForms()
     {
         // Add noun mastery record
-        _repository.RecordNounPracticeResult(111111111L, wasEasy: true, "buddhassa");
+        _repository.RecordNounPracticeResult(111111111L, wasEasy: true);
 
         // Add verb mastery record (separate table)
-        _repository.RecordVerbPracticeResult(2222222222L, wasEasy: true, "gacchati");
+        _repository.RecordVerbPracticeResult(2222222222L, wasEasy: true);
 
         var nounIds = _repository.GetPracticedNounFormIds();
         nounIds.Should().Contain(111111111L);
@@ -109,7 +109,7 @@ public class UserDataRepositoryTests
     {
         var formId = 1234567890L;
 
-        _repository.RecordVerbPracticeResult(formId, wasEasy: true, "gacchati");
+        _repository.RecordVerbPracticeResult(formId, wasEasy: true);
 
         var mastery = _repository.GetVerbFormMastery(formId);
         mastery.Should().NotBeNull();
@@ -121,21 +121,22 @@ public class UserDataRepositoryTests
     {
         var formId = 1234567890L;
 
-        _repository.RecordVerbPracticeResult(formId, wasEasy: false, "gacchati");
+        _repository.RecordVerbPracticeResult(formId, wasEasy: false);
 
         var history = _repository.GetRecentVerbHistory(limit: 10);
         history.Should().HaveCount(1);
-        history[0].FormText.Should().Be("gacchati");
+        history[0].FormId.Should().Be(formId);
+        // FormText is resolved on load via InflectionService, not stored in DB
     }
 
     [Test]
     public void GetPracticedVerbFormIds_ReturnsOnlyVerbForms()
     {
         // Add noun mastery record
-        _repository.RecordNounPracticeResult(111111111L, wasEasy: true, "buddhassa");
+        _repository.RecordNounPracticeResult(111111111L, wasEasy: true);
 
         // Add verb mastery record
-        _repository.RecordVerbPracticeResult(2222222222L, wasEasy: true, "gacchati");
+        _repository.RecordVerbPracticeResult(2222222222L, wasEasy: true);
 
         var verbIds = _repository.GetPracticedVerbFormIds();
         verbIds.Should().Contain(2222222222L);
@@ -151,7 +152,7 @@ public class UserDataRepositoryTests
     {
         var formId = 111111111L;
 
-        _repository.RecordPracticeResult(formId, PracticeType.Declension, wasEasy: true, "buddhassa");
+        _repository.RecordPracticeResult(formId, PracticeType.Declension, wasEasy: true);
 
         _repository.GetNounFormMastery(formId).Should().NotBeNull();
         _repository.GetVerbFormMastery(formId).Should().BeNull();
@@ -162,7 +163,7 @@ public class UserDataRepositoryTests
     {
         var formId = 2222222222L;
 
-        _repository.RecordPracticeResult(formId, PracticeType.Conjugation, wasEasy: true, "gacchati");
+        _repository.RecordPracticeResult(formId, PracticeType.Conjugation, wasEasy: true);
 
         _repository.GetVerbFormMastery(formId).Should().NotBeNull();
         _repository.GetNounFormMastery(formId).Should().BeNull();
@@ -171,25 +172,27 @@ public class UserDataRepositoryTests
     [Test]
     public void GetRecentHistory_Declension_ReturnsNounHistory()
     {
-        _repository.RecordNounPracticeResult(111111111L, wasEasy: true, "buddhassa");
-        _repository.RecordVerbPracticeResult(2222222222L, wasEasy: true, "gacchati");
+        _repository.RecordNounPracticeResult(111111111L, wasEasy: true);
+        _repository.RecordVerbPracticeResult(2222222222L, wasEasy: true);
 
         var history = _repository.GetRecentHistory(PracticeType.Declension, limit: 10);
 
         history.Should().HaveCount(1);
-        history[0].FormText.Should().Be("buddhassa");
+        history[0].FormId.Should().Be(111111111L);
+        // FormText is resolved on load via InflectionService, not stored in DB
     }
 
     [Test]
     public void GetRecentHistory_Conjugation_ReturnsVerbHistory()
     {
-        _repository.RecordNounPracticeResult(111111111L, wasEasy: true, "buddhassa");
-        _repository.RecordVerbPracticeResult(2222222222L, wasEasy: true, "gacchati");
+        _repository.RecordNounPracticeResult(111111111L, wasEasy: true);
+        _repository.RecordVerbPracticeResult(2222222222L, wasEasy: true);
 
         var history = _repository.GetRecentHistory(PracticeType.Conjugation, limit: 10);
 
         history.Should().HaveCount(1);
-        history[0].FormText.Should().Be("gacchati");
+        history[0].FormId.Should().Be(2222222222L);
+        // FormText is resolved on load via InflectionService, not stored in DB
     }
 
     #endregion
@@ -264,13 +267,13 @@ public class UserDataRepositoryTests
     [Test]
     public void NounsPracticeHistory_ImplementsIPracticeHistory()
     {
-        _repository.RecordNounPracticeResult(111111111L, wasEasy: true, "buddhassa");
+        _repository.RecordNounPracticeResult(111111111L, wasEasy: true);
 
         var history = _repository.GetRecentHistory(PracticeType.Declension, limit: 10);
         var record = history[0];
 
-        // Verify interface properties
-        record.FormText.Should().Be("buddhassa");
+        // Verify interface properties (FormText resolved on load, not stored)
+        record.FormId.Should().Be(111111111L);
         record.IsImproved.Should().BeTrue(); // Easy increases level
         record.NewLevelPercent.Should().BeGreaterThan(0);
     }
@@ -278,13 +281,13 @@ public class UserDataRepositoryTests
     [Test]
     public void VerbsPracticeHistory_ImplementsIPracticeHistory()
     {
-        _repository.RecordVerbPracticeResult(2222222222L, wasEasy: false, "gacchati");
+        _repository.RecordVerbPracticeResult(2222222222L, wasEasy: false);
 
         var history = _repository.GetRecentHistory(PracticeType.Conjugation, limit: 10);
         var record = history[0];
 
-        // Verify interface properties
-        record.FormText.Should().Be("gacchati");
+        // Verify interface properties (FormText resolved on load, not stored)
+        record.FormId.Should().Be(2222222222L);
         record.IsImproved.Should().BeFalse(); // Hard decreases level
     }
 
@@ -298,8 +301,8 @@ public class UserDataRepositoryTests
         var nounFormId = 111111111L;
         var verbFormId = 111111111L; // Same ID, different tables
 
-        _repository.RecordNounPracticeResult(nounFormId, wasEasy: true, "buddhassa");
-        _repository.RecordVerbPracticeResult(verbFormId, wasEasy: false, "gacchati");
+        _repository.RecordNounPracticeResult(nounFormId, wasEasy: true);
+        _repository.RecordVerbPracticeResult(verbFormId, wasEasy: false);
 
         // Each should have their own record
         var nounMastery = _repository.GetNounFormMastery(nounFormId);

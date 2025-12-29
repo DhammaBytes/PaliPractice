@@ -165,13 +165,17 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                 // Remove from due list to update category's TotalCount
                 cat.DueForms.Remove(form);
 
+                // Label as DifficultCombo only if this form's grammatical combo is actually in hardCombos
+                var comboKey = GetComboKey(form.FormId, type);
+                var source = hardCombos.ContainsKey(comboKey)
+                    ? PracticeItemSource.DifficultCombo
+                    : PracticeItemSource.DueForReview;
+
                 queue.Add(new PracticeItem(
                     form.FormId,
                     type,
                     ExtractLemmaId(form.FormId, type),
-                    priority > 0.7
-                        ? PracticeItemSource.DifficultCombo
-                        : PracticeItemSource.DueForReview,
+                    source,
                     priority,
                     form.MasteryLevel
                 ));
@@ -255,7 +259,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
     ///
     /// Factors (weighted to sum to ~1.0 max):
     /// - Overdue time:  0.0-0.3 (3+ days overdue = max)
-    /// - Low mastery:   0.05-0.45 (level 1 = 0.45, level 10 = 0.05)
+    /// - Low mastery:   0.0-0.45 (level 1 = 0.45, level 10 = 0.0)
     /// - Hard combo:    0.0-0.3 (boost if this grammatical combo is difficult)
     ///
     /// Example: A level-2 form that's 2 days overdue in a hard combo:
@@ -556,7 +560,8 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         if (categories.Count == 1) return categories.Keys.First();
 
         var totalForms = categories.Values.Sum(c => c.TotalCount);
-        var floorWeight = (int)(totalForms * MinCategoryFloor);
+        // Use ceiling + min 1 to ensure floor is never 0 for small form counts
+        var floorWeight = Math.Max(1, (int)Math.Ceiling(totalForms * MinCategoryFloor));
 
         // Build weighted list with floor
         var weights = new List<(string Key, int Weight)>();

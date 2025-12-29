@@ -147,4 +147,15 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
     {
         return _currentConjugation?.Primary?.Ending ?? string.Empty;
     }
+
+    protected override IReadOnlyList<string> GetAllInflectedForms()
+    {
+        if (_currentConjugation == null)
+            return [];
+
+        return _currentConjugation.Forms
+            .Select(f => f.Form)
+            .Where(f => !string.IsNullOrEmpty(f))
+            .ToList();
+    }
 }

@@ -51,6 +51,11 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     protected abstract string GetInflectedEnding();
 
     /// <summary>
+    /// Returns all inflected forms (not just primary) to avoid in example selection.
+    /// </summary>
+    protected abstract IReadOnlyList<string> GetAllInflectedForms();
+
+    /// <summary>
     /// Returns the practice type (Declension or Conjugation) for history navigation.
     /// </summary>
     protected abstract PracticeType CurrentPracticeType { get; }
@@ -141,6 +146,9 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         var parameters = _provider.GetCurrentParameters();
         PrepareCardAnswer(lemma, parameters);
         Flashcard.SetAnswer(GetInflectedForm(), GetInflectedEnding());
+
+        // Filter examples to avoid those containing answer forms
+        ExampleCarousel.SetFormsToAvoid(GetAllInflectedForms());
     }
 
     void RevealAnswer()

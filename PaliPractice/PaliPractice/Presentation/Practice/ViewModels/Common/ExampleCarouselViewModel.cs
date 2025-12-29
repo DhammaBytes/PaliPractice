@@ -15,6 +15,7 @@ public partial class ExampleCarouselViewModel : ObservableObject
     static readonly Random _random = new();
 
     IReadOnlyList<TranslationEntry> _entries = [];
+    IReadOnlyList<string> _formsToAvoid = [];
 
     [ObservableProperty] int _currentIndex;
     [ObservableProperty] int _totalTranslations;
@@ -45,6 +46,7 @@ public partial class ExampleCarouselViewModel : ObservableObject
     void InitializeEntries(IReadOnlyList<TranslationEntry> entries)
     {
         _entries = entries;
+        _formsToAvoid = [];
 
         TotalTranslations = _entries.Count;
         HasMultipleTranslations = TotalTranslations > 1;
@@ -53,6 +55,21 @@ public partial class ExampleCarouselViewModel : ObservableObject
         CurrentIndex = TotalTranslations > 1 ? _random.Next(TotalTranslations) : 0;
 
         UpdateCurrentDisplay();
+    }
+
+    /// <summary>
+    /// Sets the inflected forms to avoid when picking examples.
+    /// Call this after Initialize and before the example is displayed.
+    /// </summary>
+    public void SetFormsToAvoid(IReadOnlyList<string> forms)
+    {
+        _formsToAvoid = forms;
+        // Re-pick example for current translation with the new filter
+        if (_entries.Count > 0)
+        {
+            _entries[CurrentIndex].ShuffleReference(_formsToAvoid);
+            UpdateCurrentDisplay();
+        }
     }
 
     void UpdateCurrentDisplay()
@@ -78,8 +95,8 @@ public partial class ExampleCarouselViewModel : ObservableObject
     {
         if (_entries.Count == 0) return;
         CurrentIndex = (CurrentIndex - 1 + _entries.Count) % _entries.Count;
-        // Shuffle reference for the new translation
-        _entries[CurrentIndex].ShuffleReference();
+        // Shuffle reference for the new translation, avoiding answer forms
+        _entries[CurrentIndex].ShuffleReference(_formsToAvoid);
         UpdateCurrentDisplay();
     }
 
@@ -88,8 +105,8 @@ public partial class ExampleCarouselViewModel : ObservableObject
     {
         if (_entries.Count == 0) return;
         CurrentIndex = (CurrentIndex + 1) % _entries.Count;
-        // Shuffle reference for the new translation
-        _entries[CurrentIndex].ShuffleReference();
+        // Shuffle reference for the new translation, avoiding answer forms
+        _entries[CurrentIndex].ShuffleReference(_formsToAvoid);
         UpdateCurrentDisplay();
     }
 
@@ -104,8 +121,8 @@ public partial class ExampleCarouselViewModel : ObservableObject
 
         // Pick new random translation
         CurrentIndex = _entries.Count > 1 ? _random.Next(_entries.Count) : 0;
-        // Shuffle reference for the selected translation
-        _entries[CurrentIndex].ShuffleReference();
+        // Shuffle reference for the selected translation, avoiding answer forms
+        _entries[CurrentIndex].ShuffleReference(_formsToAvoid);
         UpdateCurrentDisplay();
     }
 }

@@ -29,24 +29,54 @@ public class TranslationEntry
     {
         Meaning = meaning;
         Examples = examples;
-        CurrentExample = PickRandomExample();
+        CurrentExample = PickRandomExample([]);
     }
 
     /// <summary>
-    /// Picks a new random example for reference display.
+    /// Picks a new random example for reference display, preferring examples
+    /// that don't contain any of the forms to avoid (answer forms).
     /// </summary>
-    public void ShuffleReference()
+    public void ShuffleReference(IReadOnlyList<string> formsToAvoid)
     {
-        CurrentExample = PickRandomExample();
+        CurrentExample = PickRandomExample(formsToAvoid);
     }
 
-    ExampleEntry PickRandomExample()
+    ExampleEntry PickRandomExample(IReadOnlyList<string> formsToAvoid)
     {
         if (Examples.Count == 0)
             throw new InvalidOperationException("TranslationEntry must have at least one example");
         if (Examples.Count == 1)
             return Examples[0];
+
+        // Prefer examples that don't contain any answer forms
+        if (formsToAvoid.Count > 0)
+        {
+            var safeExamples = Examples
+                .Where(e => !ContainsAnyForm(e.Example, formsToAvoid))
+                .ToList();
+
+            if (safeExamples.Count < Examples.Count)
+                System.Diagnostics.Debug.WriteLine("Example excluded due to answer form");
+
+            if (safeExamples.Count > 0)
+                return safeExamples[_random.Next(safeExamples.Count)];
+        }
+
+        // Fallback: pick any example if all contain answer forms
         return Examples[_random.Next(Examples.Count)];
+    }
+
+    static bool ContainsAnyForm(string? text, IReadOnlyList<string> forms)
+    {
+        if (string.IsNullOrEmpty(text))
+            return false;
+
+        foreach (var form in forms)
+        {
+            if (!string.IsNullOrEmpty(form) && text.Contains(form, StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+        return false;
     }
 
     /// <summary>

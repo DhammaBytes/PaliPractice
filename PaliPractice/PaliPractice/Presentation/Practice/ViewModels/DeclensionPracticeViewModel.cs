@@ -159,4 +159,15 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
     {
         return _currentDeclension?.Primary?.Ending ?? string.Empty;
     }
+
+    protected override IReadOnlyList<string> GetAllInflectedForms()
+    {
+        if (_currentDeclension == null)
+            return [];
+
+        return _currentDeclension.Forms
+            .Select(f => f.Form)
+            .Where(f => !string.IsNullOrEmpty(f))
+            .ToList();
+    }
 }

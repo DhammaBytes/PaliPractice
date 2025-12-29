@@ -263,7 +263,7 @@ public class DatabaseService : IDatabaseService
                 return true;
             }
 
-            // Check if bundle version is newer
+            // Check if a bundle version is newer
             var previousVersion = connection.ExecuteScalar<int>("PRAGMA user_version;");
             return previousVersion < BundleVersion;
         }

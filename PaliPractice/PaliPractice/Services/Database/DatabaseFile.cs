@@ -12,7 +12,7 @@ public enum DatabaseBehavior
 
     /// <summary>
     /// Read-only database bundled with the app.
-    /// On some platforms (iOS, Desktop) can be read directly from bundle.
+    /// On some platforms (iOS, Desktop) can be read directly from a bundle.
     /// On others (Android, WASM) must be copied to local storage first.
     /// </summary>
     BundledReadOnly
@@ -34,13 +34,13 @@ public readonly record struct DatabaseFile
 
     /// <summary>
     /// Pali database with nouns, verbs, patterns, and corpus data.
-    /// Bundled read-only - extracted from DPD and embedded in app.
+    /// Bundled read-only - extracted from DPD and embedded in the app.
     /// </summary>
     public static readonly DatabaseFile Pali = new("pali.db", DatabaseBehavior.BundledReadOnly);
 
     /// <summary>
     /// User data database for mastery tracking, settings, and history.
-    /// Created on first use in user's local app data folder.
+    /// Created on first use in the user's local app data folder.
     /// </summary>
     public static readonly DatabaseFile UserData = new("practice.db", DatabaseBehavior.CreatedUserWritable);
 

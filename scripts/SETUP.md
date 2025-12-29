@@ -31,7 +31,7 @@ scripts/
 
 ### `extract_nouns_and_verbs.py`
 The primary extraction script that:
-- Extracts 3000 most frequent nouns and 2000 most frequent verbs
+- Extracts 1500 most frequent nouns and 750 most frequent verbs
 - Creates `corpus_declensions` table tracking which forms appear in Tipitaka
 - Creates `corpus_conjugations` table tracking which forms appear in Tipitaka
 - Assigns stable `lemma_id` values via `configs/lemma_registry.json`
@@ -216,7 +216,7 @@ This takes **~1 hour** and creates `dpd.db` (~450MB).
 cd /Users/ivm/Sources/PaliPractice
 source .venv/bin/activate
 cd scripts
-python3 extract_nouns_and_verbs.py
+python3 extract_nouns_and_verbs.py --nouns 1500 --verbs 750
 python3 validate_db.py
 ```
 
@@ -241,14 +241,14 @@ uv run python scripts/bash/initial_build_db.py
 
 cd /Users/ivm/Sources/PaliPractice
 source .venv/bin/activate
-cd scripts && python3 extract_nouns_and_verbs.py
+cd scripts && python3 extract_nouns_and_verbs.py --nouns 1500 --verbs 750
 ```
 
 ### Just Re-extract Training Data (no dpd-db rebuild)
 ```bash
 cd /Users/ivm/Sources/PaliPractice
 source .venv/bin/activate
-cd scripts && python3 extract_nouns_and_verbs.py
+cd scripts && python3 extract_nouns_and_verbs.py --nouns 1500 --verbs 750
 ```
 
 ---

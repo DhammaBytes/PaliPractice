@@ -29,18 +29,38 @@ public sealed partial class SettingsPage : Page
                                 .Children(
                                     // General section
                                     SettingsSection.Build("General",
-                                        SettingsRow.BuildPlaceholder("Appearance")
+                                        SettingsRow.BuildPlaceholder("Appearance", "\uE790") // ColorSolid
                                     ),
 
                                     // Practice settings sections
                                     SettingsSection.Build("Practice",
                                         SettingsRow.BuildNavigation<SettingsViewModel>(
-                                            "Conjugations",
-                                            v => v.GoToConjugationSettingsCommand),
-                                        SettingsRow.BuildNavigation<SettingsViewModel>(
                                             "Declensions",
-                                            v => v.GoToDeclensionSettingsCommand)
-                                    )
+                                            "\uE8C8", // Repair/transformation
+                                            v => v.GoToDeclensionSettingsCommand),
+                                        SettingsRow.BuildNavigation<SettingsViewModel>(
+                                            "Conjugations",
+                                            "\uE823", // Clock
+                                            v => v.GoToConjugationSettingsCommand)
+                                    ),
+
+                                    // Feedback section (only visible on supported platforms)
+                                    new StackPanel()
+                                        .Visibility(() => vm.IsStoreReviewAvailable)
+                                        .Children(
+                                            SettingsSection.Build("Feedback",
+                                                SettingsRow.BuildAction<SettingsViewModel>(
+                                                    "Write a review",
+                                                    "\uE735", // FavoriteStar
+                                                    v => v.RateAppCommand)
+                                            ),
+                                            new TextBlock()
+                                                .Text("If you have a minute, please leave a review for Pāli Practice. Even one sentence is valuable feedback and it helps other Pāli learners discover the app on the store.")
+                                                .FontSize(12)
+                                                .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                                                .TextWrapping(TextWrapping.Wrap)
+                                                .Margin(16, -12, 16, 16)
+                                        )
                                 )
                         )
                 )

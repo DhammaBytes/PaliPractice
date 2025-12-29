@@ -24,12 +24,11 @@ public partial class AboutViewModel : ObservableObject
     }
 
     // Use markdown-style links: [text](url) or [text](mailto:email)
-    // Static because content doesn't change - allows direct access from page
+    // Static because content doesn't change - allows direct access from the page
     public static string Description => """
         An app for practicing Pāli grammar using spaced repetition, a method based on repeated review over time
 
-        Maintained by the [DhammaBytes](https://dhammabytes.org) contributors
-        We warmly welcome feedback and help with translating the app into other languages. Please [contact us](mailto:contact@qotoqot.com)
+        Maintained by the [DhammaBytes](https://dhammabytes.org) contributors. We warmly welcome feedback and help with translating the app into other languages.
 
         Word and grammar data are sourced from the [Digital Pāli Dictionary](https://dpdict.net)
         """;

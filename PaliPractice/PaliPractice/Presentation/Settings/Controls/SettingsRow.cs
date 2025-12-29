@@ -97,6 +97,47 @@ public static class SettingsRow
 
     public static Grid BuildNavigation<TDC>(
         string label,
+        string iconGlyph,
+        Expression<Func<TDC, ICommand>> commandExpr)
+    {
+        var button = new Button()
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .HorizontalContentAlignment(HorizontalAlignment.Stretch)
+            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .Padding(16, 12)
+            .Command(commandExpr)
+            .Content(
+                new Grid()
+                    .ColumnDefinitions("Auto,*,Auto")
+                    .Children(
+                        new FontIcon()
+                            .Glyph(iconGlyph)
+                            .FontSize(16)
+                            .VerticalAlignment(VerticalAlignment.Center)
+                            .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"))
+                            .Margin(0, 0, 12, 0)
+                            .Grid(column: 0),
+                        RegularText()
+                            .Text(label)
+                            .FontSize(16)
+                            .VerticalAlignment(VerticalAlignment.Center)
+                            .Grid(column: 1),
+                        new FontIcon()
+                            .Glyph("\uE76C") // Chevron right
+                            .FontSize(14)
+                            .VerticalAlignment(VerticalAlignment.Center)
+                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                            .Grid(column: 2)
+                    )
+            );
+
+        return new Grid()
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .Children(button);
+    }
+
+    public static Grid BuildNavigation<TDC>(
+        string label,
         Expression<Func<TDC, ICommand>> commandExpr,
         Action<TextBlock> bindAccessoryText)
     {
@@ -157,6 +198,36 @@ public static class SettingsRow
                     .VerticalAlignment(VerticalAlignment.Center)
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                     .Grid(column: 1)
+            );
+    }
+
+    public static Grid BuildPlaceholder(string label, string iconGlyph)
+    {
+        return new Grid()
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .ColumnDefinitions("Auto,*,Auto")
+            .Padding(16, 12)
+            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .Children(
+                new FontIcon()
+                    .Glyph(iconGlyph)
+                    .FontSize(16)
+                    .VerticalAlignment(VerticalAlignment.Center)
+                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                    .Margin(0, 0, 12, 0)
+                    .Grid(column: 0),
+                RegularText()
+                    .Text(label)
+                    .FontSize(16)
+                    .VerticalAlignment(VerticalAlignment.Center)
+                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                    .Grid(column: 1),
+                new FontIcon()
+                    .Glyph("\uE76C") // Chevron right
+                    .FontSize(14)
+                    .VerticalAlignment(VerticalAlignment.Center)
+                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                    .Grid(column: 2)
             );
     }
 
@@ -388,5 +459,67 @@ public static class SettingsRow
                     ),
                 comboBox
             );
+    }
+
+    /// <summary>
+    /// Builds a settings row with a label and action button (no chevron).
+    /// The row is tappable and executes the command.
+    /// </summary>
+    public static Grid BuildAction<TDC>(string label, Expression<Func<TDC, ICommand>> commandExpr)
+    {
+        var button = new Button()
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .HorizontalContentAlignment(HorizontalAlignment.Stretch)
+            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .Padding(16, 12)
+            .Command(commandExpr)
+            .Content(
+                RegularText()
+                    .Text(label)
+                    .FontSize(16)
+                    .VerticalAlignment(VerticalAlignment.Center)
+            );
+
+        return new Grid()
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .Children(button);
+    }
+
+    /// <summary>
+    /// Builds a settings row with a label, icon, and action button.
+    /// </summary>
+    public static Grid BuildAction<TDC>(
+        string label,
+        string iconGlyph,
+        Expression<Func<TDC, ICommand>> commandExpr)
+    {
+        var button = new Button()
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .HorizontalContentAlignment(HorizontalAlignment.Stretch)
+            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .Padding(16, 12)
+            .Command(commandExpr)
+            .Content(
+                new Grid()
+                    .ColumnDefinitions("Auto,*")
+                    .Children(
+                        new FontIcon()
+                            .Glyph(iconGlyph)
+                            .FontSize(16)
+                            .VerticalAlignment(VerticalAlignment.Center)
+                            .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"))
+                            .Margin(0, 0, 12, 0)
+                            .Grid(column: 0),
+                        RegularText()
+                            .Text(label)
+                            .FontSize(16)
+                            .VerticalAlignment(VerticalAlignment.Center)
+                            .Grid(column: 1)
+                    )
+            );
+
+        return new Grid()
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .Children(button);
     }
 }

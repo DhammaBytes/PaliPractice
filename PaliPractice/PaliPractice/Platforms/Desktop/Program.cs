@@ -1,5 +1,6 @@
 using Uno.UI.Hosting;
 
+// ReSharper disable once CheckNamespace
 namespace PaliPractice.Desktop;
 
 class Program

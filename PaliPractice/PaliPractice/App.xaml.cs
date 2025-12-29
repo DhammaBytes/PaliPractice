@@ -10,6 +10,7 @@ using PaliPractice.Presentation.Practice.ViewModels.Common;
 using PaliPractice.Presentation.Settings;
 using PaliPractice.Presentation.Settings.ViewModels;
 using PaliPractice.Services.Database.Providers;
+using PaliPractice.Services.Feedback;
 using PaliPractice.Services.Practice;
 using PaliPractice.Services.UserData;
 using AboutPage = PaliPractice.Presentation.Main.AboutPage;
@@ -104,6 +105,9 @@ public partial class App : Application
                     services.AddSingleton<IDatabaseService, DatabaseService>();
                     services.AddSingleton<IInflectionService, InflectionService>();
                     services.AddTransient<IPracticeQueueBuilder, PracticeQueueBuilder>();
+
+                    // Platform services
+                    services.AddSingleton<IStoreReviewService, StoreReviewService>();
 
                     services.AddTransient<FlashCardViewModel>();
 

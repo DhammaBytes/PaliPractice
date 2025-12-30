@@ -44,6 +44,16 @@ public partial class App : Application
     public App()
     {
         InitializeComponent();
+
+#if DEBUG
+        // Catch exceptions on the UI dispatcher thread (XAML binding errors, event handlers, etc.)
+        this.UnhandledException += (_, e) =>
+        {
+            System.Diagnostics.Debug.WriteLine($"[APP UNHANDLED] {e.Exception}");
+            Console.Error.WriteLine($"[APP UNHANDLED] {e.Exception}");
+            e.Handled = false; // Set to true if you want to prevent crash and continue
+        };
+#endif
     }
 
     public static Window? MainWindow { get; private set; }
@@ -181,16 +191,16 @@ public partial class App : Application
             new RouteMap("", View: views.FindByViewModel<ShellViewModel>(),
                 Nested:
                 [
-                    new("Start", View: views.FindByViewModel<StartViewModel>(), IsDefault: true),
-                    new("DeclensionPractice", View: views.FindByViewModel<DeclensionPracticeViewModel>()),
-                    new("ConjugationPractice", View: views.FindByViewModel<ConjugationPracticeViewModel>()),
-                    new("Help", View: views.FindByViewModel<HelpViewModel>()),
-                    new("About", View: views.FindByViewModel<AboutViewModel>()),
-                    new("Settings", View: views.FindByViewModel<SettingsViewModel>()),
-                    new("ConjugationSettings", View: views.FindByViewModel<ConjugationSettingsViewModel>()),
-                    new("DeclensionSettings", View: views.FindByViewModel<DeclensionSettingsViewModel>()),
-                    new("LemmaRangeSettings", View: views.FindByViewModel<LemmaRangeSettingsViewModel>()),
-                    new("History", View: views.FindByViewModel<HistoryViewModel>()),
+                    new RouteMap("Start", View: views.FindByViewModel<StartViewModel>(), IsDefault: true),
+                    new RouteMap("DeclensionPractice", View: views.FindByViewModel<DeclensionPracticeViewModel>()),
+                    new RouteMap("ConjugationPractice", View: views.FindByViewModel<ConjugationPracticeViewModel>()),
+                    new RouteMap("Help", View: views.FindByViewModel<HelpViewModel>()),
+                    new RouteMap("About", View: views.FindByViewModel<AboutViewModel>()),
+                    new RouteMap("Settings", View: views.FindByViewModel<SettingsViewModel>()),
+                    new RouteMap("ConjugationSettings", View: views.FindByViewModel<ConjugationSettingsViewModel>()),
+                    new RouteMap("DeclensionSettings", View: views.FindByViewModel<DeclensionSettingsViewModel>()),
+                    new RouteMap("LemmaRangeSettings", View: views.FindByViewModel<LemmaRangeSettingsViewModel>()),
+                    new RouteMap("History", View: views.FindByViewModel<HistoryViewModel>()),
                 ]
             )
         );

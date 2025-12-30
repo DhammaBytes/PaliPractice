@@ -19,7 +19,7 @@ public partial class DeclensionSettingsViewModel : ObservableObject
         .Where(p => p is > NounPattern.None and < NounPattern._VariantMasc)
         .Select(p => p.ToDisplayLabel()).ToArray();
     public static readonly string[] FemPatterns = Enum.GetValues<NounPattern>()
-        .Where(p => p is > NounPattern._BaseFem and < NounPattern._BaseNeut)
+        .Where(p => p is > NounPattern._BaseFem and < NounPattern._VariantFem)
         .Select(p => p.ToDisplayLabel()).ToArray();
     public static readonly string[] NtPatterns = Enum.GetValues<NounPattern>()
         .Where(p => p is > NounPattern._BaseNeut and < NounPattern._VariantNeut)

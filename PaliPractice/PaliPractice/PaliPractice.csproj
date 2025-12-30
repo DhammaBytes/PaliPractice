@@ -9,8 +9,8 @@
         <ApplicationTitle>PāliPractice</ApplicationTitle>
         <!-- App Identifier -->
         <ApplicationId>org.dhammabytes.palipractice</ApplicationId>
-        <!-- Versions -->
-        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+        <!-- Versions, 00 for parsing issues, use 1.1 or 1.23 later -->
+        <ApplicationDisplayVersion>1.00</ApplicationDisplayVersion>
         <ApplicationVersion>1</ApplicationVersion>
         <!-- Package Publisher -->
         <ApplicationPublisher>O=DhammaBytes</ApplicationPublisher>

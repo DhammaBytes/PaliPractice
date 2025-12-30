@@ -9,16 +9,10 @@ namespace PaliPractice.Services.Database.Providers;
 /// </summary>
 public class BundledFileProvider : IBundledFileProvider
 {
-    readonly string _userDataDirectory;
-
-    public BundledFileProvider()
-    {
-        // Use Uno's ApplicationData API for consistent cross-platform storage
-        // Note: macOS path override is configured in Program.cs to use ~/Library/Application Support/
-        _userDataDirectory = ApplicationData.Current.LocalFolder.Path;
-    }
-
-    public string GetUserDataDirectory() => _userDataDirectory;
+    // Use Uno's ApplicationData API for consistent cross-platform storage
+    // 
+    // Note: macOS path override is configured in Program.cs to use ~/Library/Application Support/
+    public string GetUserDataDirectory() => ApplicationData.Current.LocalFolder.Path;
 
     public string? TryGetReadOnlyPath(string relativePath)
     {

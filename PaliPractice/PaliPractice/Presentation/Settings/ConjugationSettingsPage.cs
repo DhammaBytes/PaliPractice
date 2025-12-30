@@ -65,16 +65,16 @@ public sealed partial class ConjugationSettingsPage : Page
                                     // Tense section
                                     SettingsSection.Build("Tense",
                                         SettingsRow.BuildToggleWithHint<ConjugationSettingsViewModel>(
-                                            "Present", "present/habitual actions; general truths",
+                                            "Present", "present/habitual actions, general truths",
                                             v => v.Present, v => v.CanDisablePresent),
                                         SettingsRow.BuildToggleWithHint<ConjugationSettingsViewModel>(
                                             "Imperative", "commands, requests, encouragements",
                                             v => v.Imperative, v => v.CanDisableImperative),
                                         SettingsRow.BuildToggleWithHint<ConjugationSettingsViewModel>(
-                                            "Optative", "wishes; ‘may/might’; ‘should/ought to’",
+                                            "Optative", "wishes, ‘may/might’, ‘should/ought to’",
                                             v => v.Optative, v => v.CanDisableOptative),
                                         SettingsRow.BuildToggleWithHint<ConjugationSettingsViewModel>(
-                                            "Future", "actions yet to happen; predictions",
+                                            "Future", "actions yet to happen, predictions",
                                             v => v.Future, v => v.CanDisableFuture)
                                     ),
 

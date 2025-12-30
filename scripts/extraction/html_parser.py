@@ -15,7 +15,11 @@ def parse_inflections_html(html: str) -> Dict[str, List[str]]:
     """Parse DPD inflections_html to extract forms by grammatical combination.
 
     Returns dict mapping title (e.g., "masc nom sg") to list of full forms.
-    Only non-gray forms are included (gray = not in corpus).
+    All forms are included (both corpus-attested and theoretical).
+
+    Note: Corpus attestation for irregular forms is determined separately via
+    the corpus_forms tables (populated from Tipitaka wordlist checks during
+    template parsing). This function extracts the actual form strings.
 
     Args:
         html: Raw HTML from DPD inflections_html field
@@ -48,13 +52,23 @@ def parse_inflections_html(html: str) -> Dict[str, List[str]]:
             if not part:
                 continue
 
-            # Skip gray forms (not in corpus)
-            if "<span class='gray'>" in part:
+            # Extract full form: combine non-bold stem + bold ending
+            # Gray forms (theoretical, not in corpus) have format:
+            #   <span class='gray'>stem<b>ending</b></span>
+            # Non-gray forms (corpus-attested) have format:
+            #   stem<b>ending</b>
+            # We extract both - corpus attestation is checked separately.
+
+            # Try gray form pattern first
+            gray_match = re.search(r"<span class='gray'>([^<]*)<b>([^<]+)</b></span>", part)
+            if gray_match:
+                stem_part = gray_match.group(1)
+                ending_part = gray_match.group(2)
+                full_form = stem_part + ending_part
+                forms.append(full_form)
                 continue
 
-            # Extract full form: combine non-bold stem + bold ending
-            # Pattern: optional_stem<b>ending</b>
-            # Example: "anga<b>raja</b>" -> "angaraja"
+            # Try non-gray form pattern
             form_match = re.search(r"^([^<]*)<b>([^<]+)</b>", part)
             if form_match:
                 stem_part = form_match.group(1)

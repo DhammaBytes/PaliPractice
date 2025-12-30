@@ -14,15 +14,15 @@ public partial class DeclensionSettingsViewModel : ObservableObject
     readonly UserDataRepository _userData;
     bool _isLoading = true;
 
-    // Pattern labels by gender (derived from enum using breakpoints, excluding None)
+    // Pattern labels by gender (base patterns only - variants/irregulars inherit from parent)
     public static readonly string[] MascPatterns = Enum.GetValues<NounPattern>()
-        .Where(p => p is > NounPattern.None and < NounPattern._RegularFem)
+        .Where(p => p is > NounPattern.None and < NounPattern._VariantMasc)
         .Select(p => p.ToDisplayLabel()).ToArray();
     public static readonly string[] FemPatterns = Enum.GetValues<NounPattern>()
-        .Where(p => p is > NounPattern._RegularFem and < NounPattern._RegularNeut)
+        .Where(p => p is > NounPattern._BaseFem and < NounPattern._BaseNeut)
         .Select(p => p.ToDisplayLabel()).ToArray();
     public static readonly string[] NtPatterns = Enum.GetValues<NounPattern>()
-        .Where(p => p is > NounPattern._RegularNeut and < NounPattern._Irregular)
+        .Where(p => p is > NounPattern._BaseNeut and < NounPattern._VariantNeut)
         .Select(p => p.ToDisplayLabel()).ToArray();
 
     public DeclensionSettingsViewModel(INavigator navigator, IDatabaseService db)

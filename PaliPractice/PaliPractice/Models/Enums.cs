@@ -119,38 +119,60 @@ public enum VerbPattern
 /// <summary>
 /// Noun declension patterns organized by gender with breakpoint markers.
 ///
-/// Structure: Regular Masculine → _RegularFem → Regular Feminine → _RegularNeut → Regular Neuter → _Irregular → All Irregulars
+/// Three-tier structure per gender: Base → Variant → (next gender or Irregular)
 ///
-/// This ordering enables simple comparisons:
-/// - pattern before _RegularFem means regular masculine
-/// - pattern after _RegularFem and before _RegularNeut means feminine
-/// - pattern after _Irregular means irregular
+/// Breakpoints enable O(1) categorization:
+/// - pattern &lt; _VariantMasc → Base Masculine
+/// - _VariantMasc &lt; pattern &lt; _BaseFem → Variant Masculine
+/// - _BaseFem &lt; pattern &lt; _BaseNeut → Base Feminine (no variants currently)
+/// - _BaseNeut &lt; pattern &lt; _VariantNeut → Base Neuter
+/// - _VariantNeut &lt; pattern &lt; _Irregular → Variant Neuter
+/// - pattern &gt; _Irregular → Irregular (forms from HTML, not stem+ending)
 ///
-/// Irregulars are grouped by their parent regular pattern for readability.
+/// Base patterns: common stem+ending construction
+/// Variant patterns: alternate ending tables, still computable
+/// Irregular patterns: full forms must be read from database
 /// </summary>
 public enum NounPattern
 {
     // ReSharper disable once UnusedMember.Global
     None = 0,
+
     // ═══════════════════════════════════════════
-    // REGULAR MASCULINE (pattern < _RegularFem)
+    // BASE MASCULINE (pattern < _VariantMasc)
     // Traditional order: a, i, ī, u, ū, ar, ant, as
     // ═══════════════════════════════════════════
-    AMasc = 1,            // "a masc"
-    IMasc = 2,            // "i masc"
-    ĪMasc = 3,            // "ī masc"
-    UMasc = 4,            // "u masc"
-    ŪMasc = 5,            // "ū masc"
-    ArMasc = 6,           // "ar masc"
-    AntMasc = 7,          // "ant masc"
-    AsMasc = 8,           // "as masc"
+    AMasc = 1,        // "a masc"
+    IMasc,            // "i masc"
+    ĪMasc,            // "ī masc"
+    UMasc,            // "u masc"
+    ŪMasc,            // "ū masc"
+    ArMasc,           // "ar masc"
+    AntMasc,          // "ant masc"
+    AsMasc,           // "as masc"
 
-    // ═══ Breakpoint: End of regular masculine ═══
-    _RegularFem,
+    // ═══ Breakpoint: End of base masculine ═══
+    _VariantMasc,
 
     // ═══════════════════════════════════════════
-    // REGULAR FEMININE (_RegularFem < pattern < _RegularNeut)
+    // VARIANT MASCULINE (_VariantMasc < pattern < _BaseFem)
+    // Grouped by parent base pattern
+    // ═══════════════════════════════════════════
+    A2Masc,           // "a2 masc" → AMasc
+    AMascEast,        // "a masc east" → AMasc
+    AMascPl,          // "a masc pl" → AMasc
+    AntaMasc,         // "anta masc" → AntMasc
+    Ar2Masc,          // "ar2 masc" → ArMasc
+    ĪMascPl,          // "ī masc pl" → ĪMasc
+    UMascPl,          // "u masc pl" → UMasc
+
+    // ═══ Breakpoint: End of masculine ═══
+    _BaseFem,
+
+    // ═══════════════════════════════════════════
+    // BASE FEMININE (_BaseFem < pattern < _BaseNeut)
     // Traditional order: ā, i, ī, u, ar
+    // No variant feminines currently
     // ═══════════════════════════════════════════
     ĀFem,             // "ā fem"
     IFem,             // "i fem"
@@ -158,69 +180,57 @@ public enum NounPattern
     UFem,             // "u fem"
     ArFem,            // "ar fem"
 
-    // ═══ Breakpoint: End of regular feminine ═══
-    _RegularNeut,
+    // ═══ Breakpoint: End of feminine ═══
+    _BaseNeut,
 
     // ═══════════════════════════════════════════
-    // REGULAR NEUTER (_RegularNeut < pattern < _Irregular)
+    // BASE NEUTER (_BaseNeut < pattern < _VariantNeut)
     // Traditional order: a, i, u
     // ═══════════════════════════════════════════
     ANeut,            // "a nt"
     INeut,            // "i nt"
     UNeut,            // "u nt"
 
-    // ═══ Breakpoint: End of regular patterns ═══
+    // ═══ Breakpoint: End of base neuter ═══
+    _VariantNeut,
+
+    // ═══════════════════════════════════════════
+    // VARIANT NEUTER (_VariantNeut < pattern < _Irregular)
+    // All derived from ANeut
+    // ═══════════════════════════════════════════
+    ANeutEast,        // "a nt east" → ANeut
+    ANeutIrreg,       // "a nt irreg" → ANeut
+    ANeutPl,          // "a nt pl" → ANeut
+
+    // ═══ Breakpoint: End of computable patterns ═══
     _Irregular,
 
     // ═══════════════════════════════════════════
-    // IRREGULAR PATTERNS (pattern >= _Irregular)
-    // Grouped by parent, alphabetical within groups.
+    // IRREGULAR PATTERNS (pattern > _Irregular)
+    // Forms must be read from database (DPD like='irreg')
+    // Grouped by gender, alphabetical within groups
     // ═══════════════════════════════════════════
 
-    // Irregulars → AMasc
-    AddhaMasc,        // "addha masc"
-    AMascEast,        // "a masc east"
-    AMascPl,          // "a masc pl"
-    A2Masc,           // "a2 masc"
-    BrahmaMasc,       // "brahma masc"
-    GoMasc,           // "go masc"
-    RājaMasc,         // "rāja masc"
-    YuvaMasc,         // "yuva masc"
+    // Irregular Masculine (9) — grouped by parent base
+    AddhaMasc,        // "addha masc" → AMasc
+    ArahantMasc,      // "arahant masc" → AntMasc
+    BhavantMasc,      // "bhavant masc" → AntMasc
+    BrahmaMasc,       // "brahma masc" → AMasc
+    GoMasc,           // "go masc" → AMasc
+    JantuMasc,        // "jantu masc" → UMasc
+    RājaMasc,         // "rāja masc" → AMasc
+    SantaMasc,        // "santa masc" → AntMasc
+    YuvaMasc,         // "yuva masc" → AMasc
 
-    // Irregulars → ĪMasc
-    ĪMascPl,          // "ī masc pl"
+    // Irregular Feminine (6)
+    JātiFem,          // "jāti fem" → IFem
+    MātarFem,         // "mātar fem" → ArFem
+    NadīFem,          // "nadī fem" → ĪFem
+    ParisāFem,        // "parisā fem" → ĀFem
+    PokkharaṇīFem,    // "pokkharaṇī fem" → ĪFem
+    RattiFem,         // "ratti fem" → IFem
 
-    // Irregulars → UMasc
-    JantuMasc,        // "jantu masc"
-    UMascPl,          // "u masc pl"
-
-    // Irregulars → ArMasc
-    Ar2Masc,          // "ar2 masc"
-
-    // Irregulars → AntMasc
-    AntaMasc,         // "anta masc"
-    ArahantMasc,      // "arahant masc"
-    BhavantMasc,      // "bhavant masc"
-    SantaMasc,        // "santa masc"
-
-    // Irregulars → ĀFem
-    ParisāFem,        // "parisā fem"
-
-    // Irregulars → IFem — note: jāti ends in short i
-    JātiFem,          // "jāti fem"
-    RattiFem,         // "ratti fem"
-
-    // Irregulars → ĪFem
-    NadīFem,          // "nadī fem"
-    PokkharaṇīFem,    // "pokkharaṇī fem"
-
-    // Irregulars → ArFem
-    MātarFem,         // "mātar fem"
-
-    // Irregulars → ANeut
-    ANeutEast,        // "a nt east"
-    ANeutIrreg,       // "a nt irreg"
-    ANeutPl,          // "a nt pl"
-    KammaNeut,        // "kamma nt"
+    // Irregular Neuter (1)
+    KammaNeut,        // "kamma nt" → ANeut
 }
 // ReSharper restore InconsistentNaming

@@ -46,15 +46,10 @@ public class NounPatternsTests
     /// </summary>
     public static IEnumerable<NounTestCase> GetNounTestCases()
     {
-        // Get all regular patterns using enum breakpoints:
-        // - Masculine: pattern > None && pattern < _RegularFem
-        // - Feminine: pattern > _RegularFem && pattern < _RegularNeut
-        // - Neuter: pattern > _RegularNeut && pattern < _Irregular
+        // Get only BASE patterns (not variants or irregulars)
+        // Only base patterns have ending tables defined in NounEndings.cs
         var patterns = Enum.GetValues<NounPattern>()
-            .Where(p => p != NounPattern.None &&
-                       p < NounPattern._Irregular &&
-                       p != NounPattern._RegularFem &&
-                       p != NounPattern._RegularNeut)
+            .Where(p => p.IsBase())
             .ToList();
 
         using var helper = new DpdTestHelper(DpdDbPath);

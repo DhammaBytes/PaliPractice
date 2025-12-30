@@ -113,32 +113,34 @@ public class PatternEnumStabilityTests
     }
 
     [Test]
-    public void NounPattern_IrregularPatterns_AllHaveValidParent()
+    public void NounPattern_NonBasePatterns_AllHaveValidParent()
     {
-        var irregulars = Enum.GetValues<NounPattern>()
+        // Non-base patterns include both variants and irregulars
+        var nonBasePatterns = Enum.GetValues<NounPattern>()
             .Where(p => p != NounPattern.None)
             .Where(p => !p.ToString().StartsWith("_"))
-            .Where(p => p.IsIrregular())
+            .Where(p => !p.IsBase())
             .ToList();
 
-        TestContext.WriteLine($"Testing {irregulars.Count} irregular noun patterns");
+        TestContext.WriteLine($"Testing {nonBasePatterns.Count} non-base noun patterns (variants + irregulars)");
 
         var failures = new List<string>();
 
-        foreach (var pattern in irregulars)
+        foreach (var pattern in nonBasePatterns)
         {
             try
             {
-                var parent = pattern.ParentRegular();
+                var parent = pattern.ParentBase();
 
-                // Parent should be a regular pattern
-                if (parent.IsIrregular())
+                // Parent should be a base pattern
+                if (!parent.IsBase())
                 {
-                    failures.Add($"{pattern} → {parent} (parent is also irregular!)");
+                    failures.Add($"{pattern} → {parent} (parent is not a base pattern!)");
                 }
                 else
                 {
-                    TestContext.WriteLine($"  {pattern} → {parent}");
+                    var patternType = pattern.IsIrregular() ? "irregular" : "variant";
+                    TestContext.WriteLine($"  {pattern} ({patternType}) → {parent}");
                 }
             }
             catch (Exception ex)
@@ -148,25 +150,25 @@ public class PatternEnumStabilityTests
         }
 
         failures.Should().BeEmpty(
-            "all irregular patterns should have a valid regular parent");
+            "all non-base patterns should have a valid base parent");
     }
 
     [Test]
-    public void NounPattern_RegularPatterns_ThrowOnParentRegular()
+    public void NounPattern_BasePatterns_ThrowOnParentBase()
     {
-        var regulars = Enum.GetValues<NounPattern>()
+        var basePatterns = Enum.GetValues<NounPattern>()
             .Where(p => p != NounPattern.None)
             .Where(p => !p.ToString().StartsWith("_"))
-            .Where(p => !p.IsIrregular())
+            .Where(p => p.IsBase())
             .ToList();
 
-        TestContext.WriteLine($"Testing {regulars.Count} regular noun patterns");
+        TestContext.WriteLine($"Testing {basePatterns.Count} base noun patterns");
 
-        foreach (var pattern in regulars)
+        foreach (var pattern in basePatterns)
         {
-            var act = () => pattern.ParentRegular();
+            var act = () => pattern.ParentBase();
             act.Should().Throw<InvalidOperationException>(
-                $"regular pattern {pattern} should throw when ParentRegular() is called");
+                $"base pattern {pattern} should throw when ParentBase() is called");
         }
     }
 

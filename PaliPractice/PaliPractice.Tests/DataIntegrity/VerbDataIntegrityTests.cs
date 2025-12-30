@@ -1,4 +1,5 @@
 using FluentAssertions;
+using PaliPractice.Models.Inflection;
 using PaliPractice.Tests.DataIntegrity.Helpers;
 
 namespace PaliPractice.Tests.DataIntegrity;
@@ -35,6 +36,7 @@ public class VerbDataIntegrityTests
 {
     PaliDbLoader? _paliDb;
     DpdWordLoader? _dpdDb;
+    DpdPatternClassifier? _dpdPatterns;
     Dictionary<int, DpdHeadword>? _dpdHeadwords;
     List<PaliVerb>? _paliVerbs;
     List<PaliVerbDetails>? _paliVerbDetails;
@@ -44,11 +46,16 @@ public class VerbDataIntegrityTests
     HashSet<string>? _tipitakaWords;
     CustomTranslationsLoader? _customTranslations;
 
+    // DPD-sourced pattern classification (loaded in OneTimeSetUp)
+    HashSet<string>? _dpdIrregularVerbPatterns;
+    HashSet<string>? _dpdRegularVerbPatterns;
+
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
         _paliDb = new PaliDbLoader();
         _dpdDb = new DpdWordLoader();
+        _dpdPatterns = new DpdPatternClassifier();
         _customTranslations = new CustomTranslationsLoader();
 
         // Load all data upfront for performance
@@ -60,6 +67,10 @@ public class VerbDataIntegrityTests
         _nonReflexiveLemmaIds = _paliDb.GetNonReflexiveLemmaIds();
         _tipitakaWords = TipitakaWordlistLoader.GetAllWords();
 
+        // Load DPD-sourced pattern classification
+        _dpdIrregularVerbPatterns = _dpdPatterns.GetIrregularVerbPatterns();
+        _dpdRegularVerbPatterns = _dpdPatterns.GetRegularVerbPatterns();
+
         TestContext.WriteLine($"Loaded {_paliVerbs.Count} verbs from pali.db");
         TestContext.WriteLine($"Loaded {_paliVerbDetails.Count} verb details from pali.db");
         TestContext.WriteLine($"Loaded {_dpdHeadwords.Count} headwords from dpd.db");
@@ -67,6 +78,8 @@ public class VerbDataIntegrityTests
         TestContext.WriteLine($"Loaded {_nonReflexiveLemmaIds.Count} non-reflexive verb lemma_ids");
         TestContext.WriteLine($"Loaded {_tipitakaWords.Count} Tipitaka words");
         TestContext.WriteLine($"Loaded {_customTranslations.Count} custom translation adjustments");
+        TestContext.WriteLine($"DPD irregular verb patterns: {_dpdIrregularVerbPatterns.Count}");
+        TestContext.WriteLine($"DPD regular verb patterns: {_dpdRegularVerbPatterns.Count}");
     }
 
     [OneTimeTearDown]
@@ -74,6 +87,7 @@ public class VerbDataIntegrityTests
     {
         _paliDb?.Dispose();
         _dpdDb?.Dispose();
+        _dpdPatterns?.Dispose();
     }
 
     #region Core Property Tests
@@ -377,7 +391,8 @@ public class VerbDataIntegrityTests
     [Test]
     public void InCorpus_GrayFormsNotInWordlists()
     {
-        var unexpectedInCorpus = new List<string>();
+        var verbsWithIssues = new HashSet<int>();
+        var formIssues = new List<string>();
 
         foreach (var verb in _paliVerbs!)
         {
@@ -393,28 +408,31 @@ public class VerbDataIntegrityTests
             {
                 if (_tipitakaWords!.Contains(form.FullForm))
                 {
-                    unexpectedInCorpus.Add($"{verb.Lemma}: '{form.FullForm}' ({form.Title}) is gray but found in wordlist");
+                    verbsWithIssues.Add(verb.Id);
+                    formIssues.Add($"{verb.Lemma}: '{form.FullForm}' ({form.Title}) is gray but found in wordlist");
                 }
             }
         }
 
         // Report discrepancies
-        TestContext.WriteLine($"Gray forms unexpectedly in wordlist: {unexpectedInCorpus.Count}");
-        foreach (var msg in unexpectedInCorpus.Take(20))
+        TestContext.WriteLine($"Verbs with gray forms unexpectedly in wordlist: {verbsWithIssues.Count}");
+        TestContext.WriteLine($"Total form issues: {formIssues.Count}");
+        foreach (var msg in formIssues.Take(20))
         {
             TestContext.WriteLine($"  {msg}");
         }
 
-        // Tightened from 5% to 2% to catch real data issues
-        var discrepancyRate = (double)unexpectedInCorpus.Count / _paliVerbs!.Count;
+        // Rate is % of verbs that have at least one problematic form
+        var discrepancyRate = (double)verbsWithIssues.Count / _paliVerbs!.Count;
         discrepancyRate.Should().BeLessThan(0.02,
-            "less than 2% of words should have gray forms that appear in wordlists");
+            "less than 2% of verbs should have gray forms that appear in wordlists");
     }
 
     [Test]
     public void InCorpus_NonGrayFormsInWordlists()
     {
-        var missingFromWordlist = new List<string>();
+        var verbsWithIssues = new HashSet<int>();
+        var formIssues = new List<string>();
 
         foreach (var verb in _paliVerbs!)
         {
@@ -430,22 +448,24 @@ public class VerbDataIntegrityTests
             {
                 if (!_tipitakaWords!.Contains(form.FullForm))
                 {
-                    missingFromWordlist.Add($"{verb.Lemma}: '{form.FullForm}' ({form.Title}) is non-gray but missing from wordlist");
+                    verbsWithIssues.Add(verb.Id);
+                    formIssues.Add($"{verb.Lemma}: '{form.FullForm}' ({form.Title}) is non-gray but missing from wordlist");
                 }
             }
         }
 
         // Report discrepancies
-        TestContext.WriteLine($"Non-gray forms missing from wordlist: {missingFromWordlist.Count}");
-        foreach (var msg in missingFromWordlist.Take(20))
+        TestContext.WriteLine($"Verbs with non-gray forms missing from wordlist: {verbsWithIssues.Count}");
+        TestContext.WriteLine($"Total form issues: {formIssues.Count}");
+        foreach (var msg in formIssues.Take(20))
         {
             TestContext.WriteLine($"  {msg}");
         }
 
-        // Tightened from 10% to 5%
-        var discrepancyRate = (double)missingFromWordlist.Count / _paliVerbs!.Count;
+        // Rate is % of verbs that have at least one problematic form
+        var discrepancyRate = (double)verbsWithIssues.Count / _paliVerbs!.Count;
         discrepancyRate.Should().BeLessThan(0.05,
-            "less than 5% of words should have non-gray forms missing from wordlists");
+            "less than 5% of verbs should have non-gray forms missing from wordlists");
     }
 
     [Test]
@@ -607,6 +627,130 @@ public class VerbDataIntegrityTests
 
         outOfRange.Should().BeEmpty(
             "all verb lemma_ids should be in range 70001-99999");
+    }
+
+    #endregion
+
+    #region Irregular Form Tests
+
+    [Test]
+    public void IrregularVerbs_CorpusFormsHaveIrregularFormEntries()
+    {
+        // Get irregular verbs using DPD-sourced patterns
+        var irregularVerbs = _paliVerbs!
+            .Where(v => _dpdIrregularVerbPatterns!.Contains(v.Pattern))
+            .ToList();
+
+        if (irregularVerbs.Count == 0)
+        {
+            Assert.Inconclusive("No irregular verbs found in pali.db");
+            return;
+        }
+
+        // Get irregular verb lemma_ids
+        var irregularLemmaIds = irregularVerbs
+            .Select(v => v.LemmaId)
+            .ToHashSet();
+
+        // Get irregular form_ids from the irregular_forms table
+        var irregularFormIds = _paliDb!.GetIrregularVerbFormIds();
+
+        // Check that corpus forms for irregular verbs have corresponding irregular_forms entries
+        var missingIrregularForms = new List<string>();
+
+        foreach (var corpusFormId in _corpusConjugationFormIds!)
+        {
+            // Extract lemma_id from form_id (first 5 digits)
+            var lemmaId = (int)(corpusFormId / 100_000);
+
+            // Skip if not an irregular verb
+            if (!irregularLemmaIds.Contains(lemmaId))
+                continue;
+
+            // Check if this corpus form has an irregular form entry
+            if (!irregularFormIds.Contains(corpusFormId))
+            {
+                var verb = irregularVerbs.FirstOrDefault(v => v.LemmaId == lemmaId);
+                missingIrregularForms.Add(
+                    $"form_id={corpusFormId} (lemma={verb?.Lemma}, pattern={verb?.Pattern})");
+            }
+        }
+
+        // Report findings
+        TestContext.WriteLine($"Irregular verbs: {irregularVerbs.Count}");
+        TestContext.WriteLine($"Irregular corpus form_ids checked: {_corpusConjugationFormIds.Count(f => irregularLemmaIds.Contains((int)(f / 100_000)))}");
+        TestContext.WriteLine($"Irregular form entries: {irregularFormIds.Count}");
+        TestContext.WriteLine($"Missing irregular form entries: {missingIrregularForms.Count}");
+
+        foreach (var msg in missingIrregularForms.Take(20))
+        {
+            TestContext.WriteLine($"  {msg}");
+        }
+
+        // Note: Some mismatch is expected because corpus_forms uses ending indices from
+        // template parsing, while irregular_forms uses indices from HTML parsing.
+        // The forms are the same but may have different ending_index values.
+        var mismatchRate = irregularLemmaIds.Count > 0
+            ? (double)missingIrregularForms.Count / _corpusConjugationFormIds.Count(f => irregularLemmaIds.Contains((int)(f / 100_000)))
+            : 0;
+        TestContext.WriteLine($"Mismatch rate: {mismatchRate:P1}");
+
+        // Allow up to 5% mismatch due to index ordering differences between template and HTML
+        mismatchRate.Should().BeLessThan(0.05,
+            "less than 5% of irregular corpus forms should have index misalignment with irregular_forms table");
+    }
+
+    /// <summary>
+    /// Verify that our VerbPattern enum classification matches DPD's inflection_templates.
+    /// If DPD changes pattern classification, this test will catch it.
+    /// </summary>
+    [Test]
+    public void DpdPatternClassification_MatchesOurEnumClassification()
+    {
+        // Get our enum's irregular patterns (exclude None and _Irregular marker)
+        var enumIrregulars = Enum.GetValues<VerbPattern>()
+            .Where(p => !p.IsMarkerOrNone() && p.IsIrregular())
+            .Select(p => p.ToDbString())
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var enumRegulars = Enum.GetValues<VerbPattern>()
+            .Where(p => !p.IsMarkerOrNone() && !p.IsIrregular())
+            .Select(p => p.ToDbString())
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        // Compare against DPD's classification
+        var onlyInEnumIrreg = enumIrregulars.Except(_dpdIrregularVerbPatterns!, StringComparer.OrdinalIgnoreCase).ToList();
+        var onlyInDpdIrreg = _dpdIrregularVerbPatterns!.Where(p => VerbPatternHelper.TryParse(p, out _))
+            .Except(enumIrregulars, StringComparer.OrdinalIgnoreCase).ToList();
+
+        var onlyInEnumReg = enumRegulars.Except(_dpdRegularVerbPatterns!, StringComparer.OrdinalIgnoreCase).ToList();
+        var onlyInDpdReg = _dpdRegularVerbPatterns!.Where(p => VerbPatternHelper.TryParse(p, out _))
+            .Except(enumRegulars, StringComparer.OrdinalIgnoreCase).ToList();
+
+        // Report differences
+        TestContext.WriteLine($"Enum irregular patterns: {enumIrregulars.Count}");
+        TestContext.WriteLine($"DPD irregular verb patterns: {_dpdIrregularVerbPatterns!.Count}");
+        TestContext.WriteLine($"Enum regular patterns: {enumRegulars.Count}");
+        TestContext.WriteLine($"DPD regular verb patterns: {_dpdRegularVerbPatterns!.Count}");
+
+        if (onlyInEnumIrreg.Count > 0)
+            TestContext.WriteLine($"Marked irregular in enum but not in DPD: {string.Join(", ", onlyInEnumIrreg)}");
+        if (onlyInDpdIrreg.Count > 0)
+            TestContext.WriteLine($"Marked irregular in DPD but not in enum: {string.Join(", ", onlyInDpdIrreg)}");
+        if (onlyInEnumReg.Count > 0)
+            TestContext.WriteLine($"Marked regular in enum but not in DPD: {string.Join(", ", onlyInEnumReg)}");
+        if (onlyInDpdReg.Count > 0)
+            TestContext.WriteLine($"Marked regular in DPD but not in enum: {string.Join(", ", onlyInDpdReg)}");
+
+        // All patterns we track should match DPD classification
+        onlyInEnumIrreg.Should().BeEmpty(
+            "all enum irregular patterns should be marked 'irreg' in DPD inflection_templates");
+        onlyInDpdIrreg.Should().BeEmpty(
+            "all DPD 'irreg' verb patterns we track should be marked irregular in enum");
+        onlyInEnumReg.Should().BeEmpty(
+            "all enum regular patterns should NOT be marked 'irreg' in DPD");
+        onlyInDpdReg.Should().BeEmpty(
+            "all DPD regular verb patterns we track should NOT be marked irregular in enum");
     }
 
     #endregion

@@ -1,3 +1,4 @@
+using PaliPractice.Models.Inflection;
 using PaliPractice.Services.UserData;
 
 namespace PaliPractice.Tests.UserData;
@@ -42,19 +43,66 @@ public class SettingsKeysTests
     }
 
     [Test]
-    public void NounsDefaultMascPatterns_ShouldNotContainNoneOrMarkers()
+    public void NounsDefaultMascPatterns_ShouldOnlyContainBasePatterns()
     {
         SettingsKeys.NounsDefaultMascPatterns.Should().NotContain(NounPattern.None);
-        SettingsKeys.NounsDefaultMascPatterns.Should().NotContain(NounPattern._RegularFem);
-        SettingsKeys.NounsDefaultMascPatterns.Should().NotContain(NounPattern._RegularNeut);
-        SettingsKeys.NounsDefaultMascPatterns.Should().NotContain(NounPattern._Irregular);
+
+        // All default patterns must be base patterns (not variants or irregulars)
+        foreach (var pattern in SettingsKeys.NounsDefaultMascPatterns)
+        {
+            pattern.IsBase().Should().BeTrue(
+                $"{pattern} in NounsDefaultMascPatterns should be a base pattern");
+            pattern.IsVariant().Should().BeFalse(
+                $"{pattern} should not be a variant pattern");
+            pattern.IsIrregular().Should().BeFalse(
+                $"{pattern} should not be an irregular pattern");
+        }
     }
 
     [Test]
-    public void VerbsDefaultPatterns_ShouldNotContainNoneOrMarkers()
+    public void NounsDefaultFemPatterns_ShouldOnlyContainBasePatterns()
+    {
+        SettingsKeys.NounsDefaultFemPatterns.Should().NotContain(NounPattern.None);
+
+        foreach (var pattern in SettingsKeys.NounsDefaultFemPatterns)
+        {
+            pattern.IsBase().Should().BeTrue(
+                $"{pattern} in NounsDefaultFemPatterns should be a base pattern");
+            pattern.IsVariant().Should().BeFalse(
+                $"{pattern} should not be a variant pattern");
+            pattern.IsIrregular().Should().BeFalse(
+                $"{pattern} should not be an irregular pattern");
+        }
+    }
+
+    [Test]
+    public void NounsDefaultNeutPatterns_ShouldOnlyContainBasePatterns()
+    {
+        SettingsKeys.NounsDefaultNeutPatterns.Should().NotContain(NounPattern.None);
+
+        foreach (var pattern in SettingsKeys.NounsDefaultNeutPatterns)
+        {
+            pattern.IsBase().Should().BeTrue(
+                $"{pattern} in NounsDefaultNeutPatterns should be a base pattern");
+            pattern.IsVariant().Should().BeFalse(
+                $"{pattern} should not be a variant pattern");
+            pattern.IsIrregular().Should().BeFalse(
+                $"{pattern} should not be an irregular pattern");
+        }
+    }
+
+    [Test]
+    public void VerbsDefaultPatterns_ShouldOnlyContainRegularPatterns()
     {
         SettingsKeys.VerbsDefaultPatterns.Should().NotContain(VerbPattern.None);
         SettingsKeys.VerbsDefaultPatterns.Should().NotContain(VerbPattern._Irregular);
+
+        // All default patterns must be regular (not irregular)
+        foreach (var pattern in SettingsKeys.VerbsDefaultPatterns)
+        {
+            pattern.IsIrregular().Should().BeFalse(
+                $"{pattern} in VerbsDefaultPatterns should not be an irregular pattern");
+        }
     }
 
     #endregion

@@ -281,6 +281,48 @@ public class PaliDbLoader : IDisposable
         return lemmaIds;
     }
 
+    /// <summary>
+    /// Load all irregular noun form_ids from pali.db.
+    /// </summary>
+    public HashSet<int> GetIrregularNounFormIds()
+    {
+        var formIds = new HashSet<int>();
+
+        const string sql = "SELECT form_id FROM nouns_irregular_forms";
+
+        using var command = _connection.CreateCommand();
+        command.CommandText = sql;
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            formIds.Add(reader.GetInt32(0));
+        }
+
+        return formIds;
+    }
+
+    /// <summary>
+    /// Load all irregular verb form_ids from pali.db.
+    /// </summary>
+    public HashSet<long> GetIrregularVerbFormIds()
+    {
+        var formIds = new HashSet<long>();
+
+        const string sql = "SELECT form_id FROM verbs_irregular_forms";
+
+        using var command = _connection.CreateCommand();
+        command.CommandText = sql;
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            formIds.Add(reader.GetInt64(0));
+        }
+
+        return formIds;
+    }
+
     public void Dispose()
     {
         if (!_disposed)

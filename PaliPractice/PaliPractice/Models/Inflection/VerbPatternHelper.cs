@@ -59,9 +59,22 @@ public static class VerbPatternHelper
     extension(VerbPattern pattern)
     {
         /// <summary>
-        /// Converts enum to database string: VerbPattern.Ati → "ati pr"
+        /// Returns true if the pattern is None or a breakpoint marker (_Irregular).
+        /// These values should never appear in runtime data.
         /// </summary>
-        public string ToDbString() => pattern switch
+        public bool IsMarkerOrNone()
+            => pattern == VerbPattern.None || pattern == VerbPattern._Irregular;
+
+        /// <summary>
+        /// Converts enum to database string: VerbPattern.Ati → "ati pr"
+        /// Throws for None or marker patterns.
+        /// </summary>
+        public string ToDbString()
+        {
+            if (pattern.IsMarkerOrNone())
+                throw new InvalidOperationException($"Cannot convert marker/None to db string: {pattern}");
+
+            return pattern switch
         {
             // Regular (traditional order: a, ā, e, o)
             VerbPattern.Ati => "ati pr",
@@ -85,8 +98,9 @@ public static class VerbPatternHelper
             VerbPattern.Brūti => "brūti pr",
             VerbPattern.Karoti => "karoti pr",
 
-            _ => throw new ArgumentOutOfRangeException(nameof(pattern), pattern, "Unknown or marker pattern")
-        };
+            _ => throw new ArgumentOutOfRangeException(nameof(pattern), pattern, "Unknown pattern")
+            };
+        }
 
         /// <summary>
         /// Gets UI display label (stem only): VerbPattern.Ati → "ati"

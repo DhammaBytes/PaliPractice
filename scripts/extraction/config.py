@@ -32,15 +32,31 @@ ALL_VERB_POS = ['vb', 'pr', 'aor', 'fut', 'opt', 'imp', 'cond',
                 'caus', 'pass', 'reflx', 'deno', 'desid', 'intens', 'trans',
                 'intrans', 'ditrans', 'impers', 'inf', 'abs', 'ger', 'comp vb']
 
-# Irregular patterns that need HTML parsing instead of template-based extraction
-# These match the C# NounPattern and VerbPattern enum irregular values
+# Truly irregular patterns - forms must be read from HTML (DPD like='irreg')
+# These match the C# NounPattern enum values after _Irregular breakpoint
 IRREGULAR_NOUN_PATTERNS = {
-    "rāja masc", "brahma masc", "kamma nt", "addha masc",
-    "a masc east", "a masc pl", "a2 masc", "go masc", "yuva masc",
-    "ī masc pl", "jantu masc", "u masc pl", "ar2 masc",
-    "anta masc", "arahant masc", "bhavant masc", "santa masc",
-    "parisā fem", "jāti fem", "ratti fem", "nadī fem", "pokkharaṇī fem",
-    "mātar fem", "a nt east", "a nt irreg", "a nt pl"
+    # Irregular Masculine (9)
+    "addha masc", "arahant masc", "bhavant masc", "brahma masc",
+    "go masc", "jantu masc", "rāja masc", "santa masc", "yuva masc",
+    # Irregular Feminine (6)
+    "jāti fem", "mātar fem", "nadī fem", "parisā fem",
+    "pokkharaṇī fem", "ratti fem",
+    # Irregular Neuter (1)
+    "kamma nt"
+}
+
+# Variant patterns - use stem+ending but with alternate ending tables
+# These are grouped with their parent base pattern but have different endings
+# Forms extracted via templates (like base patterns), not HTML
+VARIANT_NOUN_PATTERNS = {
+    # Variant Masculine → AMasc, AntMasc, ArMasc, ĪMasc, UMasc
+    "a masc east", "a masc pl", "a2 masc",
+    "anta masc",
+    "ar2 masc",
+    "ī masc pl",
+    "u masc pl",
+    # Variant Neuter → ANeut
+    "a nt east", "a nt irreg", "a nt pl"
 }
 
 IRREGULAR_VERB_PATTERNS = {

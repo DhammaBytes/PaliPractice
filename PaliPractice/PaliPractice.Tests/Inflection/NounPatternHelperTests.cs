@@ -5,11 +5,15 @@ namespace PaliPractice.Tests.Inflection;
 /// <summary>
 /// Tests for NounPatternHelper methods using breakpoint-based pattern hierarchy.
 ///
-/// Enum structure:
-/// - Regular Masculine (pattern &lt; _RegularFem)
-/// - Regular Feminine (_RegularFem &lt; pattern &lt; _RegularNeut)
-/// - Regular Neuter (_RegularNeut &lt; pattern &lt; _Irregular)
-/// - Irregular (pattern &gt;= _Irregular)
+/// Three-tier structure per gender: Base → Variant → (next gender or Irregular)
+///
+/// Breakpoints:
+/// - pattern &lt; _VariantMasc → Base Masculine
+/// - _VariantMasc &lt; pattern &lt; _BaseFem → Variant Masculine
+/// - _BaseFem &lt; pattern &lt; _BaseNeut → Base Feminine
+/// - _BaseNeut &lt; pattern &lt; _VariantNeut → Base Neuter
+/// - _VariantNeut &lt; pattern &lt; _Irregular → Variant Neuter
+/// - pattern &gt; _Irregular → Irregular
 /// </summary>
 [TestFixture]
 public class NounPatternHelperTests
@@ -17,7 +21,7 @@ public class NounPatternHelperTests
     #region ToDbString / Parse roundtrip tests
 
     [Test]
-    public void ToDbString_RegularPatterns_ReturnsCorrectFormat()
+    public void ToDbString_BasePatterns_ReturnsCorrectFormat()
     {
         NounPattern.AMasc.ToDbString().Should().Be("a masc");
         NounPattern.ANeut.ToDbString().Should().Be("a nt");
@@ -25,6 +29,14 @@ public class NounPatternHelperTests
         NounPattern.ĪMasc.ToDbString().Should().Be("ī masc");
         NounPattern.ArMasc.ToDbString().Should().Be("ar masc");
         NounPattern.AntMasc.ToDbString().Should().Be("ant masc");
+    }
+
+    [Test]
+    public void ToDbString_VariantPatterns_ReturnsCorrectFormat()
+    {
+        NounPattern.A2Masc.ToDbString().Should().Be("a2 masc");
+        NounPattern.AMascEast.ToDbString().Should().Be("a masc east");
+        NounPattern.ANeutIrreg.ToDbString().Should().Be("a nt irreg");
     }
 
     [Test]
@@ -42,8 +54,10 @@ public class NounPatternHelperTests
         // Test all patterns except None and breakpoint markers
         var usablePatterns = Enum.GetValues<NounPattern>()
             .Where(p => p != NounPattern.None &&
-                        p != NounPattern._RegularFem &&
-                        p != NounPattern._RegularNeut &&
+                        p != NounPattern._VariantMasc &&
+                        p != NounPattern._BaseFem &&
+                        p != NounPattern._BaseNeut &&
+                        p != NounPattern._VariantNeut &&
                         p != NounPattern._Irregular);
 
         foreach (var pattern in usablePatterns)
@@ -72,10 +86,10 @@ public class NounPatternHelperTests
 
     #endregion
 
-    #region IsIrregular tests (breakpoint-based)
+    #region IsIrregular tests
 
     [Test]
-    public void IsIrregular_RegularMasculine_ReturnsFalse()
+    public void IsIrregular_BaseMasculine_ReturnsFalse()
     {
         NounPattern.AMasc.IsIrregular().Should().BeFalse();
         NounPattern.IMasc.IsIrregular().Should().BeFalse();
@@ -88,7 +102,7 @@ public class NounPatternHelperTests
     }
 
     [Test]
-    public void IsIrregular_RegularFeminine_ReturnsFalse()
+    public void IsIrregular_BaseFeminine_ReturnsFalse()
     {
         NounPattern.ĀFem.IsIrregular().Should().BeFalse();
         NounPattern.IFem.IsIrregular().Should().BeFalse();
@@ -98,7 +112,7 @@ public class NounPatternHelperTests
     }
 
     [Test]
-    public void IsIrregular_RegularNeuter_ReturnsFalse()
+    public void IsIrregular_BaseNeuter_ReturnsFalse()
     {
         NounPattern.ANeut.IsIrregular().Should().BeFalse();
         NounPattern.INeut.IsIrregular().Should().BeFalse();
@@ -106,100 +120,195 @@ public class NounPatternHelperTests
     }
 
     [Test]
-    public void IsIrregular_IrregularPatterns_ReturnsTrue()
+    public void IsIrregular_VariantPatterns_ReturnsFalse()
     {
-        // Sample from each irregular group
+        // Variant patterns use stem+ending (alternate tables), not irregular
+        NounPattern.A2Masc.IsIrregular().Should().BeFalse();
+        NounPattern.AMascEast.IsIrregular().Should().BeFalse();
+        NounPattern.AMascPl.IsIrregular().Should().BeFalse();
+        NounPattern.AntaMasc.IsIrregular().Should().BeFalse();
+        NounPattern.ANeutEast.IsIrregular().Should().BeFalse();
+        NounPattern.ANeutPl.IsIrregular().Should().BeFalse();
+    }
+
+    [Test]
+    public void IsIrregular_TrulyIrregularPatterns_ReturnsTrue()
+    {
+        // Only patterns with DPD like='irreg' are truly irregular
         NounPattern.RājaMasc.IsIrregular().Should().BeTrue();
         NounPattern.BrahmaMasc.IsIrregular().Should().BeTrue();
-        NounPattern.ĪMascPl.IsIrregular().Should().BeTrue();
         NounPattern.ArahantMasc.IsIrregular().Should().BeTrue();
         NounPattern.ParisāFem.IsIrregular().Should().BeTrue();
         NounPattern.NadīFem.IsIrregular().Should().BeTrue();
         NounPattern.KammaNeut.IsIrregular().Should().BeTrue();
-        NounPattern.ANeutPl.IsIrregular().Should().BeTrue();
     }
 
     [Test]
     public void IsIrregular_BreakpointMarkers_ReturnsFalse()
     {
-        // Breakpoint markers are not real patterns, so IsIrregular returns false
-        // Only actual patterns > _Irregular are considered irregular
-        NounPattern._RegularFem.IsIrregular().Should().BeFalse();
-        NounPattern._RegularNeut.IsIrregular().Should().BeFalse();
+        NounPattern._VariantMasc.IsIrregular().Should().BeFalse();
+        NounPattern._BaseFem.IsIrregular().Should().BeFalse();
+        NounPattern._BaseNeut.IsIrregular().Should().BeFalse();
+        NounPattern._VariantNeut.IsIrregular().Should().BeFalse();
         NounPattern._Irregular.IsIrregular().Should().BeFalse();
     }
 
     #endregion
 
-    #region ParentRegular tests
+    #region IsVariant tests
 
     [Test]
-    public void ParentRegular_IrregularMasculineA_ReturnsAMasc()
+    public void IsVariant_VariantMasculine_ReturnsTrue()
     {
-        NounPattern.RājaMasc.ParentRegular().Should().Be(NounPattern.AMasc);
-        NounPattern.BrahmaMasc.ParentRegular().Should().Be(NounPattern.AMasc);
-        NounPattern.GoMasc.ParentRegular().Should().Be(NounPattern.AMasc);
-        NounPattern.YuvaMasc.ParentRegular().Should().Be(NounPattern.AMasc);
-        NounPattern.A2Masc.ParentRegular().Should().Be(NounPattern.AMasc);
-        NounPattern.AMascEast.ParentRegular().Should().Be(NounPattern.AMasc);
-        NounPattern.AMascPl.ParentRegular().Should().Be(NounPattern.AMasc);
-        NounPattern.AddhaMasc.ParentRegular().Should().Be(NounPattern.AMasc);
+        NounPattern.A2Masc.IsVariant().Should().BeTrue();
+        NounPattern.AMascEast.IsVariant().Should().BeTrue();
+        NounPattern.AMascPl.IsVariant().Should().BeTrue();
+        NounPattern.AntaMasc.IsVariant().Should().BeTrue();
+        NounPattern.Ar2Masc.IsVariant().Should().BeTrue();
+        NounPattern.ĪMascPl.IsVariant().Should().BeTrue();
+        NounPattern.UMascPl.IsVariant().Should().BeTrue();
     }
 
     [Test]
-    public void ParentRegular_IrregularMasculineOther_ReturnsCorrectParent()
+    public void IsVariant_VariantNeuter_ReturnsTrue()
     {
-        NounPattern.ĪMascPl.ParentRegular().Should().Be(NounPattern.ĪMasc);
-        NounPattern.JantuMasc.ParentRegular().Should().Be(NounPattern.UMasc);
-        NounPattern.UMascPl.ParentRegular().Should().Be(NounPattern.UMasc);
-        NounPattern.Ar2Masc.ParentRegular().Should().Be(NounPattern.ArMasc);
+        NounPattern.ANeutEast.IsVariant().Should().BeTrue();
+        NounPattern.ANeutIrreg.IsVariant().Should().BeTrue();
+        NounPattern.ANeutPl.IsVariant().Should().BeTrue();
     }
 
     [Test]
-    public void ParentRegular_IrregularAntMasc_ReturnsAntMasc()
+    public void IsVariant_BasePatterns_ReturnsFalse()
     {
-        NounPattern.AntaMasc.ParentRegular().Should().Be(NounPattern.AntMasc);
-        NounPattern.ArahantMasc.ParentRegular().Should().Be(NounPattern.AntMasc);
-        NounPattern.BhavantMasc.ParentRegular().Should().Be(NounPattern.AntMasc);
-        NounPattern.SantaMasc.ParentRegular().Should().Be(NounPattern.AntMasc);
+        NounPattern.AMasc.IsVariant().Should().BeFalse();
+        NounPattern.ĀFem.IsVariant().Should().BeFalse();
+        NounPattern.ANeut.IsVariant().Should().BeFalse();
     }
 
     [Test]
-    public void ParentRegular_IrregularNeuter_ReturnsANeut()
+    public void IsVariant_IrregularPatterns_ReturnsFalse()
     {
-        NounPattern.KammaNeut.ParentRegular().Should().Be(NounPattern.ANeut);
-        NounPattern.ANeutEast.ParentRegular().Should().Be(NounPattern.ANeut);
-        NounPattern.ANeutIrreg.ParentRegular().Should().Be(NounPattern.ANeut);
-        NounPattern.ANeutPl.ParentRegular().Should().Be(NounPattern.ANeut);
-    }
-
-    [Test]
-    public void ParentRegular_IrregularFeminine_ReturnsCorrectParent()
-    {
-        NounPattern.ParisāFem.ParentRegular().Should().Be(NounPattern.ĀFem);
-        // jāti ends in short i, ratti ends in short i
-        NounPattern.JātiFem.ParentRegular().Should().Be(NounPattern.IFem);
-        NounPattern.RattiFem.ParentRegular().Should().Be(NounPattern.IFem);
-        // nadī ends in long ī, pokkharaṇī ends in long ī
-        NounPattern.NadīFem.ParentRegular().Should().Be(NounPattern.ĪFem);
-        NounPattern.PokkharaṇīFem.ParentRegular().Should().Be(NounPattern.ĪFem);
-        NounPattern.MātarFem.ParentRegular().Should().Be(NounPattern.ArFem);
-    }
-
-    [Test]
-    public void ParentRegular_RegularPattern_ThrowsInvalidOperation()
-    {
-        var act = () => NounPattern.AMasc.ParentRegular();
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*not an irregular*");
+        NounPattern.RājaMasc.IsVariant().Should().BeFalse();
+        NounPattern.KammaNeut.IsVariant().Should().BeFalse();
     }
 
     #endregion
 
-    #region GetGender tests (breakpoint-based)
+    #region IsBase tests
 
     [Test]
-    public void GetGender_RegularMasculine_ReturnsMasculine()
+    public void IsBase_BasePatterns_ReturnsTrue()
+    {
+        NounPattern.AMasc.IsBase().Should().BeTrue();
+        NounPattern.ĀFem.IsBase().Should().BeTrue();
+        NounPattern.ANeut.IsBase().Should().BeTrue();
+    }
+
+    [Test]
+    public void IsBase_VariantPatterns_ReturnsFalse()
+    {
+        NounPattern.A2Masc.IsBase().Should().BeFalse();
+        NounPattern.ANeutPl.IsBase().Should().BeFalse();
+    }
+
+    [Test]
+    public void IsBase_IrregularPatterns_ReturnsFalse()
+    {
+        NounPattern.RājaMasc.IsBase().Should().BeFalse();
+        NounPattern.KammaNeut.IsBase().Should().BeFalse();
+    }
+
+    #endregion
+
+    #region GetPatternType tests
+
+    [Test]
+    public void GetPatternType_ReturnsCorrectType()
+    {
+        NounPattern.AMasc.GetPatternType().Should().Be(PatternType.Base);
+        NounPattern.A2Masc.GetPatternType().Should().Be(PatternType.Variant);
+        NounPattern.RājaMasc.GetPatternType().Should().Be(PatternType.Irregular);
+    }
+
+    #endregion
+
+    #region ParentBase tests
+
+    [Test]
+    public void ParentBase_VariantMasculine_ReturnsCorrectParent()
+    {
+        NounPattern.A2Masc.ParentBase().Should().Be(NounPattern.AMasc);
+        NounPattern.AMascEast.ParentBase().Should().Be(NounPattern.AMasc);
+        NounPattern.AMascPl.ParentBase().Should().Be(NounPattern.AMasc);
+        NounPattern.AntaMasc.ParentBase().Should().Be(NounPattern.AntMasc);
+        NounPattern.Ar2Masc.ParentBase().Should().Be(NounPattern.ArMasc);
+        NounPattern.ĪMascPl.ParentBase().Should().Be(NounPattern.ĪMasc);
+        NounPattern.UMascPl.ParentBase().Should().Be(NounPattern.UMasc);
+    }
+
+    [Test]
+    public void ParentBase_VariantNeuter_ReturnsANeut()
+    {
+        NounPattern.ANeutEast.ParentBase().Should().Be(NounPattern.ANeut);
+        NounPattern.ANeutIrreg.ParentBase().Should().Be(NounPattern.ANeut);
+        NounPattern.ANeutPl.ParentBase().Should().Be(NounPattern.ANeut);
+    }
+
+    [Test]
+    public void ParentBase_IrregularMasculineA_ReturnsAMasc()
+    {
+        NounPattern.RājaMasc.ParentBase().Should().Be(NounPattern.AMasc);
+        NounPattern.BrahmaMasc.ParentBase().Should().Be(NounPattern.AMasc);
+        NounPattern.GoMasc.ParentBase().Should().Be(NounPattern.AMasc);
+        NounPattern.YuvaMasc.ParentBase().Should().Be(NounPattern.AMasc);
+        NounPattern.AddhaMasc.ParentBase().Should().Be(NounPattern.AMasc);
+    }
+
+    [Test]
+    public void ParentBase_IrregularMasculineOther_ReturnsCorrectParent()
+    {
+        NounPattern.JantuMasc.ParentBase().Should().Be(NounPattern.UMasc);
+    }
+
+    [Test]
+    public void ParentBase_IrregularAntMasc_ReturnsAntMasc()
+    {
+        NounPattern.ArahantMasc.ParentBase().Should().Be(NounPattern.AntMasc);
+        NounPattern.BhavantMasc.ParentBase().Should().Be(NounPattern.AntMasc);
+        NounPattern.SantaMasc.ParentBase().Should().Be(NounPattern.AntMasc);
+    }
+
+    [Test]
+    public void ParentBase_IrregularNeuter_ReturnsANeut()
+    {
+        NounPattern.KammaNeut.ParentBase().Should().Be(NounPattern.ANeut);
+    }
+
+    [Test]
+    public void ParentBase_IrregularFeminine_ReturnsCorrectParent()
+    {
+        NounPattern.ParisāFem.ParentBase().Should().Be(NounPattern.ĀFem);
+        NounPattern.JātiFem.ParentBase().Should().Be(NounPattern.IFem);
+        NounPattern.RattiFem.ParentBase().Should().Be(NounPattern.IFem);
+        NounPattern.NadīFem.ParentBase().Should().Be(NounPattern.ĪFem);
+        NounPattern.PokkharaṇīFem.ParentBase().Should().Be(NounPattern.ĪFem);
+        NounPattern.MātarFem.ParentBase().Should().Be(NounPattern.ArFem);
+    }
+
+    [Test]
+    public void ParentBase_BasePattern_ThrowsInvalidOperation()
+    {
+        var act = () => NounPattern.AMasc.ParentBase();
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*not a variant or irregular*");
+    }
+
+    #endregion
+
+    #region GetGender tests
+
+    [Test]
+    public void GetGender_BaseMasculine_ReturnsMasculine()
     {
         NounPattern.AMasc.GetGender().Should().Be(Gender.Masculine);
         NounPattern.IMasc.GetGender().Should().Be(Gender.Masculine);
@@ -212,7 +321,7 @@ public class NounPatternHelperTests
     }
 
     [Test]
-    public void GetGender_RegularFeminine_ReturnsFeminine()
+    public void GetGender_BaseFeminine_ReturnsFeminine()
     {
         NounPattern.ĀFem.GetGender().Should().Be(Gender.Feminine);
         NounPattern.IFem.GetGender().Should().Be(Gender.Feminine);
@@ -222,7 +331,7 @@ public class NounPatternHelperTests
     }
 
     [Test]
-    public void GetGender_RegularNeuter_ReturnsNeuter()
+    public void GetGender_BaseNeuter_ReturnsNeuter()
     {
         NounPattern.ANeut.GetGender().Should().Be(Gender.Neuter);
         NounPattern.INeut.GetGender().Should().Be(Gender.Neuter);
@@ -230,13 +339,26 @@ public class NounPatternHelperTests
     }
 
     [Test]
+    public void GetGender_VariantMasculine_ReturnsMasculine()
+    {
+        NounPattern.A2Masc.GetGender().Should().Be(Gender.Masculine);
+        NounPattern.AMascPl.GetGender().Should().Be(Gender.Masculine);
+        NounPattern.ĪMascPl.GetGender().Should().Be(Gender.Masculine);
+    }
+
+    [Test]
+    public void GetGender_VariantNeuter_ReturnsNeuter()
+    {
+        NounPattern.ANeutEast.GetGender().Should().Be(Gender.Neuter);
+        NounPattern.ANeutPl.GetGender().Should().Be(Gender.Neuter);
+    }
+
+    [Test]
     public void GetGender_IrregularMasculine_ReturnsMasculine()
     {
-        // Irregulars get gender via ParentRegular recursion
         NounPattern.RājaMasc.GetGender().Should().Be(Gender.Masculine);
         NounPattern.BrahmaMasc.GetGender().Should().Be(Gender.Masculine);
         NounPattern.ArahantMasc.GetGender().Should().Be(Gender.Masculine);
-        NounPattern.ĪMascPl.GetGender().Should().Be(Gender.Masculine);
     }
 
     [Test]
@@ -252,8 +374,6 @@ public class NounPatternHelperTests
     public void GetGender_IrregularNeuter_ReturnsNeuter()
     {
         NounPattern.KammaNeut.GetGender().Should().Be(Gender.Neuter);
-        NounPattern.ANeutEast.GetGender().Should().Be(Gender.Neuter);
-        NounPattern.ANeutPl.GetGender().Should().Be(Gender.Neuter);
     }
 
     #endregion
@@ -277,38 +397,56 @@ public class NounPatternHelperTests
     [Test]
     public void Breakpoints_OrderIsCorrect()
     {
-        // Verify the breakpoint ordering (traditional: a, i, ī, u, ū, ar, ant, as)
-        (NounPattern.AsMasc < NounPattern._RegularFem).Should().BeTrue(
-            "Last regular masculine (as) should be before _RegularFem");
+        // Base masculine → _VariantMasc
+        (NounPattern.AsMasc < NounPattern._VariantMasc).Should().BeTrue(
+            "Last base masculine (as) should be before _VariantMasc");
 
-        (NounPattern._RegularFem < NounPattern.ĀFem).Should().BeTrue(
-            "_RegularFem should be before first regular feminine");
+        // _VariantMasc → Variant masculine → _BaseFem
+        (NounPattern._VariantMasc < NounPattern.A2Masc).Should().BeTrue(
+            "_VariantMasc should be before first variant masculine");
+        (NounPattern.UMascPl < NounPattern._BaseFem).Should().BeTrue(
+            "Last variant masculine should be before _BaseFem");
 
-        (NounPattern.ArFem < NounPattern._RegularNeut).Should().BeTrue(
-            "Last regular feminine should be before _RegularNeut");
+        // _BaseFem → Base feminine → _BaseNeut
+        (NounPattern._BaseFem < NounPattern.ĀFem).Should().BeTrue(
+            "_BaseFem should be before first base feminine");
+        (NounPattern.ArFem < NounPattern._BaseNeut).Should().BeTrue(
+            "Last base feminine should be before _BaseNeut");
 
-        (NounPattern._RegularNeut < NounPattern.ANeut).Should().BeTrue(
-            "_RegularNeut should be before first regular neuter");
+        // _BaseNeut → Base neuter → _VariantNeut
+        (NounPattern._BaseNeut < NounPattern.ANeut).Should().BeTrue(
+            "_BaseNeut should be before first base neuter");
+        (NounPattern.UNeut < NounPattern._VariantNeut).Should().BeTrue(
+            "Last base neuter should be before _VariantNeut");
 
-        (NounPattern.UNeut < NounPattern._Irregular).Should().BeTrue(
-            "Last regular neuter should be before _Irregular");
+        // _VariantNeut → Variant neuter → _Irregular
+        (NounPattern._VariantNeut < NounPattern.ANeutEast).Should().BeTrue(
+            "_VariantNeut should be before first variant neuter");
+        (NounPattern.ANeutPl < NounPattern._Irregular).Should().BeTrue(
+            "Last variant neuter should be before _Irregular");
 
+        // _Irregular → Irregular patterns
         (NounPattern._Irregular < NounPattern.AddhaMasc).Should().BeTrue(
-            "_Irregular should be before first irregular pattern (alphabetical)");
+            "_Irregular should be before first irregular pattern");
     }
 
     [Test]
-    public void AllIrregulars_HaveValidParent()
+    public void AllVariantsAndIrregulars_HaveValidParent()
     {
-        var irregulars = Enum.GetValues<NounPattern>()
-            .Where(p => p >= NounPattern._Irregular &&
-                        p != NounPattern._Irregular);
+        var nonBasePatterns = Enum.GetValues<NounPattern>()
+            .Where(p => p != NounPattern.None &&
+                        p != NounPattern._VariantMasc &&
+                        p != NounPattern._BaseFem &&
+                        p != NounPattern._BaseNeut &&
+                        p != NounPattern._VariantNeut &&
+                        p != NounPattern._Irregular)
+            .Where(p => !p.IsBase());
 
-        foreach (var pattern in irregulars)
+        foreach (var pattern in nonBasePatterns)
         {
-            var parent = pattern.ParentRegular();
-            parent.IsIrregular().Should().BeFalse(
-                $"{pattern}'s parent {parent} should be regular");
+            var parent = pattern.ParentBase();
+            parent.IsBase().Should().BeTrue(
+                $"{pattern}'s parent {parent} should be a base pattern");
             pattern.GetGender().Should().Be(parent.GetGender(),
                 $"{pattern} should have same gender as parent {parent}");
         }

@@ -5,15 +5,11 @@ namespace PaliPractice.Tests.Inflection;
 /// <summary>
 /// Tests for NounPatternHelper methods using breakpoint-based pattern hierarchy.
 ///
-/// Three-tier structure per gender: Base → Variant → (next gender or Irregular)
-///
-/// Breakpoints:
-/// - pattern &lt; _VariantMasc → Base Masculine
-/// - _VariantMasc &lt; pattern &lt; _BaseFem → Variant Masculine
-/// - _BaseFem &lt; pattern &lt; _BaseNeut → Base Feminine
-/// - _BaseNeut &lt; pattern &lt; _VariantNeut → Base Neuter
-/// - _VariantNeut &lt; pattern &lt; _Irregular → Variant Neuter
-/// - pattern &gt; _Irregular → Irregular
+/// Gender-based numbering (reflects Gender enum: Masc=1, Fem=2, Neut=3):
+/// - 101-149 Base Masculine, 151-199 Variant Masculine
+/// - 201-249 Base Feminine, 251-299 Variant Feminine (reserved)
+/// - 301-349 Base Neuter, 351-399 Variant Neuter
+/// - 1101+ Irregular Masculine, 1201+ Irregular Feminine, 1301+ Irregular Neuter
 /// </summary>
 [TestFixture]
 public class NounPatternHelperTests
@@ -56,6 +52,7 @@ public class NounPatternHelperTests
             .Where(p => p != NounPattern.None &&
                         p != NounPattern._VariantMasc &&
                         p != NounPattern._BaseFem &&
+                        p != NounPattern._VariantFem &&
                         p != NounPattern._BaseNeut &&
                         p != NounPattern._VariantNeut &&
                         p != NounPattern._Irregular);
@@ -403,6 +400,7 @@ public class NounPatternHelperTests
             NounPattern.None,
             NounPattern._VariantMasc,
             NounPattern._BaseFem,
+            NounPattern._VariantFem,
             NounPattern._BaseNeut,
             NounPattern._VariantNeut,
             NounPattern._Irregular
@@ -429,10 +427,15 @@ public class NounPatternHelperTests
 
         // Verify base feminine patterns are bounded correctly
         var baseFem = usablePatterns.Where(p =>
-            p > NounPattern._BaseFem && p < NounPattern._BaseNeut).ToList();
+            p > NounPattern._BaseFem && p < NounPattern._VariantFem).ToList();
         baseFem.Should().NotBeEmpty("should have base feminine patterns");
         baseFem.All(p => p.IsBase() && p.GetGender() == Gender.Feminine)
             .Should().BeTrue("all patterns in base feminine range should be base feminine");
+
+        // Variant feminine range is reserved (251-299) - currently empty
+        var variantFem = usablePatterns.Where(p =>
+            p > NounPattern._VariantFem && p < NounPattern._BaseNeut).ToList();
+        variantFem.Should().BeEmpty("variant feminine is reserved, currently empty");
 
         // Verify base neuter patterns are bounded correctly
         var baseNeut = usablePatterns.Where(p =>
@@ -470,6 +473,7 @@ public class NounPatternHelperTests
             .Where(p => p != NounPattern.None &&
                         p != NounPattern._VariantMasc &&
                         p != NounPattern._BaseFem &&
+                        p != NounPattern._VariantFem &&
                         p != NounPattern._BaseNeut &&
                         p != NounPattern._VariantNeut &&
                         p != NounPattern._Irregular)

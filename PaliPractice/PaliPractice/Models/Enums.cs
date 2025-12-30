@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace PaliPractice.Models;
 
 public enum Case
@@ -20,7 +22,6 @@ public enum Tense
     Imperative = 2,
     Optative = 3,
     Future = 4
-    // Aorist = 5
 }
 
 
@@ -28,8 +29,8 @@ public enum Gender
 {
     None,
     Masculine = 1,
-    Neuter = 2,
-    Feminine = 3
+    Feminine = 2,
+    Neuter = 3
 }
 
 public enum Person
@@ -71,19 +72,23 @@ public enum Transitivity
 }
 
 // ReSharper disable InconsistentNaming
+
 /// <summary>
 /// Verb conjugation patterns. All are present tense (pr).
 ///
-/// Structure: Regular patterns → _Irregular → All Irregulars
+/// Structure: Regular patterns (1-9) → _Irregular (100) → Irregulars (101+)
 /// Traditional order for regulars: a, ā, e, o
 /// Irregulars grouped by parent, alphabetical within groups.
+///
+/// Values are explicitly numbered for database stability.
 /// </summary>
 public enum VerbPattern
 {
     // ReSharper disable once UnusedMember.Global
     None = 0,
+
     // ═══════════════════════════════════════════
-    // REGULAR PATTERNS (pattern < _Irregular)
+    // REGULAR PATTERNS (1-9)
     // Traditional order: a, ā, e, o
     // ═══════════════════════════════════════════
     Ati = 1,          // "ati pr"
@@ -92,145 +97,153 @@ public enum VerbPattern
     Oti = 4,          // "oti pr"
 
     // ═══ Breakpoint: End of regular patterns ═══
-    _Irregular,
+    _Irregular = 100,
 
     // ═══════════════════════════════════════════
-    // IRREGULAR PATTERNS (pattern > _Irregular)
+    // IRREGULAR PATTERNS (101+)
     // Grouped by parent, alphabetical within groups.
     // ═══════════════════════════════════════════
 
     // Irregulars → Ati
-    Atthi,        // "atthi pr"
-    Dakkhati,     // "dakkhati pr"
-    Dammi,        // "dammi pr"
-    Hanati,       // "hanati pr"
-    Hoti,         // "hoti pr"
-    Kubbati,      // "kubbati pr"
-    Natthi,       // "natthi pr"
+    Atthi = 101,      // "atthi pr"
+    Dakkhati = 102,   // "dakkhati pr"
+    Dammi = 103,      // "dammi pr"
+    Hanati = 104,     // "hanati pr"
+    Hoti = 105,       // "hoti pr"
+    Kubbati = 106,    // "kubbati pr"
+    Natthi = 107,     // "natthi pr"
 
     // Irregulars → Eti
-    Eti2,         // "eti pr 2"
+    Eti2 = 111,       // "eti pr 2"
 
     // Irregulars → Oti
-    Brūti,        // "brūti pr"
-    Karoti,       // "karoti pr"
+    Brūti = 121,      // "brūti pr"
+    Karoti = 122,     // "karoti pr"
 }
 
 /// <summary>
 /// Noun declension patterns organized by gender with breakpoint markers.
 ///
-/// Three-tier structure per gender: Base → Variant → (next gender or Irregular)
+/// Gender-based numbering reflects Gender enum (Masc=1, Fem=2, Neut=3):
+/// - Masculine: 101-149 base, 151-199 variant
+/// - Feminine:  201-249 base, 251-299 variant
+/// - Neuter:    301-349 base, 351-399 variant
+/// - Irregular: 1101+ masc, 1201+ fem, 1301+ neut
 ///
 /// Breakpoints enable O(1) categorization:
-/// - pattern &lt; _VariantMasc → Base Masculine
-/// - _VariantMasc &lt; pattern &lt; _BaseFem → Variant Masculine
-/// - _BaseFem &lt; pattern &lt; _BaseNeut → Base Feminine (no variants currently)
-/// - _BaseNeut &lt; pattern &lt; _VariantNeut → Base Neuter
-/// - _VariantNeut &lt; pattern &lt; _Irregular → Variant Neuter
-/// - pattern &gt; _Irregular → Irregular (forms from HTML, not stem+ending)
+/// - 101 ≤ pattern &lt; 150 → Base Masculine
+/// - 151 ≤ pattern &lt; 200 → Variant Masculine
+/// - 201 ≤ pattern &lt; 250 → Base Feminine
+/// - 251 ≤ pattern &lt; 300 → Variant Feminine (reserved)
+/// - 301 ≤ pattern &lt; 350 → Base Neuter
+/// - 351 ≤ pattern &lt; 1000 → Variant Neuter
+/// - pattern ≥ 1001 → Irregular (forms from database)
 ///
-/// Base patterns: common stem+ending construction
-/// Variant patterns: alternate ending tables, still computable
-/// Irregular patterns: full forms must be read from database
+/// Values are explicitly numbered for database stability.
 /// </summary>
+[SuppressMessage("ReSharper", "UnusedMember.Global")]
 public enum NounPattern
 {
     // ReSharper disable once UnusedMember.Global
     None = 0,
 
     // ═══════════════════════════════════════════
-    // BASE MASCULINE (pattern < _VariantMasc)
+    // BASE MASCULINE (101-149)
     // Traditional order: a, i, ī, u, ū, ar, ant, as
     // ═══════════════════════════════════════════
-    AMasc = 1,        // "a masc"
-    IMasc,            // "i masc"
-    ĪMasc,            // "ī masc"
-    UMasc,            // "u masc"
-    ŪMasc,            // "ū masc"
-    ArMasc,           // "ar masc"
-    AntMasc,          // "ant masc"
-    AsMasc,           // "as masc"
+    AMasc = 101,      // "a masc"
+    IMasc = 102,      // "i masc"
+    ĪMasc = 103,      // "ī masc"
+    UMasc = 104,      // "u masc"
+    ŪMasc = 105,      // "ū masc"
+    ArMasc = 106,     // "ar masc"
+    AntMasc = 107,    // "ant masc"
+    AsMasc = 108,     // "as masc"
 
     // ═══ Breakpoint: End of base masculine ═══
-    _VariantMasc,
+    _VariantMasc = 150,
 
     // ═══════════════════════════════════════════
-    // VARIANT MASCULINE (_VariantMasc < pattern < _BaseFem)
+    // VARIANT MASCULINE (151-199)
     // Grouped by parent base pattern
     // ═══════════════════════════════════════════
-    A2Masc,           // "a2 masc" → AMasc
-    AMascEast,        // "a masc east" → AMasc
-    AMascPl,          // "a masc pl" → AMasc
-    AntaMasc,         // "anta masc" → AntMasc
-    Ar2Masc,          // "ar2 masc" → ArMasc
-    ĪMascPl,          // "ī masc pl" → ĪMasc
-    UMascPl,          // "u masc pl" → UMasc
+    A2Masc = 151,     // "a2 masc" → AMasc
+    AMascEast = 152,  // "a masc east" → AMasc
+    AMascPl = 153,    // "a masc pl" → AMasc
+    AntaMasc = 154,   // "anta masc" → AntMasc
+    Ar2Masc = 155,    // "ar2 masc" → ArMasc
+    ĪMascPl = 156,    // "ī masc pl" → ĪMasc
+    UMascPl = 157,    // "u masc pl" → UMasc
 
     // ═══ Breakpoint: End of masculine ═══
-    _BaseFem,
+    _BaseFem = 200,
 
     // ═══════════════════════════════════════════
-    // BASE FEMININE (_BaseFem < pattern < _BaseNeut)
+    // BASE FEMININE (201-249)
     // Traditional order: ā, i, ī, u, ar
-    // No variant feminines currently
     // ═══════════════════════════════════════════
-    ĀFem,             // "ā fem"
-    IFem,             // "i fem"
-    ĪFem,             // "ī fem"
-    UFem,             // "u fem"
-    ArFem,            // "ar fem"
+    ĀFem = 201,       // "ā fem"
+    IFem = 202,       // "i fem"
+    ĪFem = 203,       // "ī fem"
+    UFem = 204,       // "u fem"
+    ArFem = 205,      // "ar fem"
+
+    // ═══ Breakpoint: End of base feminine ═══
+    _VariantFem = 250,
+
+    // (No variant feminines currently — reserved 251-299)
 
     // ═══ Breakpoint: End of feminine ═══
-    _BaseNeut,
+    _BaseNeut = 300,
 
     // ═══════════════════════════════════════════
-    // BASE NEUTER (_BaseNeut < pattern < _VariantNeut)
+    // BASE NEUTER (301-349)
     // Traditional order: a, i, u
     // ═══════════════════════════════════════════
-    ANeut,            // "a nt"
-    INeut,            // "i nt"
-    UNeut,            // "u nt"
+    ANeut = 301,      // "a nt"
+    INeut = 302,      // "i nt"
+    UNeut = 303,      // "u nt"
 
     // ═══ Breakpoint: End of base neuter ═══
-    _VariantNeut,
+    _VariantNeut = 350,
 
     // ═══════════════════════════════════════════
-    // VARIANT NEUTER (_VariantNeut < pattern < _Irregular)
+    // VARIANT NEUTER (351-399)
     // All derived from ANeut
     // ═══════════════════════════════════════════
-    ANeutEast,        // "a nt east" → ANeut
-    ANeutIrreg,       // "a nt irreg" → ANeut
-    ANeutPl,          // "a nt pl" → ANeut
+    ANeutEast = 351,  // "a nt east" → ANeut
+    ANeutIrreg = 352, // "a nt irreg" → ANeut
+    ANeutPl = 353,    // "a nt pl" → ANeut
 
     // ═══ Breakpoint: End of computable patterns ═══
-    _Irregular,
+    _Irregular = 1000,
 
     // ═══════════════════════════════════════════
-    // IRREGULAR PATTERNS (pattern > _Irregular)
+    // IRREGULAR PATTERNS (1101+ masc, 1201+ fem, 1301+ neut)
     // Forms must be read from database (DPD like='irreg')
     // Grouped by gender, alphabetical within groups
     // ═══════════════════════════════════════════
 
     // Irregular Masculine (9) — grouped by parent base
-    AddhaMasc,        // "addha masc" → AMasc
-    ArahantMasc,      // "arahant masc" → AntMasc
-    BhavantMasc,      // "bhavant masc" → AntMasc
-    BrahmaMasc,       // "brahma masc" → AMasc
-    GoMasc,           // "go masc" → AMasc
-    JantuMasc,        // "jantu masc" → UMasc
-    RājaMasc,         // "rāja masc" → AMasc
-    SantaMasc,        // "santa masc" → AntMasc
-    YuvaMasc,         // "yuva masc" → AMasc
+    AddhaMasc = 1101,     // "addha masc" → AMasc
+    ArahantMasc = 1102,   // "arahant masc" → AntMasc
+    BhavantMasc = 1103,   // "bhavant masc" → AntMasc
+    BrahmaMasc = 1104,    // "brahma masc" → AMasc
+    GoMasc = 1105,        // "go masc" → AMasc
+    JantuMasc = 1106,     // "jantu masc" → UMasc
+    RājaMasc = 1107,      // "rāja masc" → AMasc
+    SantaMasc = 1108,     // "santa masc" → AntMasc
+    YuvaMasc = 1109,      // "yuva masc" → AMasc
 
     // Irregular Feminine (6)
-    JātiFem,          // "jāti fem" → IFem
-    MātarFem,         // "mātar fem" → ArFem
-    NadīFem,          // "nadī fem" → ĪFem
-    ParisāFem,        // "parisā fem" → ĀFem
-    PokkharaṇīFem,    // "pokkharaṇī fem" → ĪFem
-    RattiFem,         // "ratti fem" → IFem
+    JātiFem = 1201,       // "jāti fem" → IFem
+    MātarFem = 1202,      // "mātar fem" → ArFem
+    NadīFem = 1203,       // "nadī fem" → ĪFem
+    ParisāFem = 1204,     // "parisā fem" → ĀFem
+    PokkharaṇīFem = 1205, // "pokkharaṇī fem" → ĪFem
+    RattiFem = 1206,      // "ratti fem" → IFem
 
     // Irregular Neuter (1)
-    KammaNeut,        // "kamma nt" → ANeut
+    KammaNeut = 1301,     // "kamma nt" → ANeut
 }
 // ReSharper restore InconsistentNaming

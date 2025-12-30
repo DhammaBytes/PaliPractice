@@ -14,7 +14,7 @@ CASE_NAMES = {
 
 NUMBER_NAMES = {0: 'None', 1: 'Singular', 2: 'Plural'}
 
-GENDER_NAMES = {0: 'None', 1: 'Masculine', 2: 'Neuter', 3: 'Feminine'}
+GENDER_NAMES = {0: 'None', 1: 'Masculine', 2: 'Feminine', 3: 'Neuter'}
 
 PERSON_NAMES = {0: 'None', 1: 'First', 2: 'Second', 3: 'Third'}
 

@@ -299,7 +299,7 @@ Fields needed for queue building and inflection generation:
 - `lemma_id`: Our stable lemma ID (INDEXED)
 - `ebt_count`: Frequency in Early Buddhist Texts (INDEXED DESC)
 - `lemma`: Clean lemma without suffix (e.g., "dhamma")
-- `gender`: INTEGER - Gender enum (0=None, 1=Masculine, 2=Neuter, 3=Feminine)
+- `gender`: INTEGER - Gender enum (0=None, 1=Masculine, 2=Feminine, 3=Neuter)
 - `stem`: Word stem for inflection (cleaned, no DPD markers)
 - `pattern`: Inflection pattern name
 
@@ -358,7 +358,7 @@ All grammatical attributes map to C# enums in `PaliPractice/Models/Enums.cs`:
 |------|--------|
 | Case | 0=None, 1=Nominative, 2=Accusative, 3=Instrumental, 4=Dative, 5=Ablative, 6=Genitive, 7=Locative, 8=Vocative |
 | Number | 0=None, 1=Singular, 2=Plural |
-| Gender | 0=None, 1=Masculine, 2=Neuter, 3=Feminine |
+| Gender | 0=None, 1=Masculine, 2=Feminine, 3=Neuter |
 | Person | 0=None, 1=First, 2=Second, 3=Third |
 | Tense | 0=None, 1=Present, 2=Imperative, 3=Optative, 4=Future, 5=Aorist |
 | Reflexive | 0=Active (non-reflexive), 1=Reflexive (middle voice) |

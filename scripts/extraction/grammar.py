@@ -29,8 +29,8 @@ class GrammarEnums:
     # Gender enum
     GENDER_NONE = 0
     GENDER_MASCULINE = 1
-    GENDER_NEUTER = 2
-    GENDER_FEMININE = 3
+    GENDER_FEMININE = 2
+    GENDER_NEUTER = 3
 
     # Person enum
     PERSON_NONE = 0

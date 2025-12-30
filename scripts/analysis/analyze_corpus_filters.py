@@ -17,7 +17,7 @@ PALI_DB = Path(__file__).parent.parent.parent / "PaliPractice/PaliPractice/Data/
 # Enum mappings (matching C# Enums.cs)
 CASES = {1: "Nominative", 2: "Accusative", 3: "Instrumental", 4: "Dative",
          5: "Ablative", 6: "Genitive", 7: "Locative", 8: "Vocative"}
-GENDERS = {1: "Masculine", 2: "Neuter", 3: "Feminine"}
+GENDERS = {1: "Masculine", 2: "Feminine", 3: "Neuter"}
 NUMBERS = {1: "Singular", 2: "Plural"}
 TENSES = {1: "Present", 2: "Imperative", 3: "Optative", 4: "Future"}
 PERSONS = {1: "First", 2: "Second", 3: "Third"}

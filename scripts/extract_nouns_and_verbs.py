@@ -900,7 +900,7 @@ class NounVerbExtractor:
 
         cursor.execute("SELECT gender, COUNT(*) FROM nouns GROUP BY gender ORDER BY COUNT(*) DESC")
         print("\nNouns by Gender:")
-        gender_names = {1: 'masculine', 2: 'neuter', 3: 'feminine', 0: 'none'}
+        gender_names = {1: 'masculine', 2: 'feminine', 3: 'neuter', 0: 'none'}
         for gender, count in cursor.fetchall():
             print(f"  {gender_names.get(gender, f'unknown({gender})')}: {count}")
 

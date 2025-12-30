@@ -16,13 +16,11 @@ public enum PatternType
 /// <summary>
 /// Extension methods and helpers for NounPattern enum.
 ///
-/// The enum uses breakpoint markers for efficient categorization:
-/// - pattern &lt; _VariantMasc → Base Masculine
-/// - _VariantMasc &lt; pattern &lt; _BaseFem → Variant Masculine
-/// - _BaseFem &lt; pattern &lt; _BaseNeut → Base Feminine
-/// - _BaseNeut &lt; pattern &lt; _VariantNeut → Base Neuter
-/// - _VariantNeut &lt; pattern &lt; _Irregular → Variant Neuter
-/// - pattern &gt; _Irregular → Irregular (use ParentBase() to get parent)
+/// Gender-based numbering (reflects Gender enum: Masc=1, Fem=2, Neut=3):
+/// - 101-149 Base Masculine, 151-199 Variant Masculine
+/// - 201-249 Base Feminine, 251-299 Variant Feminine (reserved)
+/// - 301-349 Base Neuter, 351-399 Variant Neuter
+/// - 1101+ Irregular Masculine, 1201+ Irregular Feminine, 1301+ Irregular Neuter
 /// </summary>
 public static class NounPatternHelper
 {
@@ -205,6 +203,7 @@ public static class NounPatternHelper
         public bool IsVariant() => pattern switch
         {
             > NounPattern._VariantMasc and < NounPattern._BaseFem => true,
+            > NounPattern._VariantFem and < NounPattern._BaseNeut => true,
             > NounPattern._VariantNeut and < NounPattern._Irregular => true,
             _ => false
         };
@@ -255,13 +254,13 @@ public static class NounPatternHelper
                 return pattern.ParentBase().GetGender();
 
             // Base + Variant patterns use breakpoint comparisons
-            // Masculine: base (None.._VariantMasc) + variant (_VariantMasc.._BaseFem)
+            // Masculine: 101-199 (base + variant)
             if (pattern < NounPattern._BaseFem)
                 return Gender.Masculine;
-            // Feminine: base only (_BaseFem.._BaseNeut) - no variants currently
+            // Feminine: 201-299 (base + variant reserved)
             if (pattern < NounPattern._BaseNeut)
                 return Gender.Feminine;
-            // Neuter: base (_BaseNeut.._VariantNeut) + variant (_VariantNeut.._Irregular)
+            // Neuter: 301-399 (base + variant)
             return Gender.Neuter;
         }
 

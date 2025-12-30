@@ -11,18 +11,18 @@ namespace PaliPractice.Services.Practice;
 /// Common data for form mastery used in queue building.
 /// Extracted from type-specific entities (NounsFormMastery, VerbsFormMastery).
 /// </summary>
-record FormMasteryData(long FormId, int MasteryLevel, DateTime NextDueUtc)
-{
-    public bool IsDue => DateTime.UtcNow >= NextDueUtc;
-}
+record FormMasteryData(long FormId, int MasteryLevel, DateTime NextDueUtc);
 
 /// <summary>
 /// Groups forms by grammatical category for balanced selection.
 /// Categories are NounPattern for nouns, (Tense, Voice) for verbs.
+///
+/// Note: DueForms is used only for initial grouping. During queue building,
+/// scoredByCategory is the authoritative source for remaining reviews.
 /// </summary>
 partial record CategoryForms(string Key, List<FormMasteryData> DueForms, List<long> UntriedForms)
 {
-    /// <summary>Total forms available in this category (due + untried).</summary>
+    /// <summary>Initial total forms in this category. Stale after queue building starts.</summary>
     public int TotalCount => DueForms.Count + UntriedForms.Count;
 }
 
@@ -70,6 +70,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         System.Diagnostics.Debug.WriteLine($"[Queue] BuildQueue({type}, {count})");
 
         var queue = new List<PracticeItem>();
+        var now = DateTime.UtcNow;  // Capture once for deterministic behavior within this build
 
         // 1. Get all eligible form IDs (corpus-attested, matching settings)
         var eligibleFormIds = GetEligibleFormIds(type);
@@ -109,27 +110,26 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         foreach (var (key, cat) in categories)
         {
             scoredByCategory[key] = cat.DueForms
-                .Select(f => (Form: f, Priority: CalculatePriority(f, hardCombos, type)))
+                .Select(f => (Form: f, Priority: CalculatePriority(f, hardCombos, type, now)))
                 .OrderByDescending(x => x.Priority)
                 .ToList();
         }
 
-        // Track indices for each category's scored due list
-        var categoryReviewIndex = categories.Keys.ToDictionary(k => k, _ => 0);
-
         // 7. Build queue with three-stage selection:
         //    Stage 1: Decide globally whether to add new vs review (enforced interval)
-        //    Stage 2: Select category from those that can satisfy the decision (weighted + 3% floor)
+        //    Stage 2: Select category from those that can satisfy the decision (weighted by relevant count + 3% floor)
         //    Stage 3: Select form from that category (SRS priority for reviews, random for new)
-        int reviewsAdded = 0;
-        int newAdded = 0;
+        //
+        // Anti-repetition: Track last lemma AND last combo to avoid consecutive same-word or same-grammar forms.
+        // IMPORTANT: Skipped items are NOT discarded - they remain in the pool for future selection.
+        int reviewsSinceLastNew = 0;
         int nextNewInterval = _random.Next(NewFormIntervalMin, NewFormIntervalMax + 1);
-        int lastLemmaId = 0;  // Track to avoid same lemma twice in a row
+        int lastLemmaId = 0;
+        string lastComboKey = "";
 
         // Helper: count total available forms across all categories
         int TotalNewAvailable() => categories.Values.Sum(c => c.UntriedForms.Count);
-        int TotalReviewsAvailable() => categories.Sum(kvp =>
-            scoredByCategory[kvp.Key].Count - categoryReviewIndex[kvp.Key]);
+        int TotalReviewsAvailable() => scoredByCategory.Values.Sum(list => list.Count);
 
         while (queue.Count < count)
         {
@@ -142,28 +142,29 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                 break;
             }
 
-            // Stage 1: Decide globally - new vs review
-            bool wantNew = ShouldAddNew(reviewsAdded, newAdded, totalNew, nextNewInterval);
+            // Stage 1: Decide globally - new vs review (counter-based, not modulo)
+            bool wantNew = ShouldAddNew(reviewsSinceLastNew, totalNew, nextNewInterval);
             System.Diagnostics.Debug.WriteLine($"[Queue #{queue.Count + 1}] Decision: {(wantNew ? "NEW" : "REVIEW")} " +
-                $"(reviews={reviewsAdded}, new={newAdded}, interval={nextNewInterval}, totalNew={totalNew}, totalReviews={totalReviews})");
+                $"(sinceLastNew={reviewsSinceLastNew}, interval={nextNewInterval}, totalNew={totalNew}, totalReviews={totalReviews})");
 
             // Stage 2: Select category that can satisfy the decision
+            // Weight by RELEVANT count: UntriedForms.Count for new, scoredByCategory list size for reviews
             string selectedKey;
             if (wantNew && totalNew > 0)
             {
-                // Select from categories with new forms available
+                // Select from categories with new forms, weighted by untried count
                 var withNew = categories
                     .Where(kvp => kvp.Value.UntriedForms.Count > 0)
                     .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-                selectedKey = SelectCategory(withNew);
+                selectedKey = SelectCategory(withNew, c => c.UntriedForms.Count);
             }
             else if (totalReviews > 0)
             {
-                // Select from categories with reviews available
+                // Select from categories with reviews, weighted by remaining review count
                 var withReviews = categories
-                    .Where(kvp => categoryReviewIndex[kvp.Key] < scoredByCategory[kvp.Key].Count)
+                    .Where(kvp => scoredByCategory[kvp.Key].Count > 0)
                     .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-                selectedKey = SelectCategory(withReviews);
+                selectedKey = SelectCategory(withReviews, c => scoredByCategory[c.Key].Count);
             }
             else if (totalNew > 0)
             {
@@ -171,7 +172,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                 var withNew = categories
                     .Where(kvp => kvp.Value.UntriedForms.Count > 0)
                     .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-                selectedKey = SelectCategory(withNew);
+                selectedKey = SelectCategory(withNew, c => c.UntriedForms.Count);
                 wantNew = true;
             }
             else
@@ -187,22 +188,17 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
             var cat = categories[selectedKey];
             System.Diagnostics.Debug.WriteLine($"[Queue #{queue.Count + 1}] Category: {selectedKey} " +
-                $"(due={cat.DueForms.Count}, new={cat.UntriedForms.Count})");
+                $"(due={scoredByCategory[selectedKey].Count}, new={cat.UntriedForms.Count})");
 
-            // Stage 3: Select form from category
+            // Stage 3: Select form from category with anti-repetition
             if (wantNew && cat.UntriedForms.Count > 0)
             {
-                // Pick random new form, avoid same lemma as last if possible
-                var candidates = cat.UntriedForms
-                    .Where(id => ExtractLemmaId(id, type) != lastLemmaId)
-                    .ToList();
-                if (candidates.Count == 0) candidates = cat.UntriedForms;
-
-                var idx = _random.Next(candidates.Count);
-                var newFormId = candidates[idx];
+                // Pick random new form with anti-repetition preference
+                var newFormId = SelectNewForm(cat.UntriedForms, type, lastLemmaId, lastComboKey);
                 cat.UntriedForms.Remove(newFormId);
 
                 lastLemmaId = ExtractLemmaId(newFormId, type);
+                lastComboKey = GetComboKey(newFormId, type);
                 queue.Add(new PracticeItem(
                     newFormId,
                     type,
@@ -211,32 +207,19 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                     0.5,
                     MasteryLevel: 1
                 ));
-                newAdded++;
-                var oldInterval = nextNewInterval;
+                reviewsSinceLastNew = 0;
                 nextNewInterval = _random.Next(NewFormIntervalMin, NewFormIntervalMax + 1);
-                System.Diagnostics.Debug.WriteLine($"[Queue #{queue.Count}] → NEW form {newFormId} (lemma={lastLemmaId}), " +
+                System.Diagnostics.Debug.WriteLine($"[Queue #{queue.Count}] → NEW form {newFormId} (lemma={lastLemmaId}, combo={lastComboKey}), " +
                     $"next new in {nextNewInterval} reviews");
             }
             else
             {
-                // Pick highest-priority review, avoid same lemma if possible
+                // Pick review with anti-repetition (items NOT selected remain in list for later)
                 var scoredDue = scoredByCategory[selectedKey];
-                var reviewIndex = categoryReviewIndex[selectedKey];
+                var (form, priority, selectedIdx) = SelectReview(scoredDue, type, lastLemmaId, lastComboKey);
 
-                // Find next review that isn't the same lemma (if possible)
-                int selectedIdx = reviewIndex;
-                for (int i = reviewIndex; i < scoredDue.Count; i++)
-                {
-                    if (ExtractLemmaId(scoredDue[i].Form.FormId, type) != lastLemmaId)
-                    {
-                        selectedIdx = i;
-                        break;
-                    }
-                }
-
-                var (form, priority) = scoredDue[selectedIdx];
-                categoryReviewIndex[selectedKey] = selectedIdx + 1;
-                cat.DueForms.Remove(form);
+                // Remove ONLY the selected item - skipped items stay available
+                scoredDue.RemoveAt(selectedIdx);
 
                 // Label as DifficultCombo only if this form's grammatical combo is actually in hardCombos
                 var comboKey = GetComboKey(form.FormId, type);
@@ -245,6 +228,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                     : PracticeItemSource.DueForReview;
 
                 lastLemmaId = ExtractLemmaId(form.FormId, type);
+                lastComboKey = comboKey;
                 queue.Add(new PracticeItem(
                     form.FormId,
                     type,
@@ -253,8 +237,8 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                     priority,
                     form.MasteryLevel
                 ));
-                reviewsAdded++;
-                System.Diagnostics.Debug.WriteLine($"[Queue #{queue.Count}] → REVIEW form {form.FormId} (lemma={lastLemmaId}, " +
+                reviewsSinceLastNew++;
+                System.Diagnostics.Debug.WriteLine($"[Queue #{queue.Count}] → REVIEW form {form.FormId} (lemma={lastLemmaId}, combo={lastComboKey}, " +
                     $"mastery={form.MasteryLevel}, priority={priority:F2}, source={source})");
             }
         }
@@ -265,13 +249,15 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         return ShuffleWithPriorityBias(queue);
     }
 
-    bool ShouldAddNew(int reviews, int newCount, int availableNew, int interval)
+    /// <summary>
+    /// Decides whether to add a new form based on reviews since last new.
+    /// Uses counter-based logic (not modulo) to ensure consistent new form pacing.
+    /// </summary>
+    bool ShouldAddNew(int reviewsSinceLastNew, int availableNew, int interval)
     {
         if (availableNew == 0) return false;
-        if (reviews == 0) return false;  // Start with a review if possible
-
-        // Add a new form every [interval] reviews
-        return reviews > 0 && reviews % interval == 0 && newCount < reviews / interval;
+        // Add a new form when we've done [interval] reviews since the last new
+        return reviewsSinceLastNew >= interval;
     }
 
     /// <summary>
@@ -325,17 +311,17 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
     /// Example: A level-2 form that's 2 days overdue in a hard combo:
     ///   0.2 (overdue) + 0.4 (low mastery) + 0.2 (hard combo) = 0.8
     /// </summary>
-    double CalculatePriority(FormMasteryData form, Dictionary<string, double> hardCombos, PracticeType type)
+    static double CalculatePriority(FormMasteryData form, Dictionary<string, double> hardCombos, PracticeType type, DateTime now)
     {
         double priority = 0.0;
 
         // Factor 1: Overdue time (more overdue = higher priority)
         // 0.1 per day overdue, capped at 0.3 (3+ days)
-        var overdueDays = (DateTime.UtcNow - form.NextDueUtc).TotalDays;
+        var overdueDays = (now - form.NextDueUtc).TotalDays;
         priority += Math.Min(0.3, Math.Max(0, overdueDays) * 0.1);
 
         // Factor 2: Low mastery level (struggling = higher priority)
-        // Level 1 → 0.45, Level 10 → 0.05
+        // Level 1 → 0.45, Level 10 → 0.0
         priority += (10 - form.MasteryLevel) * 0.05;
 
         // Factor 3: Combination difficulty boost
@@ -606,29 +592,28 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
     /// <summary>
     /// Selects a category using weighted random selection with minimum floor.
     ///
-    /// Each category's weight = max(form count, floor weight).
-    /// Floor weight = 3% of total forms, ensuring rare patterns appear regularly.
+    /// Each category's weight = max(relevant count, floor weight).
+    /// Floor weight = 3% of total relevant forms, ensuring rare patterns appear regularly.
     ///
-    /// Example with 1000 forms, 2% in category A:
-    /// - Natural weight: 20
-    /// - Floor weight: 30 (3% of 1000)
-    /// - Actual weight: 30 (boosted to floor)
+    /// The getWeight function extracts the relevant count for the selection stage:
+    /// - For new form selection: UntriedForms.Count
+    /// - For review selection: remaining reviews in scoredByCategory
     /// </summary>
-    string SelectCategory(Dictionary<string, CategoryForms> categories)
+    string SelectCategory(Dictionary<string, CategoryForms> categories, Func<CategoryForms, int> getWeight)
     {
         if (categories.Count == 0) return string.Empty;
         if (categories.Count == 1) return categories.Keys.First();
 
-        var totalForms = categories.Values.Sum(c => c.TotalCount);
+        var totalRelevant = categories.Values.Sum(getWeight);
         // Use ceiling + min 1 to ensure floor is never 0 for small form counts
-        var floorWeight = Math.Max(1, (int)Math.Ceiling(totalForms * MinCategoryFloor));
+        var floorWeight = Math.Max(1, (int)Math.Ceiling(totalRelevant * MinCategoryFloor));
 
         // Build weighted list with floor, tracking which got boosted
         var weights = new List<(string Key, int Weight, bool Boosted)>();
         foreach (var (key, cat) in categories)
         {
-            if (cat.TotalCount == 0) continue;
-            var natural = cat.TotalCount;
+            var natural = getWeight(cat);
+            if (natural == 0) continue;
             var weight = Math.Max(natural, floorWeight);
             weights.Add((key, weight, weight > natural));
         }
@@ -651,9 +636,71 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
             }
         }
 
-        LogFloorBoost(weights, floorWeight, totalForms, selected);
+        LogFloorBoost(weights, floorWeight, totalRelevant, selected);
 
         return selected;
+    }
+
+    /// <summary>
+    /// Selects a new form with anti-repetition preference.
+    /// Prioritizes forms that differ in both lemma AND combo from previous.
+    /// Falls back gracefully: different-both → different-either → any.
+    /// </summary>
+    long SelectNewForm(List<long> untried, PracticeType type, int lastLemmaId, string lastComboKey)
+    {
+        // First try: different lemma AND different combo
+        var best = untried
+            .Where(id => ExtractLemmaId(id, type) != lastLemmaId && GetComboKey(id, type) != lastComboKey)
+            .ToList();
+        if (best.Count > 0)
+            return best[_random.Next(best.Count)];
+
+        // Second try: different lemma OR different combo
+        var good = untried
+            .Where(id => ExtractLemmaId(id, type) != lastLemmaId || GetComboKey(id, type) != lastComboKey)
+            .ToList();
+        if (good.Count > 0)
+            return good[_random.Next(good.Count)];
+
+        // Fallback: any
+        return untried[_random.Next(untried.Count)];
+    }
+
+    /// <summary>
+    /// Selects a review form with anti-repetition preference, maintaining priority order.
+    /// Returns (form, priority, index) - caller removes by index to preserve other items.
+    ///
+    /// IMPORTANT: Items not selected are NOT skipped - they remain available for later.
+    /// This fixes the original bug where advancing index would discard skipped items.
+    /// </summary>
+    (FormMasteryData Form, double Priority, int Index) SelectReview(
+        List<(FormMasteryData Form, double Priority)> scoredDue,
+        PracticeType type,
+        int lastLemmaId,
+        string lastComboKey)
+    {
+        // First try: find highest-priority item with different lemma AND different combo
+        for (int i = 0; i < scoredDue.Count; i++)
+        {
+            var (form, priority) = scoredDue[i];
+            var lemmaId = ExtractLemmaId(form.FormId, type);
+            var comboKey = GetComboKey(form.FormId, type);
+            if (lemmaId != lastLemmaId && comboKey != lastComboKey)
+                return (form, priority, i);
+        }
+
+        // Second try: different lemma OR different combo
+        for (int i = 0; i < scoredDue.Count; i++)
+        {
+            var (form, priority) = scoredDue[i];
+            var lemmaId = ExtractLemmaId(form.FormId, type);
+            var comboKey = GetComboKey(form.FormId, type);
+            if (lemmaId != lastLemmaId || comboKey != lastComboKey)
+                return (form, priority, i);
+        }
+
+        // Fallback: just take highest priority (first item)
+        return (scoredDue[0].Form, scoredDue[0].Priority, 0);
     }
 
     #endregion

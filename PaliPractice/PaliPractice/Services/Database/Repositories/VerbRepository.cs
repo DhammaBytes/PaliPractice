@@ -21,6 +21,13 @@ class NonReflexiveVerb
 /// </summary>
 public class VerbRepository
 {
+    /// <summary>
+    /// Maximum number of ending variants for verb forms.
+    /// Used for iterating over possible endings when checking attestation or retrieving forms.
+    /// The value 7 accounts for irregular verbs like "atthi" which have many variants.
+    /// </summary>
+    const int MaxVerbEndings = 7;
+
     readonly SQLiteConnection _connection;
     readonly Lock _cacheLock = new();
     bool _isCacheLoaded;
@@ -154,14 +161,14 @@ public class VerbRepository
 
     /// <summary>
     /// Check if any ending variant is in corpus for this verb form.
-    /// O(1) from cache (checks up to 7 ending variants because of "atthi", though only 5 of them are in the corpus).
+    /// O(1) from cache.
     /// </summary>
     public bool HasAttestedForm(int lemmaId, Tense tense, Person person, Number number, bool reflexive)
     {
         EnsureCacheLoaded();
         var voice = reflexive ? Voice.Reflexive : Voice.Active;
         var baseFormId = Conjugation.ResolveId(lemmaId, tense, person, number, voice, 0);
-        for (int endingId = 1; endingId <= 7; endingId++)
+        for (int endingId = 1; endingId <= MaxVerbEndings; endingId++)
         {
             if (_corpusFormIds!.Contains(baseFormId + endingId))
                 return true;
@@ -179,7 +186,7 @@ public class VerbRepository
         var forms = new List<string>();
         var voice = reflexive ? Voice.Reflexive : Voice.Active;
         var baseFormId = Conjugation.ResolveId(lemmaId, tense, person, number, voice, 0);
-        for (int endingId = 1; endingId <= 9; endingId++)
+        for (int endingId = 1; endingId <= MaxVerbEndings; endingId++)
         {
             if (_irregularForms!.TryGetValue(baseFormId + endingId, out var form))
                 forms.Add(form);

@@ -139,13 +139,16 @@ public class InflectionService : IInflectionService
             var endingId = EndingIdFromIndex(i);
             var formId = Declension.ResolveId(noun.LemmaId, nounCase, noun.Gender, number, endingId);
 
-            // Irregular forms from DB are always corpus-attested
+            // Check corpus attestation via corpus_forms table (same as regular forms)
+            var inCorpus = _databaseService.Nouns.IsFormInCorpus(
+                noun.LemmaId, nounCase, noun.Gender, number, endingId);
+
             forms.Add(new DeclensionForm(
                 FormId: formId,
                 Form: form,
                 Ending: form, // For irregular, ending = full form
                 EndingId: endingId,
-                InCorpus: true
+                InCorpus: inCorpus
             ));
         }
 
@@ -266,13 +269,16 @@ public class InflectionService : IInflectionService
             var endingId = EndingIdFromIndex(i);
             var formId = Conjugation.ResolveId(verb.LemmaId, tense, person, number, voice, endingId);
 
-            // Irregular forms from DB are always corpus-attested
+            // Check corpus attestation via corpus_forms table (same as regular forms)
+            var inCorpus = _databaseService.Verbs.IsFormInCorpus(
+                verb.LemmaId, tense, person, number, reflexive, endingId);
+
             forms.Add(new ConjugationForm(
                 FormId: formId,
                 Form: form,
                 Ending: form, // For irregular, ending = full form
                 EndingId: endingId,
-                InCorpus: true
+                InCorpus: inCorpus
             ));
         }
 

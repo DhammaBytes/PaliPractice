@@ -11,6 +11,12 @@ namespace PaliPractice.Services.Database.Repositories;
 /// </summary>
 public class NounRepository
 {
+    /// <summary>
+    /// Maximum number of ending variants for noun forms.
+    /// Used for iterating over possible endings when checking attestation or retrieving forms.
+    /// </summary>
+    const int MaxNounEndings = 6;
+
     readonly SQLiteConnection _connection;
     readonly Lock _cacheLock = new();
     bool _isCacheLoaded;
@@ -126,13 +132,13 @@ public class NounRepository
 
     /// <summary>
     /// Check if any ending variant is attested for this noun form.
-    /// O(1) from cache (checks up to 6 ending variants).
+    /// O(1) from cache.
     /// </summary>
     public bool HasAttestedForm(int lemmaId, Case @case, Gender gender, Number number)
     {
         EnsureCacheLoaded();
         var baseFormId = Declension.ResolveId(lemmaId, @case, gender, number, 0);
-        for (int endingId = 1; endingId <= 6; endingId++)
+        for (int endingId = 1; endingId <= MaxNounEndings; endingId++)
         {
             if (_corpusFormIds!.Contains(baseFormId + endingId))
                 return true;
@@ -149,7 +155,7 @@ public class NounRepository
         EnsureCacheLoaded();
         var forms = new List<string>();
         var baseFormId = Declension.ResolveId(lemmaId, @case, gender, number, 0);
-        for (int endingId = 1; endingId <= 9; endingId++)
+        for (int endingId = 1; endingId <= MaxNounEndings; endingId++)
         {
             if (_irregularForms!.TryGetValue(baseFormId + endingId, out var form))
                 forms.Add(form);
@@ -165,7 +171,7 @@ public class NounRepository
     {
         EnsureCacheLoaded();
         var baseFormId = Declension.ResolveId(lemmaId, @case, gender, number, 0);
-        for (int endingId = 1; endingId <= 9; endingId++)
+        for (int endingId = 1; endingId <= MaxNounEndings; endingId++)
         {
             if (_irregularForms!.ContainsKey(baseFormId + endingId))
                 return true;

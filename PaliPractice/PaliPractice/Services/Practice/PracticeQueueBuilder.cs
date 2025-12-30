@@ -204,7 +204,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                     type,
                     lastLemmaId,
                     PracticeItemSource.NewForm,
-                    0.5,
+                    Priority: 0.5,  // Medium tier - new forms appear early but don't dominate
                     MasteryLevel: 1
                 ));
                 reviewsSinceLastNew = 0;
@@ -409,8 +409,8 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         HashSet<NounPattern> neutEnabled,
         HashSet<NounPattern> femEnabled)
     {
-        // For irregulars, check if parent regular pattern is enabled
-        var checkPattern = pattern.IsIrregular() ? pattern.ParentRegular() : pattern;
+        // For variants and irregulars, check if parent base pattern is enabled
+        var checkPattern = pattern.IsBase() ? pattern : pattern.ParentBase();
 
         // Get the appropriate enabled set for this gender
         var enabled = gender switch
@@ -504,16 +504,19 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         return formIds;
     }
 
+    /// <summary>
+    /// Extracts lemmaId from a packed formId by removing the trailing grammar digits.
+    /// </summary>
     static int ExtractLemmaId(long formId, PracticeType type)
     {
-        // FormId format:
-        // Declension: lemmaId(5) + case(1) + gender(1) + number(1) + endingId(1) = 9 digits
-        // Conjugation: lemmaId(5) + tense(1) + person(1) + number(1) + reflexive(1) + endingId(1) = 10 digits
-
+        // FormId is a packed integer: lemmaId in high digits, grammar slots in low digits.
+        // Declension: LLLLL_CGNX (5+4 digits) → divide by 10,000
+        // Conjugation: LLLLL_TPNRX (5+5 digits) → divide by 100,000
+        // Where L=lemma, C=case, G=gender, N=number, X=ending, T=tense, P=person, R=reflexive
         return type switch
         {
-            PracticeType.Declension => (int)(formId / 10_000),  // Remove last 4 digits
-            PracticeType.Conjugation => (int)(formId / 100_000),  // Remove last 5 digits
+            PracticeType.Declension => (int)(formId / 10_000),
+            PracticeType.Conjugation => (int)(formId / 100_000),
             _ => 0
         };
     }
@@ -541,8 +544,8 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
             if (lemma == null) return "Unknown";
 
             var noun = (Noun)lemma.Primary;
-            // Use parent regular pattern for irregulars to group them together
-            var pattern = noun.Pattern.IsIrregular() ? noun.Pattern.ParentRegular() : noun.Pattern;
+            // Use parent base pattern for variants/irregulars to group them together
+            var pattern = noun.Pattern.IsBase() ? noun.Pattern : noun.Pattern.ParentBase();
             return pattern.ToString();
         }
         else
@@ -720,9 +723,15 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
     /// This ensures high-priority items dominate early positions while
     /// mixing in easier items for psychological relief.
     /// Falls back to next available tier when one is exhausted.
+    ///
+    /// Post-shuffle: Swaps adjacent items with same lemma/combo to maintain variety.
     /// </summary>
     List<PracticeItem> ShuffleWithPriorityBias(List<PracticeItem> queue)
     {
+        // Tier boundaries chosen to match priority score distribution:
+        // - High (≥0.7): 2+ days overdue OR low mastery + hard combo
+        // - Medium (0.4-0.7): typical due reviews, new forms (0.5)
+        // - Low (<0.4): well-learned forms slightly past due
         var tier1 = queue.Where(i => i.Priority >= 0.7).OrderBy(_ => _random.Next()).ToList();
         var tier2 = queue.Where(i => i.Priority is >= 0.4 and < 0.7).OrderBy(_ => _random.Next()).ToList();
         var tier3 = queue.Where(i => i.Priority < 0.4).OrderBy(_ => _random.Next()).ToList();
@@ -731,14 +740,17 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         int i1 = 0, i2 = 0, i3 = 0;
         int index = 0;
 
+        // Interleave: H-M-L-H-M-L... ensures variety while keeping urgent items frequent.
+        // Fallback chain: if preferred tier empty, try next available.
         while (result.Count < queue.Count)
         {
-            // Interleave pattern: position 0 → tier1, position 1 → tier2, position 2 → tier3
-            // Falls back to next available tier when preferred tier is exhausted
-            if (index % 3 == 2 && i3 < tier3.Count)
-                result.Add(tier3[i3++]);
+            if (index % 3 == 0 && i1 < tier1.Count)
+                result.Add(tier1[i1++]);
             else if (index % 3 == 1 && i2 < tier2.Count)
                 result.Add(tier2[i2++]);
+            else if (index % 3 == 2 && i3 < tier3.Count)
+                result.Add(tier3[i3++]);
+            // Fallback chain when preferred tier exhausted
             else if (i1 < tier1.Count)
                 result.Add(tier1[i1++]);
             else if (i2 < tier2.Count)
@@ -749,7 +761,44 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
             index++;
         }
 
+        // Post-shuffle: break up adjacent same-lemma or same-combo pairs
+        FixAdjacentCollisions(result);
+
         return result;
+    }
+
+    /// <summary>
+    /// Swaps adjacent items that share lemma or grammar combo with a later non-colliding item.
+    /// Best-effort: if no swap candidate exists, leaves the collision in place.
+    /// </summary>
+    void FixAdjacentCollisions(List<PracticeItem> items)
+    {
+        for (int i = 1; i < items.Count; i++)
+        {
+            var prev = items[i - 1];
+            var curr = items[i];
+
+            // Check for collision: same lemma OR same grammar combo
+            var prevCombo = GetComboKey(prev.FormId, prev.Type);
+            var currCombo = GetComboKey(curr.FormId, curr.Type);
+
+            if (curr.LemmaId == prev.LemmaId || currCombo == prevCombo)
+            {
+                // Find a swap candidate further ahead that doesn't collide with prev
+                for (int j = i + 1; j < items.Count; j++)
+                {
+                    var candidate = items[j];
+                    var candidateCombo = GetComboKey(candidate.FormId, candidate.Type);
+
+                    // Candidate must not collide with prev
+                    if (candidate.LemmaId != prev.LemmaId && candidateCombo != prevCombo)
+                    {
+                        (items[i], items[j]) = (items[j], items[i]);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     #region Debug Logging

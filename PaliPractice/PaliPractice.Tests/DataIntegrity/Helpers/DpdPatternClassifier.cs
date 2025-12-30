@@ -28,7 +28,7 @@ public class DpdPatternClassifier : IDisposable
 
     public DpdPatternClassifier(string? dpdDbPath = null)
     {
-        var path = dpdDbPath ?? DpdWordLoader.DefaultDpdDbPath;
+        var path = dpdDbPath ?? TestPaths.DpdDbPath;
         _connection = new SqliteConnection($"Data Source={path};Mode=ReadOnly");
         _connection.Open();
     }

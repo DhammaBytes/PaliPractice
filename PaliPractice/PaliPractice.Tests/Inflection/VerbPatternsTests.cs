@@ -11,7 +11,6 @@ namespace PaliPractice.Tests.Inflection;
 public class VerbPatternsTests
 {
     static DpdTestHelper? _dpdHelper;
-    const string DpdDbPath = "/Users/ivm/Sources/PaliPractice/dpd-db/dpd.db";
 
     /// <summary>
     /// Test case data: pattern, word, grammatical parameters, expected endings.
@@ -32,7 +31,8 @@ public class VerbPatternsTests
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
-        _dpdHelper = new DpdTestHelper(DpdDbPath);
+        TestPaths.ValidateDpdDbExists();
+        _dpdHelper = new DpdTestHelper(TestPaths.DpdDbPath);
     }
 
     [OneTimeTearDown]
@@ -53,7 +53,7 @@ public class VerbPatternsTests
             .Where(p => p != VerbPattern.None && p < VerbPattern._Irregular)
             .ToList();
 
-        using var helper = new DpdTestHelper(DpdDbPath);
+        using var helper = new DpdTestHelper(TestPaths.DpdDbPath);
 
         foreach (var pattern in patterns)
         {

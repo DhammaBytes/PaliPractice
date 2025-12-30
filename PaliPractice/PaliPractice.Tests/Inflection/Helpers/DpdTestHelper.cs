@@ -10,10 +10,52 @@ public class DpdTestHelper : IDisposable
     readonly SqliteConnection _connection;
     bool _disposed;
 
+    /// <summary>
+    /// Expected columns in dpd_headwords table. Schema validation will fail if any are missing.
+    /// </summary>
+    static readonly string[] RequiredColumns =
+    [
+        "id", "lemma_1", "lemma_2", "pattern", "pos", "ebt_count", "inflections_html"
+    ];
+
     public DpdTestHelper(string dpdDbPath)
     {
         _connection = new SqliteConnection($"Data Source={dpdDbPath};Mode=ReadOnly");
         _connection.Open();
+        ValidateSchema();
+    }
+
+    /// <summary>
+    /// Validates that the DPD database has the expected schema.
+    /// Throws if required columns are missing.
+    /// </summary>
+    void ValidateSchema()
+    {
+        var existingColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        using var command = _connection.CreateCommand();
+        command.CommandText = "PRAGMA table_info(dpd_headwords)";
+
+        using var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            var columnName = reader.GetString(1); // Column 1 is "name"
+            existingColumns.Add(columnName);
+        }
+
+        if (existingColumns.Count == 0)
+        {
+            throw new InvalidOperationException(
+                "DPD database schema validation failed: table 'dpd_headwords' not found or has no columns.");
+        }
+
+        var missingColumns = RequiredColumns.Where(c => !existingColumns.Contains(c)).ToList();
+        if (missingColumns.Count > 0)
+        {
+            throw new InvalidOperationException(
+                $"DPD database schema validation failed. Missing columns in dpd_headwords: {string.Join(", ", missingColumns)}. " +
+                $"This may indicate a DPD version mismatch. Expected columns: {string.Join(", ", RequiredColumns)}");
+        }
     }
 
     /// <summary>

@@ -46,11 +46,9 @@ public class DpdWordLoader : IDisposable
     readonly SqliteConnection _connection;
     bool _disposed;
 
-    public const string DefaultDpdDbPath = "/Users/ivm/Sources/PaliPractice/dpd-db/dpd.db";
-
     public DpdWordLoader(string? dpdDbPath = null)
     {
-        var path = dpdDbPath ?? DefaultDpdDbPath;
+        var path = dpdDbPath ?? TestPaths.DpdDbPath;
         _connection = new SqliteConnection($"Data Source={path};Mode=ReadOnly");
         _connection.Open();
     }

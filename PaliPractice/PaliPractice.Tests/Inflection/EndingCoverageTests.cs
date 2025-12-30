@@ -26,45 +26,23 @@ namespace PaliPractice.Tests.Inflection;
 public class EndingCoverageTests
 {
     /// <summary>
-    /// All regular noun patterns that should have complete endings defined.
-    /// Irregulars are handled via database lookup.
+    /// All base noun patterns that should have complete endings defined in NounEndings.cs.
+    /// Derived from enum breakpoints: patterns where IsBase() returns true.
+    /// Irregulars and variants are handled via database lookup.
     /// </summary>
-    static readonly NounPattern[] RegularNounPatterns =
-    [
-        // Masculine (8)
-        NounPattern.AMasc,
-        NounPattern.IMasc,
-        NounPattern.ĪMasc,
-        NounPattern.UMasc,
-        NounPattern.ŪMasc,
-        NounPattern.ArMasc,
-        NounPattern.AntMasc,
-        NounPattern.AsMasc,
-
-        // Feminine (5)
-        NounPattern.ĀFem,
-        NounPattern.IFem,
-        NounPattern.ĪFem,
-        NounPattern.UFem,
-        // Note: ArFem is not in NounEndings - might be handled as irregular
-        // NounPattern.ArFem,
-
-        // Neuter (3)
-        NounPattern.ANeut,
-        NounPattern.INeut,
-        NounPattern.UNeut,
-    ];
+    static NounPattern[] BaseNounPatterns =>
+        Enum.GetValues<NounPattern>()
+            .Where(p => p.IsBase())
+            .ToArray();
 
     /// <summary>
-    /// All regular verb patterns that should have complete endings defined.
+    /// All regular verb patterns that should have complete endings defined in VerbEndings.cs.
+    /// Derived from enum breakpoints: None &lt; pattern &lt; _Irregular.
     /// </summary>
-    static readonly VerbPattern[] RegularVerbPatterns =
-    [
-        VerbPattern.Ati,
-        VerbPattern.Āti,
-        VerbPattern.Eti,
-        VerbPattern.Oti,
-    ];
+    static VerbPattern[] RegularVerbPatterns =>
+        Enum.GetValues<VerbPattern>()
+            .Where(p => p != VerbPattern.None && p < VerbPattern._Irregular)
+            .ToArray();
 
     #region Noun Ending Coverage
 
@@ -73,7 +51,7 @@ public class EndingCoverageTests
     {
         var missingCombos = new List<string>();
 
-        foreach (var pattern in RegularNounPatterns)
+        foreach (var pattern in BaseNounPatterns)
         foreach (Case c in Enum.GetValues<Case>().Where(c => c != Case.None))
         foreach (Number n in Enum.GetValues<Number>().Where(n => n != Number.None))
         {
@@ -84,7 +62,7 @@ public class EndingCoverageTests
             }
         }
 
-        TestContext.WriteLine($"Tested {RegularNounPatterns.Length} patterns × 8 cases × 2 numbers = {RegularNounPatterns.Length * 8 * 2} combinations");
+        TestContext.WriteLine($"Tested {BaseNounPatterns.Length} patterns × 8 cases × 2 numbers = {BaseNounPatterns.Length * 8 * 2} combinations");
         TestContext.WriteLine($"Missing combinations: {missingCombos.Count}");
         foreach (var combo in missingCombos)
             TestContext.WriteLine($"  {combo}");
@@ -118,7 +96,7 @@ public class EndingCoverageTests
     public void NounEndings_EachPatternGender_MatchesExpectedGender()
     {
         // Verify each pattern returns endings appropriate for its gender
-        foreach (var pattern in RegularNounPatterns)
+        foreach (var pattern in BaseNounPatterns)
         {
             var gender = pattern.GetGender();
             TestContext.WriteLine($"{pattern} → {gender}");

@@ -397,37 +397,70 @@ public class NounPatternHelperTests
     [Test]
     public void Breakpoints_OrderIsCorrect()
     {
-        // Base masculine → _VariantMasc
-        (NounPattern.AsMasc < NounPattern._VariantMasc).Should().BeTrue(
-            "Last base masculine (as) should be before _VariantMasc");
+        // Get all usable patterns (excluding None and breakpoint markers)
+        var breakpointMarkers = new HashSet<NounPattern>
+        {
+            NounPattern.None,
+            NounPattern._VariantMasc,
+            NounPattern._BaseFem,
+            NounPattern._BaseNeut,
+            NounPattern._VariantNeut,
+            NounPattern._Irregular
+        };
 
-        // _VariantMasc → Variant masculine → _BaseFem
-        (NounPattern._VariantMasc < NounPattern.A2Masc).Should().BeTrue(
-            "_VariantMasc should be before first variant masculine");
-        (NounPattern.UMascPl < NounPattern._BaseFem).Should().BeTrue(
-            "Last variant masculine should be before _BaseFem");
+        var usablePatterns = Enum.GetValues<NounPattern>()
+            .Where(p => !breakpointMarkers.Contains(p))
+            .OrderBy(p => (int)p)
+            .ToList();
 
-        // _BaseFem → Base feminine → _BaseNeut
-        (NounPattern._BaseFem < NounPattern.ĀFem).Should().BeTrue(
-            "_BaseFem should be before first base feminine");
-        (NounPattern.ArFem < NounPattern._BaseNeut).Should().BeTrue(
-            "Last base feminine should be before _BaseNeut");
+        // Verify base masculine patterns are bounded correctly
+        var baseMasc = usablePatterns.Where(p =>
+            p > NounPattern.None && p < NounPattern._VariantMasc).ToList();
+        baseMasc.Should().NotBeEmpty("should have base masculine patterns");
+        baseMasc.All(p => p.IsBase() && p.GetGender() == Gender.Masculine)
+            .Should().BeTrue("all patterns in base masculine range should be base masculine");
 
-        // _BaseNeut → Base neuter → _VariantNeut
-        (NounPattern._BaseNeut < NounPattern.ANeut).Should().BeTrue(
-            "_BaseNeut should be before first base neuter");
-        (NounPattern.UNeut < NounPattern._VariantNeut).Should().BeTrue(
-            "Last base neuter should be before _VariantNeut");
+        // Verify variant masculine patterns are bounded correctly
+        var variantMasc = usablePatterns.Where(p =>
+            p > NounPattern._VariantMasc && p < NounPattern._BaseFem).ToList();
+        variantMasc.Should().NotBeEmpty("should have variant masculine patterns");
+        variantMasc.All(p => p.IsVariant() && p.GetGender() == Gender.Masculine)
+            .Should().BeTrue("all patterns in variant masculine range should be variant masculine");
 
-        // _VariantNeut → Variant neuter → _Irregular
-        (NounPattern._VariantNeut < NounPattern.ANeutEast).Should().BeTrue(
-            "_VariantNeut should be before first variant neuter");
-        (NounPattern.ANeutPl < NounPattern._Irregular).Should().BeTrue(
-            "Last variant neuter should be before _Irregular");
+        // Verify base feminine patterns are bounded correctly
+        var baseFem = usablePatterns.Where(p =>
+            p > NounPattern._BaseFem && p < NounPattern._BaseNeut).ToList();
+        baseFem.Should().NotBeEmpty("should have base feminine patterns");
+        baseFem.All(p => p.IsBase() && p.GetGender() == Gender.Feminine)
+            .Should().BeTrue("all patterns in base feminine range should be base feminine");
 
-        // _Irregular → Irregular patterns
-        (NounPattern._Irregular < NounPattern.AddhaMasc).Should().BeTrue(
-            "_Irregular should be before first irregular pattern");
+        // Verify base neuter patterns are bounded correctly
+        var baseNeut = usablePatterns.Where(p =>
+            p > NounPattern._BaseNeut && p < NounPattern._VariantNeut).ToList();
+        baseNeut.Should().NotBeEmpty("should have base neuter patterns");
+        baseNeut.All(p => p.IsBase() && p.GetGender() == Gender.Neuter)
+            .Should().BeTrue("all patterns in base neuter range should be base neuter");
+
+        // Verify variant neuter patterns are bounded correctly
+        var variantNeut = usablePatterns.Where(p =>
+            p > NounPattern._VariantNeut && p < NounPattern._Irregular).ToList();
+        variantNeut.Should().NotBeEmpty("should have variant neuter patterns");
+        variantNeut.All(p => p.IsVariant() && p.GetGender() == Gender.Neuter)
+            .Should().BeTrue("all patterns in variant neuter range should be variant neuter");
+
+        // Verify irregular patterns are bounded correctly
+        var irregular = usablePatterns.Where(p => p > NounPattern._Irregular).ToList();
+        irregular.Should().NotBeEmpty("should have irregular patterns");
+        irregular.All(p => p.IsIrregular())
+            .Should().BeTrue("all patterns after _Irregular should be irregular");
+
+        // Log counts for visibility
+        TestContext.WriteLine($"Base masculine: {baseMasc.Count}");
+        TestContext.WriteLine($"Variant masculine: {variantMasc.Count}");
+        TestContext.WriteLine($"Base feminine: {baseFem.Count}");
+        TestContext.WriteLine($"Base neuter: {baseNeut.Count}");
+        TestContext.WriteLine($"Variant neuter: {variantNeut.Count}");
+        TestContext.WriteLine($"Irregular: {irregular.Count}");
     }
 
     [Test]

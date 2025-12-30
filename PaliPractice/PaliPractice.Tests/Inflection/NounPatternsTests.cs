@@ -11,7 +11,6 @@ namespace PaliPractice.Tests.Inflection;
 public class NounPatternsTests
 {
     static DpdTestHelper? _dpdHelper;
-    const string DpdDbPath = "/Users/ivm/Sources/PaliPractice/dpd-db/dpd.db";
 
     /// <summary>
     /// Test case data: pattern, word, case, number, expected endings.
@@ -30,7 +29,8 @@ public class NounPatternsTests
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
-        _dpdHelper = new DpdTestHelper(DpdDbPath);
+        TestPaths.ValidateDpdDbExists();
+        _dpdHelper = new DpdTestHelper(TestPaths.DpdDbPath);
     }
 
     [OneTimeTearDown]
@@ -52,7 +52,7 @@ public class NounPatternsTests
             .Where(p => p.IsBase())
             .ToList();
 
-        using var helper = new DpdTestHelper(DpdDbPath);
+        using var helper = new DpdTestHelper(TestPaths.DpdDbPath);
 
         foreach (var pattern in patterns)
         {
@@ -73,8 +73,11 @@ public class NounPatternsTests
                         if (number == Number.None) continue;
 
                         // Build the DPD title format
+                        // Check masc/fem before nt to avoid false matches (e.g., "ant masc" contains "nt")
                         var gender = dbString.Contains(NounEndings.MascAbbrev) ? NounEndings.MascAbbrev :
-                                   dbString.Contains(NounEndings.NeutAbbrev) ? NounEndings.NeutAbbrev : NounEndings.FemAbbrev;
+                                   dbString.Contains(NounEndings.FemAbbrev) ? NounEndings.FemAbbrev :
+                                   dbString.Contains($" {NounEndings.NeutAbbrev}") ? NounEndings.NeutAbbrev :
+                                   throw new ArgumentException($"Cannot determine gender from pattern: {dbString}");
 
                         var caseStr = nounCase switch
                         {

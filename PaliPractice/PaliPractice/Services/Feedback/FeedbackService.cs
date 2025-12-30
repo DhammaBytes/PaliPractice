@@ -1,8 +1,8 @@
 using System.Globalization;
 using System.Text;
+using PaliPractice.Services.Feedback.Providers;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Email;
-using Windows.System.Profile;
 
 namespace PaliPractice.Services.Feedback;
 
@@ -17,11 +17,16 @@ public sealed class FeedbackService : IFeedbackService
 
     readonly ILogger<FeedbackService> _logger;
     readonly IDatabaseService _databaseService;
+    readonly IDeviceInfoProvider _deviceInfo;
 
-    public FeedbackService(ILogger<FeedbackService> logger, IDatabaseService databaseService)
+    public FeedbackService(
+        ILogger<FeedbackService> logger,
+        IDatabaseService databaseService,
+        IDeviceInfoProvider deviceInfo)
     {
         _logger = logger;
         _databaseService = databaseService;
+        _deviceInfo = deviceInfo;
     }
 
     public async Task SendFeedbackAsync()
@@ -55,10 +60,21 @@ public sealed class FeedbackService : IFeedbackService
 
         try
         {
-            sb.AppendLine($"App: {GetAppVersion()}");
-            sb.AppendLine($"Device: {GetDeviceInfo()}");
-            sb.AppendLine($"OS: {GetOsInfo()}");
-            sb.AppendLine($"Locale: {GetLocaleInfo()}");
+            var appVersion = GetAppVersion();
+            if (appVersion != null)
+                sb.AppendLine($"App: {appVersion}");
+
+            var deviceLine = BuildDeviceLine();
+            if (deviceLine != null)
+                sb.AppendLine($"Device: {deviceLine}");
+
+            if (_deviceInfo.OsVersion != null)
+                sb.AppendLine($"OS: {_deviceInfo.OsVersion}");
+
+            var locale = GetLocaleInfo();
+            if (locale != null)
+                sb.AppendLine($"Locale: {locale}");
+
             sb.AppendLine();
             sb.AppendLine("Settings:");
             AppendSettings(sb);
@@ -93,7 +109,39 @@ public sealed class FeedbackService : IFeedbackService
         }
     }
 
-    static string GetAppVersion()
+    string? BuildDeviceLine()
+    {
+        var parts = new List<string>();
+
+        // "Apple iPhone13,4" or "Samsung Galaxy S21" or just "iPhone13,4"
+        if (_deviceInfo.Manufacturer != null && _deviceInfo.Model != null)
+        {
+            // Skip manufacturer if model already contains it (e.g., "Samsung" in "Samsung Galaxy")
+            if (_deviceInfo.Model.Contains(_deviceInfo.Manufacturer, StringComparison.OrdinalIgnoreCase))
+                parts.Add(_deviceInfo.Model);
+            else
+                parts.Add($"{_deviceInfo.Manufacturer} {_deviceInfo.Model}");
+        }
+        else if (_deviceInfo.Model != null)
+        {
+            parts.Add(_deviceInfo.Model);
+        }
+        else if (_deviceInfo.Manufacturer != null)
+        {
+            parts.Add(_deviceInfo.Manufacturer);
+        }
+
+        if (parts.Count == 0)
+            return null;
+
+        // Add device type in parentheses if available: "Apple iPhone13,4 (Phone)"
+        if (_deviceInfo.DeviceType != null)
+            return $"{string.Join(" ", parts)} ({_deviceInfo.DeviceType})";
+
+        return string.Join(" ", parts);
+    }
+
+    static string? GetAppVersion()
     {
         try
         {
@@ -108,89 +156,31 @@ public sealed class FeedbackService : IFeedbackService
         }
         catch
         {
-            return "Unknown";
+            return null;
         }
     }
 
-    static string GetDeviceInfo()
-    {
-        try
-        {
-            // AnalyticsInfo.DeviceForm returns: Mobile, Tablet, Desktop, etc.
-            var deviceForm = AnalyticsInfo.DeviceForm;
-            return string.IsNullOrEmpty(deviceForm) ? "Unknown" : deviceForm;
-        }
-        catch
-        {
-            return "Unknown";
-        }
-    }
-
-    static string GetOsInfo()
-    {
-        try
-        {
-            // VersionInfo.DeviceFamily is like "iOS.Mobile" or "Android.Mobile"
-            var deviceFamily = AnalyticsVersionInfo.DeviceFamily;
-
-            // VersionInfo.DeviceFamilyVersion gives OS version
-            var osVersion = AnalyticsVersionInfo.DeviceFamilyVersion;
-
-            if (!string.IsNullOrEmpty(deviceFamily))
-            {
-                // For WASM, osVersion is the full user agent - truncate it
-                if (osVersion?.Length > 50)
-                    osVersion = osVersion[..50] + "...";
-
-                return string.IsNullOrEmpty(osVersion)
-                    ? deviceFamily
-                    : $"{deviceFamily} {osVersion}";
-            }
-
-            return GetOsPlatform();
-        }
-        catch
-        {
-            return GetOsPlatform();
-        }
-    }
-
-    static string GetOsPlatform()
-    {
-#if __IOS__
-        return "iOS";
-#elif __ANDROID__
-        return "Android";
-#elif HAS_UNO_SKIA
-        if (OperatingSystem.IsMacOS()) return "macOS";
-        if (OperatingSystem.IsWindows()) return "Windows";
-        if (OperatingSystem.IsLinux()) return "Linux";
-        return "Desktop";
-#else
-        return "Unknown";
-#endif
-    }
-
-    static AnalyticsVersionInfo AnalyticsVersionInfo =>
-        AnalyticsInfo.VersionInfo;
-
-    static string GetLocaleInfo()
+    static string? GetLocaleInfo()
     {
         try
         {
             var culture = CultureInfo.CurrentCulture;
-            var region = "??";
+            if (string.IsNullOrEmpty(culture.Name))
+                return null;
+
             try
             {
-                region = RegionInfo.CurrentRegion.TwoLetterISORegionName;
+                var region = RegionInfo.CurrentRegion.TwoLetterISORegionName;
+                return $"{culture.Name}, {region}";
             }
-            catch { /* keep ?? */ }
-
-            return $"{culture.Name}, {region}";
+            catch
+            {
+                return culture.Name;
+            }
         }
         catch
         {
-            return "Unknown";
+            return null;
         }
     }
 }

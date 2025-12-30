@@ -11,6 +11,7 @@ using PaliPractice.Presentation.Settings;
 using PaliPractice.Presentation.Settings.ViewModels;
 using PaliPractice.Services.Database.Providers;
 using PaliPractice.Services.Feedback;
+using PaliPractice.Services.Feedback.Providers;
 using PaliPractice.Services.Grammar;
 using PaliPractice.Services.Practice;
 using PaliPractice.Services.UserData;
@@ -108,6 +109,7 @@ public partial class App : Application
                     services.AddTransient<IPracticeQueueBuilder, PracticeQueueBuilder>();
 
                     // Platform services
+                    services.AddSingleton<IDeviceInfoProvider, DeviceInfoProvider>();
                     services.AddSingleton<IFeedbackService, FeedbackService>();
                     services.AddSingleton<IStoreReviewService, StoreReviewService>();
 

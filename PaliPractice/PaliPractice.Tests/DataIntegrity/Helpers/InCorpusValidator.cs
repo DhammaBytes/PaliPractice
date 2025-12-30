@@ -16,8 +16,57 @@ public record FormWithCorpusStatus(
 /// <summary>
 /// Validates InCorpus status by cross-checking DPD HTML gray forms against Tipitaka wordlists.
 /// </summary>
+/// <remarks>
+/// This class parses DPD HTML and will fail loudly if the HTML structure changes.
+/// Expected structure:
+/// - Table cells: &lt;td title='...'&gt;...&lt;/td&gt;
+/// - Gray class: class='gray' or class="gray"
+/// - Endings: &lt;b&gt;ending&lt;/b&gt;
+/// - Multiple forms separated by &lt;br&gt;
+/// </remarks>
 public static class InCorpusValidator
 {
+    // Expected DPD HTML structural patterns - if these stop matching, tests should fail
+    private const string ExpectedGrayClass = "gray";
+    private const string ExpectedTdPattern = @"<td[^>]*title='([^']+)'[^>]*>(.*?)</td>";
+    private const string ExpectedBoldPattern = @"<b>(.*?)</b>";
+
+    /// <summary>
+    /// Validates that the DPD HTML structure matches our expected format.
+    /// Call this once per test run to catch structural changes early.
+    /// </summary>
+    /// <param name="sampleHtml">A non-empty inflections_html sample from DPD</param>
+    /// <exception cref="InvalidOperationException">Thrown if HTML structure has changed</exception>
+    public static void ValidateHtmlStructure(string sampleHtml)
+    {
+        if (string.IsNullOrEmpty(sampleHtml))
+            throw new ArgumentException("Sample HTML cannot be empty", nameof(sampleHtml));
+
+        // Check for expected table structure
+        var hasTdWithTitle = Regex.IsMatch(sampleHtml, ExpectedTdPattern, RegexOptions.Singleline);
+        if (!hasTdWithTitle)
+        {
+            throw new InvalidOperationException(
+                "DPD HTML structure changed: Expected <td title='...'> elements not found. " +
+                "Update InCorpusValidator patterns to match new DPD format.");
+        }
+
+        // Check for expected bold tags
+        var hasBoldTags = Regex.IsMatch(sampleHtml, ExpectedBoldPattern);
+        if (!hasBoldTags)
+        {
+            throw new InvalidOperationException(
+                "DPD HTML structure changed: Expected <b>...</b> elements not found. " +
+                "Update InCorpusValidator patterns to match new DPD format.");
+        }
+
+        // Check for expected gray class (either format)
+        var hasGrayClass = sampleHtml.Contains($"class='{ExpectedGrayClass}'") ||
+                          sampleHtml.Contains($"class=\"{ExpectedGrayClass}\"");
+        // Gray class might not be present in all samples, so this is informational
+        // We only care that IF gray forms exist, they use the expected class name
+    }
+
     /// <summary>
     /// Parse all inflected forms from DPD HTML, extracting gray status for each.
     /// </summary>
@@ -31,9 +80,8 @@ public static class InCorpusValidator
         if (string.IsNullOrEmpty(html))
             return results;
 
-        // Find all <td> elements with title attributes
-        var cellPattern = @"<td[^>]*title='([^']+)'[^>]*>(.*?)</td>";
-        var cellMatches = Regex.Matches(html, cellPattern, RegexOptions.Singleline);
+        // Find all <td> elements with title attributes using expected pattern
+        var cellMatches = Regex.Matches(html, ExpectedTdPattern, RegexOptions.Singleline);
 
         foreach (Match cellMatch in cellMatches)
         {
@@ -53,11 +101,12 @@ public static class InCorpusValidator
                 if (string.IsNullOrWhiteSpace(part))
                     continue;
 
-                // Check if this part is wrapped in gray span
-                var isGray = part.Contains("class='gray'") || part.Contains("class=\"gray\"");
+                // Check if this part is wrapped in gray span (using expected class name)
+                var isGray = part.Contains($"class='{ExpectedGrayClass}'") ||
+                            part.Contains($"class=\"{ExpectedGrayClass}\"");
 
-                // Extract the ending from <b> tag
-                var boldMatch = Regex.Match(part, @"<b>(.*?)</b>");
+                // Extract the ending from <b> tag using expected pattern
+                var boldMatch = Regex.Match(part, ExpectedBoldPattern);
                 if (!boldMatch.Success)
                     continue;
 

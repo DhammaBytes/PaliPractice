@@ -1,4 +1,5 @@
 using FluentAssertions;
+using PaliPractice.Models;
 using PaliPractice.Models.Inflection;
 using PaliPractice.Tests.DataIntegrity.Helpers;
 
@@ -81,6 +82,15 @@ public class NounDataIntegrityTests
         // Load DPD-sourced pattern classification
         _dpdIrregularNounPatterns = _dpdPatterns.GetIrregularNounPatterns();
         _dpdRegularNounPatterns = _dpdPatterns.GetRegularNounPatterns();
+
+        // Validate DPD HTML structure hasn't changed (fail loudly if it has)
+        var sampleHtml = _dpdHeadwords.Values
+            .FirstOrDefault(h => !string.IsNullOrEmpty(h.InflectionsHtml))?.InflectionsHtml;
+        if (sampleHtml != null)
+        {
+            InCorpusValidator.ValidateHtmlStructure(sampleHtml);
+            TestContext.WriteLine("DPD HTML structure validation: PASSED");
+        }
 
         TestContext.WriteLine($"Loaded {_paliNouns.Count} nouns from pali.db");
         TestContext.WriteLine($"Loaded {_paliNounDetails.Count} noun details from pali.db");
@@ -216,13 +226,7 @@ public class NounDataIntegrityTests
             "nouns.gender should match dpd.pos (masc=1, nt=2, fem=3)");
     }
 
-    static int PosToGender(string pos) => pos switch
-    {
-        "masc" => 1,
-        "nt" => 2,
-        "fem" => 3,
-        _ => 0
-    };
+    static int PosToGender(string pos) => (int)NounEndings.PosToGender(pos);
 
     #endregion
 
@@ -598,14 +602,6 @@ public class NounDataIntegrityTests
     static bool IsPluralOnlyPattern(string pattern) =>
         pattern.Trim().EndsWith(" pl", StringComparison.OrdinalIgnoreCase);
 
-    /// <summary>
-    /// Parse a noun form_id to extract the number component.
-    /// Format: lemma_id(5) + case(1) + gender(1) + number(1) + ending_index(1)
-    /// Number: 1 = singular, 2 = plural
-    /// </summary>
-    static int ExtractNumberFromNounFormId(long formId) =>
-        (int)(formId % 100 / 10);
-
     [Test]
     public void DpdPatternClassification_MatchesOurEnumClassification()
     {
@@ -698,25 +694,28 @@ public class NounDataIntegrityTests
 
         foreach (var corpusFormId in _corpusDeclensionFormIds!)
         {
-            // Extract lemma_id from form_id (first 5 digits)
-            var lemmaId = (int)(corpusFormId / 10_000);
+            // Use the authoritative ParseId method from Declension model
+            var parsed = Declension.ParseId((int)corpusFormId);
 
             // Skip if not an irregular noun
-            if (!irregularLemmaIds.Contains(lemmaId))
+            if (!irregularLemmaIds.Contains(parsed.LemmaId))
                 continue;
 
             // Check if this corpus form has an irregular form entry
             if (!irregularFormIds.Contains((int)corpusFormId))
             {
-                var noun = irregularNouns.FirstOrDefault(n => n.LemmaId == lemmaId);
+                var noun = irregularNouns.FirstOrDefault(n => n.LemmaId == parsed.LemmaId);
                 missingIrregularForms.Add(
                     $"form_id={corpusFormId} (lemma={noun?.Lemma}, pattern={noun?.Pattern})");
             }
         }
 
         // Report findings
+        var irregularCorpusCount = _corpusDeclensionFormIds.Count(f =>
+            irregularLemmaIds.Contains(Declension.ParseId((int)f).LemmaId));
+
         TestContext.WriteLine($"Irregular nouns: {irregularNouns.Count}");
-        TestContext.WriteLine($"Irregular corpus form_ids checked: {_corpusDeclensionFormIds.Count(f => irregularLemmaIds.Contains((int)(f / 10_000)))}");
+        TestContext.WriteLine($"Irregular corpus form_ids checked: {irregularCorpusCount}");
         TestContext.WriteLine($"Irregular form entries: {irregularFormIds.Count}");
         TestContext.WriteLine($"Missing irregular form entries: {missingIrregularForms.Count}");
 
@@ -730,7 +729,7 @@ public class NounDataIntegrityTests
         // The forms are the same but may have different ending_index values.
         // This is acceptable as long as the app uses the irregular_forms table for display
         // and the corpus check is based on the form string presence in Tipitaka wordlists.
-        var mismatchRate = (double)missingIrregularForms.Count / _corpusDeclensionFormIds.Count(f => irregularLemmaIds.Contains((int)(f / 10_000)));
+        var mismatchRate = (double)missingIrregularForms.Count / irregularCorpusCount;
         TestContext.WriteLine($"Mismatch rate: {mismatchRate:P1}");
 
         // Allow up to 10% mismatch due to index ordering differences between template and HTML
@@ -822,20 +821,19 @@ public class NounDataIntegrityTests
             .Select(n => n.LemmaId)
             .ToHashSet();
 
-        // Check for singular forms (number = 1) in corpus
+        // Check for singular forms in corpus
         var singularForms = new List<string>();
 
         foreach (var corpusFormId in _corpusDeclensionFormIds!)
         {
-            var lemmaId = (int)(corpusFormId / 10_000);
+            var parsed = Declension.ParseId((int)corpusFormId);
 
-            if (!pluralOnlyLemmaIds.Contains(lemmaId))
+            if (!pluralOnlyLemmaIds.Contains(parsed.LemmaId))
                 continue;
 
-            var number = ExtractNumberFromNounFormId(corpusFormId);
-            if (number == 1) // Singular
+            if (parsed.Number == Number.Singular)
             {
-                var noun = pluralOnlyNouns.FirstOrDefault(n => n.LemmaId == lemmaId);
+                var noun = pluralOnlyNouns.FirstOrDefault(n => n.LemmaId == parsed.LemmaId);
                 singularForms.Add(
                     $"form_id={corpusFormId} (lemma={noun?.Lemma}, pattern={noun?.Pattern})");
             }

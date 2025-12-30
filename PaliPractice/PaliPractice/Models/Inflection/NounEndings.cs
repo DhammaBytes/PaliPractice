@@ -1,3 +1,5 @@
+using PaliPractice.Models;
+
 namespace PaliPractice.Models.Inflection;
 
 /// <summary>
@@ -6,6 +8,39 @@ namespace PaliPractice.Models.Inflection;
 /// </summary>
 public static class NounEndings
 {
+    #region DPD Gender Abbreviations
+
+    /// <summary>DPD abbreviation for masculine gender.</summary>
+    public const string MascAbbrev = "masc";
+
+    /// <summary>DPD abbreviation for feminine gender.</summary>
+    public const string FemAbbrev = "fem";
+
+    /// <summary>DPD abbreviation for neuter gender.</summary>
+    public const string NeutAbbrev = "nt";
+
+    /// <summary>
+    /// Checks if a pattern string indicates a noun (contains masc/fem/nt).
+    /// Use with space prefix for "nt" to avoid false matches (e.g., "ant").
+    /// </summary>
+    public static bool IsNounPattern(string pattern) =>
+        pattern.Contains(MascAbbrev) ||
+        pattern.Contains(FemAbbrev) ||
+        pattern.Contains($" {NeutAbbrev}");
+
+    /// <summary>
+    /// Converts DPD POS string to Gender enum.
+    /// </summary>
+    public static Gender PosToGender(string pos) => pos switch
+    {
+        MascAbbrev => Gender.Masculine,
+        NeutAbbrev => Gender.Neuter,
+        FemAbbrev => Gender.Feminine,
+        _ => Gender.None
+    };
+
+    #endregion
+
     /// <summary>
     /// Get declension endings for a noun pattern.
     /// </summary>

@@ -1,4 +1,5 @@
 using Microsoft.Data.Sqlite;
+using PaliPractice.Models.Inflection;
 
 namespace PaliPractice.Tests.DataIntegrity.Helpers;
 
@@ -135,8 +136,7 @@ public class DpdPatternClassifier : IDisposable
     /// <summary>
     /// Check if a pattern string represents a noun (masc/fem/nt).
     /// </summary>
-    static bool IsNounPattern(string pattern) =>
-        pattern.Contains("masc") || pattern.Contains("fem") || pattern.Contains(" nt");
+    static bool IsNounPattern(string pattern) => NounEndings.IsNounPattern(pattern);
 
     /// <summary>
     /// Check if a pattern string represents a present tense verb (" pr").

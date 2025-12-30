@@ -71,6 +71,15 @@ public class VerbDataIntegrityTests
         _dpdIrregularVerbPatterns = _dpdPatterns.GetIrregularVerbPatterns();
         _dpdRegularVerbPatterns = _dpdPatterns.GetRegularVerbPatterns();
 
+        // Validate DPD HTML structure hasn't changed (fail loudly if it has)
+        var sampleHtml = _dpdHeadwords.Values
+            .FirstOrDefault(h => !string.IsNullOrEmpty(h.InflectionsHtml))?.InflectionsHtml;
+        if (sampleHtml != null)
+        {
+            InCorpusValidator.ValidateHtmlStructure(sampleHtml);
+            TestContext.WriteLine("DPD HTML structure validation: PASSED");
+        }
+
         TestContext.WriteLine($"Loaded {_paliVerbs.Count} verbs from pali.db");
         TestContext.WriteLine($"Loaded {_paliVerbDetails.Count} verb details from pali.db");
         TestContext.WriteLine($"Loaded {_dpdHeadwords.Count} headwords from dpd.db");
@@ -660,25 +669,28 @@ public class VerbDataIntegrityTests
 
         foreach (var corpusFormId in _corpusConjugationFormIds!)
         {
-            // Extract lemma_id from form_id (first 5 digits)
-            var lemmaId = (int)(corpusFormId / 100_000);
+            // Use the authoritative ParseId method from Conjugation model
+            var parsed = Conjugation.ParseId(corpusFormId);
 
             // Skip if not an irregular verb
-            if (!irregularLemmaIds.Contains(lemmaId))
+            if (!irregularLemmaIds.Contains(parsed.LemmaId))
                 continue;
 
             // Check if this corpus form has an irregular form entry
             if (!irregularFormIds.Contains(corpusFormId))
             {
-                var verb = irregularVerbs.FirstOrDefault(v => v.LemmaId == lemmaId);
+                var verb = irregularVerbs.FirstOrDefault(v => v.LemmaId == parsed.LemmaId);
                 missingIrregularForms.Add(
                     $"form_id={corpusFormId} (lemma={verb?.Lemma}, pattern={verb?.Pattern})");
             }
         }
 
         // Report findings
+        var irregularCorpusCount = _corpusConjugationFormIds.Count(f =>
+            irregularLemmaIds.Contains(Conjugation.ParseId(f).LemmaId));
+
         TestContext.WriteLine($"Irregular verbs: {irregularVerbs.Count}");
-        TestContext.WriteLine($"Irregular corpus form_ids checked: {_corpusConjugationFormIds.Count(f => irregularLemmaIds.Contains((int)(f / 100_000)))}");
+        TestContext.WriteLine($"Irregular corpus form_ids checked: {irregularCorpusCount}");
         TestContext.WriteLine($"Irregular form entries: {irregularFormIds.Count}");
         TestContext.WriteLine($"Missing irregular form entries: {missingIrregularForms.Count}");
 
@@ -690,8 +702,8 @@ public class VerbDataIntegrityTests
         // Note: Some mismatch is expected because corpus_forms uses ending indices from
         // template parsing, while irregular_forms uses indices from HTML parsing.
         // The forms are the same but may have different ending_index values.
-        var mismatchRate = irregularLemmaIds.Count > 0
-            ? (double)missingIrregularForms.Count / _corpusConjugationFormIds.Count(f => irregularLemmaIds.Contains((int)(f / 100_000)))
+        var mismatchRate = irregularCorpusCount > 0
+            ? (double)missingIrregularForms.Count / irregularCorpusCount
             : 0;
         TestContext.WriteLine($"Mismatch rate: {mismatchRate:P1}");
 

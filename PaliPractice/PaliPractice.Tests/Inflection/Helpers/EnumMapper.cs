@@ -1,3 +1,5 @@
+using PaliPractice.Models.Inflection;
+
 namespace PaliPractice.Tests.Inflection.Helpers;
 
 /// <summary>
@@ -67,13 +69,10 @@ public static class EnumMapper
 
     static Gender ParseGender(string gender)
     {
-        return gender switch
-        {
-            "masc" => Gender.Masculine,
-            "nt" => Gender.Neuter,
-            "fem" => Gender.Feminine,
-            _ => throw new ArgumentException($"Unknown gender: {gender}")
-        };
+        var result = NounEndings.PosToGender(gender);
+        return result != Gender.None
+            ? result
+            : throw new ArgumentException($"Unknown gender: {gender}");
     }
 
     static Case ParseCase(string caseStr)

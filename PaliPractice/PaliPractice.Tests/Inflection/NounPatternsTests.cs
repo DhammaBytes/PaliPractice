@@ -73,8 +73,8 @@ public class NounPatternsTests
                         if (number == Number.None) continue;
 
                         // Build the DPD title format
-                        var gender = dbString.Contains("masc") ? "masc" :
-                                   dbString.Contains("nt") ? "nt" : "fem";
+                        var gender = dbString.Contains(NounEndings.MascAbbrev) ? NounEndings.MascAbbrev :
+                                   dbString.Contains(NounEndings.NeutAbbrev) ? NounEndings.NeutAbbrev : NounEndings.FemAbbrev;
 
                         var caseStr = nounCase switch
                         {

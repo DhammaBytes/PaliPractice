@@ -89,9 +89,9 @@ public class Declension
 
     static readonly Dictionary<Gender, string> GenderAbbrev = new()
     {
-        [Gender.Masculine] = "masc",
-        [Gender.Feminine] = "fem",
-        [Gender.Neuter] = "nt"
+        [Gender.Masculine] = NounEndings.MascAbbrev,
+        [Gender.Feminine] = NounEndings.FemAbbrev,
+        [Gender.Neuter] = NounEndings.NeutAbbrev
     };
 
     static readonly Dictionary<Number, string> NumberAbbrev = new()

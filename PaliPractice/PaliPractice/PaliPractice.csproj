@@ -46,6 +46,15 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
     </PropertyGroup>
 
+    <!-- Runtime identifiers for device builds -->
+    <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+        <RuntimeIdentifiers>iossimulator-x64;iossimulator-arm64;ios-arm64</RuntimeIdentifiers>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+        <RuntimeIdentifiers>android-arm64;android-arm;android-x64;android-x86</RuntimeIdentifiers>
+    </PropertyGroup>
+
     <ItemGroup>
       <PackageReference Include="Markdig" />
       <PackageReference Include="sqlite-net-pcl" />

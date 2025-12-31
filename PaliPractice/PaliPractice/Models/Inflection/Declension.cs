@@ -74,8 +74,8 @@ public class Declension
         );
     }
 
-    // DPD-style abbreviations for combo keys
-    static readonly Dictionary<Case, string> CaseAbbrev = new()
+    // DPD-style abbreviations for combo keys (public for UI reuse)
+    public static IReadOnlyDictionary<Case, string> CaseAbbreviations { get; } = new Dictionary<Case, string>
     {
         [Case.Nominative] = "nom",
         [Case.Accusative] = "acc",
@@ -87,14 +87,14 @@ public class Declension
         [Case.Vocative] = "voc"
     };
 
-    static readonly Dictionary<Gender, string> GenderAbbrev = new()
+    public static IReadOnlyDictionary<Gender, string> GenderAbbreviations { get; } = new Dictionary<Gender, string>
     {
         [Gender.Masculine] = NounEndings.MascAbbrev,
         [Gender.Feminine] = NounEndings.FemAbbrev,
         [Gender.Neuter] = NounEndings.NeutAbbrev
     };
 
-    static readonly Dictionary<Number, string> NumberAbbrev = new()
+    public static IReadOnlyDictionary<Number, string> NumberAbbreviations { get; } = new Dictionary<Number, string>
     {
         [Number.Singular] = "sg",
         [Number.Plural] = "pl"
@@ -105,9 +105,9 @@ public class Declension
     /// </summary>
     public static string ComboKey(Case @case, Gender gender, Number number)
     {
-        var c = CaseAbbrev.GetValueOrDefault(@case, @case.ToString().ToLowerInvariant());
-        var g = GenderAbbrev.GetValueOrDefault(gender, gender.ToString().ToLowerInvariant());
-        var n = NumberAbbrev.GetValueOrDefault(number, number.ToString().ToLowerInvariant());
+        var c = CaseAbbreviations.GetValueOrDefault(@case, @case.ToString().ToLowerInvariant());
+        var g = GenderAbbreviations.GetValueOrDefault(gender, gender.ToString().ToLowerInvariant());
+        var n = NumberAbbreviations.GetValueOrDefault(number, number.ToString().ToLowerInvariant());
         return $"{c}_{g}_{n}";
     }
 

@@ -52,6 +52,13 @@ public class Noun : IWord
     public bool Irregular => Pattern.IsIrregular();
 
     /// <summary>
+    /// Whether this noun uses a variant (non-standard) declension pattern.
+    /// Variant patterns use stem+ending construction but with non-standard endings.
+    /// </summary>
+    [Ignore]
+    public bool IsVariant => Pattern.IsVariant();
+
+    /// <summary>
     /// Whether this noun is plural-only (lacks singular forms).
     /// True "pluralia tantum" nouns should not be asked for singular declensions.
     /// </summary>

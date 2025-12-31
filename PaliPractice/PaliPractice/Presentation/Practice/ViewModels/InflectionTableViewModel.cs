@@ -66,9 +66,30 @@ public partial class InflectionTableViewModel : ObservableObject
     string _patternName = "";
 
     /// <summary>
-    /// The type name: "declension" or "conjugation" (normal)
+    /// Whether the pattern is irregular (forms from database lookup).
     /// </summary>
-    public string TypeName => IsNoun ? "declension" : "conjugation";
+    [ObservableProperty]
+    bool _isIrregular;
+
+    /// <summary>
+    /// Whether the pattern is a variant (non-standard endings).
+    /// </summary>
+    [ObservableProperty]
+    bool _isVariantPattern;
+
+    /// <summary>
+    /// The type name: "declension" or "conjugation", with "irregular" or "non-standard" prefix if applicable.
+    /// </summary>
+    public string TypeName
+    {
+        get
+        {
+            var baseType = IsNoun ? "declension" : "conjugation";
+            if (IsIrregular) return $"irregular {baseType}";
+            if (IsVariantPattern) return $"non-standard {baseType}";
+            return baseType;
+        }
+    }
 
     /// <summary>
     /// The "like" example lemma from DPD (bold, Pali font)
@@ -106,38 +127,32 @@ public partial class InflectionTableViewModel : ObservableObject
 
     void GenerateNounTable(IInflectionService inflectionService)
     {
-        var noun = Lemma.Primary as Noun;
-        if (noun == null) return;
+        if (Lemma.Primary is not Noun noun) return;
 
         // Header info
         LemmaName = noun.Lemma;
         PatternName = noun.RawPattern;
         LikeExample = noun.Pattern.GetLikeExample();
+        IsIrregular = noun.Irregular;
+        IsVariantPattern = noun.IsVariant;
 
-        var genderLabel = noun.Gender switch
-        {
-            Gender.Masculine => "masc",
-            Gender.Feminine => "fem",
-            Gender.Neuter => "nt",
-            _ => ""
-        };
+        var genderLabel = Declension.GenderAbbreviations.GetValueOrDefault(noun.Gender, "");
+        var sgLabel = Declension.NumberAbbreviations[Number.Singular];
+        var plLabel = Declension.NumberAbbreviations[Number.Plural];
 
         // Column headers based on gender and plural-only status
         var columns = new List<string>();
         if (!noun.PluralOnly)
-            columns.Add($"{genderLabel} sg");
-        columns.Add($"{genderLabel} pl");
+            columns.Add($"{genderLabel} {sgLabel}");
+        columns.Add($"{genderLabel} {plLabel}");
         ColumnHeaders = columns;
 
         // Row headers: 8 grammatical cases
-        RowHeaders = new[]
-        {
-            "nom", "acc", "instr", "dat", "abl", "gen", "loc", "voc"
-        };
-
-        // Generate cells for each case × number
         var cases = new[] { Case.Nominative, Case.Accusative, Case.Instrumental, Case.Dative,
                            Case.Ablative, Case.Genitive, Case.Locative, Case.Vocative };
+        RowHeaders = cases.Select(c => Declension.CaseAbbreviations[c]).ToList();
+
+        // Generate cells for each case × number
 
         var rows = new List<IReadOnlyList<TableCell>>();
         foreach (var @case in cases)
@@ -168,43 +183,38 @@ public partial class InflectionTableViewModel : ObservableObject
         LemmaName = verb.Lemma;
         PatternName = verb.RawPattern;
         LikeExample = verb.Pattern.GetLikeExample();
+        IsIrregular = verb.Irregular;
+        IsVariantPattern = false; // Verbs don't have variant patterns
 
         // Check if verb has reflexive forms by testing one combination
         var testReflexive = inflectionService.GenerateVerbForms(verb, Person.Third, Number.Singular, Tense.Present, reflexive: true);
         var hasReflexive = testReflexive.Forms.Count > 0;
 
+        var sgLabel = Conjugation.NumberAbbreviations[Number.Singular];
+        var plLabel = Conjugation.NumberAbbreviations[Number.Plural];
+        var reflxLabel = Conjugation.ReflexiveAbbrev;
+
         // Column headers
-        var columns = new List<string> { "sg", "pl" };
+        var columns = new List<string> { sgLabel, plLabel };
         if (hasReflexive)
         {
-            columns.Add("reflx sg");
-            columns.Add("reflx pl");
+            columns.Add($"{reflxLabel} {sgLabel}");
+            columns.Add($"{reflxLabel} {plLabel}");
         }
         ColumnHeaders = columns;
 
         // Row headers: 4 tenses × 3 persons = 12 rows
         var rowHeadersList = new List<string>();
         var tenses = new[] { Tense.Present, Tense.Imperative, Tense.Optative, Tense.Future };
-        var tenseAbbrevs = new Dictionary<Tense, string>
-        {
-            [Tense.Present] = "pr",
-            [Tense.Imperative] = "imp",
-            [Tense.Optative] = "opt",
-            [Tense.Future] = "fut"
-        };
         var persons = new[] { Person.Third, Person.Second, Person.First };
-        var personLabels = new Dictionary<Person, string>
-        {
-            [Person.Third] = "3rd",
-            [Person.Second] = "2nd",
-            [Person.First] = "1st"
-        };
 
         foreach (var tense in tenses)
         {
             foreach (var person in persons)
             {
-                rowHeadersList.Add($"{tenseAbbrevs[tense]} {personLabels[person]}");
+                var tenseAbbrev = Conjugation.TenseAbbreviations[tense];
+                var personAbbrev = Conjugation.PersonAbbreviations[person];
+                rowHeadersList.Add($"{tenseAbbrev} {personAbbrev}");
             }
         }
         RowHeaders = rowHeadersList;

@@ -4,6 +4,11 @@ using static PaliPractice.Presentation.Common.TextHelpers;
 namespace PaliPractice.Presentation.Common;
 
 /// <summary>
+/// Result of building a frozen header table.
+/// </summary>
+public record FrozenHeaderTableResult(Grid Table, bool HasNonCorpusForms);
+
+/// <summary>
 /// A table control with frozen row and column headers that remain visible
 /// during scrolling (Excel-style sticky headers).
 ///
@@ -17,8 +22,9 @@ public static class FrozenHeaderTable
 {
     /// <summary>
     /// Builds a frozen header table from the given data.
+    /// Returns the table and whether any cells contain non-corpus forms.
     /// </summary>
-    public static Grid Build(
+    public static FrozenHeaderTableResult Build(
         IReadOnlyList<string> columnHeaders,
         IReadOnlyList<string> rowHeaders,
         IReadOnlyList<IReadOnlyList<TableCell>> cells)
@@ -28,7 +34,7 @@ public static class FrozenHeaderTable
         var clonedRowHeadersPanel = BuildClonedRowHeaders(rowHeaders, clonedRowHeaders);
 
         // Build the body grid with ghost row headers and content cells
-        var (bodyGrid, rowHeaderWidth) = BuildBodyGrid(rowHeaders, cells, columnHeaders.Count, clonedRowHeaders);
+        var (bodyGrid, rowHeaderWidth, hasNonCorpusForms) = BuildBodyGrid(rowHeaders, cells, columnHeaders.Count, clonedRowHeaders);
 
         // Build column headers panel
         var columnHeadersPanel = BuildColumnHeaders(columnHeaders);
@@ -86,7 +92,7 @@ public static class FrozenHeaderTable
             );
 
         // Main layout: 2 rows (header row, body row)
-        return new Grid()
+        var table = new Grid()
             .RowDefinitions("Auto,*")
             .ColumnDefinitions($"{rowHeaderWidth},*")
             .Children(
@@ -99,6 +105,8 @@ public static class FrozenHeaderTable
                 // [1,0-1] Body area with overlay (spans both columns)
                 bodyArea.Grid(row: 1, column: 0, columnSpan: 2)
             );
+
+        return new FrozenHeaderTableResult(table, hasNonCorpusForms);
     }
 
     /// <summary>
@@ -124,13 +132,14 @@ public static class FrozenHeaderTable
     /// Builds the body grid with ghost row headers (transparent) in column 0 and data cells in columns 1-N.
     /// Ghost cells sync their heights to cloned cells via SizeChanged.
     /// </summary>
-    static (Grid grid, double rowHeaderWidth) BuildBodyGrid(
+    static (Grid grid, double rowHeaderWidth, bool hasNonCorpusForms) BuildBodyGrid(
         IReadOnlyList<string> rowHeaders,
         IReadOnlyList<IReadOnlyList<TableCell>> cells,
         int columnCount,
         List<Border> clonedCells)
     {
         int rowCount = rowHeaders.Count;
+        bool hasNonCorpusForms = false;
 
         // Row definitions: one per data row
         var rowDefs = string.Join(",", Enumerable.Repeat("Auto", rowCount));
@@ -166,13 +175,17 @@ public static class FrozenHeaderTable
             var rowCells = cells[row];
             for (int col = 0; col < rowCells.Count; col++)
             {
+                // Check for non-corpus forms
+                if (rowCells[col].Forms.Any(f => !f.InCorpus))
+                    hasNonCorpusForms = true;
+
                 var cell = BuildDataCell(rowCells[col]);
                 cell.Grid(row: row, column: col + 1); // +1 because column 0 is row headers
                 grid.Children.Add(cell);
             }
         }
 
-        return (grid, RowHeaderWidth);
+        return (grid, RowHeaderWidth, hasNonCorpusForms);
     }
 
     static StackPanel BuildColumnHeaders(IReadOnlyList<string> headers)
@@ -261,10 +274,10 @@ public static class FrozenHeaderTable
                 });
             }
 
-            // Gray out non-attested forms
+            // Gray out non-attested forms (even more faded than normal variant)
             if (!form.InCorpus)
             {
-                textBlock.Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"));
+                textBlock.Foreground(ThemeResource.Get<Brush>("OnSurfaceDisabledBrush"));
             }
 
             panel.Children.Add(textBlock);

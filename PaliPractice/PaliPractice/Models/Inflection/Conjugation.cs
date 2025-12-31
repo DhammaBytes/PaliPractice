@@ -81,8 +81,8 @@ public class Conjugation
         );
     }
 
-    // DPD-style abbreviations for combo keys
-    static readonly Dictionary<Tense, string> TenseAbbrev = new()
+    // DPD-style abbreviations for combo keys (public for UI reuse)
+    public static IReadOnlyDictionary<Tense, string> TenseAbbreviations { get; } = new Dictionary<Tense, string>
     {
         [Tense.Present] = "pr",
         [Tense.Imperative] = "imp",
@@ -90,29 +90,31 @@ public class Conjugation
         [Tense.Future] = "fut"
     };
 
-    static readonly Dictionary<Person, string> PersonAbbrev = new()
+    public static IReadOnlyDictionary<Person, string> PersonAbbreviations { get; } = new Dictionary<Person, string>
     {
         [Person.First] = "1st",
         [Person.Second] = "2nd",
         [Person.Third] = "3rd"
     };
 
-    static readonly Dictionary<Number, string> NumberAbbrev = new()
+    public static IReadOnlyDictionary<Number, string> NumberAbbreviations { get; } = new Dictionary<Number, string>
     {
         [Number.Singular] = "sg",
         [Number.Plural] = "pl"
     };
+
+    public const string ReflexiveAbbrev = "reflx";
 
     /// <summary>
     /// Generate DPD-style combo key for a conjugation (e.g., "pr_1st_sg" or "opt_3rd_pl_reflx").
     /// </summary>
     public static string ComboKey(Tense tense, Person person, Number number, Voice voice)
     {
-        var t = TenseAbbrev.GetValueOrDefault(tense, tense.ToString().ToLowerInvariant());
-        var p = PersonAbbrev.GetValueOrDefault(person, person.ToString().ToLowerInvariant());
-        var n = NumberAbbrev.GetValueOrDefault(number, number.ToString().ToLowerInvariant());
+        var t = TenseAbbreviations.GetValueOrDefault(tense, tense.ToString().ToLowerInvariant());
+        var p = PersonAbbreviations.GetValueOrDefault(person, person.ToString().ToLowerInvariant());
+        var n = NumberAbbreviations.GetValueOrDefault(number, number.ToString().ToLowerInvariant());
         var key = $"{t}_{p}_{n}";
-        return voice == Voice.Reflexive ? $"{key}_reflx" : key;
+        return voice == Voice.Reflexive ? $"{key}_{ReflexiveAbbrev}" : key;
     }
 
     /// <summary>

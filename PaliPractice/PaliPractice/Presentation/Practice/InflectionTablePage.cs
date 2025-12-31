@@ -11,9 +11,10 @@ namespace PaliPractice.Presentation.Practice;
 /// </summary>
 public sealed partial class InflectionTablePage : Page
 {
-    Grid? _tableContainer;
-    TextBlock? _titleTextBlock;
-    TextBlock? _headerTextBlock;
+    readonly Grid? _tableContainer;
+    readonly TextBlock? _titleTextBlock;
+    readonly TextBlock? _headerTextBlock;
+    readonly TextBlock? _hintTextBlock;
 
     public InflectionTablePage()
     {
@@ -27,6 +28,10 @@ public sealed partial class InflectionTablePage : Page
         _headerTextBlock = RegularText()
             .FontSize(16)
             .TextWrapping(TextWrapping.Wrap);
+        _hintTextBlock = RegularText()
+            .FontSize(12)
+            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
+            .Visibility(Visibility.Collapsed); // Hidden by default, shown if table has non-corpus forms
 
         this.DataContext<InflectionTableViewModel>((page, vm) => page
             .NavigationCacheMode(NavigationCacheMode.Disabled)
@@ -67,10 +72,10 @@ public sealed partial class InflectionTablePage : Page
         if (args.NewValue is InflectionTableViewModel vm && _tableContainer != null)
         {
             // Update title with lemma name
-            if (_titleTextBlock != null)
-                _titleTextBlock.Text = vm.LemmaName;
+            _titleTextBlock?.Text = vm.LemmaName;
 
             // Update formatted header: <pattern> <type> (like <example>)
+            // Skip "(like ...)" if the example is the same as the current lemma
             if (_headerTextBlock != null)
             {
                 _headerTextBlock.Inlines.Clear();
@@ -79,26 +84,43 @@ public sealed partial class InflectionTablePage : Page
                     Text = vm.PatternName,
                     FontWeight = Microsoft.UI.Text.FontWeights.SemiBold
                 });
-                _headerTextBlock.Inlines.Add(new Run { Text = $" {vm.TypeName} (like " });
-                _headerTextBlock.Inlines.Add(new Run
+                _headerTextBlock.Inlines.Add(new Run { Text = $" {vm.TypeName}" });
+
+                if (!string.Equals(vm.LikeExample, vm.LemmaName, StringComparison.OrdinalIgnoreCase))
                 {
-                    Text = vm.LikeExample,
-                    FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
-                    FontFamily = new FontFamily(FontPaths.LibertinusSans)
-                });
-                _headerTextBlock.Inlines.Add(new Run { Text = ")" });
+                    _headerTextBlock.Inlines.Add(new Run { Text = " (like " });
+                    _headerTextBlock.Inlines.Add(new Run
+                    {
+                        Text = vm.LikeExample,
+                        FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+                        FontFamily = new FontFamily(FontPaths.LibertinusSans)
+                    });
+                    _headerTextBlock.Inlines.Add(new Run { Text = ")" });
+                }
             }
 
             // Build the frozen header table with actual data
             if (vm.RowHeaders.Count > 0 && vm.ColumnHeaders.Count > 0)
             {
-                var table = FrozenHeaderTable.Build(
+                var result = FrozenHeaderTable.Build(
                     vm.ColumnHeaders,
                     vm.RowHeaders,
                     vm.Cells);
 
                 _tableContainer.Children.Clear();
-                _tableContainer.Children.Add(table);
+                _tableContainer.Children.Add(result.Table);
+
+                // Show hint if there are non-corpus forms
+                if (_hintTextBlock != null && result.HasNonCorpusForms)
+                {
+                    var typeName = vm.IsNoun ? "Irregular declensions" : "Non-standard conjugations";
+                    _hintTextBlock.Text = $"{typeName} not found in the Pāḷi corpus are grayed out";
+                    _hintTextBlock.Visibility = Visibility.Visible;
+                }
+                else if (_hintTextBlock != null)
+                {
+                    _hintTextBlock.Visibility = Visibility.Collapsed;
+                }
             }
         }
     }
@@ -107,8 +129,7 @@ public sealed partial class InflectionTablePage : Page
     {
         var backButton = new SquircleButton()
             .Fill(ThemeResource.Get<Brush>("BackgroundBrush"))
-            .RadiusMode(SquircleRadiusMode.ButtonSmall)
-            .Padding(12, 8);
+                        .Padding(12, 8);
         backButton.SetBinding(ButtonBase.CommandProperty, new Binding { Path = new PropertyPath("GoBackCommand") });
         backButton.Child(new StackPanel()
             .Orientation(Orientation.Horizontal)
@@ -126,7 +147,7 @@ public sealed partial class InflectionTablePage : Page
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
             .Padding(16, 8)
             .Children(
-                _titleTextBlock,
+                _titleTextBlock!,
                 new Grid()
                     .ColumnDefinitions("Auto,*")
                     .Children(backButton.Grid(column: 0))
@@ -139,6 +160,11 @@ public sealed partial class InflectionTablePage : Page
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
             .Padding(16, 12)
             .Margin(0, 0, 0, 1)
-            .Child(_headerTextBlock);
+            .Child(new StackPanel()
+                .Spacing(8)
+                .Children(
+                    _headerTextBlock!,
+                    _hintTextBlock!
+                ));
     }
 }

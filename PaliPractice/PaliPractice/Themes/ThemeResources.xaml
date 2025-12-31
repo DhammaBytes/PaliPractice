@@ -47,7 +47,8 @@
             <SolidColorBrush x:Key="OnSurfaceBrush" Color="#1C1B1F"/>
             <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="#8B8494"/>
             <SolidColorBrush x:Key="OnSurfaceInverseBrush" Color="#F4EFF4"/>
-            
+            <SolidColorBrush x:Key="OnSurfaceDisabledBrush" Color="#C0BBC6"/>
+
             <!-- Outline Colors -->
             <SolidColorBrush x:Key="OutlineBrush" Color="#79747E"/>
             <SolidColorBrush x:Key="OutlineVariantBrush" Color="#C9C5D0"/>
@@ -97,7 +98,8 @@
             <SolidColorBrush x:Key="OnSurfaceBrush" Color="#E6E1E5"/>
             <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="#C9C5D0"/>
             <SolidColorBrush x:Key="OnSurfaceInverseBrush" Color="#1C1B1F"/>
-            
+            <SolidColorBrush x:Key="OnSurfaceDisabledBrush" Color="#706D78"/>
+
             <!-- Outline Colors -->
             <SolidColorBrush x:Key="OutlineBrush" Color="#928F99"/>
             <SolidColorBrush x:Key="OutlineVariantBrush" Color="#57545D"/>
@@ -147,7 +149,8 @@
             <SolidColorBrush x:Key="OnSurfaceBrush" Color="#1C1B1F"/>
             <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="#8B8494"/>
             <SolidColorBrush x:Key="OnSurfaceInverseBrush" Color="#F4EFF4"/>
-            
+            <SolidColorBrush x:Key="OnSurfaceDisabledBrush" Color="#C0BBC6"/>
+
             <!-- Outline Colors -->
             <SolidColorBrush x:Key="OutlineBrush" Color="#79747E"/>
             <SolidColorBrush x:Key="OutlineVariantBrush" Color="#C9C5D0"/>

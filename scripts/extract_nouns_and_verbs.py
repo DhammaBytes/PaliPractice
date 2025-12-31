@@ -255,6 +255,7 @@ class NounVerbExtractor:
                 id INTEGER PRIMARY KEY,
                 lemma_id INTEGER NOT NULL,
                 word TEXT NOT NULL DEFAULT '',
+                root TEXT DEFAULT '',
                 meaning TEXT,
                 source_1 TEXT DEFAULT '',
                 sutta_1 TEXT DEFAULT '',
@@ -286,6 +287,7 @@ class NounVerbExtractor:
                 id INTEGER PRIMARY KEY,
                 lemma_id INTEGER NOT NULL,
                 word TEXT NOT NULL DEFAULT '',
+                root TEXT DEFAULT '',
                 type TEXT DEFAULT '',
                 trans TEXT DEFAULT '',
                 meaning TEXT,
@@ -377,6 +379,7 @@ class NounVerbExtractor:
             ~DpdHeadword.meaning_1.contains('in reference to'),
             ~DpdHeadword.meaning_1.contains('people of'),
             ~DpdHeadword.meaning_1.contains('name of'),
+            ~DpdHeadword.meaning_1.contains('names of'),
             ~DpdHeadword.meaning_1.contains('family name')
         ).all()
 
@@ -661,10 +664,10 @@ class NounVerbExtractor:
 
             cursor.execute("""
                 INSERT INTO nouns_details (
-                    id, lemma_id, word, meaning, source_1, sutta_1, example_1, source_2, sutta_2, example_2
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    id, lemma_id, word, root, meaning, source_1, sutta_1, example_1, source_2, sutta_2, example_2
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
-                word.id, lemma_id, word_variant, meaning,
+                word.id, lemma_id, word_variant, word.family_root or '', meaning,
                 word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
                 word.source_2 or '', word.sutta_2 or '', word.example_2 or ''
             ))
@@ -779,11 +782,11 @@ class NounVerbExtractor:
 
             cursor.execute("""
                 INSERT INTO verbs_details (
-                    id, lemma_id, word, type, trans, meaning,
+                    id, lemma_id, word, root, type, trans, meaning,
                     source_1, sutta_1, example_1, source_2, sutta_2, example_2
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
-                word.id, lemma_id, word_variant, word.verb or '', word.trans or '', meaning,
+                word.id, lemma_id, word_variant, word.family_root or '', word.verb or '', word.trans or '', meaning,
                 word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
                 word.source_2 or '', word.sutta_2 or '', word.example_2 or ''
             ))

@@ -25,6 +25,9 @@ public class VerbDetails : IWordDetails
     [Column("word")]
     public string Variant { get; set; } = string.Empty;
 
+    [Column("root")]
+    public string Root { get; set; } = string.Empty;
+
     [Column("type")]
     public string VerbType { get; set; } = string.Empty;
 

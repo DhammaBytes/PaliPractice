@@ -142,7 +142,8 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         }
 
         var masteryLevel = _provider.Current?.MasteryLevel ?? 1;
-        FlashCard.DisplayWord(lemma.Primary, _provider.CurrentIndex, _provider.TotalCount, masteryLevel);
+        var root = lemma.Primary.Details?.Root;
+        FlashCard.DisplayWord(lemma.Primary, _provider.CurrentIndex, _provider.TotalCount, masteryLevel, root);
 
         // Initialize carousel with all word variants for this lemma
         ExampleCarousel.Initialize(lemma.Words);

@@ -48,6 +48,11 @@ public interface IWordDetails
     string Variant { get; }
 
     /// <summary>
+    /// The root family this word belongs to, e.g., "√kar" or empty.
+    /// </summary>
+    string Root { get; }
+
+    /// <summary>
     /// Primary meaning/translation. Never null - extraction filters for words with meanings.
     /// </summary>
     string Meaning { get; }

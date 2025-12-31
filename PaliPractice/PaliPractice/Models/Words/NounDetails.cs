@@ -25,6 +25,9 @@ public class NounDetails : IWordDetails
     [Column("word")]
     public string Variant { get; set; } = string.Empty;
 
+    [Column("root")]
+    public string Root { get; set; } = string.Empty;
+
     [Column("meaning")]
     public string Meaning { get; set; } = string.Empty;
 

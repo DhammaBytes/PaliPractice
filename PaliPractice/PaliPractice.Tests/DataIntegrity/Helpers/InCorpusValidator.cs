@@ -27,9 +27,9 @@ public record FormWithCorpusStatus(
 public static class InCorpusValidator
 {
     // Expected DPD HTML structural patterns - if these stop matching, tests should fail
-    private const string ExpectedGrayClass = "gray";
-    private const string ExpectedTdPattern = @"<td[^>]*title='([^']+)'[^>]*>(.*?)</td>";
-    private const string ExpectedBoldPattern = @"<b>(.*?)</b>";
+    const string ExpectedGrayClass = "gray";
+    const string ExpectedTdPattern = @"<td[^>]*title='([^']+)'[^>]*>(.*?)</td>";
+    const string ExpectedBoldPattern = @"<b>(.*?)</b>";
 
     /// <summary>
     /// Validates that the DPD HTML structure matches our expected format.

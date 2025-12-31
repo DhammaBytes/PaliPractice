@@ -14,7 +14,6 @@ namespace PaliPractice.Presentation.Practice;
 /// </summary>
 public record PracticePageConfig<TVM>(
     string Title,
-    string RankPrefix,
     Expression<Func<TVM, FlashCardViewModel>> FlashCardPath,
     Expression<Func<TVM, string>> AnswerStemPath,
     Expression<Func<TVM, string>> AnswerEndingPath,
@@ -113,7 +112,7 @@ public static class PracticePageBuilder
         // Assemble card children
         var cardChildren = new List<UIElement>
         {
-            BuildCardHeader(config.FlashCardPath, config.RankPrefix, debugText),
+            BuildCardHeader(config.FlashCardPath, debugText),
             wordViewbox,
             badges.Panel
         };
@@ -127,8 +126,7 @@ public static class PracticePageBuilder
         var cardBorder = new SquircleBorder()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .RadiusMode(SquircleRadiusMode.CardSmall)
-            .Child(
+                        .Child(
                 new StackPanel()
                     .Padding(LayoutConstants.Gaps.Card(heightClass))
                     .Spacing(LayoutConstants.Gaps.CardInternal)
@@ -137,7 +135,7 @@ public static class PracticePageBuilder
         elements.CardBorder = cardBorder;
 
         // Set up dynamic widths based on card size
-        cardBorder.SizeChanged += (s, e) =>
+        cardBorder.SizeChanged += (_, e) =>
         {
             var translationWidth = e.NewSize.Width * LayoutConstants.TranslationWidthRatio;
 
@@ -181,9 +179,9 @@ public static class PracticePageBuilder
             });
 
         // Detect overflow and show/hide fade overlay
-        exampleScrollViewer.SizeChanged += (s, e) => UpdateFadeOverlay();
-        exampleContainer.SizeChanged += (s, e) => UpdateFadeOverlay();
-        exampleScrollViewer.ViewChanged += (s, e) => UpdateFadeOverlay();
+        exampleScrollViewer.SizeChanged += (_, _) => UpdateFadeOverlay();
+        exampleContainer.SizeChanged += (_, _) => UpdateFadeOverlay();
+        exampleScrollViewer.ViewChanged += (_, _) => UpdateFadeOverlay();
 
         // Container that fills available space with ScrollViewer and fade overlay
         var exampleArea = new Grid()
@@ -237,49 +235,51 @@ public static class PracticePageBuilder
     #region Card Components
 
     /// <summary>
-    /// Builds the header row: [Rank Badge] [Debug] [Anki State]
+    /// Builds the header row: [√Root] [Debug] [Level: N]
     /// </summary>
     static Grid BuildCardHeader<TVM>(
         Expression<Func<TVM, FlashCardViewModel>> cardPath,
-        string rankPrefix,
         TextBlock? debugText)
     {
         return new Grid()
             .ColumnDefinitions("Auto,*,Auto")
             .Children(
-                new Border()
-                    .Background(ThemeResource.Get<Brush>("PrimaryBrush"))
-                    .CornerRadius(LayoutConstants.Sizes.RankBadgeCornerRadius)
-                    .Padding(LayoutConstants.Gaps.RankBadgeHorizontal, LayoutConstants.Gaps.RankBadgeVertical)
-                    .Child(
-                        new StackPanel()
-                            .Orientation(Orientation.Horizontal)
-                            .Spacing(LayoutConstants.Gaps.RankBadge)
-                            .Children(
-                                RegularText()
-                                    .Text(rankPrefix)
-                                    .FontSize(LayoutConstants.FixedFonts.RankText)
-                                    .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
-                                    .Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush")),
-                                RegularText()
-                                    .Scope(cardPath)
-                                    .TextWithin<FlashCardViewModel>(c => c.RankText)
-                                    .FontSize(LayoutConstants.FixedFonts.RankText)
-                                    .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
-                                    .Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush"))
-                            )
+                // Left: √Root in gray text
+                new StackPanel()
+                    .Orientation(Orientation.Horizontal)
+                    .VerticalAlignment(VerticalAlignment.Center)
+                    .Scope(cardPath)
+                    .Children(
+                        PaliText()
+                            .Text("")
+                            .FontSize(LayoutConstants.FixedFonts.RankText)
+                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush")),
+                        PaliText()
+                            .TextWithin<FlashCardViewModel>(c => c.Root)
+                            .FontSize(LayoutConstants.FixedFonts.RankText)
+                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                     )
                     .Grid(column: 0),
                 (debugText ?? new TextBlock())
                     .HorizontalAlignment(HorizontalAlignment.Center)
                     .VerticalAlignment(VerticalAlignment.Center)
                     .Grid(column: 1),
-                RegularText()
-                    .Scope(cardPath)
-                    .TextWithin<FlashCardViewModel>(c => c.MasteryText)
-                    .FontSize(LayoutConstants.FixedFonts.AnkiState)
+                // Right: Level: N
+                new StackPanel()
+                    .Orientation(Orientation.Horizontal)
                     .HorizontalAlignment(HorizontalAlignment.Right)
-                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                    .VerticalAlignment(VerticalAlignment.Center)
+                    .Scope(cardPath)
+                    .Children(
+                        RegularText()
+                            .Text("Level: ")
+                            .FontSize(LayoutConstants.FixedFonts.AnkiState)
+                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush")),
+                        RegularText()
+                            .TextWithin<FlashCardViewModel>(c => c.LevelText)
+                            .FontSize(LayoutConstants.FixedFonts.AnkiState)
+                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                    )
                     .Grid(column: 2)
             );
     }
@@ -450,7 +450,7 @@ public static class PracticePageBuilder
             .Text<TVM>(labelPath);
 
         var badge = new SquircleBorder()
-            .RadiusMode(SquircleRadiusMode.Pill)
+            .RadiusMode(SquircleRadiusMode.Harmonized)
             .FillColor<TVM>(colorPath)
             .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)
@@ -522,8 +522,7 @@ public static class PracticePageBuilder
 
         // Translation border - width set dynamically based on card width
         var translationBorder = new SquircleBorder()
-            .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .RadiusMode(SquircleRadiusMode.ButtonSmall)
+            .Fill(ThemeResource.Get<Brush>("SurfaceBrush")) 
             .Child(
                 new Border()
                     .Padding(LayoutConstants.Gaps.TranslationHorizontal, LayoutConstants.Gaps.TranslationVertical)
@@ -606,7 +605,7 @@ public static class PracticePageBuilder
 
         // Update arrow container height when reference is measured
         // Height = reference content + border padding (top + bottom)
-        singleLineReference.SizeChanged += (s, e) =>
+        singleLineReference.SizeChanged += (_, e) =>
         {
             var singleLineBlockHeight = e.NewSize.Height + (LayoutConstants.Gaps.TranslationVertical * 2);
             prevArrowContainer.Height = singleLineBlockHeight;
@@ -716,8 +715,7 @@ public static class PracticePageBuilder
     {
         var button = new SquircleButton()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .Fill(ThemeResource.Get<Brush>("PrimaryBrush"))
-            .RadiusMode(SquircleRadiusMode.ButtonSmall)
+            .Fill(ThemeResource.Get<Brush>("PrimaryBrush")) 
             .Padding(LayoutConstants.Gaps.ActionButtonHorizontal, LayoutConstants.Gaps.ActionButtonVertical);
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
         return button
@@ -756,7 +754,6 @@ public static class PracticePageBuilder
 
         var button = new SquircleButton()
             .Fill(ThemeResource.Get<Brush>(brushKey))
-            .RadiusMode(SquircleRadiusMode.ButtonSmall)
             .Padding(LayoutConstants.Gaps.ActionButtonHorizontal, LayoutConstants.Gaps.ActionButtonVertical);
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
         button.Child(new StackPanel()

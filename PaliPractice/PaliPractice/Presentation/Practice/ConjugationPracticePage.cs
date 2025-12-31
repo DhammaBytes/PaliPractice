@@ -24,7 +24,6 @@ public sealed partial class ConjugationPracticePage : Page
     {
         var config = new PracticePageConfig<ViewModels.ConjugationPracticeViewModel>(
             Title: "Conjugation Practice",
-            RankPrefix: "V",
             FlashCardPath: vm => vm.FlashCard,
             AnswerStemPath: vm => vm.FlashCard.AnswerStem,
             AnswerEndingPath: vm => vm.FlashCard.AnswerEnding,

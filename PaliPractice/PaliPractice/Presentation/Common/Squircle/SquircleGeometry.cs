@@ -96,33 +96,33 @@ public static class SquircleGeometry
     /// 1.0 = default, &gt;1.0 = rounder, &lt;1.0 = sharper.
     /// This is the primary knob for adjusting the overall "roundness feel".
     /// </summary>
-    private const double HarmonizedScale = 1.0;
+    const double HarmonizedScale = 1.0;
 
     /// <summary>
     /// Reference radius - the asymptotic value that large elements approach.
     /// Increasing this makes large elements rounder (small elements less affected).
     /// </summary>
-    private const double HarmonizedRref = 14.0;
+    const double HarmonizedRref = 14.0;
 
     /// <summary>
     /// Falloff factor - controls curve steepness.
     /// Lower values make small elements catch up to Rref faster.
     /// Higher values keep small elements relatively sharper.
     /// </summary>
-    private const double HarmonizedFalloff = 4.0;
+    const double HarmonizedFalloff = 4.0;
 
     /// <summary>
     /// Minimum corner ratio - prevents very small elements from being too sharp.
     /// Applied as: minRadius = elementSize × MinRatio
     /// </summary>
-    private const double HarmonizedMinRatio = 0.10;
+    const double HarmonizedMinRatio = 0.10;
 
     /// <summary>
     /// Maximum corner ratio - prevents elements from becoming pill-shaped.
     /// Applied as: maxRadius = elementSize × MaxRatio × Scale
     /// Note: Also scaled by HarmonizedScale to maintain proportions.
     /// </summary>
-    private const double HarmonizedMaxRatio = 0.32;
+    const double HarmonizedMaxRatio = 0.32;
 
     #endregion
 
@@ -312,7 +312,7 @@ public static class SquircleGeometry
     /// To adjust the entire curve uniformly, change HarmonizedScale.
     /// See the detailed documentation in the constants region above.
     /// </remarks>
-    private static double CalculateHarmonizedRadius(double width, double height)
+    static double CalculateHarmonizedRadius(double width, double height)
     {
         var m = Math.Min(width, height);
         if (m <= 0) return 0;

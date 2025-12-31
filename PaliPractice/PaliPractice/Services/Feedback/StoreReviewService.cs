@@ -76,6 +76,7 @@ public sealed class StoreReviewService : IStoreReviewService
 
         try
         {
+            // TODO: not implemented in Uno?
             var result = await StoreContext.GetDefault().RequestRateAndReviewAppAsync();
             _logger.LogInformation("In-app review result: {Status}", result.Status);
         }

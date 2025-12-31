@@ -1,6 +1,7 @@
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Main.ViewModels;
 using static PaliPractice.Presentation.Common.RichTextHelper;
+using static PaliPractice.Presentation.Common.TextHelpers;
 
 namespace PaliPractice.Presentation.Main;
 
@@ -64,7 +65,7 @@ public sealed partial class HelpPage : Page
         return new StackPanel()
             .Spacing(TitleToContentSpacing)
             .Children(
-                new TextBlock()
+                RegularText()
                     .Text(title)
                     .FontSize(isMainTitle ? MainTitleFontSize : TitleFontSize)
                     .FontWeight(isMainTitle
@@ -83,7 +84,7 @@ public sealed partial class HelpPage : Page
     {
         var children = new List<UIElement>
         {
-            new TextBlock()
+            RegularText()
                 .Text(title)
                 .FontSize(TitleFontSize)
                 .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)

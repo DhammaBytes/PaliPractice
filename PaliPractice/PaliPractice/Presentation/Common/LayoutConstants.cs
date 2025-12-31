@@ -135,8 +135,9 @@ public static class LayoutConstants
     /// </summary>
     public static class FixedFonts
     {
-        public const double RankText = 12;
-        public const double AnkiState = 14;
+        public const double PaliRoot = 15;
+        public const double Level = 14;
+        
         public const double DebugText = 10;
         public const double TranslationPagination = 11;
         public const double TranslationPlaceholder = 24;

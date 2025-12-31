@@ -1,5 +1,6 @@
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Settings.ViewModels;
+using static PaliPractice.Presentation.Common.TextHelpers;
 
 namespace PaliPractice.Presentation.Settings;
 
@@ -86,7 +87,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
 
     static StackPanel BuildAllWordsOption(LemmaRangeSettingsViewModel vm)
     {
-        var subtitleText = new TextBlock()
+        var subtitleText = RegularText()
             .FontSize(12)
             .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"));
 

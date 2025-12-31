@@ -102,7 +102,7 @@ public static class PracticePageBuilder
         elements.ButtonElements.AddRange(buttonElements);
 
         // Debug text for size bracket (in header middle)
-        var debugText = new TextBlock()
+        var debugText = RegularText()
             .Text("Size: --")
             .FontSize(LayoutConstants.FixedFonts.DebugText)
             .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
@@ -251,12 +251,8 @@ public static class PracticePageBuilder
                     .Scope(cardPath)
                     .Children(
                         PaliText()
-                            .Text("")
-                            .FontSize(LayoutConstants.FixedFonts.RankText)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush")),
-                        PaliText()
                             .TextWithin<FlashCardViewModel>(c => c.Root)
-                            .FontSize(LayoutConstants.FixedFonts.RankText)
+                            .FontSize(LayoutConstants.FixedFonts.PaliRoot)
                             .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                     )
                     .Grid(column: 0),
@@ -273,11 +269,11 @@ public static class PracticePageBuilder
                     .Children(
                         RegularText()
                             .Text("Level: ")
-                            .FontSize(LayoutConstants.FixedFonts.AnkiState)
+                            .FontSize(LayoutConstants.FixedFonts.Level)
                             .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush")),
                         RegularText()
                             .TextWithin<FlashCardViewModel>(c => c.LevelText)
-                            .FontSize(LayoutConstants.FixedFonts.AnkiState)
+                            .FontSize(LayoutConstants.FixedFonts.Level)
                             .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                     )
                     .Grid(column: 2)
@@ -357,10 +353,10 @@ public static class PracticePageBuilder
             .Opacity(0)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .Children(
-                new TextBlock()
+                PaliText()
                     .FontSize(fonts.Answer)
                     .Text("X"),
-                new TextBlock()
+                PaliText()
                     .FontSize(fonts.AnswerSecondary)
                     .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
                     .Text("X")
@@ -488,9 +484,9 @@ public static class PracticePageBuilder
     #region Translation Carousel
 
     /// <summary>
-    /// Builds the translation display with navigation arrows.
+    /// Builds the translation display with navigation arrows at content edges.
     /// </summary>
-    static (TextBlock translationText, SquircleBorder translationBorder, StackPanel container) BuildTranslationCarousel<TVM>(
+    static (TextBlock translationText, SquircleBorder translationBorder, Grid container) BuildTranslationCarousel<TVM>(
         Expression<Func<TVM, ExampleCarouselViewModel>> carouselPath,
         Expression<Func<TVM, bool>> isRevealedPath,
         LayoutConstants.PracticeFontSizes fonts)
@@ -564,61 +560,44 @@ public static class PracticePageBuilder
                     )
             );
 
-        // Arrow containers - height set to match single-line block, arrows centered within
-        var prevArrowContainer = new Border()
+        // Arrow buttons styled like app bar buttons, aligned to content edges
+        var prevButton = new SquircleButton()
+            .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .Padding(10, 8)
             .VerticalAlignment(VerticalAlignment.Top)
-            .Child(
-                new Button()
-                    .Background(new SolidColorBrush(Colors.Transparent))
-                    .Padding(LayoutConstants.Gaps.TranslationArrowHorizontal, LayoutConstants.Gaps.TranslationArrowVertical)
-                    .MinWidth(0)
-                    .MinHeight(0)
-                    .VerticalAlignment(VerticalAlignment.Center)
-                    .Scope(carouselPath)
-                    .CommandWithin<Button, ExampleCarouselViewModel>(c => c.PreviousCommand)
-                    .VisibilityWithin<Button, ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
-                    .OpacityWithin<Button, ExampleCarouselViewModel>(c => c.IsRevealed)
-                    .Content(new FontIcon()
-                        .Glyph("\uE76B") // ChevronLeft
-                        .FontSize(LayoutConstants.FixedFonts.TranslationArrowIcon)
-                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush")))
-            );
+            .HorizontalAlignment(HorizontalAlignment.Left)
+            .Scope(carouselPath)
+            .CommandWithin<SquircleButton, ExampleCarouselViewModel>(c => c.PreviousCommand)
+            .VisibilityWithin<SquircleButton, ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
+            .OpacityWithin<SquircleButton, ExampleCarouselViewModel>(c => c.IsRevealed)
+            .Child(new FontIcon()
+                .Glyph("\uE76B") // ChevronLeft
+                .FontSize(16)
+                .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")));
 
-        var nextArrowContainer = new Border()
+        var nextButton = new SquircleButton()
+            .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .Padding(10, 8)
             .VerticalAlignment(VerticalAlignment.Top)
-            .Child(
-                new Button()
-                    .Background(new SolidColorBrush(Colors.Transparent))
-                    .Padding(LayoutConstants.Gaps.TranslationArrowHorizontal, LayoutConstants.Gaps.TranslationArrowVertical)
-                    .MinWidth(0)
-                    .MinHeight(0)
-                    .VerticalAlignment(VerticalAlignment.Center)
-                    .Scope(carouselPath)
-                    .CommandWithin<Button, ExampleCarouselViewModel>(c => c.NextCommand)
-                    .VisibilityWithin<Button, ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
-                    .OpacityWithin<Button, ExampleCarouselViewModel>(c => c.IsRevealed)
-                    .Content(new FontIcon()
-                        .Glyph("\uE76C") // ChevronRight
-                        .FontSize(LayoutConstants.FixedFonts.TranslationArrowIcon)
-                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush")))
-            );
+            .HorizontalAlignment(HorizontalAlignment.Right)
+            .Scope(carouselPath)
+            .CommandWithin<SquircleButton, ExampleCarouselViewModel>(c => c.NextCommand)
+            .VisibilityWithin<SquircleButton, ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
+            .OpacityWithin<SquircleButton, ExampleCarouselViewModel>(c => c.IsRevealed)
+            .Child(new FontIcon()
+                .Glyph("\uE76C") // ChevronRight
+                .FontSize(16)
+                .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")));
 
-        // Update arrow container height when reference is measured
-        // Height = reference content + border padding (top + bottom)
-        singleLineReference.SizeChanged += (_, e) =>
-        {
-            var singleLineBlockHeight = e.NewSize.Height + (LayoutConstants.Gaps.TranslationVertical * 2);
-            prevArrowContainer.Height = singleLineBlockHeight;
-            nextArrowContainer.Height = singleLineBlockHeight;
-        };
-
-        var container = new StackPanel()
-            .Orientation(Orientation.Horizontal)
-            .HorizontalAlignment(HorizontalAlignment.Center)
+        // Grid layout: arrows at edges, translation centered
+        // This aligns arrow edges with card edges above
+        var container = new Grid()
+            .ColumnDefinitions("Auto,*,Auto")
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Children(
-                prevArrowContainer,
-                translationBorder,
-                nextArrowContainer
+                prevButton.Grid(column: 0),
+                translationBorder.Grid(column: 1).HorizontalAlignment(HorizontalAlignment.Center),
+                nextButton.Grid(column: 2)
             );
 
         return (translationTextBlock, translationBorder, container);

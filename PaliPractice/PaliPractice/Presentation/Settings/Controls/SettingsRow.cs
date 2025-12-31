@@ -140,7 +140,7 @@ public static class SettingsRow
         Expression<Func<TDC, ICommand>> commandExpr,
         Action<TextBlock> bindAccessoryText)
     {
-        var accessoryText = new TextBlock()
+        var accessoryText = RegularText()
             .FontSize(14)
             .VerticalAlignment(VerticalAlignment.Center)
             .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))

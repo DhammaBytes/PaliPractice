@@ -12,15 +12,19 @@ Uno Platform implements the entire WinUI and WinRT API (like Microsoft.UI) surfa
 
 ### Build and Run
 ```bash
-# Build for desktop (Windows/Mac/Linux)
-dotnet build --framework net10.0-desktop
+# Build for desktop (Windows/Mac/Linux) - target project directly to avoid test project issues
+cd PaliPractice
+dotnet build PaliPractice/PaliPractice.csproj -f net10.0-desktop
 
 # Run on desktop
-dotnet run --framework net10.0-desktop
+dotnet run --project PaliPractice/PaliPractice.csproj -f net10.0-desktop
 
 # Build for other platforms
-dotnet build --framework net10.0-ios
-dotnet build --framework net10.0-android
+dotnet build PaliPractice/PaliPractice.csproj -f net10.0-ios
+dotnet build PaliPractice/PaliPractice.csproj -f net10.0-android
+
+# Run tests (uses net10.0, not platform-specific)
+dotnet test PaliPractice.Tests/PaliPractice.Tests.csproj
 ```
 
 ### Database Generation
@@ -84,6 +88,12 @@ When modifying code:
 - Database models are in Models/ directory
 - Platform-specific code goes in Platforms/ subdirectories
 - The training.db is embedded as a resource and copied on first run
+
+**UI Text Guidelines:**
+- Never use raw `new TextBlock()` - always use the font helpers from `TextHelpers`:
+  - `RegularText()` - For UI labels, descriptions, and translations (uses SourceSans3 font)
+  - `PaliText()` - For Pali words and inflected forms (uses LibertinusSans font)
+- Add `using static PaliPractice.Presentation.Common.TextHelpers;` to use these helpers directly
 
 For database changes:
 - Modify extraction script in scripts/extract_nouns_and_verbs.py

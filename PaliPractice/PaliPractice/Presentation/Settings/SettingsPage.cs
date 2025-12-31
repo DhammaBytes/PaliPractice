@@ -1,6 +1,7 @@
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Settings.Controls;
 using PaliPractice.Presentation.Settings.ViewModels;
+using static PaliPractice.Presentation.Common.TextHelpers;
 
 namespace PaliPractice.Presentation.Settings;
 
@@ -59,7 +60,7 @@ public sealed partial class SettingsPage : Page
                                     ),
 
                                     // Review explanation (only visible on supported platforms)
-                                    new TextBlock()
+                                    RegularText()
                                         .Text("If you have a minute, please leave a review for Pāli Practice. Even one sentence is valuable feedback and it helps other Pāli learners discover the app on the store.")
                                         .FontSize(12)
                                         .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))

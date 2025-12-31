@@ -58,8 +58,8 @@ public partial class LemmaRangeSettingsViewModel : ObservableObject
         LemmaMin = _userData.GetSetting(minKey, SettingsKeys.DefaultLemmaMin);
         LemmaMax = _userData.GetSetting(maxKey, SettingsKeys.DefaultLemmaMax);
 
-        // Derive preset from loaded min/max values
-        _selectedPreset = DerivePresetFromRange(LemmaMin, LemmaMax);
+        // Derive preset from loaded min/max values (silent - no side effects during init)
+        SetPresetSilently(DerivePresetFromRange(LemmaMin, LemmaMax));
     }
 
     void SaveSettings()
@@ -103,44 +103,66 @@ public partial class LemmaRangeSettingsViewModel : ObservableObject
     /// <summary>
     /// Selected preset index: 0=Top100, 1=Top300, 2=Top500, 3=All, 4=Custom.
     /// Derived from min/max values, not stored separately.
+    /// Manually implemented to control when side effects trigger.
     /// </summary>
-    [ObservableProperty]
     int _selectedPreset;
 
-    partial void OnSelectedPresetChanged(int value)
+    public int SelectedPreset
     {
-        // Auto-set min/max when a preset is selected
-        switch (value)
+        get => _selectedPreset;
+        set
+        {
+            if (!SetProperty(ref _selectedPreset, value))
+                return;
+
+            // Auto-set min/max when a preset is selected by user
+            ApplyPresetRange(value);
+            OnPropertyChanged(nameof(IsCustomRange));
+            SaveSettings();
+        }
+    }
+
+    /// <summary>
+    /// Sets the preset value without triggering side effects.
+    /// Used during initialization and when deriving preset from range changes.
+    /// </summary>
+    void SetPresetSilently(int value)
+    {
+        if (_selectedPreset == value)
+            return;
+
+        _selectedPreset = value;
+        OnPropertyChanged(nameof(SelectedPreset));
+        OnPropertyChanged(nameof(IsCustomRange));
+    }
+
+    /// <summary>
+    /// Applies min/max values for a preset selection.
+    /// </summary>
+    void ApplyPresetRange(int preset)
+    {
+        _isLoading = true;
+        switch (preset)
         {
             case 0: // Top 100
-                _isLoading = true;
                 LemmaMin = 1;
                 LemmaMax = 100;
-                _isLoading = false;
                 break;
             case 1: // Top 300
-                _isLoading = true;
                 LemmaMin = 1;
                 LemmaMax = 300;
-                _isLoading = false;
                 break;
             case 2: // Top 500
-                _isLoading = true;
                 LemmaMin = 1;
                 LemmaMax = 500;
-                _isLoading = false;
                 break;
             case 3: // All words
-                _isLoading = true;
                 LemmaMin = 1;
                 LemmaMax = TotalLemmaCount;
-                _isLoading = false;
                 break;
             // case 4: Custom - don't change values
         }
-
-        OnPropertyChanged(nameof(IsCustomRange));
-        SaveSettings();
+        _isLoading = false;
     }
 
     /// <summary>
@@ -180,13 +202,8 @@ public partial class LemmaRangeSettingsViewModel : ObservableObject
     {
         if (_isLoading) return;
 
-        var derived = DerivePresetFromRange(LemmaMin, LemmaMax);
-        if (derived != _selectedPreset)
-        {
-            _selectedPreset = derived;
-            OnPropertyChanged(nameof(SelectedPreset));
-            OnPropertyChanged(nameof(IsCustomRange));
-        }
+        // Silent update - avoids triggering ApplyPresetRange back
+        SetPresetSilently(DerivePresetFromRange(LemmaMin, LemmaMax));
     }
 
     /// <summary>

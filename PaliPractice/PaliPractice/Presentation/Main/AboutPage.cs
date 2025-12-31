@@ -8,6 +8,11 @@ namespace PaliPractice.Presentation.Main;
 
 public sealed partial class AboutPage : Page
 {
+    // Styling constants
+    const double BodyFontSize = 15;
+    const double TitleFontSize = 18;
+    const double SectionPadding = 24;
+
     public AboutPage()
     {
         this.DataContext<AboutViewModel>((page, vm) => page
@@ -27,7 +32,7 @@ public sealed partial class AboutPage : Page
                             new StackPanel()
                                 .Padding(20)
                                 .Spacing(24)
-                                .MaxWidth(600)
+                                .MaxWidth(LayoutConstants.ContentMaxWidth)
                                 .HorizontalAlignment(HorizontalAlignment.Center)
                                 .VerticalAlignment(VerticalAlignment.Center)
                                 .Children(
@@ -80,12 +85,21 @@ public sealed partial class AboutPage : Page
                                     BuildRichSection(AboutViewModel.LibrariesTitle, AboutViewModel.LibrariesText),
 
                                     // Blessing
-                                    CreateRichText(AboutViewModel.Blessing)
-                                        .FontSize(16)
-                                        .TextWrapping(TextWrapping.Wrap)
-                                        .TextAlignment(TextAlignment.Center)
+                                    new StackPanel()
                                         .HorizontalAlignment(HorizontalAlignment.Center)
-                                        .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"))
+                                        .Children(
+                                            PaliText()
+                                                .Text(AboutViewModel.BlessingPali)
+                                                .FontSize(TitleFontSize)
+                                                .FontStyle(Windows.UI.Text.FontStyle.Italic)
+                                                .HorizontalAlignment(HorizontalAlignment.Center)
+                                                .Foreground(ThemeResource.Get<Brush>("PrimaryBrush")),
+                                            RegularText()
+                                                .Text(AboutViewModel.BlessingEnglish)
+                                                .FontSize(TitleFontSize - 1)
+                                                .HorizontalAlignment(HorizontalAlignment.Center)
+                                                .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"))
+                                        )
                                 )
                         )
                 )
@@ -106,24 +120,19 @@ public sealed partial class AboutPage : Page
             children.Add(
                 RegularText()
                     .Text(title)
-                    .FontSize(16)
+                    .FontSize(TitleFontSize)
                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
                     .HorizontalAlignment(HorizontalAlignment.Center)
                     .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
             );
         }
 
-        children.Add(
-            CreateRichText(content)
-                .FontSize(14)
-                .TextAlignment(TextAlignment.Left)
-                .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
-        );
+        children.Add(CreateRichContent(content, fontSize: BodyFontSize));
 
         return new Border()
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
             .CornerRadius(8)
-            .Padding(16)
+            .Padding(SectionPadding)
             .Child(
                 new StackPanel()
                     .Spacing(12)

@@ -6,36 +6,12 @@ namespace PaliPractice.Presentation.Main;
 
 public sealed partial class HelpPage : Page
 {
-    const string HowToPractice = """
-This app helps you memorize Pāli noun and verb forms. You will see a Pāli word along with labels indicating the required form — such as case and number for nouns, or tense and person for verbs.
-
-Try to recall the correct inflected form and its meaning. Tap **Reveal** to see the answer along with possible translations. Then mark **Easy** or **Hard** based on how well you knew both.
-""";
-
-    const string SpacedRepetition = """
-The app tracks how well you know each form. Every form has a progress level from 1 to 10:
-
-• **Level 1–3:** Still learning — reviewed within days
-• **Level 4–6:** Becoming familiar — reviewed every week or two
-• **Level 7–9:** Well known — reviewed monthly or less
-• **Level 10:** Mastered — reviewed after about 8 months
-
-New forms start at level 4. Marking **Easy** increases the level by 1; marking **Hard** decreases it by 1. This ensures you spend more time on forms you find difficult.
-""";
-
-    const string Faq = """
-**Where can I learn the grammar?**
-
-This app is focused on memorizing, so it does not replace textbooks or courses. See the [Learn Pali: Best way to start?](https://palistudies.blogspot.com/2018/05/learn-pali-where-to-begin.html) guide and its author's [Learn Pali Language series](https://www.youtube.com/playlist?list=PLf6RXFuRpeLRYj-wWs4KFrTPrzvAWWMpo) on YouTube.
-
-**Why do some answers show multiple forms?**
-
-Certain cases and tenses in Pāli have more than one valid ending. The app displays all correct forms for the given grammatical context.
-
-**Why do sutta examples use different forms?**
-
-Example sentences come from the [Digital Pāli Dictionary](https://digitalpalidictionary.github.io/), which provides 1–2 examples per word meaning rather than per inflected form. These examples illustrate how the word is used in context, not necessarily the specific form being practiced.
-""";
+    // Styling constants
+    const double BodyFontSize = 15;
+    const double TitleFontSize = 18;
+    const double MainTitleFontSize = 22;
+    const double TitleToContentSpacing = 12;
+    const double FaqBlockSpacing = 16;
 
     public HelpPage()
     {
@@ -56,17 +32,22 @@ Example sentences come from the [Digital Pāli Dictionary](https://digitalpalidi
                             new StackPanel()
                                 .Padding(20)
                                 .Spacing(24)
-                                .MaxWidth(600)
+                                .MaxWidth(LayoutConstants.ContentMaxWidth)
                                 .HorizontalAlignment(HorizontalAlignment.Center)
                                 .Children(
                                     // How to Practice
-                                    BuildSection("How to Practice", HowToPractice, isMainTitle: true),
+                                    BuildSection(HelpViewModel.HowToPracticeTitle, HelpViewModel.HowToPractice, isMainTitle: true),
 
                                     // Spaced Repetition
-                                    BuildSection("Spaced Repetition", SpacedRepetition),
+                                    BuildSection(HelpViewModel.SpacedRepetitionTitle, HelpViewModel.SpacedRepetition),
 
                                     // FAQ
-                                    BuildSection("Questions", Faq)
+                                    BuildFaqSection(HelpViewModel.QuestionsTitle,
+                                        HelpViewModel.FaqGrammar,
+                                        HelpViewModel.FaqMultipleForms,
+                                        HelpViewModel.FaqExamples,
+                                        HelpViewModel.FaqMissingWords,
+                                        HelpViewModel.FaqMissingForms)
                                 )
                         )
                 )
@@ -80,17 +61,45 @@ Example sentences come from the [Digital Pāli Dictionary](https://digitalpalidi
     static StackPanel BuildSection(string title, string content, bool isMainTitle = false)
     {
         return new StackPanel()
-            .Spacing(12)
+            .Spacing(TitleToContentSpacing)
             .Children(
                 new TextBlock()
                     .Text(title)
-                    .FontSize(isMainTitle ? 24 : 20)
+                    .FontSize(isMainTitle ? MainTitleFontSize : TitleFontSize)
                     .FontWeight(isMainTitle
                         ? Microsoft.UI.Text.FontWeights.Bold
                         : Microsoft.UI.Text.FontWeights.SemiBold)
                     .Foreground(ThemeResource.Get<Brush>("PrimaryBrush")),
-                CreateRichText(content)
-                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+                CreateRichContent(content, fontSize: BodyFontSize)
             );
+    }
+
+    /// <summary>
+    /// Builds a FAQ section with title and multiple Q-A blocks.
+    /// Each Q-A block has tight internal spacing, but larger spacing between blocks.
+    /// </summary>
+    static StackPanel BuildFaqSection(string title, params string[] qaBlocks)
+    {
+        var children = new List<UIElement>
+        {
+            new TextBlock()
+                .Text(title)
+                .FontSize(TitleFontSize)
+                .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+                .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"))
+                .Margin(0, 0, 0, TitleToContentSpacing)
+        };
+
+        for (int i = 0; i < qaBlocks.Length; i++)
+        {
+            var qaPanel = CreateRichContent(qaBlocks[i], fontSize: BodyFontSize);
+            // Add spacing after each Q-A block except the last
+            if (i < qaBlocks.Length - 1)
+                qaPanel.Margin(0, 0, 0, FaqBlockSpacing);
+            children.Add(qaPanel);
+        }
+
+        return new StackPanel()
+            .Children(children.ToArray());
     }
 }

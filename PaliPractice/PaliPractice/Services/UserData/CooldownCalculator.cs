@@ -11,8 +11,8 @@ namespace PaliPractice.Services.UserData;
 ///   1   | 1 day     | Struggling
 ///   2   | 1.9 days  | Very weak
 ///   3   | 3.4 days  | Weak
-///   4   | 6.3 days  | Below average
-///   5   | 12 days   | Default for new forms
+///   4   | 6.3 days  | Default for new forms
+///   5   | 12 days   | Below average
 ///   6   | 22 days   | Average
 ///   7   | 40 days   | Good
 ///   8   | 74 days   | Strong
@@ -25,7 +25,7 @@ public static class CooldownCalculator
     public const double Multiplier = 1.85; // Reaches ~254 days at level 10
     public const int MinLevel = 1;
     public const int MaxLevel = 10;
-    public const int DefaultLevel = 5;
+    public const int DefaultLevel = 4;
 
     /// <summary>
     /// Pre-calculated cooldown hours for each level (index 0 = level 1).
@@ -69,13 +69,13 @@ public static class CooldownCalculator
     /// <summary>
     /// Adjust level based on practice result.
     /// Easy: +1 level (max 10)
-    /// Hard: -2 levels (min 1)
+    /// Hard: -1 level (min 1)
     /// </summary>
     public static int AdjustLevel(int currentLevel, bool wasEasy)
     {
         if (wasEasy)
             return Math.Min(MaxLevel, currentLevel + 1);
         else
-            return Math.Max(MinLevel, currentLevel - 2);
+            return Math.Max(MinLevel, currentLevel - 1);
     }
 }

@@ -41,7 +41,6 @@ public static class RichTextHelper
             if (block is ParagraphBlock paragraph)
             {
                 ProcessInlineContainer(textBlock, paragraph.Inline, font);
-                // Add line break between paragraphs
                 textBlock.Inlines.Add(new LineBreak());
             }
         }

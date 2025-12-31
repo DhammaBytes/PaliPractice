@@ -76,11 +76,12 @@ public sealed partial class AboutPage : Page
                                     // Fonts section (plain text)
                                     BuildRichSection(AboutViewModel.FontsTitle, AboutViewModel.FontsText),
 
+                                    // Libraries section
+                                    BuildRichSection(AboutViewModel.LibrariesTitle, AboutViewModel.LibrariesText),
+
                                     // Blessing
-                                    PaliText()
-                                        .Text(AboutViewModel.Blessing)
+                                    CreateRichText(AboutViewModel.Blessing)
                                         .FontSize(16)
-                                        .FontStyle(Windows.UI.Text.FontStyle.Italic)
                                         .TextWrapping(TextWrapping.Wrap)
                                         .TextAlignment(TextAlignment.Center)
                                         .HorizontalAlignment(HorizontalAlignment.Center)
@@ -94,6 +95,7 @@ public sealed partial class AboutPage : Page
 
     /// <summary>
     /// Builds a section with optional title and rich content with clickable links.
+    /// Titles are centered, content is left-aligned.
     /// </summary>
     static Border BuildRichSection(string? title, string content)
     {
@@ -114,8 +116,7 @@ public sealed partial class AboutPage : Page
         children.Add(
             CreateRichText(content)
                 .FontSize(14)
-                .TextAlignment(TextAlignment.Center)
-                .HorizontalAlignment(HorizontalAlignment.Center)
+                .TextAlignment(TextAlignment.Left)
                 .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
         );
 
@@ -125,7 +126,7 @@ public sealed partial class AboutPage : Page
             .Padding(16)
             .Child(
                 new StackPanel()
-                    .Spacing(8)
+                    .Spacing(12)
                     .Children(children.ToArray())
             );
     }

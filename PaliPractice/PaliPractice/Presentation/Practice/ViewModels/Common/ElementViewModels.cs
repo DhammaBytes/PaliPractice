@@ -47,9 +47,12 @@ public partial class FlashCardViewModel : ObservableObject
 {
     // Question side
     [ObservableProperty] string _question = string.Empty;
-    [ObservableProperty] string _rankText = "Top-100";
+    [ObservableProperty] string _root = string.Empty;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(LevelText))]
+    int _level;
+    public string LevelText => Level.ToString();
     [ObservableProperty] string _progressText = "1/50";
-    [ObservableProperty] string _masteryText = "Progress: 1/10";
     [ObservableProperty] bool _isLoading = true;
     [ObservableProperty] string _errorMessage = string.Empty;
 
@@ -62,18 +65,12 @@ public partial class FlashCardViewModel : ObservableObject
     string _inflectedForm = string.Empty;
     string _inflectedEnding = string.Empty;
 
-    public void DisplayWord(IWord word, int currentIndex, int totalCount, int masteryLevel)
+    public void DisplayWord(IWord word, int currentIndex, int totalCount, int masteryLevel, string? root = null)
     {
         Question = word.Lemma;
         ProgressText = $"{currentIndex + 1}/{totalCount}";
-        MasteryText = $"Progress: {masteryLevel}/10";
-        RankText = word.EbtCount switch
-        {
-            > 1000 => "Top-100",
-            > 500 => "Top-300",
-            > 200 => "Top-500",
-            _ => "Top-1000"
-        };
+        Level = masteryLevel;
+        Root = root ?? string.Empty;
     }
 
     /// <summary>

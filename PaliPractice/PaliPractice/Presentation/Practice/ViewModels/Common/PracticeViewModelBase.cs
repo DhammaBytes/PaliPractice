@@ -19,6 +19,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     [ObservableProperty] bool _canRateCard;
     [ObservableProperty] string _alternativeForms = string.Empty;
+    [ObservableProperty] string _currentLemmaText = string.Empty;
 
     public FlashCardViewModel FlashCard { get; }
     public DailyGoalViewModel DailyGoal { get; }
@@ -141,6 +142,9 @@ public abstract partial class PracticeViewModelBase : ObservableObject
             return;
         }
 
+        // Update lemma text for title bar button
+        CurrentLemmaText = lemma.BaseForm;
+
         var masteryLevel = _provider.Current?.MasteryLevel ?? 1;
         FlashCard.DisplayWord(lemma.Primary, _provider.CurrentIndex, _provider.TotalCount, masteryLevel);
 
@@ -182,9 +186,19 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     public ICommand GoBackCommand => new AsyncRelayCommand(() => _navigator.NavigateBackAsync(this));
     public ICommand GoToHistoryCommand => new AsyncRelayCommand(() =>
         _navigator.NavigateViewModelAsync<HistoryViewModel>(this, data: new HistoryNavigationData(CurrentPracticeType)));
+    public ICommand GoToInflectionTableCommand => new AsyncRelayCommand(NavigateToInflectionTable);
     public ICommand HardCommand => _hardCommand;
     public ICommand EasyCommand => _easyCommand;
     public ICommand RevealCommand => _revealCommand;
+
+    async Task NavigateToInflectionTable()
+    {
+        var lemma = _provider.GetCurrentLemma();
+        if (lemma == null) return;
+
+        await _navigator.NavigateViewModelAsync<InflectionTableViewModel>(
+            this, data: new InflectionTableNavigationData(lemma, CurrentPracticeType));
+    }
 
     void MarkAsHard()
     {

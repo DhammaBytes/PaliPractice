@@ -29,6 +29,9 @@ using LemmaRangeSettingsViewModel = PaliPractice.Presentation.Settings.ViewModel
 using LemmaRangeNavigationData = PaliPractice.Presentation.Settings.ViewModels.LemmaRangeNavigationData;
 using HelpPage = PaliPractice.Presentation.Main.HelpPage;
 using HistoryPage = PaliPractice.Presentation.Practice.HistoryPage;
+using InflectionTablePage = PaliPractice.Presentation.Practice.InflectionTablePage;
+using InflectionTableViewModel = PaliPractice.Presentation.Practice.ViewModels.InflectionTableViewModel;
+using InflectionTableNavigationData = PaliPractice.Presentation.Practice.ViewModels.InflectionTableNavigationData;
 using SettingsPage = PaliPractice.Presentation.Settings.SettingsPage;
 using Shell = PaliPractice.Presentation.Main.Shell;
 using StartPage = PaliPractice.Presentation.Main.StartPage;
@@ -141,6 +144,7 @@ public partial class App : Application
                     services.AddTransient<DeclensionSettingsViewModel>();
                     services.AddTransient<LemmaRangeSettingsViewModel>();
                     services.AddTransient<HistoryViewModel>();
+                    services.AddTransient<InflectionTableViewModel>();
                 })
                 .UseNavigation(RegisterRoutes)
             );
@@ -184,7 +188,8 @@ public partial class App : Application
             new ViewMap<ConjugationSettingsPage, ConjugationSettingsViewModel>(),
             new ViewMap<DeclensionSettingsPage, DeclensionSettingsViewModel>(),
             new DataViewMap<LemmaRangeSettingsPage, LemmaRangeSettingsViewModel, LemmaRangeNavigationData>(),
-            new DataViewMap<HistoryPage, HistoryViewModel, HistoryNavigationData>()
+            new DataViewMap<HistoryPage, HistoryViewModel, HistoryNavigationData>(),
+            new DataViewMap<InflectionTablePage, InflectionTableViewModel, InflectionTableNavigationData>()
         );
 
         routes.Register(
@@ -201,6 +206,7 @@ public partial class App : Application
                     new RouteMap("DeclensionSettings", View: views.FindByViewModel<DeclensionSettingsViewModel>()),
                     new RouteMap("LemmaRangeSettings", View: views.FindByViewModel<LemmaRangeSettingsViewModel>()),
                     new RouteMap("History", View: views.FindByViewModel<HistoryViewModel>()),
+                    new RouteMap("InflectionTable", View: views.FindByViewModel<InflectionTableViewModel>()),
                 ]
             )
         );

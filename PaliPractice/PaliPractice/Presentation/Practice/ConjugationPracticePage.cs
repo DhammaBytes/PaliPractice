@@ -34,6 +34,8 @@ public sealed partial class ConjugationPracticePage : Page
             CarouselPath: vm => vm.ExampleCarousel,
             GoBackCommandPath: vm => vm.GoBackCommand,
             GoToHistoryCommandPath: vm => vm.GoToHistoryCommand,
+            GoToInflectionTableCommandPath: vm => vm.GoToInflectionTableCommand,
+            CurrentLemmaTextPath: vm => vm.CurrentLemmaText,
             RevealCommandPath: vm => vm.RevealCommand,
             HardCommandPath: vm => vm.HardCommand,
             EasyCommandPath: vm => vm.EasyCommand,

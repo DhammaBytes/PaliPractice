@@ -25,6 +25,8 @@ public record PracticePageConfig<TVM>(
     Expression<Func<TVM, ExampleCarouselViewModel>> CarouselPath,
     Expression<Func<TVM, ICommand>> GoBackCommandPath,
     Expression<Func<TVM, ICommand>> GoToHistoryCommandPath,
+    Expression<Func<TVM, ICommand>> GoToInflectionTableCommandPath,
+    Expression<Func<TVM, string>> CurrentLemmaTextPath,
     Expression<Func<TVM, ICommand>> RevealCommandPath,
     Expression<Func<TVM, ICommand>> HardCommandPath,
     Expression<Func<TVM, ICommand>> EasyCommandPath,
@@ -205,8 +207,12 @@ public static class PracticePageBuilder
             );
         elements.ContentArea = contentArea;
 
-        // Build title bar and daily goal bar
-        var titleBar = AppTitleBar.BuildWithHistory(config.Title, config.GoBackCommandPath, config.GoToHistoryCommandPath);
+        // Build title bar with clickable lemma button and daily goal bar
+        var titleBar = AppTitleBar.BuildWithCenterButton<TVM>(
+            config.GoBackCommandPath,
+            tb => tb.Text(config.CurrentLemmaTextPath),
+            config.GoToInflectionTableCommandPath,
+            config.GoToHistoryCommandPath);
         var dailyGoalBar = BuildDailyGoalBar(config.DailyGoalTextPath, config.DailyProgressPath, heightClass);
         elements.TitleBar = titleBar;
         elements.DailyGoalBar = dailyGoalBar;

@@ -34,6 +34,77 @@ public static class AppTitleBar
     }
 
     /// <summary>
+    /// Builds a title bar with back button, clickable center button, and history button.
+    /// Used for practice pages where the center shows the current lemma as a tappable button.
+    /// </summary>
+    public static Grid BuildWithCenterButton<TDC>(
+        Expression<Func<TDC, ICommand>> goBackCommand,
+        Action<TextBlock> bindCenterText,
+        Expression<Func<TDC, ICommand>> centerClickCommand,
+        Expression<Func<TDC, ICommand>> goToHistoryCommand)
+    {
+        // Create center button with bound text
+        var centerTextBlock = PaliText()
+            .FontSize(18)
+            .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+            .VerticalAlignment(VerticalAlignment.Center)
+            .TextTrimming(TextTrimming.CharacterEllipsis)
+            .MaxWidth(180);
+
+        // Apply text binding via callback
+        bindCenterText(centerTextBlock);
+
+        var centerButton = new SquircleButton()
+            .Fill(ThemeResource.Get<Brush>("BackgroundBrush"))
+            .RadiusMode(SquircleRadiusMode.ButtonSmall)
+            .Padding(12, 8);
+        centerButton.SetBinding(ButtonBase.CommandProperty, Bind.Path(centerClickCommand));
+        centerButton.Child(new StackPanel()
+            .Orientation(Orientation.Horizontal)
+            .Spacing(6)
+            .Children(
+                centerTextBlock,
+                new FontIcon()
+                    .Glyph("\uE8A7") // List/table icon
+                    .FontSize(14)
+                    .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
+            ));
+
+        return BuildCoreWithCenterElement(
+            centerButton,
+            CreateBackButton(goBackCommand),
+            CreateHistoryButton(goToHistoryCommand));
+    }
+
+    /// <summary>
+    /// Core builder with a center element instead of text.
+    /// </summary>
+    static Grid BuildCoreWithCenterElement(UIElement centerElement, SquircleButton leftButton, SquircleButton? rightButton)
+    {
+        // Center layer: spans full width, centered element
+        var centerLayer = new Grid()
+            .HorizontalAlignment(HorizontalAlignment.Center)
+            .VerticalAlignment(VerticalAlignment.Center)
+            .Children(centerElement);
+
+        // Buttons layer: left and right edges
+        var buttonsLayer = new Grid()
+            .ColumnDefinitions("Auto,*,Auto")
+            .Children(
+                leftButton.Grid(column: 0)
+            );
+
+        if (rightButton is not null)
+            buttonsLayer.Children(rightButton.Grid(column: 2));
+
+        // Stack layers: center behind, buttons on top
+        return new Grid()
+            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .Padding(16, 8)
+            .Children(centerLayer, buttonsLayer);
+    }
+
+    /// <summary>
     /// Core builder: uses layered Grid to truly center title regardless of button widths.
     /// </summary>
     static Grid BuildCore(string title, SquircleButton leftButton, SquircleButton? rightButton)

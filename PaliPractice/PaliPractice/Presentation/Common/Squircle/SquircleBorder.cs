@@ -62,7 +62,7 @@ public class SquircleBorder : ContentControl
         nameof(Radius),
         typeof(double),
         typeof(SquircleBorder),
-        new PropertyMetadata(16.0, OnShapePropertyChanged));
+        new PropertyMetadata(8.0, OnShapePropertyChanged));
 
     /// <summary>
     /// The corner radius for the squircle shape.

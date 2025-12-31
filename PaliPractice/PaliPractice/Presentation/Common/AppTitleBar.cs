@@ -44,7 +44,6 @@ public static class AppTitleBar
     {
         var centerButton = new SquircleButton()
             .Fill(ThemeResource.Get<Brush>("BackgroundBrush"))
-            .RadiusMode(SquircleRadiusMode.ButtonSmall)
             .Padding(12, 8);
         centerButton.SetBinding(ButtonBase.CommandProperty, Bind.Path(centerClickCommand));
         centerButton.Child(new StackPanel()
@@ -128,7 +127,6 @@ public static class AppTitleBar
     {
         var button = new SquircleButton()
             .Fill(ThemeResource.Get<Brush>("BackgroundBrush"))
-            .RadiusMode(SquircleRadiusMode.ButtonSmall)
             .Padding(12, 8);
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
         return button
@@ -149,7 +147,6 @@ public static class AppTitleBar
     {
         var button = new SquircleButton()
             .Fill(ThemeResource.Get<Brush>("BackgroundBrush"))
-            .RadiusMode(SquircleRadiusMode.ButtonSmall)
             .Padding(12, 8);
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
         return button

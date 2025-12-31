@@ -32,6 +32,100 @@ public static class SquircleGeometry
     /// </summary>
     public const float MaxSideRatio = 0.47f;
 
+    #region Harmonized Radius System
+    // ═══════════════════════════════════════════════════════════════════════════
+    // HARMONIZED CORNER RADIUS SYSTEM
+    // ═══════════════════════════════════════════════════════════════════════════
+    //
+    // This system creates visually consistent corners across all UI element sizes
+    // using a saturating exponential curve. All elements share the same "curve
+    // family" - they look like they belong together even at different sizes.
+    //
+    // ┌─────────────────────────────────────────────────────────────────────────┐
+    // │ FORMULA                                                                 │
+    // ├─────────────────────────────────────────────────────────────────────────┤
+    // │ r = Scale × Rref × (1 - e^(-m / (F × Rref)))                            │
+    // │                                                                         │
+    // │ Where:                                                                  │
+    // │   m     = min(width, height)  — the limiting dimension                  │
+    // │   Scale = uniform multiplier  — adjusts entire curve up/down            │
+    // │   Rref  = reference radius    — asymptote that large elements approach  │
+    // │   F     = falloff factor      — how quickly small elements catch up     │
+    // └─────────────────────────────────────────────────────────────────────────┘
+    //
+    // ┌─────────────────────────────────────────────────────────────────────────┐
+    // │ EXAMPLE OUTPUTS (Scale=1.0, Rref=14, F=4)                               │
+    // ├─────────────────────────────────────────────────────────────────────────┤
+    // │ Element          │ Dimensions │ m (min) │ Radius │ % of height         │
+    // │──────────────────┼────────────┼─────────┼────────┼─────────────────────│
+    // │ Small badge      │ 100×30     │ 30      │ ~6px   │ 20%                 │
+    // │ Button           │ 150×50     │ 50      │ ~8px   │ 16%                 │
+    // │ Translation box  │ 300×80     │ 80      │ ~10px  │ 12%                 │
+    // │ Card             │ 450×300    │ 300     │ ~14px  │ 5%                  │
+    // └─────────────────────────────────────────────────────────────────────────┘
+    //
+    // ┌─────────────────────────────────────────────────────────────────────────┐
+    // │ SCALE FACTOR EXAMPLES                                                   │
+    // ├─────────────────────────────────────────────────────────────────────────┤
+    // │ To adjust the entire curve uniformly, change HarmonizedScale:           │
+    // │                                                                         │
+    // │ Scale │ Badge (30px) │ Button (50px) │ Box (80px) │ Card (300px)        │
+    // │───────┼──────────────┼───────────────┼────────────┼─────────────────────│
+    // │ 0.7   │ ~4px         │ ~6px          │ ~7px       │ ~10px    (sharper)  │
+    // │ 0.8   │ ~5px         │ ~6px          │ ~8px       │ ~11px               │
+    // │ 1.0   │ ~6px         │ ~8px          │ ~10px      │ ~14px    (default)  │
+    // │ 1.2   │ ~7px         │ ~10px         │ ~12px      │ ~17px               │
+    // │ 1.4   │ ~8px         │ ~11px         │ ~14px      │ ~20px    (rounder)  │
+    // └─────────────────────────────────────────────────────────────────────────┘
+    //
+    // ┌─────────────────────────────────────────────────────────────────────────┐
+    // │ TUNING GUIDE                                                            │
+    // ├─────────────────────────────────────────────────────────────────────────┤
+    // │ Problem                        │ Adjust                                 │
+    // │────────────────────────────────┼────────────────────────────────────────│
+    // │ Everything too round/sharp     │ Scale ↑/↓ (uniform change)             │
+    // │ Large elements not round enough│ Rref ↑ (e.g., 18)                      │
+    // │ Small elements too sharp       │ Falloff ↓ (e.g., 3) or MinRatio ↑      │
+    // │ Small elements becoming pills  │ MaxRatio ↓ (e.g., 0.28)                │
+    // └─────────────────────────────────────────────────────────────────────────┘
+    //
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Uniform scale factor for the entire curve.
+    /// 1.0 = default, &gt;1.0 = rounder, &lt;1.0 = sharper.
+    /// This is the primary knob for adjusting the overall "roundness feel".
+    /// </summary>
+    private const double HarmonizedScale = 1.0;
+
+    /// <summary>
+    /// Reference radius - the asymptotic value that large elements approach.
+    /// Increasing this makes large elements rounder (small elements less affected).
+    /// </summary>
+    private const double HarmonizedRref = 14.0;
+
+    /// <summary>
+    /// Falloff factor - controls curve steepness.
+    /// Lower values make small elements catch up to Rref faster.
+    /// Higher values keep small elements relatively sharper.
+    /// </summary>
+    private const double HarmonizedFalloff = 4.0;
+
+    /// <summary>
+    /// Minimum corner ratio - prevents very small elements from being too sharp.
+    /// Applied as: minRadius = elementSize × MinRatio
+    /// </summary>
+    private const double HarmonizedMinRatio = 0.10;
+
+    /// <summary>
+    /// Maximum corner ratio - prevents elements from becoming pill-shaped.
+    /// Applied as: maxRadius = elementSize × MaxRatio × Scale
+    /// Note: Also scaled by HarmonizedScale to maintain proportions.
+    /// </summary>
+    private const double HarmonizedMaxRatio = 0.32;
+
+    #endregion
+
     /// <summary>
     /// Creates a PathGeometry representing a squircle shape.
     /// </summary>
@@ -196,34 +290,63 @@ public static class SquircleGeometry
     /// </summary>
     public static double CalculateRadius(double width, double height, SquircleRadiusMode mode) => mode switch
     {
-        SquircleRadiusMode.Card => Math.Round((width + height) / 12),
-        SquircleRadiusMode.CardSmall => Math.Round((width + height) / 17),
-        SquircleRadiusMode.Pill => Math.Round(height * MaxSideRatio),
-        SquircleRadiusMode.Button => Math.Round(height * 0.5),
-        SquircleRadiusMode.ButtonSmall => Math.Round(height * 0.35),
-        SquircleRadiusMode.Subtle => Math.Round(height * 0.375),
-        SquircleRadiusMode.TallCard => Math.Round(width * 0.16),
-        _ => Math.Round(height * MaxSideRatio)
+        SquircleRadiusMode.Harmonized => CalculateHarmonizedRadius(width, height),
+        SquircleRadiusMode.Pill => Math.Round(Math.Min(width, height) * MaxSideRatio),
+        _ => CalculateHarmonizedRadius(width, height)
     };
+
+    /// <summary>
+    /// Calculates a harmonized radius using a saturating exponential curve.
+    /// All elements share the same curve family, creating visual consistency.
+    /// </summary>
+    /// <remarks>
+    /// Formula: r = Scale × Rref × (1 - exp(-m / (F × Rref)))
+    /// where m = min(width, height), Scale = uniform multiplier,
+    /// Rref = target radius, F = falloff factor.
+    ///
+    /// With default constants (Scale=1.0, Rref=14, F=4), this produces:
+    /// - Small elements (30px): ~6px radius
+    /// - Medium elements (80px): ~10px radius
+    /// - Large elements (300px): ~14px radius (approaches Rref asymptotically)
+    ///
+    /// To adjust the entire curve uniformly, change HarmonizedScale.
+    /// See the detailed documentation in the constants region above.
+    /// </remarks>
+    private static double CalculateHarmonizedRadius(double width, double height)
+    {
+        var m = Math.Min(width, height);
+        if (m <= 0) return 0;
+
+        // Saturating curve: approaches (Scale × Rref) as m grows large
+        var r = HarmonizedScale * HarmonizedRref * (1.0 - Math.Exp(-m / (HarmonizedFalloff * HarmonizedRref)));
+
+        // Clamp to prevent pills and too-sharp corners
+        // MaxRatio is also scaled to maintain proportions when Scale changes
+        var rMin = m * HarmonizedMinRatio;
+        var rMax = m * HarmonizedMaxRatio * HarmonizedScale;
+
+        // Ensure we never exceed the absolute maximum (prevents geometry overlap)
+        rMax = Math.Min(rMax, m * MaxSideRatio);
+
+        return Math.Round(Math.Clamp(r, rMin, rMax));
+    }
 }
 
 /// <summary>
-/// Preset radius calculation modes for common UI elements.
+/// Preset radius calculation modes for squircle elements.
 /// </summary>
 public enum SquircleRadiusMode
 {
-    /// <summary>General card shape: (width + height) / 12</summary>
-    Card,
-    /// <summary>Smaller card shape (30% less): (width + height) / 17</summary>
-    CardSmall,
-    /// <summary>Pill/badge/chip shape: height * 0.47 (maximum)</summary>
-    Pill,
-    /// <summary>Standard button: height * 0.5</summary>
-    Button,
-    /// <summary>Smaller button (30% less): height * 0.35</summary>
-    ButtonSmall,
-    /// <summary>Subtle rounding: height * 0.375</summary>
-    Subtle,
-    /// <summary>Tall card: width * 0.16</summary>
-    TallCard
+    /// <summary>
+    /// Harmonized curve for all UI elements (default).
+    /// Uses a saturating exponential that creates visual consistency
+    /// across different element sizes.
+    /// </summary>
+    Harmonized,
+
+    /// <summary>
+    /// Fully rounded ends (capsule/pill shape).
+    /// Uses min(width, height) * MaxSideRatio.
+    /// </summary>
+    Pill
 }

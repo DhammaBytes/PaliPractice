@@ -1,3 +1,5 @@
+using Windows.Graphics;
+using Microsoft.Graphics.Display;
 using PaliPractice.Presentation.Main.ViewModels;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Presentation.Practice.ViewModels;
@@ -142,21 +144,10 @@ public partial class App : Application
             );
         
         MainWindow = builder.Window;
-        
+
         if (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() || OperatingSystem.IsLinux())
         {
-            // var displayInfo = DisplayInformation.CreateForWindowId(MainWindow.AppWindow.Id);
-
-            // var scale = 1;
-            
-            // var logicalWidth = 800;
-            // var logicalHeight = 600;
-            
-            // MainWindow.AppWindow.Resize(new SizeInt32
-            // {
-            //     Width = 800,//(int)(logicalWidth * scale),
-            //     Height = 600//(int)(logicalHeight * scale)
-            // });
+            ResizeWindowForDesktop(MainWindow);
         }
 
 #if DEBUG
@@ -165,6 +156,43 @@ public partial class App : Application
         // MainWindow.SetWindowIcon();
 
         Host = await builder.NavigateAsync<Shell>();
+    }
+
+    private static void ResizeWindowForDesktop(Window window)
+    {
+        var displayInfo = Windows.Graphics.Display.DisplayInformation.GetForCurrentView();
+        var scale = displayInfo.RawPixelsPerViewPixel;
+        var screenHeightRaw = displayInfo.ScreenHeightInRawPixels;
+        var screenHeight = (int)(screenHeightRaw / scale);
+
+        const int logicalWidth = 600;
+        var logicalHeight = CalculateWindowHeight(screenHeight);
+
+        window.AppWindow.Resize(new SizeInt32
+        {
+            Width = (int)(logicalWidth * scale),
+            Height = (int)(logicalHeight * scale)
+        });
+    }
+
+    /// <summary>
+    /// Calculates optimal window height based on available screen height.
+    /// Accounts for OS UI (title bar ~32px, taskbar/dock ~40-60px).
+    /// </summary>
+    private static int CalculateWindowHeight(int screenHeight)
+    {
+        // Screen height breakpoints and corresponding window heights:
+        // - Tiny laptops (720p): 640px leaves ~80px for title bar + taskbar
+        // - Small screens (768p): 680px leaves ~88px for OS UI
+        // - Medium screens (800-863p): 720px
+        // - Standard+ (864p+): 800px is the ideal app height
+        return screenHeight switch
+        {
+            <= 720 => 640,
+            <= 768 => 680,
+            <= 863 => 720,
+            _ => 800
+        };
     }
 
     static void RegisterRoutes(IViewRegistry views, IRouteRegistry routes)

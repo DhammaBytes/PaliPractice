@@ -113,13 +113,12 @@ public sealed partial class InflectionTablePage : Page
                 // Show hint if there are non-corpus forms
                 if (_hintTextBlock != null && result.HasNonCorpusForms)
                 {
-                    var typeName = vm.IsNoun ? "Irregular declensions" : "Non-standard conjugations";
-                    _hintTextBlock.Text = $"{typeName} not found in the Pāḷi corpus are grayed out";
+                    _hintTextBlock.Text = "Forms not found in the Pāli corpus are grayed out";
                     _hintTextBlock.Visibility = Visibility.Visible;
                 }
-                else if (_hintTextBlock != null)
+                else
                 {
-                    _hintTextBlock.Visibility = Visibility.Collapsed;
+                    _hintTextBlock?.Visibility = Visibility.Collapsed;
                 }
             }
         }

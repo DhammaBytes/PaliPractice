@@ -65,7 +65,7 @@ public static class FrozenHeaderTable
             .Content(clonedRowHeadersPanel);
 
         // Synchronize scrolling
-        bodyScrollViewer.ViewChanged += (s, e) =>
+        bodyScrollViewer.ViewChanged += (_, _) =>
         {
             // Sync column headers horizontally
             columnHeadersScrollViewer.ChangeView(bodyScrollViewer.HorizontalOffset, null, null, disableAnimation: true);
@@ -160,7 +160,7 @@ public static class FrozenHeaderTable
 
             // Sync height from ghost to cloned cell
             var clonedCell = clonedCells[row];
-            ghostCell.SizeChanged += (s, e) =>
+            ghostCell.SizeChanged += (_, e) =>
             {
                 if (e.NewSize.Height > 0)
                 {
@@ -225,7 +225,7 @@ public static class FrozenHeaderTable
         if (isGhost)
         {
             // Ghost cell: transparent, no content, just occupies space for layout
-            border.Background(new SolidColorBrush(Microsoft.UI.Colors.Transparent));
+            border.Background(new SolidColorBrush(Colors.Transparent));
         }
         else
         {

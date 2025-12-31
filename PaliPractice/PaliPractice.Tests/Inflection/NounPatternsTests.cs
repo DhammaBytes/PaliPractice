@@ -40,16 +40,16 @@ public class NounPatternsTests
     }
 
     /// <summary>
-    /// Generate test cases for all regular noun patterns.
+    /// Generate test cases for all regular noun patterns (base + variant).
     /// Irregular patterns are handled via database lookup, not hardcoded endings.
     /// For each pattern, get top 3 words and test all 16 grammatical combinations.
     /// </summary>
     public static IEnumerable<NounTestCase> GetNounTestCases()
     {
-        // Get only BASE patterns (not variants or irregulars)
-        // Only base patterns have ending tables defined in NounEndings.cs
+        // Get BASE and VARIANT patterns (not irregulars)
+        // Both base and variant patterns have ending tables defined in NounEndings.cs
         var patterns = Enum.GetValues<NounPattern>()
-            .Where(p => p.IsBase())
+            .Where(p => p.IsBase() || p.IsVariant())
             .ToList();
 
         using var helper = new DpdTestHelper(TestPaths.DpdDbPath);

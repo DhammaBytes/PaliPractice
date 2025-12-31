@@ -56,7 +56,15 @@ public class InflectionService : IInflectionService
         Case nounCase,
         Number number)
     {
-        if (string.IsNullOrEmpty(noun.RawPattern) || string.IsNullOrEmpty(noun.Stem))
+        // Irregular patterns: fetch full forms from database
+        // No need for Stem - forms come directly from DB
+        if (noun.Irregular)
+        {
+            return GenerateIrregularNounForms(noun, nounCase, number);
+        }
+
+        // Regular/variant patterns: require stem for stem+ending computation
+        if (string.IsNullOrEmpty(noun.Stem))
         {
             return new Declension
             {
@@ -68,13 +76,7 @@ public class InflectionService : IInflectionService
             };
         }
 
-        // Irregular patterns: fetch full forms from database
-        if (noun.Irregular)
-        {
-            return GenerateIrregularNounForms(noun, nounCase, number);
-        }
-
-        // Regular patterns: compute stem + ending
+        // Regular patterns (base + variant): compute stem + ending
         var endings = NounEndings.GetEndings(noun.Pattern, nounCase, number);
 
         if (endings.Length == 0)
@@ -169,7 +171,15 @@ public class InflectionService : IInflectionService
         Tense tense,
         bool reflexive)
     {
-        if (string.IsNullOrEmpty(verb.RawPattern) || string.IsNullOrEmpty(verb.Stem))
+        // Irregular patterns: fetch full forms from database
+        // No need for Stem - forms come directly from DB
+        if (verb.Irregular)
+        {
+            return GenerateIrregularVerbForms(verb, person, number, tense, reflexive);
+        }
+
+        // Regular patterns: require stem for stem+ending computation
+        if (string.IsNullOrEmpty(verb.Stem))
         {
             return new Conjugation
             {
@@ -180,12 +190,6 @@ public class InflectionService : IInflectionService
                 Voice = reflexive ? Voice.Reflexive : Voice.Active,
                 Forms = []
             };
-        }
-
-        // Irregular patterns: fetch full forms from database
-        if (verb.Irregular)
-        {
-            return GenerateIrregularVerbForms(verb, person, number, tense, reflexive);
         }
 
         // Regular patterns: compute stem + ending

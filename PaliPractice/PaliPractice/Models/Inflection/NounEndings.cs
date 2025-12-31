@@ -74,6 +74,20 @@ public static class NounEndings
             NounPattern.UFem => GetU_Fem(nounCase, number),
             NounPattern.ArFem => GetAr_Fem(nounCase, number),
 
+            // Variant Masculine patterns
+            NounPattern.A2Masc => GetA2_Masc(nounCase, number),
+            NounPattern.AMascEast => GetA_Masc_East(nounCase, number),
+            NounPattern.AMascPl => GetA_Masc_Pl(nounCase, number),
+            NounPattern.AntaMasc => GetAnta_Masc(nounCase, number),
+            NounPattern.Ar2Masc => GetAr2_Masc(nounCase, number),
+            NounPattern.ĪMascPl => GetI_Long_Masc_Pl(nounCase, number),
+            NounPattern.UMascPl => GetU_Masc_Pl(nounCase, number),
+
+            // Variant Neuter patterns
+            NounPattern.ANeutEast => GetA_Nt_East(nounCase, number),
+            NounPattern.ANeutIrreg => GetA_Nt_Irreg(nounCase, number),
+            NounPattern.ANeutPl => GetA_Nt_Pl(nounCase, number),
+
             // Irregular patterns are handled via database lookup in InflectionService
             _ => []
         };
@@ -467,6 +481,240 @@ public static class NounEndings
             (Case.Locative, Number.Plural) => ["antesu"],
             (Case.Vocative, Number.Singular) => ["a", "aṃ", "ā"],
             (Case.Vocative, Number.Plural) => ["antā", "anto"],
+            _ => []
+        };
+    }
+
+    #endregion
+
+    #region Variant patterns
+
+    /// <summary>a2 masc - like atta (reflexive pronoun pattern)</summary>
+    static string[] GetA2_Masc(Case nounCase, Number number)
+    {
+        return (nounCase, number) switch
+        {
+            (Case.Nominative, Number.Singular) => ["ā"],
+            (Case.Nominative, Number.Plural) => ["āno"],
+            (Case.Accusative, Number.Singular) => ["anaṃ", "aṃ", "ānaṃ"],
+            (Case.Accusative, Number.Plural) => ["āno"],
+            (Case.Instrumental, Number.Singular) => ["anā", "ena"],
+            (Case.Instrumental, Number.Plural) => ["anehi"],
+            (Case.Dative, Number.Singular) => ["ano"],
+            (Case.Dative, Number.Plural) => ["ānaṃ"],
+            (Case.Ablative, Number.Singular) => ["anā"],
+            (Case.Ablative, Number.Plural) => ["anehi"],
+            (Case.Genitive, Number.Singular) => ["ano"],
+            (Case.Genitive, Number.Plural) => ["ānaṃ"],
+            (Case.Locative, Number.Singular) => ["ani"],
+            (Case.Locative, Number.Plural) => ["anesu"],
+            (Case.Vocative, Number.Singular) => ["a", "ā"],
+            (Case.Vocative, Number.Plural) => ["āno"],
+            _ => []
+        };
+    }
+
+    /// <summary>a masc east - Eastern dialect like bāle</summary>
+    static string[] GetA_Masc_East(Case nounCase, Number number)
+    {
+        return (nounCase, number) switch
+        {
+            (Case.Nominative, Number.Singular) => ["e", "o"],
+            (Case.Nominative, Number.Plural) => ["ā", "āse"],
+            (Case.Accusative, Number.Singular) => ["aṃ"],
+            (Case.Accusative, Number.Plural) => ["e"],
+            (Case.Instrumental, Number.Singular) => ["ena"],
+            (Case.Instrumental, Number.Plural) => ["ebhi", "ehi"],
+            (Case.Dative, Number.Singular) => ["assa", "āya"],
+            (Case.Dative, Number.Plural) => ["ānaṃ"],
+            (Case.Ablative, Number.Singular) => ["ato", "amhā", "asmā", "ā"],
+            (Case.Ablative, Number.Plural) => ["ebhi", "ehi"],
+            (Case.Genitive, Number.Singular) => ["assa"],
+            (Case.Genitive, Number.Plural) => ["ānaṃ"],
+            (Case.Locative, Number.Singular) => ["amhi", "asmiṃ", "e"],
+            (Case.Locative, Number.Plural) => ["esu"],
+            (Case.Vocative, Number.Singular) => ["a", "ā", "e"],
+            (Case.Vocative, Number.Plural) => ["ā"],
+            _ => []
+        };
+    }
+
+    /// <summary>a masc pl - Plural only like samaṇabrāhmaṇā</summary>
+    static string[] GetA_Masc_Pl(Case nounCase, Number number)
+    {
+        // No singular forms
+        if (number == Number.Singular) return [];
+
+        return nounCase switch
+        {
+            Case.Nominative => ["ā", "āse"],
+            Case.Accusative => ["e"],
+            Case.Instrumental => ["ebhi", "ehi"],
+            Case.Dative => ["ānaṃ"],
+            Case.Ablative => ["ato", "ebhi", "ehi"],
+            Case.Genitive => ["āna", "ānaṃ"],
+            Case.Locative => ["esu"],
+            Case.Vocative => ["ā"],
+            _ => []
+        };
+    }
+
+    /// <summary>anta masc - like bhadanta (simplified ant)</summary>
+    static string[] GetAnta_Masc(Case nounCase, Number number)
+    {
+        return (nounCase, number) switch
+        {
+            (Case.Nominative, Number.Singular) => ["anto"],
+            (Case.Nominative, Number.Plural) => ["antā", "anto"],
+            (Case.Accusative, Number.Singular) => ["antaṃ"],
+            (Case.Accusative, Number.Plural) => ["ante"],
+            (Case.Instrumental, Number.Singular) => ["antena"],
+            (Case.Instrumental, Number.Plural) => ["antehi"],
+            (Case.Dative, Number.Singular) => ["antassa"],
+            (Case.Dative, Number.Plural) => ["antānaṃ"],
+            (Case.Ablative, Number.Singular) => ["antamhā", "antasmā", "antā"],
+            (Case.Ablative, Number.Plural) => ["antehi"],
+            (Case.Genitive, Number.Singular) => ["antassa"],
+            (Case.Genitive, Number.Plural) => ["antānaṃ"],
+            (Case.Locative, Number.Singular) => ["antamhi", "antasmiṃ", "ante"],
+            (Case.Locative, Number.Plural) => ["antesu"],
+            (Case.Vocative, Number.Singular) => ["anta", "ante"],
+            (Case.Vocative, Number.Plural) => ["antā", "ante", "anto"],
+            _ => []
+        };
+    }
+
+    /// <summary>ar2 masc - like pitar (different from satthar)</summary>
+    static string[] GetAr2_Masc(Case nounCase, Number number)
+    {
+        return (nounCase, number) switch
+        {
+            (Case.Nominative, Number.Singular) => ["ā"],
+            (Case.Nominative, Number.Plural) => ["aro"],
+            (Case.Accusative, Number.Singular) => ["araṃ"],
+            (Case.Accusative, Number.Plural) => ["are", "aro"],
+            (Case.Instrumental, Number.Singular) => ["arā", "unā"],
+            (Case.Instrumental, Number.Plural) => ["ūhi"],
+            (Case.Dative, Number.Singular) => ["u", "uno", "ussa"],
+            (Case.Dative, Number.Plural) => ["unnaṃ", "ūnaṃ"],
+            (Case.Ablative, Number.Singular) => ["arā"],
+            (Case.Ablative, Number.Plural) => ["ūhi"],
+            (Case.Genitive, Number.Singular) => ["u", "uno", "ussa"],
+            (Case.Genitive, Number.Plural) => ["unnaṃ", "ūnaṃ"],
+            (Case.Locative, Number.Singular) => ["ari"],
+            (Case.Locative, Number.Plural) => ["aresu", "usu", "ū", "ūsu"],
+            (Case.Vocative, Number.Singular) => ["a", "ā"],
+            (Case.Vocative, Number.Plural) => ["aro"],
+            _ => []
+        };
+    }
+
+    /// <summary>ī masc pl - Plural only like vajjī</summary>
+    static string[] GetI_Long_Masc_Pl(Case nounCase, Number number)
+    {
+        // No singular forms
+        if (number == Number.Singular) return [];
+
+        return nounCase switch
+        {
+            Case.Nominative => ["ino", "ī"],
+            Case.Accusative => ["ino", "ī"],
+            Case.Instrumental => ["ibhi", "īhi"],
+            Case.Dative => ["inaṃ", "īnaṃ"],
+            Case.Ablative => ["ibhi", "īhi"],
+            Case.Genitive => ["īnaṃ"],
+            Case.Locative => ["īsu"],
+            Case.Vocative => ["ino", "ī"],
+            _ => []
+        };
+    }
+
+    /// <summary>u masc pl - Plural only like bahū</summary>
+    static string[] GetU_Masc_Pl(Case nounCase, Number number)
+    {
+        // No singular forms
+        if (number == Number.Singular) return [];
+
+        return nounCase switch
+        {
+            Case.Nominative => ["avo", "ū"],
+            Case.Accusative => ["avo", "ū"],
+            Case.Instrumental => ["ūhi"],
+            Case.Dative => ["unaṃ", "ūnaṃ"],
+            Case.Ablative => ["ūhi"],
+            Case.Genitive => ["unaṃ", "ūnaṃ"],
+            Case.Locative => ["ūsu"],
+            Case.Vocative => ["ave", "avo", "ū"],
+            _ => []
+        };
+    }
+
+    /// <summary>a nt east - Eastern dialect neuter like sukhadukkha</summary>
+    static string[] GetA_Nt_East(Case nounCase, Number number)
+    {
+        return (nounCase, number) switch
+        {
+            (Case.Nominative, Number.Singular) => ["aṃ", "e"],
+            (Case.Nominative, Number.Plural) => ["ā", "āni"],
+            (Case.Accusative, Number.Singular) => ["aṃ"],
+            (Case.Accusative, Number.Plural) => ["āni", "e"],
+            (Case.Instrumental, Number.Singular) => ["ena"],
+            (Case.Instrumental, Number.Plural) => ["ebhi", "ehi"],
+            (Case.Dative, Number.Singular) => ["assa", "āya"],
+            (Case.Dative, Number.Plural) => ["ānaṃ"],
+            (Case.Ablative, Number.Singular) => ["ato", "amhā", "asmā", "ā"],
+            (Case.Ablative, Number.Plural) => ["ebhi", "ehi"],
+            (Case.Genitive, Number.Singular) => ["assa"],
+            (Case.Genitive, Number.Plural) => ["ānaṃ"],
+            (Case.Locative, Number.Singular) => ["amhi", "asmiṃ", "e"],
+            (Case.Locative, Number.Plural) => ["esu"],
+            (Case.Vocative, Number.Singular) => ["a", "aṃ", "ā", "e"],
+            (Case.Vocative, Number.Plural) => ["ā", "āni"],
+            _ => []
+        };
+    }
+
+    /// <summary>a nt irreg - like camma (slightly irregular)</summary>
+    static string[] GetA_Nt_Irreg(Case nounCase, Number number)
+    {
+        return (nounCase, number) switch
+        {
+            (Case.Nominative, Number.Singular) => ["aṃ"],
+            (Case.Nominative, Number.Plural) => ["ā", "āni"],
+            (Case.Accusative, Number.Singular) => ["aṃ"],
+            (Case.Accusative, Number.Plural) => ["āni", "e"],
+            (Case.Instrumental, Number.Singular) => ["ena"],
+            (Case.Instrumental, Number.Plural) => ["ebhi", "ehi"],
+            (Case.Dative, Number.Singular) => ["assa", "āya"],
+            (Case.Dative, Number.Plural) => ["ānaṃ"],
+            (Case.Ablative, Number.Singular) => ["amhā", "asmā", "ā"],
+            (Case.Ablative, Number.Plural) => ["ebhi", "ehi"],
+            (Case.Genitive, Number.Singular) => ["assa"],
+            (Case.Genitive, Number.Plural) => ["ānaṃ"],
+            (Case.Locative, Number.Singular) => ["ani", "amhi", "asmiṃ", "e"],
+            (Case.Locative, Number.Plural) => ["esu"],
+            (Case.Vocative, Number.Singular) => ["a", "ā"],
+            (Case.Vocative, Number.Plural) => ["āni"],
+            _ => []
+        };
+    }
+
+    /// <summary>a nt pl - Plural only like pañcindriyāni</summary>
+    static string[] GetA_Nt_Pl(Case nounCase, Number number)
+    {
+        // No singular forms
+        if (number == Number.Singular) return [];
+
+        return nounCase switch
+        {
+            Case.Nominative => ["ā", "āni"],
+            Case.Accusative => ["āni", "e"],
+            Case.Instrumental => ["ebhi", "ehi"],
+            Case.Dative => ["ānaṃ"],
+            Case.Ablative => ["ebhi", "ehi"],
+            Case.Genitive => ["ānaṃ"],
+            Case.Locative => ["esu"],
+            Case.Vocative => ["ā", "āni"],
             _ => []
         };
     }

@@ -19,7 +19,6 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     [ObservableProperty] bool _canRateCard;
     [ObservableProperty] string _alternativeForms = string.Empty;
-    [ObservableProperty] string _currentLemmaText = string.Empty;
 
     public FlashCardViewModel FlashCard { get; }
     public DailyGoalViewModel DailyGoal { get; }
@@ -141,9 +140,6 @@ public abstract partial class PracticeViewModelBase : ObservableObject
             Logger.LogWarning("No lemma for current form");
             return;
         }
-
-        // Update lemma text for title bar button
-        CurrentLemmaText = lemma.BaseForm;
 
         var masteryLevel = _provider.Current?.MasteryLevel ?? 1;
         FlashCard.DisplayWord(lemma.Primary, _provider.CurrentIndex, _provider.TotalCount, masteryLevel);

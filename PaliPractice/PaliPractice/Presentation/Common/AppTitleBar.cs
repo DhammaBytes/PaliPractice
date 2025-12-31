@@ -35,25 +35,13 @@ public static class AppTitleBar
 
     /// <summary>
     /// Builds a title bar with back button, clickable center button, and history button.
-    /// Used for practice pages where the center shows the current lemma as a tappable button.
+    /// Used for practice pages where the center shows a button to navigate to the inflection table.
     /// </summary>
     public static Grid BuildWithCenterButton<TDC>(
         Expression<Func<TDC, ICommand>> goBackCommand,
-        Action<TextBlock> bindCenterText,
         Expression<Func<TDC, ICommand>> centerClickCommand,
         Expression<Func<TDC, ICommand>> goToHistoryCommand)
     {
-        // Create center button with bound text
-        var centerTextBlock = PaliText()
-            .FontSize(18)
-            .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-            .VerticalAlignment(VerticalAlignment.Center)
-            .TextTrimming(TextTrimming.CharacterEllipsis)
-            .MaxWidth(180);
-
-        // Apply text binding via callback
-        bindCenterText(centerTextBlock);
-
         var centerButton = new SquircleButton()
             .Fill(ThemeResource.Get<Brush>("BackgroundBrush"))
             .RadiusMode(SquircleRadiusMode.ButtonSmall)
@@ -63,11 +51,13 @@ public static class AppTitleBar
             .Orientation(Orientation.Horizontal)
             .Spacing(6)
             .Children(
-                centerTextBlock,
                 new FontIcon()
                     .Glyph("\uE8A7") // List/table icon
-                    .FontSize(14)
-                    .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
+                    .FontSize(14),
+                RegularText()
+                    .Text("All Forms")
+                    .FontSize(16)
+                    .VerticalAlignment(VerticalAlignment.Center)
             ));
 
         return BuildCoreWithCenterElement(

@@ -1,5 +1,5 @@
 using Windows.Graphics;
-using Microsoft.Graphics.Display;
+using Windows.Graphics.Display;
 using PaliPractice.Presentation.Main.ViewModels;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Presentation.Practice.ViewModels;
@@ -158,28 +158,38 @@ public partial class App : Application
         Host = await builder.NavigateAsync<Shell>();
     }
 
-    private static void ResizeWindowForDesktop(Window window)
+    static void ResizeWindowForDesktop(Window window)
     {
-        var displayInfo = Windows.Graphics.Display.DisplayInformation.GetForCurrentView();
+        var displayInfo = DisplayInformation.GetForCurrentView();
         var scale = displayInfo.RawPixelsPerViewPixel;
-        var screenHeightRaw = displayInfo.ScreenHeightInRawPixels;
-        var screenHeight = (int)(screenHeightRaw / scale);
+        
+        var rawWidth = (int)displayInfo.ScreenWidthInRawPixels;
+        var rawHeight = (int)displayInfo.ScreenHeightInRawPixels;
 
-        const int logicalWidth = 600;
-        var logicalHeight = CalculateWindowHeight(screenHeight);
+        // Uno/macOS may report Portrait orientation for landscape displays, swapping dimensions
+        var screenWidthPx = Math.Max(rawWidth, rawHeight);
+        var screenHeightPx = Math.Min(rawWidth, rawHeight);
+        var screenHeightLogical = (int)(screenHeightPx / scale);
 
-        window.AppWindow.Resize(new SizeInt32
-        {
-            Width = (int)(logicalWidth * scale),
-            Height = (int)(logicalHeight * scale)
-        });
+        const int windowWidthLogical = 600;
+        var windowHeightLogical = CalculateWindowHeight(screenHeightLogical);
+
+        var windowWidthPx = (int)(windowWidthLogical * scale);
+        var windowHeightPx = (int)(windowHeightLogical * scale);
+
+        window.AppWindow.Resize(new SizeInt32 { Width = windowWidthPx, Height = windowHeightPx });
+
+        // Horizontally centered, vertically at top for small screens
+        var x = (screenWidthPx - windowWidthPx) / 2;
+        var y = screenHeightLogical < 864 ? 0 : (screenHeightPx - windowHeightPx) / 2;
+        window.AppWindow.Move(new PointInt32 { X = x, Y = y });
     }
 
     /// <summary>
     /// Calculates optimal window height based on available screen height.
     /// Accounts for OS UI (title bar ~32px, taskbar/dock ~40-60px).
     /// </summary>
-    private static int CalculateWindowHeight(int screenHeight)
+    static int CalculateWindowHeight(int screenHeight)
     {
         // Screen height breakpoints and corresponding window heights:
         // - Tiny laptops (720p): 640px leaves ~80px for title bar + taskbar

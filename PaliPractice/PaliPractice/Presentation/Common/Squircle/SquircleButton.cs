@@ -66,6 +66,22 @@ public class SquircleButton : Button
         set => SetValue(RadiusModeProperty, value);
     }
 
+    public static readonly DependencyProperty RadiusProperty = DependencyProperty.Register(
+        nameof(Radius),
+        typeof(double?),
+        typeof(SquircleButton),
+        new PropertyMetadata(null, OnShapePropertyChanged));
+
+    /// <summary>
+    /// Explicit corner radius. If set, overrides RadiusMode calculation.
+    /// Use this to match another element's radius ("copycat" pattern).
+    /// </summary>
+    public double? Radius
+    {
+        get => (double?)GetValue(RadiusProperty);
+        set => SetValue(RadiusProperty, value);
+    }
+
     public static readonly DependencyProperty FillProperty = DependencyProperty.Register(
         nameof(Fill),
         typeof(Brush),
@@ -218,7 +234,7 @@ public class SquircleButton : Button
     }
 
     /// <summary>
-    /// Updates the squircle geometry on all Path elements based on current size and RadiusMode.
+    /// Updates the squircle geometry on all Path elements based on current size.
     /// </summary>
     /// <remarks>
     /// All three paths share the same geometry instance since they need identical shapes.
@@ -233,8 +249,8 @@ public class SquircleButton : Button
         if (width <= 0 || height <= 0)
             return;
 
-        // Calculate radius based on dimensions and RadiusMode preset
-        var radius = SquircleGeometry.CalculateRadius(width, height, RadiusMode);
+        // Explicit Radius takes precedence over RadiusMode calculation
+        var radius = Radius ?? SquircleGeometry.CalculateRadius(width, height, RadiusMode);
 
         // Generate the squircle PathGeometry (reused for all paths)
         var geometry = SquircleGeometry.Create(width, height, radius);

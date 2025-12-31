@@ -589,6 +589,32 @@ public static class PracticePageBuilder
                 .FontSize(16)
                 .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")));
 
+        // Blend arrow button radii between natural and translation border radius
+        // 0 = natural (too small), 1 = full copy (too round), 0.5 = halfway
+        const double blendFactor = 0.3;
+        translationBorder.SizeChanged += (_, e) =>
+        {
+            var sourceRadius = SquircleGeometry.CalculateRadius(
+                e.NewSize.Width,
+                e.NewSize.Height,
+                SquircleRadiusMode.Harmonized);
+
+            // Blend each button's natural radius toward the source
+            if (prevButton.ActualWidth > 0 && prevButton.ActualHeight > 0)
+            {
+                var naturalRadius = SquircleGeometry.CalculateRadius(
+                    prevButton.ActualWidth, prevButton.ActualHeight, SquircleRadiusMode.Harmonized);
+                prevButton.Radius = naturalRadius + (sourceRadius - naturalRadius) * blendFactor;
+            }
+
+            if (nextButton.ActualWidth > 0 && nextButton.ActualHeight > 0)
+            {
+                var naturalRadius = SquircleGeometry.CalculateRadius(
+                    nextButton.ActualWidth, nextButton.ActualHeight, SquircleRadiusMode.Harmonized);
+                nextButton.Radius = naturalRadius + (sourceRadius - naturalRadius) * blendFactor;
+            }
+        };
+
         // Grid layout: arrows at edges, translation centered
         // This aligns arrow edges with card edges above
         var container = new Grid()

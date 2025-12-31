@@ -17,6 +17,16 @@ public static class SquircleExtensions
     }
 
     /// <summary>
+    /// Sets an explicit radius (overrides RadiusMode).
+    /// Use to match another element's corner radius ("copycat" pattern).
+    /// </summary>
+    public static SquircleButton Radius(this SquircleButton button, double radius)
+    {
+        button.Radius = radius;
+        return button;
+    }
+
+    /// <summary>
     /// Sets the fill brush.
     /// </summary>
     public static SquircleButton Fill(this SquircleButton button, Brush fill)

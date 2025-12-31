@@ -12,11 +12,12 @@ public sealed partial class AboutPage : Page
     const double BodyFontSize = 15;
     const double TitleFontSize = 18;
     const double SectionPadding = 24;
+    const double ContentPadding = 20;
 
     public AboutPage()
     {
         this.DataContext<AboutViewModel>((page, vm) => page
-            .NavigationCacheMode<AboutPage>(NavigationCacheMode.Required)
+            .NavigationCacheMode(NavigationCacheMode.Required)
             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
             .Content(new Grid()
                 .SafeArea(SafeArea.InsetMask.VisibleBounds)
@@ -30,9 +31,9 @@ public sealed partial class AboutPage : Page
                         .Grid(row: 1)
                         .Content(
                             new StackPanel()
-                                .Padding(20)
+                                .MaxWidth(LayoutConstants.ContentMaxWidth + ContentPadding * 2)
+                                .Padding(ContentPadding)
                                 .Spacing(24)
-                                .MaxWidth(LayoutConstants.ContentMaxWidth)
                                 .HorizontalAlignment(HorizontalAlignment.Center)
                                 .VerticalAlignment(VerticalAlignment.Center)
                                 .Children(

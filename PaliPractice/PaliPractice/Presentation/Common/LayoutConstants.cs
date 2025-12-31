@@ -225,11 +225,6 @@ public static class LayoutConstants
         public const double ActionButtonHorizontal = 16;
         public const double ActionButtonVertical = 12;
 
-        // Rank badge
-        public const double RankBadgeHorizontal = 8;
-        public const double RankBadgeVertical = 4;
-        public const double RankBadge = 4;
-
         // Daily goal
         public const double DailyGoal = 8;
 

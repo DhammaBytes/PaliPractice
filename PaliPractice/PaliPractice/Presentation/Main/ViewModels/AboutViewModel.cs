@@ -28,14 +28,42 @@ public partial class AboutViewModel : ObservableObject
     }
 
     // Use markdown-style links: [text](url) or [text](mailto:email)
-    // Static because content doesn't change - allows direct access from the page
-    public static string Description => """
-An app for practicing Pāli grammar using spaced repetition, a method based on repeated review over time.
+    public static string Description => $"""
+Free and open-source app for learning Pāli verb conjugations and noun declensions via spaced repetition flashcards.
 
-Maintained by the [DhammaBytes](https://dhammabytes.org) contributors. We warmly welcome feedback and help with translating the app into other languages.
+Maintained by [DhammaBytes](https://dhammabytes.org) contributors. We welcome feedback and help with translations.
 
-Word and grammar data are sourced from the [Digital Pāli Dictionary](https://dpdict.net).
+Word and grammar data sourced from the [Digital Pāli Dictionary](https://dpdict.net) project.
+
+{GetPlatformAvailability()}
 """;
+
+    static string GetPlatformAvailability()
+    {
+        var current = GetCurrentPlatform();
+
+        // Desktop lists mobile first, mobile lists desktop first
+        var isDesktop = current is "Windows" or "Linux" or "Mac";
+        var allPlatforms = isDesktop
+            ? new[] { "Android", "iPhone", "Windows", "Linux", "Mac" }
+            : new[] { "Windows", "Linux", "Mac", "Android", "iPhone" };
+
+        var others = allPlatforms.Where(p => p != current).ToList();
+        var last = others[^1];
+        var rest = others.Take(others.Count - 1);
+
+        return $"This app is also available on {string.Join(", ", rest)}, and {last}.";
+    }
+
+    static string GetCurrentPlatform()
+    {
+        if (OperatingSystem.IsAndroid()) return "Android";
+        if (OperatingSystem.IsIOS()) return "iPhone";
+        if (OperatingSystem.IsWindows()) return "Windows";
+        if (OperatingSystem.IsMacOS()) return "Mac";
+        if (OperatingSystem.IsLinux()) return "Linux";
+        return "Desktop"; // Fallback, won't match any platform in list
+    }
 
     public static string IconTitle => "App Icon";
     public static string IconDescription => """

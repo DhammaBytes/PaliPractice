@@ -12,6 +12,7 @@ public sealed partial class HelpPage : Page
     const double MainTitleFontSize = 22;
     const double TitleToContentSpacing = 12;
     const double FaqBlockSpacing = 16;
+    const double ContentPadding = 20;
 
     public HelpPage()
     {
@@ -30,9 +31,9 @@ public sealed partial class HelpPage : Page
                         .Grid(row: 1)
                         .Content(
                             new StackPanel()
-                                .Padding(20)
+                                .MaxWidth(LayoutConstants.ContentMaxWidth + ContentPadding * 2)
+                                .Padding(ContentPadding)
                                 .Spacing(24)
-                                .MaxWidth(LayoutConstants.ContentMaxWidth)
                                 .HorizontalAlignment(HorizontalAlignment.Center)
                                 .Children(
                                     // How to Practice

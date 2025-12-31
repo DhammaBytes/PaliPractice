@@ -265,6 +265,69 @@ public static class NounPatternHelper
         }
 
         /// <summary>
+        /// Gets the example lemma ("like X") for this pattern from DPD inflection_templates.
+        /// For irregular patterns marked as "irreg" in DPD, returns the pattern's own stem.
+        /// </summary>
+        public string GetLikeExample() => pattern switch
+        {
+            // Base Masculine
+            NounPattern.AMasc => "dhamma",
+            NounPattern.IMasc => "gahapati",
+            NounPattern.ĪMasc => "udāyī",
+            NounPattern.UMasc => "bhikkhu",
+            NounPattern.ŪMasc => "lokavidū",
+            NounPattern.ArMasc => "satthar",
+            NounPattern.AntMasc => "bhagavant",
+            NounPattern.AsMasc => "manas",
+
+            // Variant Masculine
+            NounPattern.A2Masc => "atta",
+            NounPattern.AMascEast => "bāle",
+            NounPattern.AMascPl => "samaṇabrāhmaṇā",
+            NounPattern.AntaMasc => "bhadanta",
+            NounPattern.Ar2Masc => "pitar",
+            NounPattern.ĪMascPl => "vajjī",
+            NounPattern.UMascPl => "bahū",
+
+            // Base Feminine
+            NounPattern.ĀFem => "vedanā",
+            NounPattern.IFem => "āpatti",
+            NounPattern.ĪFem => "bhikkhunī",
+            NounPattern.UFem => "vāyodhātu",
+            NounPattern.ArFem => "dhītar",
+
+            // Base Neuter
+            NounPattern.ANeut => "citta",
+            NounPattern.INeut => "sappi",
+            NounPattern.UNeut => "cakkhu",
+
+            // Variant Neuter
+            NounPattern.ANeutEast => "sukhadukkha",
+            NounPattern.ANeutIrreg => "camma",
+            NounPattern.ANeutPl => "pañcindriyāni",
+
+            // Irregular patterns - use pattern stem as example
+            NounPattern.AddhaMasc => "addha",
+            NounPattern.ArahantMasc => "arahant",
+            NounPattern.BhavantMasc => "bhavant",
+            NounPattern.BrahmaMasc => "brahma",
+            NounPattern.GoMasc => "go",
+            NounPattern.JantuMasc => "jantu",
+            NounPattern.RājaMasc => "rāja",
+            NounPattern.SantaMasc => "santa",
+            NounPattern.YuvaMasc => "yuva",
+            NounPattern.JātiFem => "jāti",
+            NounPattern.MātarFem => "mātar",
+            NounPattern.NadīFem => "nadī",
+            NounPattern.ParisāFem => "parisā",
+            NounPattern.PokkharaṇīFem => "pokkharaṇī",
+            NounPattern.RattiFem => "ratti",
+            NounPattern.KammaNeut => "kamma",
+
+            _ => throw new InvalidOperationException($"No like example for pattern: {pattern}")
+        };
+
+        /// <summary>
         /// Gets the parent base pattern for a variant or irregular pattern.
         /// Throws if called on a base or breakpoint pattern.
         /// </summary>

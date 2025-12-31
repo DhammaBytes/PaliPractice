@@ -49,16 +49,32 @@ public partial class InflectionTableViewModel : ObservableObject
     public bool IsVerb => !IsNoun;
 
     /// <summary>
-    /// Header text like "dhamma is a masc (like dhamma)" or "bhavati is ati pr (like bhavati)"
+    /// Title for the page: "Declension Table" or "Conjugation Table"
     /// </summary>
-    [ObservableProperty]
-    string _headerText = "";
+    public string PageTitle => IsNoun ? "Declension Table" : "Conjugation Table";
 
     /// <summary>
-    /// Pattern display like "a masc" or "ati pr"
+    /// The lemma name (bold, Pali font)
     /// </summary>
     [ObservableProperty]
-    string _patternText = "";
+    string _lemmaName = "";
+
+    /// <summary>
+    /// The pattern name like "a masc" or "ati pr" (bold)
+    /// </summary>
+    [ObservableProperty]
+    string _patternName = "";
+
+    /// <summary>
+    /// The type name: "declension" or "conjugation" (normal)
+    /// </summary>
+    public string TypeName => IsNoun ? "declension" : "conjugation";
+
+    /// <summary>
+    /// The "like" example lemma from DPD (bold, Pali font)
+    /// </summary>
+    [ObservableProperty]
+    string _likeExample = "";
 
     /// <summary>
     /// Column headers: ["masc sg", "masc pl"] for nouns, ["sg", "pl", "reflx sg", "reflx pl"] for verbs
@@ -93,7 +109,11 @@ public partial class InflectionTableViewModel : ObservableObject
         var noun = Lemma.Primary as Noun;
         if (noun == null) return;
 
-        // Header text
+        // Header info
+        LemmaName = noun.Lemma;
+        PatternName = noun.RawPattern;
+        LikeExample = noun.Pattern.GetLikeExample();
+
         var genderLabel = noun.Gender switch
         {
             Gender.Masculine => "masc",
@@ -101,8 +121,6 @@ public partial class InflectionTableViewModel : ObservableObject
             Gender.Neuter => "nt",
             _ => ""
         };
-        HeaderText = $"{noun.Lemma} is {noun.RawPattern} (like {noun.Lemma})";
-        PatternText = noun.RawPattern;
 
         // Column headers based on gender and plural-only status
         var columns = new List<string>();
@@ -146,9 +164,10 @@ public partial class InflectionTableViewModel : ObservableObject
         var verb = Lemma.Primary as Verb;
         if (verb == null) return;
 
-        // Header text
-        HeaderText = $"{verb.Lemma} is {verb.RawPattern} (like {verb.Lemma})";
-        PatternText = verb.RawPattern;
+        // Header info
+        LemmaName = verb.Lemma;
+        PatternName = verb.RawPattern;
+        LikeExample = verb.Pattern.GetLikeExample();
 
         // Check if verb has reflexive forms by testing one combination
         var testReflexive = inflectionService.GenerateVerbForms(verb, Person.Third, Number.Singular, Tense.Present, reflexive: true);

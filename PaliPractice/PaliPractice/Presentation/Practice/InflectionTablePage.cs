@@ -1,5 +1,6 @@
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Practice.ViewModels;
+using PaliPractice.Themes;
 using static PaliPractice.Presentation.Common.TextHelpers;
 
 namespace PaliPractice.Presentation.Practice;
@@ -11,11 +12,21 @@ namespace PaliPractice.Presentation.Practice;
 public sealed partial class InflectionTablePage : Page
 {
     Grid? _tableContainer;
+    TextBlock? _titleTextBlock;
+    TextBlock? _headerTextBlock;
 
     public InflectionTablePage()
     {
         // Create placeholder for the table that will be built after data is available
         _tableContainer = new Grid();
+        _titleTextBlock = PaliText()
+            .FontSize(22)
+            .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
+            .HorizontalAlignment(HorizontalAlignment.Center)
+            .VerticalAlignment(VerticalAlignment.Center);
+        _headerTextBlock = RegularText()
+            .FontSize(16)
+            .TextWrapping(TextWrapping.Wrap);
 
         this.DataContext<InflectionTableViewModel>((page, vm) => page
             .NavigationCacheMode(NavigationCacheMode.Disabled)
@@ -25,9 +36,7 @@ public sealed partial class InflectionTablePage : Page
                 .RowDefinitions("Auto,*")
                 .Children(
                     // Row 0: Title bar with back button (full width)
-                    AppTitleBar.Build<InflectionTableViewModel>(
-                        "Inflection Table",
-                        v => v.GoBackCommand)
+                    BuildTitleBar(vm)
                         .Grid(row: 0),
 
                     // Row 1: Centered content container (header info + table)
@@ -37,7 +46,7 @@ public sealed partial class InflectionTablePage : Page
                         .RowDefinitions("Auto,*")
                         .Children(
                             // Row 0: Header info panel (left-aligned within centered container)
-                            BuildHeaderInfo(vm)
+                            BuildHeaderInfo()
                                 .Grid(row: 0),
 
                             // Row 1: Table container (populated in DataContextChanged)
@@ -57,6 +66,29 @@ public sealed partial class InflectionTablePage : Page
     {
         if (args.NewValue is InflectionTableViewModel vm && _tableContainer != null)
         {
+            // Update title with lemma name
+            if (_titleTextBlock != null)
+                _titleTextBlock.Text = vm.LemmaName;
+
+            // Update formatted header: <pattern> <type> (like <example>)
+            if (_headerTextBlock != null)
+            {
+                _headerTextBlock.Inlines.Clear();
+                _headerTextBlock.Inlines.Add(new Run
+                {
+                    Text = vm.PatternName,
+                    FontWeight = Microsoft.UI.Text.FontWeights.SemiBold
+                });
+                _headerTextBlock.Inlines.Add(new Run { Text = $" {vm.TypeName} (like " });
+                _headerTextBlock.Inlines.Add(new Run
+                {
+                    Text = vm.LikeExample,
+                    FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
+                    FontFamily = new FontFamily(FontPaths.LibertinusSans)
+                });
+                _headerTextBlock.Inlines.Add(new Run { Text = ")" });
+            }
+
             // Build the frozen header table with actual data
             if (vm.RowHeaders.Count > 0 && vm.ColumnHeaders.Count > 0)
             {
@@ -71,39 +103,42 @@ public sealed partial class InflectionTablePage : Page
         }
     }
 
-    static Border BuildHeaderInfo(InflectionTableViewModel vm)
+    Grid BuildTitleBar(InflectionTableViewModel vm)
     {
-        // Create TextBlocks for binding
-        var lemmaText = PaliText()
-            .FontSize(24)
-            .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
-            .Margin(0, 0, 0, 4);
+        var backButton = new SquircleButton()
+            .Fill(ThemeResource.Get<Brush>("BackgroundBrush"))
+            .RadiusMode(SquircleRadiusMode.ButtonSmall)
+            .Padding(12, 8);
+        backButton.SetBinding(ButtonBase.CommandProperty, new Binding { Path = new PropertyPath("GoBackCommand") });
+        backButton.Child(new StackPanel()
+            .Orientation(Orientation.Horizontal)
+            .Spacing(6)
+            .Children(
+                new FontIcon()
+                    .Glyph("\uE72B")
+                    .FontSize(16),
+                RegularText()
+                    .Text("Back")
+                    .VerticalAlignment(VerticalAlignment.Center)
+            ));
 
-        var patternText = RegularText()
-            .FontSize(14)
-            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"));
+        return new Grid()
+            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .Padding(16, 8)
+            .Children(
+                _titleTextBlock,
+                new Grid()
+                    .ColumnDefinitions("Auto,*")
+                    .Children(backButton.Grid(column: 0))
+            );
+    }
 
-        var headerText = RegularText()
-            .FontSize(16)
-            .TextWrapping(TextWrapping.Wrap);
-
-        // Apply bindings using the ViewModel expressions
-        lemmaText.Text(() => vm.Lemma.BaseForm);
-        patternText.Text(() => vm.PatternText);
-        headerText.Text(() => vm.HeaderText);
-
+    Border BuildHeaderInfo()
+    {
         return new Border()
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
             .Padding(16, 12)
             .Margin(0, 0, 0, 1)
-            .Child(
-                new StackPanel()
-                    .Spacing(4)
-                    .Children(
-                        lemmaText,
-                        patternText,
-                        headerText
-                    )
-            );
+            .Child(_headerTextBlock);
     }
 }

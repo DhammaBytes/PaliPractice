@@ -115,6 +115,33 @@ public static class VerbPatternHelper
             => pattern > VerbPattern._Irregular;
 
         /// <summary>
+        /// Gets the example lemma ("like X") for this pattern from DPD inflection_templates.
+        /// For irregular patterns marked as "irreg" in DPD, returns the pattern's own stem.
+        /// </summary>
+        public string GetLikeExample() => pattern switch
+        {
+            // Regular patterns
+            VerbPattern.Ati => "bhavati",
+            VerbPattern.Āti => "pajānāti",
+            VerbPattern.Eti => "vadeti",
+            VerbPattern.Oti => "byākaroti",
+
+            // Irregular patterns - use pattern stem as example
+            VerbPattern.Atthi => "atthi",
+            VerbPattern.Dakkhati => "dakkhati",
+            VerbPattern.Dammi => "dammi",
+            VerbPattern.Hanati => "hanati",
+            VerbPattern.Hoti => "hoti",
+            VerbPattern.Kubbati => "kubbati",
+            VerbPattern.Natthi => "natthi",
+            VerbPattern.Eti2 => "eti",
+            VerbPattern.Brūti => "brūti",
+            VerbPattern.Karoti => "karoti",
+
+            _ => throw new InvalidOperationException($"No like example for pattern: {pattern}")
+        };
+
+        /// <summary>
         /// Gets the parent regular pattern for an irregular.
         /// Throws if called on a regular or breakpoint pattern.
         /// </summary>

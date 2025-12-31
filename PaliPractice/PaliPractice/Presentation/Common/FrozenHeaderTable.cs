@@ -9,10 +9,9 @@ namespace PaliPractice.Presentation.Common;
 ///
 /// Architecture:
 /// - Column headers stay frozen at top with horizontal scroll sync
-/// - Row headers and content share the same Grid (ensuring matching row heights)
-/// - Outer vertical ScrollViewer scrolls both row headers and content together
-/// - Inner horizontal ScrollViewer scrolls only the content columns
-/// - Row headers are overlaid to stay visible during horizontal scroll
+/// - Row headers in body Grid are transparent "ghosts" that determine row heights
+/// - Visible row headers are cloned and overlaid, synced vertically only
+/// - Clone heights are synchronized via SizeChanged events from ghost cells
 /// </summary>
 public static class FrozenHeaderTable
 {
@@ -24,8 +23,12 @@ public static class FrozenHeaderTable
         IReadOnlyList<string> rowHeaders,
         IReadOnlyList<IReadOnlyList<TableCell>> cells)
     {
-        // Build the full body grid with row headers in column 0 and content in columns 1-N
-        var (bodyGrid, rowHeaderWidth) = BuildBodyGrid(rowHeaders, cells, columnHeaders.Count);
+        // Build cloned (visible) row headers first - we'll sync their heights later
+        var clonedRowHeaders = new List<Border>();
+        var clonedRowHeadersPanel = BuildClonedRowHeaders(rowHeaders, clonedRowHeaders);
+
+        // Build the body grid with ghost row headers and content cells
+        var (bodyGrid, rowHeaderWidth) = BuildBodyGrid(rowHeaders, cells, columnHeaders.Count, clonedRowHeaders);
 
         // Build column headers panel
         var columnHeadersPanel = BuildColumnHeaders(columnHeaders);
@@ -46,18 +49,41 @@ public static class FrozenHeaderTable
             .VerticalScrollBarVisibility(ScrollBarVisibility.Auto)
             .Content(bodyGrid);
 
-        // Synchronize horizontal scrolling for column headers
+        // Cloned row headers ScrollViewer (vertical only, synced with body)
+        var clonedHeadersScrollViewer = new ScrollViewer()
+            .HorizontalScrollMode(ScrollMode.Disabled)
+            .VerticalScrollMode(ScrollMode.Auto)
+            .HorizontalScrollBarVisibility(ScrollBarVisibility.Hidden)
+            .VerticalScrollBarVisibility(ScrollBarVisibility.Hidden)
+            .IsHitTestVisible(false) // Let touches pass through to body
+            .Content(clonedRowHeadersPanel);
+
+        // Synchronize scrolling
         bodyScrollViewer.ViewChanged += (s, e) =>
         {
+            // Sync column headers horizontally
             columnHeadersScrollViewer.ChangeView(bodyScrollViewer.HorizontalOffset, null, null, disableAnimation: true);
+            // Sync cloned row headers vertically
+            clonedHeadersScrollViewer.ChangeView(null, bodyScrollViewer.VerticalOffset, null, disableAnimation: true);
         };
 
         // Corner cell
         var cornerCell = new Border()
             .Width(rowHeaderWidth)
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .BorderBrush(ThemeResource.Get<Brush>("SystemControlForegroundBaseMediumBrush"))
+            .BorderBrush(ThemeResource.Get<Brush>("SystemControlForegroundBaseMediumLowBrush"))
             .BorderThickness(0, 0, 1, 1);
+
+        // Body area: overlay cloned row headers on top of scrollable content
+        var bodyArea = new Grid()
+            .Children(
+                // Layer 1 (back): Body with ghost row headers + content
+                bodyScrollViewer,
+                // Layer 2 (front): Cloned row headers (frozen horizontally)
+                clonedHeadersScrollViewer
+                    .Width(rowHeaderWidth)
+                    .HorizontalAlignment(HorizontalAlignment.Left)
+            );
 
         // Main layout: 2 rows (header row, body row)
         return new Grid()
@@ -70,38 +96,68 @@ public static class FrozenHeaderTable
                 // [0,1] Column headers (scrollable horizontally)
                 columnHeadersScrollViewer.Grid(row: 0, column: 1),
 
-                // [1,0-1] Body with row headers and content (spans both columns)
-                bodyScrollViewer.Grid(row: 1, column: 0, columnSpan: 2)
+                // [1,0-1] Body area with overlay (spans both columns)
+                bodyArea.Grid(row: 1, column: 0, columnSpan: 2)
             );
     }
 
     /// <summary>
-    /// Builds the body grid with row headers in column 0 and data cells in columns 1-N.
-    /// Returns the grid and the row header column width.
+    /// Builds cloned (visible) row headers in a StackPanel.
+    /// Populates the clonedCells list for height synchronization.
+    /// </summary>
+    static StackPanel BuildClonedRowHeaders(IReadOnlyList<string> headers, List<Border> clonedCells)
+    {
+        var panel = new StackPanel()
+            .Orientation(Orientation.Vertical);
+
+        foreach (var header in headers)
+        {
+            var cell = BuildRowHeaderCell(header, isGhost: false);
+            clonedCells.Add(cell);
+            panel.Children.Add(cell);
+        }
+
+        return panel;
+    }
+
+    /// <summary>
+    /// Builds the body grid with ghost row headers (transparent) in column 0 and data cells in columns 1-N.
+    /// Ghost cells sync their heights to cloned cells via SizeChanged.
     /// </summary>
     static (Grid grid, double rowHeaderWidth) BuildBodyGrid(
         IReadOnlyList<string> rowHeaders,
         IReadOnlyList<IReadOnlyList<TableCell>> cells,
-        int columnCount)
+        int columnCount,
+        List<Border> clonedCells)
     {
         int rowCount = rowHeaders.Count;
 
         // Row definitions: one per data row
         var rowDefs = string.Join(",", Enumerable.Repeat("Auto", rowCount));
 
-        // Column definitions: Auto for row header, then fixed width for each data column
+        // Column definitions: fixed width for ghost row header, then fixed width for each data column
         var colDefs = $"{RowHeaderWidth}," + string.Join(",", Enumerable.Repeat($"{CellWidth}", columnCount));
 
         var grid = new Grid()
             .RowDefinitions(rowDefs)
             .ColumnDefinitions(colDefs);
 
-        // Add row headers (column 0)
+        // Add ghost row headers (column 0) - transparent but participate in layout
         for (int row = 0; row < rowCount; row++)
         {
-            var headerCell = BuildRowHeaderCell(rowHeaders[row]);
-            headerCell.Grid(row: row, column: 0);
-            grid.Children.Add(headerCell);
+            var ghostCell = BuildRowHeaderCell(rowHeaders[row], isGhost: true);
+            ghostCell.Grid(row: row, column: 0);
+            grid.Children.Add(ghostCell);
+
+            // Sync height from ghost to cloned cell
+            var clonedCell = clonedCells[row];
+            ghostCell.SizeChanged += (s, e) =>
+            {
+                if (e.NewSize.Height > 0)
+                {
+                    clonedCell.Height(e.NewSize.Height);
+                }
+            };
         }
 
         // Add data cells (columns 1-N)
@@ -130,7 +186,7 @@ public static class FrozenHeaderTable
             var cell = new Border()
                 .Width(CellWidth)
                 .Padding(8, 6)
-                .BorderBrush(ThemeResource.Get<Brush>("SystemControlForegroundBaseMediumBrush"))
+                .BorderBrush(ThemeResource.Get<Brush>("SystemControlForegroundBaseMediumLowBrush"))
                 .BorderThickness(0, 0, 1, 1)
                 .Child(
                     RegularText()
@@ -146,23 +202,36 @@ public static class FrozenHeaderTable
         return panel;
     }
 
-    static Border BuildRowHeaderCell(string header)
+    static Border BuildRowHeaderCell(string header, bool isGhost = false)
     {
-        return new Border()
+        var border = new Border()
             .Width(RowHeaderWidth)
             .MinHeight(CellMinHeight)
-            .Padding(8, 6)
-            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .BorderBrush(ThemeResource.Get<Brush>("SystemControlForegroundBaseMediumBrush"))
-            .BorderThickness(0, 0, 1, 1)
-            .Child(
-                RegularText()
-                    .Text(header)
-                    .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                    .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"))
-                    .HorizontalAlignment(HorizontalAlignment.Right)
-                    .VerticalAlignment(VerticalAlignment.Center)
-            );
+            .Padding(8, 6);
+
+        if (isGhost)
+        {
+            // Ghost cell: transparent, no content, just occupies space for layout
+            border.Background(new SolidColorBrush(Microsoft.UI.Colors.Transparent));
+        }
+        else
+        {
+            // Visible cell: has background, border, and content
+            border
+                .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+                .BorderBrush(ThemeResource.Get<Brush>("SystemControlForegroundBaseMediumLowBrush"))
+                .BorderThickness(0, 0, 1, 1)
+                .Child(
+                    RegularText()
+                        .Text(header)
+                        .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+                        .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"))
+                        .HorizontalAlignment(HorizontalAlignment.Right)
+                        .VerticalAlignment(VerticalAlignment.Center)
+                );
+        }
+
+        return border;
     }
 
     static Border BuildDataCell(TableCell cell)

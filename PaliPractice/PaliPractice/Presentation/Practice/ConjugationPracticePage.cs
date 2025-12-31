@@ -1,6 +1,5 @@
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
-using PaliPractice.Presentation.Common.Squircle;
 
 namespace PaliPractice.Presentation.Practice;
 

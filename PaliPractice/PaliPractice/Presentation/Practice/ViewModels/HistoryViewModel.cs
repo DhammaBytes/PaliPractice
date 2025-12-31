@@ -1,6 +1,4 @@
 using System.Collections.ObjectModel;
-using PaliPractice.Presentation.Practice.ViewModels.Common;
-using PaliPractice.Services.Database;
 using PaliPractice.Services.Grammar;
 using PaliPractice.Services.UserData.Entities;
 
@@ -12,7 +10,7 @@ namespace PaliPractice.Presentation.Practice.ViewModels;
 public record HistoryNavigationData(PracticeType PracticeType);
 
 [Bindable]
-public partial class HistoryViewModel : ObservableObject
+public class HistoryViewModel : ObservableObject
 {
     readonly INavigator _navigator;
 
@@ -30,7 +28,7 @@ public partial class HistoryViewModel : ObservableObject
         Records = new ObservableCollection<IPracticeHistory>(history);
     }
 
-    public PracticeType CurrentPracticeType { get; }
+    PracticeType CurrentPracticeType { get; }
 
     public string Title => CurrentPracticeType == PracticeType.Declension
         ? "Declension History"

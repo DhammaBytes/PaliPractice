@@ -1,5 +1,4 @@
 using PaliPractice.Models.Words;
-using PaliPractice.Services.Database;
 using PaliPractice.Services.UserData;
 
 namespace PaliPractice.Presentation.Practice.Providers;

@@ -1,8 +1,5 @@
 using Microsoft.UI.Dispatching;
-using PaliPractice.Models;
-using PaliPractice.Services.Database;
 using PaliPractice.Services.Database.Repositories;
-using PaliPractice.Services.Practice;
 using PaliPractice.Services.UserData;
 
 namespace PaliPractice.Presentation.Settings.ViewModels;

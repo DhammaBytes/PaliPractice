@@ -1,7 +1,6 @@
 using Markdig;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
-using Microsoft.UI.Xaml.Documents;
 using PaliPractice.Themes;
 
 namespace PaliPractice.Presentation.Common;

@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
-using Microsoft.UI.Xaml.Controls;
 using static PaliPractice.Presentation.Common.TextHelpers;
 
 namespace PaliPractice.Presentation.Settings.Controls;

@@ -1,5 +1,5 @@
 using System.Runtime.InteropServices;
-using Windows.System.Profile;
+using Environment = System.Environment;
 #if __IOS__
 using UIKit;
 using ObjCRuntime;
@@ -197,11 +197,11 @@ public sealed class DeviceInfoProvider : IDeviceInfoProvider
     static string? GetDesktopOsVersion()
     {
         if (OperatingSystem.IsMacOS())
-            return $"macOS {System.Environment.OSVersion.Version}";
+            return $"macOS {Environment.OSVersion.Version}";
         if (OperatingSystem.IsLinux())
-            return $"Linux {System.Environment.OSVersion.Version}";
+            return $"Linux {Environment.OSVersion.Version}";
         if (OperatingSystem.IsWindows())
-            return $"Windows {System.Environment.OSVersion.Version}";
+            return $"Windows {Environment.OSVersion.Version}";
         return null;
     }
 

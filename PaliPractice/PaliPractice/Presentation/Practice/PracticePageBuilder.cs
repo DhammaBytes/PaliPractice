@@ -1,8 +1,6 @@
 using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
-using PaliPractice.Presentation.Practice.ViewModels;
-using PaliPractice.Presentation.Practice.ViewModels.Common;
 using PaliPractice.Themes;
 using static PaliPractice.Presentation.Common.TextHelpers;
 using ExampleCarouselViewModel = PaliPractice.Presentation.Practice.ViewModels.Common.ExampleCarouselViewModel;

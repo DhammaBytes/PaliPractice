@@ -1,5 +1,3 @@
-using PaliPractice.Models;
-
 namespace PaliPractice.Services.UserData;
 
 /// <summary>

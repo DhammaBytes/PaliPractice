@@ -30,9 +30,9 @@ public static class TestPaths
     /// </summary>
     public static void ValidateDpdDbExists()
     {
-        if (!System.IO.File.Exists(DpdDbPath))
+        if (!File.Exists(DpdDbPath))
         {
-            throw new System.IO.FileNotFoundException(
+            throw new FileNotFoundException(
                 $"DPD database not found at: {DpdDbPath}. " +
                 $"Ensure dpd-db submodule is initialized: git submodule update --init");
         }

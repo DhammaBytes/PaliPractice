@@ -1,4 +1,4 @@
-using PaliPractice.Presentation.Practice.ViewModels;
+using PaliPractice.Presentation.Grammar.ViewModels;
 using static PaliPractice.Presentation.Common.TextHelpers;
 
 namespace PaliPractice.Presentation.Common;

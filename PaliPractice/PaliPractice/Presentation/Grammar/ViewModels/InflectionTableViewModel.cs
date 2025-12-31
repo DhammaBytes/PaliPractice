@@ -1,9 +1,8 @@
-using PaliPractice.Models;
 using PaliPractice.Models.Inflection;
 using PaliPractice.Models.Words;
 using PaliPractice.Services.Grammar;
 
-namespace PaliPractice.Presentation.Practice.ViewModels;
+namespace PaliPractice.Presentation.Grammar.ViewModels;
 
 /// <summary>
 /// Navigation data for inflection table page.

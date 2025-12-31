@@ -1,7 +1,7 @@
 using PaliPractice.Models.Words;
+using PaliPractice.Presentation.Grammar.ViewModels;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Services.Database.Repositories;
-using PaliPractice.Services.Practice;
 
 namespace PaliPractice.Presentation.Practice.ViewModels.Common;
 

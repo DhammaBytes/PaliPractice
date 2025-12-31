@@ -1,4 +1,3 @@
-using Windows.Foundation;
 using ShapePath = Microsoft.UI.Xaml.Shapes.Path;
 
 namespace PaliPractice.Presentation.Common.Squircle;

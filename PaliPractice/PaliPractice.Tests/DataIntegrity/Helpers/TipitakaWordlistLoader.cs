@@ -1,4 +1,3 @@
-using System.IO;
 using System.Text.Json;
 
 namespace PaliPractice.Tests.DataIntegrity.Helpers;

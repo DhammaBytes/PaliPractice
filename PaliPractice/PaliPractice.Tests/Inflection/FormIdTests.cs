@@ -1,4 +1,3 @@
-using PaliPractice.Models;
 using PaliPractice.Models.Inflection;
 
 namespace PaliPractice.Tests.Inflection;

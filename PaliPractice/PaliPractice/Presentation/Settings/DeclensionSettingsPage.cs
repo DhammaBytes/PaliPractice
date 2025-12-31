@@ -1,4 +1,3 @@
-using Microsoft.UI.Xaml.Controls;
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Settings.Controls;

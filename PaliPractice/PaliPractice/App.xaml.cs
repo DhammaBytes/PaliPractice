@@ -1,20 +1,12 @@
-using Windows.Graphics;
-using Microsoft.Graphics.Display;
-using Microsoft.UI.Windowing;
-using PaliPractice.Presentation.Main;
 using PaliPractice.Presentation.Main.ViewModels;
-using PaliPractice.Presentation.Practice;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Presentation.Practice.ViewModels;
-using PaliPractice.Presentation.Practice.ViewModels.Common;
-using PaliPractice.Presentation.Settings;
 using PaliPractice.Presentation.Settings.ViewModels;
 using PaliPractice.Services.Database.Providers;
 using PaliPractice.Services.Feedback;
 using PaliPractice.Services.Feedback.Providers;
 using PaliPractice.Services.Grammar;
 using PaliPractice.Services.Practice;
-using PaliPractice.Services.UserData;
 using AboutPage = PaliPractice.Presentation.Main.AboutPage;
 using ConjugationPracticePage = PaliPractice.Presentation.Practice.ConjugationPracticePage;
 using ConjugationPracticeViewModel = PaliPractice.Presentation.Practice.ViewModels.ConjugationPracticeViewModel;
@@ -29,9 +21,9 @@ using LemmaRangeSettingsViewModel = PaliPractice.Presentation.Settings.ViewModel
 using LemmaRangeNavigationData = PaliPractice.Presentation.Settings.ViewModels.LemmaRangeNavigationData;
 using HelpPage = PaliPractice.Presentation.Main.HelpPage;
 using HistoryPage = PaliPractice.Presentation.Practice.HistoryPage;
-using InflectionTablePage = PaliPractice.Presentation.Practice.InflectionTablePage;
-using InflectionTableViewModel = PaliPractice.Presentation.Practice.ViewModels.InflectionTableViewModel;
-using InflectionTableNavigationData = PaliPractice.Presentation.Practice.ViewModels.InflectionTableNavigationData;
+using InflectionTablePage = PaliPractice.Presentation.Grammar.InflectionTablePage;
+using InflectionTableViewModel = PaliPractice.Presentation.Grammar.ViewModels.InflectionTableViewModel;
+using InflectionTableNavigationData = PaliPractice.Presentation.Grammar.ViewModels.InflectionTableNavigationData;
 using SettingsPage = PaliPractice.Presentation.Settings.SettingsPage;
 using Shell = PaliPractice.Presentation.Main.Shell;
 using StartPage = PaliPractice.Presentation.Main.StartPage;
@@ -50,7 +42,7 @@ public partial class App : Application
 
 #if DEBUG
         // Catch exceptions on the UI dispatcher thread (XAML binding errors, event handlers, etc.)
-        this.UnhandledException += (_, e) =>
+        UnhandledException += (_, e) =>
         {
             System.Diagnostics.Debug.WriteLine($"[APP UNHANDLED] {e.Exception}");
             Console.Error.WriteLine($"[APP UNHANDLED] {e.Exception}");

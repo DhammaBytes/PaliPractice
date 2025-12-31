@@ -1,7 +1,6 @@
 using System.Globalization;
 using System.Text;
 using PaliPractice.Services.Feedback.Providers;
-using Windows.ApplicationModel;
 using Windows.ApplicationModel.Email;
 
 namespace PaliPractice.Services.Feedback;

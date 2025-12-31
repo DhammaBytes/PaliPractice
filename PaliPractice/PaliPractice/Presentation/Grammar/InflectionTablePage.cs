@@ -1,9 +1,9 @@
 using PaliPractice.Presentation.Common;
-using PaliPractice.Presentation.Practice.ViewModels;
+using PaliPractice.Presentation.Grammar.ViewModels;
 using PaliPractice.Themes;
 using static PaliPractice.Presentation.Common.TextHelpers;
 
-namespace PaliPractice.Presentation.Practice;
+namespace PaliPractice.Presentation.Grammar;
 
 /// <summary>
 /// Page displaying complete inflection table for a lemma.
@@ -34,7 +34,7 @@ public sealed partial class InflectionTablePage : Page
             .Visibility(Visibility.Collapsed); // Hidden by default, shown if table has non-corpus forms
 
         this.DataContext<InflectionTableViewModel>((page, vm) => page
-            .NavigationCacheMode(NavigationCacheMode.Disabled)
+            .NavigationCacheMode<InflectionTablePage>(NavigationCacheMode.Disabled)
             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
             .Content(new Grid()
                 .SafeArea(SafeArea.InsetMask.VisibleBounds)

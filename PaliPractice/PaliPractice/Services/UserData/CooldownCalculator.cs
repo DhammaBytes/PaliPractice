@@ -25,6 +25,7 @@ public static class CooldownCalculator
     public const double Multiplier = 1.85; // Reaches ~254 days at level 10
     public const int MinLevel = 1;
     public const int MaxLevel = 10;
+    public const int RetiredLevel = 11;  // Forms at this level are excluded from practice forever
     public const int DefaultLevel = 4;
 
     /// <summary>
@@ -68,13 +69,13 @@ public static class CooldownCalculator
 
     /// <summary>
     /// Adjust level based on practice result.
-    /// Easy: +1 level (max 10)
+    /// Easy: +1 level (max 11 = retired)
     /// Hard: -1 level (min 1)
     /// </summary>
     public static int AdjustLevel(int currentLevel, bool wasEasy)
     {
         if (wasEasy)
-            return Math.Min(MaxLevel, currentLevel + 1);
+            return Math.Min(RetiredLevel, currentLevel + 1);
         else
             return Math.Max(MinLevel, currentLevel - 1);
     }

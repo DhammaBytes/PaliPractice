@@ -15,6 +15,12 @@ namespace PaliPractice.Models.Inflection;
 public class Declension
 {
     /// <summary>
+    /// Divisor to extract lemmaId from formId: formId / GrammarDivisor = lemmaId.
+    /// FormId format: LLLLL_CGNE (5 digits lemma + 4 digits grammar).
+    /// </summary>
+    public const int GrammarDivisor = 10_000;
+
+    /// <summary>
     /// Stable ID for the lemma group (10001-69999 for nouns).
     /// </summary>
     public int LemmaId { get; init; }

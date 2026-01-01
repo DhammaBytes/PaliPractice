@@ -12,49 +12,54 @@ namespace PaliPractice.Services.Practice;
 record FormMasteryData(long FormId, int MasteryLevel, DateTime NextDueUtc);
 
 /// <summary>
-/// Groups forms by grammatical category for balanced selection.
-/// Categories are NounPattern for nouns, (Tense, Voice) for verbs.
+/// Builds a practice queue using a prebuilt slot-based approach:
 ///
-/// Note: DueForms is used only for initial grouping. During queue building,
-/// scoredByCategory is the authoritative source for remaining reviews.
-/// </summary>
-partial record CategoryForms(string Key, List<FormMasteryData> DueForms, List<long> UntriedForms)
-{
-    /// <summary>Initial total forms in this category. Stale after queue building starts.</summary>
-    public int TotalCount => DueForms.Count + UntriedForms.Count;
-}
-
-/// <summary>
-/// Builds a practice queue using a three-bucket SRS approach:
+/// 1. SLOT PLAN: Pre-determine new vs review pattern (1 new every 4-6 reviews).
+/// 2. LEVEL BUCKETS: Rotate through mastery levels (1-2, 3-4, 5-6, 7-8, 9-10)
+///    to mix difficulty instead of always showing hardest items first.
+/// 3. SPACING CONSTRAINTS: Enforce lemma, combo, and category gaps with graceful degradation.
 ///
-/// 1. DUE REVIEWS: Forms whose cooldown has expired (LastPracticedUtc + cooldown &lt; now).
-///    Prioritized by: overdue time, low mastery level, and difficult combo patterns.
+/// The queue is deterministically built for reproducibility (seeded by date + type).
+/// No post-shuffle needed - spacing is handled during selection.
 ///
-/// 2. NEW FORMS: Forms never practiced before, introduced gradually (1 per 4-6 reviews).
-///    Randomized to provide variety and prevent pattern memorization.
+/// SPACING AXES (in priority order for fallback):
+/// - Lemma: Same word shouldn't repeat within N items (prevents "deva, deva, deva...")
+/// - Combo: Same grammatical combination shouldn't repeat (prevents "nom_sg, nom_sg...")
+/// - Category: Same inflection pattern shouldn't dominate (prevents "all -a masc" or "all Class I verbs")
 ///
-/// 3. DIFFICULT COMBOS: Meta-bucket boost for grammatical combinations the user struggles with.
-///    E.g., if user often fails "gen_masc_pl", those forms get priority boost.
-///
-/// The queue is shuffled with priority bias to avoid predictable ordering while
-/// ensuring high-priority items appear early. Pattern: H-M-L-H-M-L where available.
+/// FALLBACK CHAIN: When ideal spacing can't be achieved, constraints are relaxed in order:
+/// all three → lemma+combo → combo only → lemma only → any
+/// This ensures small pools (e.g., 2 lemmas, 1 combo) still produce valid queues.
 /// </summary>
 public class PracticeQueueBuilder : IPracticeQueueBuilder
 {
     readonly UserDataRepository _userData;
     readonly NounRepository _nouns;
     readonly VerbRepository _verbs;
-    readonly Random _random = new();
+    Random _random = new();  // Re-seeded per build for determinism
 
     // Introduce new forms gradually: 1 new form every 4-6 reviews.
-    // Randomized interval prevents predictable patterns.
+    // Variable interval prevents predictable patterns (vs fixed "every 5th").
     const int NewFormIntervalMin = 4;
     const int NewFormIntervalMax = 6;
 
-    // Minimum representation floor for category balancing.
-    // Boosts rare patterns (e.g., Masc-ū at 0.3%) toward ~3% selection probability.
-    // Note: actual probability depends on category count due to normalization.
-    const double MinCategoryFloor = 0.03;
+    // Ideal spacing gaps (scaled down when pool is small via EffectiveGap).
+    // These values assume a reasonably diverse pool; with 2 lemmas, gap becomes 1 (ABAB pattern).
+    const int IdealLemmaGap = 8;   // Don't show same word within 8 items
+    const int IdealComboGap = 6;   // Don't show same case/number or tense/person within 6 items
+    const int IdealCategoryGap = 3; // Don't show same inflection pattern within 3 items
+
+    // Level buckets for round-robin difficulty mixing.
+    // Instead of always showing struggling items first (which is discouraging),
+    // we rotate through buckets to interleave easy wins with challenging items.
+    static readonly (int Min, int Max)[] LevelBuckets =
+    [
+        (1, 2),   // Struggling - items user finds difficult
+        (3, 4),   // Learning - includes level 4, the default for new items
+        (5, 6),   // Developing - gaining confidence
+        (7, 8),   // Strong - approaching mastery
+        (9, 10),  // Practiced - near retirement (level 11 = retired forever)
+    ];
 
     public PracticeQueueBuilder(IDatabaseService db)
     {
@@ -67,8 +72,17 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
     {
         System.Diagnostics.Debug.WriteLine($"[Queue] BuildQueue({type}, {count})");
 
+        // Deterministic seeding: same day + type = same queue order.
+        // This ensures reproducibility for testing and prevents queue "churn" during a session.
+        // We use a custom hash because HashCode.Combine is not stable across processes/restarts.
+        // The 397 multiplier is a common prime that provides good distribution.
+        var today = DateTime.UtcNow.Date;
+        var daysSinceEpoch = (int)(today - DateTime.UnixEpoch).TotalDays;
+        var seed = unchecked(daysSinceEpoch * 397 ^ (int)type);
+        _random = new Random(seed);
+        System.Diagnostics.Debug.WriteLine($"[Queue] Seeded with {seed} (date={DateTime.UtcNow.Date:yyyy-MM-dd}, type={type})");
+
         var queue = new List<PracticeItem>();
-        var now = DateTime.UtcNow;  // Capture once for deterministic behavior within this build
 
         // 1. Get all eligible form IDs (corpus-attested, matching settings)
         var eligibleFormIds = GetEligibleFormIds(type);
@@ -82,181 +96,506 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
             return queue;
         }
 
-        // 2. Get practiced form IDs (type-specific)
+        // 2. Get practiced form IDs and categorize
         var practicedIds = type == PracticeType.Declension
             ? _userData.GetPracticedNounFormIds()
             : _userData.GetPracticedVerbFormIds();
 
-        // 3. Categorize into buckets (type-specific)
         var dueForReview = GetDueForms(type, eligibleSet);
-
         var untriedIds = eligibleFormIds
             .Where(id => !practicedIds.Contains(id))
             .ToList();
 
-        // 4. Get difficulty weights for prioritization (type-specific)
-        var hardCombos = GetHardestCombinations(type);
+        // Shuffle untried for variety (deterministic via seeded random)
+        ShuffleList(untriedIds);
 
-        // 5. Group forms by category for balanced selection
-        var categories = GroupFormsByCategory(type, dueForReview, untriedIds);
+        System.Diagnostics.Debug.WriteLine($"[Queue] Due: {dueForReview.Count}, Untried: {untriedIds.Count}");
 
-        System.Diagnostics.Debug.WriteLine($"[Queue] Categories: {categories.Count} " +
-            $"({string.Join(", ", categories.Select(c => $"{c.Key}:{c.Value.TotalCount}"))})");
+        // 3. Build slot plan: determines new vs review for each position
+        var slotPlan = BuildSlotPlan(count, untriedIds.Count, dueForReview.Count);
+        var newSlotCount = slotPlan.Count(isNew => isNew);
+        var reviewSlotCount = slotPlan.Count - newSlotCount;
+        System.Diagnostics.Debug.WriteLine($"[Queue] Slot plan: {newSlotCount} new, {reviewSlotCount} review");
 
-        // 6. Score due forms within each category by priority
-        var scoredByCategory = new Dictionary<string, List<(FormMasteryData Form, double Priority)>>();
-        foreach (var (key, cat) in categories)
+        // 4. Group due forms by level bucket, sorted by overdue time within each bucket.
+        // Sorting by NextDueUtc ascending means most overdue items come first within their bucket.
+        // This preserves urgency: if you have 3 items in bucket [1-2], the one due 5 days ago
+        // gets picked before the one due yesterday, even though we rotate through buckets.
+        var levelBuckets = GroupByLevelBucket(dueForReview);
+        foreach (var bucket in levelBuckets)
+            bucket.Sort((a, b) => a.NextDueUtc.CompareTo(b.NextDueUtc));
+
+        LogLevelBuckets(levelBuckets);
+
+        // 5. Calculate effective gaps based on pool diversity.
+        // We use union of due + untried (not sum) to get true unique counts.
+        // Category cache is built here because GetCategoryKey requires GetLemma() DB lookup.
+        // Cache is keyed by lemmaId since all forms of a lemma share the same pattern.
+        var categoryCache = new Dictionary<int, string>();
+        var uniqueLemmas = dueForReview.Select(f => ExtractLemmaId(f.FormId, type))
+            .Concat(untriedIds.Select(id => ExtractLemmaId(id, type)))
+            .Distinct()
+            .Count();
+        var uniqueCombos = dueForReview.Select(f => GetComboKey(f.FormId, type))
+            .Concat(untriedIds.Select(id => GetComboKey(id, type)))
+            .Distinct()
+            .Count();
+        var uniqueCategories = dueForReview.Select(f => GetCachedCategoryKey(ExtractLemmaId(f.FormId, type), type, categoryCache))
+            .Concat(untriedIds.Select(id => GetCachedCategoryKey(ExtractLemmaId(id, type), type, categoryCache)))
+            .Distinct()
+            .Count();
+
+        var lemmaGap = EffectiveGap(IdealLemmaGap, uniqueLemmas);
+        var comboGap = EffectiveGap(IdealComboGap, uniqueCombos);
+        var categoryGap = EffectiveGap(IdealCategoryGap, uniqueCategories);
+        System.Diagnostics.Debug.WriteLine($"[Queue] Gaps: lemma={lemmaGap}, combo={comboGap}, category={categoryGap}");
+
+        // 6. Track last-seen positions for spacing constraints
+        var lastLemmaPos = new Dictionary<int, int>();
+        var lastComboPos = new Dictionary<string, int>();
+        var lastCategoryPos = new Dictionary<string, int>();
+
+        // 7. Fill slots according to plan
+        int newIdx = 0;
+        int bucketRound = 0;  // Which level bucket to try next
+        var bucketIndices = new int[LevelBuckets.Length];  // Current index in each bucket
+
+        for (int pos = 0; pos < slotPlan.Count; pos++)
         {
-            scoredByCategory[key] = cat.DueForms
-                .Select(f => (Form: f, Priority: CalculatePriority(f, hardCombos, type, now)))
-                .OrderByDescending(x => x.Priority)
-                .ToList();
-        }
+            bool isNewSlot = slotPlan[pos];
 
-        // 7. Build queue with three-stage selection:
-        //    Stage 1: Decide globally whether to add new vs review (enforced interval)
-        //    Stage 2: Select category from those that can satisfy the decision (weighted by relevant count + 3% floor)
-        //    Stage 3: Select form from that category (SRS priority for reviews, random for new)
-        //
-        // Anti-repetition: Track last lemma AND last combo to avoid consecutive same-word or same-grammar forms.
-        // IMPORTANT: Skipped items are NOT discarded - they remain in the pool for future selection.
-        int reviewsSinceLastNew = 0;
-        int nextNewInterval = _random.Next(NewFormIntervalMin, NewFormIntervalMax + 1);
-        int lastLemmaId = 0;
-        string lastComboKey = "";
+            PracticeItem? item = null;
 
-        // Helper: count total available forms across all categories
-        int TotalNewAvailable() => categories.Values.Sum(c => c.UntriedForms.Count);
-        int TotalReviewsAvailable() => scoredByCategory.Values.Sum(list => list.Count);
-
-        while (queue.Count < count)
-        {
-            var totalNew = TotalNewAvailable();
-            var totalReviews = TotalReviewsAvailable();
-
-            if (totalNew == 0 && totalReviews == 0)
+            if (isNewSlot && newIdx < untriedIds.Count)
             {
-                System.Diagnostics.Debug.WriteLine($"[Queue] No more forms available (new={totalNew}, reviews={totalReviews})");
+                // Fill new slot
+                item = TakeNewForm(untriedIds, ref newIdx, type, pos, lastLemmaPos, lastComboPos, lastCategoryPos, categoryCache, lemmaGap, comboGap, categoryGap);
+            }
+            else if (!isNewSlot || newIdx >= untriedIds.Count)
+            {
+                // Fill review slot (or fallback if no new forms left)
+                item = TakeReviewForm(levelBuckets, bucketIndices, ref bucketRound, type, pos, lastLemmaPos, lastComboPos, lastCategoryPos, categoryCache, lemmaGap, comboGap, categoryGap);
+            }
+
+            if (item == null)
+            {
+                // Try the other type if primary failed
+                if (isNewSlot)
+                    item = TakeReviewForm(levelBuckets, bucketIndices, ref bucketRound, type, pos, lastLemmaPos, lastComboPos, lastCategoryPos, categoryCache, lemmaGap, comboGap, categoryGap);
+                else if (newIdx < untriedIds.Count)
+                    item = TakeNewForm(untriedIds, ref newIdx, type, pos, lastLemmaPos, lastComboPos, lastCategoryPos, categoryCache, lemmaGap, comboGap, categoryGap);
+            }
+
+            if (item == null)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Queue] No more forms at position {pos}");
                 break;
             }
 
-            // Stage 1: Decide globally - new vs review (counter-based, not modulo)
-            bool wantNew = ShouldAddNew(reviewsSinceLastNew, totalNew, nextNewInterval);
-            System.Diagnostics.Debug.WriteLine($"[Queue #{queue.Count + 1}] Decision: {(wantNew ? "NEW" : "REVIEW")} " +
-                $"(sinceLastNew={reviewsSinceLastNew}, interval={nextNewInterval}, totalNew={totalNew}, totalReviews={totalReviews})");
+            queue.Add(item);
 
-            // Stage 2: Select category that can satisfy the decision
-            // Weight by RELEVANT count: UntriedForms.Count for new, scoredByCategory list size for reviews
-            string selectedKey;
-            if (wantNew && totalNew > 0)
-            {
-                // Select from categories with new forms, weighted by untried count
-                var withNew = categories
-                    .Where(kvp => kvp.Value.UntriedForms.Count > 0)
-                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-                selectedKey = SelectCategory(withNew, c => c.UntriedForms.Count);
-            }
-            else if (totalReviews > 0)
-            {
-                // Select from categories with reviews, weighted by remaining review count
-                var withReviews = categories
-                    .Where(kvp => scoredByCategory[kvp.Key].Count > 0)
-                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-                selectedKey = SelectCategory(withReviews, c => scoredByCategory[c.Key].Count);
-            }
-            else if (totalNew > 0)
-            {
-                // No reviews left, fall back to new forms
-                var withNew = categories
-                    .Where(kvp => kvp.Value.UntriedForms.Count > 0)
-                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-                selectedKey = SelectCategory(withNew, c => c.UntriedForms.Count);
-                wantNew = true;
-            }
-            else
-            {
-                break;
-            }
-
-            if (string.IsNullOrEmpty(selectedKey))
-            {
-                System.Diagnostics.Debug.WriteLine($"[Queue] No category selected, breaking");
-                break;
-            }
-
-            var cat = categories[selectedKey];
-            System.Diagnostics.Debug.WriteLine($"[Queue #{queue.Count + 1}] Category: {selectedKey} " +
-                $"(due={scoredByCategory[selectedKey].Count}, new={cat.UntriedForms.Count})");
-
-            // Stage 3: Select form from category with anti-repetition
-            if (wantNew && cat.UntriedForms.Count > 0)
-            {
-                // Pick random new form with anti-repetition preference
-                var newFormId = SelectNewForm(cat.UntriedForms, type, lastLemmaId, lastComboKey);
-                cat.UntriedForms.Remove(newFormId);
-
-                lastLemmaId = ExtractLemmaId(newFormId, type);
-                lastComboKey = GetComboKey(newFormId, type);
-                queue.Add(new PracticeItem(
-                    newFormId,
-                    type,
-                    lastLemmaId,
-                    PracticeItemSource.NewForm,
-                    Priority: 0.5,  // Medium tier - new forms appear early but don't dominate
-                    MasteryLevel: 1
-                ));
-                reviewsSinceLastNew = 0;
-                nextNewInterval = _random.Next(NewFormIntervalMin, NewFormIntervalMax + 1);
-                System.Diagnostics.Debug.WriteLine($"[Queue #{queue.Count}] → NEW form {newFormId} (lemma={lastLemmaId}, combo={lastComboKey}), " +
-                    $"next new in {nextNewInterval} reviews");
-            }
-            else
-            {
-                // Pick review with anti-repetition (items NOT selected remain in list for later)
-                var scoredDue = scoredByCategory[selectedKey];
-                var (form, priority, selectedIdx) = SelectReview(scoredDue, type, lastLemmaId, lastComboKey);
-
-                // Remove ONLY the selected item - skipped items stay available
-                scoredDue.RemoveAt(selectedIdx);
-
-                // Label as DifficultCombo only if this form's grammatical combo is actually in hardCombos
-                var comboKey = GetComboKey(form.FormId, type);
-                var source = hardCombos.ContainsKey(comboKey)
-                    ? PracticeItemSource.DifficultCombo
-                    : PracticeItemSource.DueForReview;
-
-                lastLemmaId = ExtractLemmaId(form.FormId, type);
-                lastComboKey = comboKey;
-                queue.Add(new PracticeItem(
-                    form.FormId,
-                    type,
-                    lastLemmaId,
-                    source,
-                    priority,
-                    form.MasteryLevel
-                ));
-                reviewsSinceLastNew++;
-                System.Diagnostics.Debug.WriteLine($"[Queue #{queue.Count}] → REVIEW form {form.FormId} (lemma={lastLemmaId}, combo={lastComboKey}, " +
-                    $"mastery={form.MasteryLevel}, priority={priority:F2}, source={source})");
-            }
+            // Update tracking for all three spacing axes (use cached category)
+            lastLemmaPos[item.LemmaId] = pos;
+            lastComboPos[GetComboKey(item.FormId, type)] = pos;
+            lastCategoryPos[GetCachedCategoryKey(item.LemmaId, type, categoryCache)] = pos;
         }
 
         LogQueueSummary(queue, type);
+        return queue;
+    }
 
-        // 8. Shuffle with priority bias to avoid predictable ordering
-        return ShuffleWithPriorityBias(queue);
+    #region Slot Planning
+
+    /// <summary>
+    /// Builds a deterministic slot plan: true = new form, false = review.
+    /// Places new forms every 4-6 reviews (variable but deterministic via seeded random).
+    /// </summary>
+    List<bool> BuildSlotPlan(int count, int totalNew, int totalReviews)
+    {
+        var slots = new List<bool>(count);
+        if (totalNew == 0 && totalReviews == 0)
+            return slots;
+
+        int newPlaced = 0;
+        int reviewPlaced = 0;
+        int reviewsSinceNew = 0;
+        int nextInterval = _random.Next(NewFormIntervalMin, NewFormIntervalMax + 1);
+
+        for (int i = 0; i < count; i++)
+        {
+            bool placeNew = false;
+
+            if (totalReviews == 0 || reviewPlaced >= totalReviews)
+            {
+                // No reviews left, must use new
+                placeNew = newPlaced < totalNew;
+            }
+            else if (totalNew == 0 || newPlaced >= totalNew)
+            {
+                // No new left, must use review
+                placeNew = false;
+            }
+            else
+            {
+                // Both available: use interval logic
+                placeNew = reviewsSinceNew >= nextInterval;
+            }
+
+            slots.Add(placeNew);
+
+            if (placeNew)
+            {
+                newPlaced++;
+                reviewsSinceNew = 0;
+                nextInterval = _random.Next(NewFormIntervalMin, NewFormIntervalMax + 1);
+            }
+            else
+            {
+                reviewPlaced++;
+                reviewsSinceNew++;
+            }
+
+            // Stop if we've exhausted both pools
+            if (newPlaced >= totalNew && reviewPlaced >= totalReviews)
+                break;
+        }
+
+        return slots;
+    }
+
+    #endregion
+
+    #region Level Bucket Management
+
+    /// <summary>
+    /// Groups due forms into 5 level buckets for round-robin selection.
+    /// </summary>
+    static List<List<FormMasteryData>> GroupByLevelBucket(List<FormMasteryData> dueForms)
+    {
+        var buckets = new List<List<FormMasteryData>>(LevelBuckets.Length);
+        for (int i = 0; i < LevelBuckets.Length; i++)
+            buckets.Add([]);
+
+        foreach (var form in dueForms)
+        {
+            for (int i = 0; i < LevelBuckets.Length; i++)
+            {
+                var (min, max) = LevelBuckets[i];
+                if (form.MasteryLevel >= min && form.MasteryLevel <= max)
+                {
+                    buckets[i].Add(form);
+                    break;
+                }
+            }
+        }
+
+        return buckets;
     }
 
     /// <summary>
-    /// Decides whether to add a new form based on reviews since last new.
-    /// Uses counter-based logic (not modulo) to ensure consistent new form pacing.
+    /// Takes next review form using round-robin through level buckets.
+    ///
+    /// ROUND-ROBIN RATIONALE: Instead of draining all struggling items (L1-2) first,
+    /// we rotate through buckets: L1-2 → L3-4 → L5-6 → L7-8 → L9-10 → L1-2...
+    /// This interleaves difficulty levels, providing "easy wins" between challenges.
+    ///
+    /// URGENCY PRESERVATION: Within each bucket, items are sorted by NextDueUtc (most
+    /// overdue first). So we get diversity across levels while still prioritizing
+    /// the most urgent items within each level group.
+    ///
+    /// SWAP TECHNIQUE: When FindFormWithConstraints picks an item at index N > startIdx
+    /// (skipping items that violate spacing), we swap it to startIdx and advance.
+    /// This avoids O(n) removal while maintaining bucket order for remaining items.
     /// </summary>
-    bool ShouldAddNew(int reviewsSinceLastNew, int availableNew, int interval)
+    PracticeItem? TakeReviewForm(
+        List<List<FormMasteryData>> buckets,
+        int[] bucketIndices,
+        ref int bucketRound,
+        PracticeType type,
+        int position,
+        Dictionary<int, int> lastLemmaPos,
+        Dictionary<string, int> lastComboPos,
+        Dictionary<string, int> lastCategoryPos,
+        Dictionary<int, string> categoryCache,
+        int lemmaGap,
+        int comboGap,
+        int categoryGap)
     {
-        if (availableNew == 0) return false;
-        // Add a new form when we've done [interval] reviews since the last new
-        return reviewsSinceLastNew >= interval;
+        // Try each bucket in round-robin order, starting from bucketRound
+        for (int attempt = 0; attempt < LevelBuckets.Length; attempt++)
+        {
+            int bucketIdx = (bucketRound + attempt) % LevelBuckets.Length;
+            var bucket = buckets[bucketIdx];
+            int startIdx = bucketIndices[bucketIdx];
+
+            if (startIdx >= bucket.Count)
+                continue;  // Bucket exhausted, try next
+
+            // Try to find a form satisfying spacing constraints
+            var (form, foundIdx) = FindFormWithConstraints(
+                bucket, startIdx, type, position, lastLemmaPos, lastComboPos, lastCategoryPos, categoryCache, lemmaGap, comboGap, categoryGap);
+
+            if (form != null)
+            {
+                // Swap selected item to the "consumed" position and advance the index.
+                // This marks the item as used without removing it from the list.
+                if (foundIdx != startIdx)
+                    (bucket[startIdx], bucket[foundIdx]) = (bucket[foundIdx], bucket[startIdx]);
+                bucketIndices[bucketIdx]++;
+
+                // Advance round-robin so next call starts with the following bucket
+                bucketRound = (bucketIdx + 1) % LevelBuckets.Length;
+
+                return new PracticeItem(
+                    form.FormId,
+                    type,
+                    ExtractLemmaId(form.FormId, type),
+                    PracticeItemSource.DueForReview,
+                    Priority: 0.5,  // Not used for ordering; bucket rotation handles difficulty mixing
+                    form.MasteryLevel
+                );
+            }
+        }
+
+        return null;  // All buckets exhausted
     }
+
+    /// <summary>
+    /// Finds a form satisfying spacing constraints using a 5-pass fallback chain.
+    ///
+    /// The fallback order is designed for graceful degradation:
+    /// - Category is dropped first (least jarring to repeat a pattern group)
+    /// - Combo-only before lemma-only handles beginner settings with few lemmas
+    ///   (e.g., practicing just 2 words: combo diversity matters more than lemma diversity)
+    /// - Final pass accepts anything to ensure we always return a form if available
+    ///
+    /// WHY THIS ORDER:
+    /// Consider a beginner practicing only "deva" and "dhamma" (2 lemmas, 16 combos).
+    /// - lemmaGap becomes 1 (ABAB pattern) via EffectiveGap
+    /// - comboGap stays at 6 (enough combos)
+    /// If we prioritized lemma-only over combo-only, we'd get "nom_sg, nom_sg, nom_sg..."
+    /// By checking combo-only first, we maintain grammatical variety even when lemma pool is tiny.
+    /// </summary>
+    (FormMasteryData? Form, int Index) FindFormWithConstraints(
+        List<FormMasteryData> forms,
+        int startIdx,
+        PracticeType type,
+        int position,
+        Dictionary<int, int> lastLemmaPos,
+        Dictionary<string, int> lastComboPos,
+        Dictionary<string, int> lastCategoryPos,
+        Dictionary<int, string> categoryCache,
+        int lemmaGap,
+        int comboGap,
+        int categoryGap)
+    {
+        // Scan up to 100 items to find one satisfying constraints.
+        // 100 is generous enough to find good candidates without being a performance issue.
+        // In practice, pass 1 or 2 usually succeeds within the first few items.
+        int remaining = forms.Count - startIdx;
+        int scanLimit = Math.Min(100, remaining);
+        int endIdx = startIdx + scanLimit;
+
+        // Gap check helpers: return true if constraint is satisfied.
+        // "Not in dictionary" means never seen → always OK.
+        // "In dictionary" means check if enough positions have passed since last use.
+        bool LemmaOk(int lemmaId) =>
+            !lastLemmaPos.TryGetValue(lemmaId, out var lp) || position - lp >= lemmaGap;
+        bool ComboOk(string comboKey) =>
+            !lastComboPos.TryGetValue(comboKey, out var cp) || position - cp >= comboGap;
+        bool CategoryOk(string categoryKey) =>
+            !lastCategoryPos.TryGetValue(categoryKey, out var cat) || position - cat >= categoryGap;
+
+        // Pass 1: Ideal case - all three constraints satisfied
+        for (int i = startIdx; i < endIdx; i++)
+        {
+            var form = forms[i];
+            var lemmaId = ExtractLemmaId(form.FormId, type);
+            var comboKey = GetComboKey(form.FormId, type);
+            var categoryKey = GetCachedCategoryKey(lemmaId, type, categoryCache);
+            if (LemmaOk(lemmaId) && ComboOk(comboKey) && CategoryOk(categoryKey))
+                return (form, i);
+        }
+
+        // Pass 2: Drop category (same pattern group is less jarring than same word/combo)
+        for (int i = startIdx; i < endIdx; i++)
+        {
+            var form = forms[i];
+            var lemmaId = ExtractLemmaId(form.FormId, type);
+            var comboKey = GetComboKey(form.FormId, type);
+            if (LemmaOk(lemmaId) && ComboOk(comboKey))
+                return (form, i);
+        }
+
+        // Pass 3: Combo only - important for small lemma pools (e.g., beginner with 2 words)
+        // When lemmaGap is 0/1, combo diversity becomes the primary differentiation axis
+        for (int i = startIdx; i < endIdx; i++)
+        {
+            var form = forms[i];
+            var comboKey = GetComboKey(form.FormId, type);
+            if (ComboOk(comboKey))
+                return (form, i);
+        }
+
+        // Pass 4: Lemma only - fallback when even combo diversity can't be achieved
+        for (int i = startIdx; i < endIdx; i++)
+        {
+            var form = forms[i];
+            var lemmaId = ExtractLemmaId(form.FormId, type);
+            if (LemmaOk(lemmaId))
+                return (form, i);
+        }
+
+        // Pass 5: Any
+        if (startIdx < forms.Count)
+            return (forms[startIdx], startIdx);
+
+        return (null, -1);
+    }
+
+    #endregion
+
+    #region New Form Selection
+
+    /// <summary>
+    /// Takes next new form with spacing constraints.
+    /// Uses same fallback chain as FindFormWithConstraints.
+    /// </summary>
+    PracticeItem? TakeNewForm(
+        List<long> untried,
+        ref int idx,
+        PracticeType type,
+        int position,
+        Dictionary<int, int> lastLemmaPos,
+        Dictionary<string, int> lastComboPos,
+        Dictionary<string, int> lastCategoryPos,
+        Dictionary<int, string> categoryCache,
+        int lemmaGap,
+        int comboGap,
+        int categoryGap)
+    {
+        if (idx >= untried.Count)
+            return null;
+
+        // Scan up to 100 items to find one satisfying constraints
+        int remaining = untried.Count - idx;
+        int scanLimit = Math.Min(100, remaining);
+        int endIdx = idx + scanLimit;
+
+        bool LemmaOk(int lemmaId) =>
+            !lastLemmaPos.TryGetValue(lemmaId, out var lp) || position - lp >= lemmaGap;
+        bool ComboOk(string comboKey) =>
+            !lastComboPos.TryGetValue(comboKey, out var cp) || position - cp >= comboGap;
+        bool CategoryOk(string categoryKey) =>
+            !lastCategoryPos.TryGetValue(categoryKey, out var cat) || position - cat >= categoryGap;
+
+        // Pass 1: All three constraints
+        for (int i = idx; i < endIdx; i++)
+        {
+            var formId = untried[i];
+            var lemmaId = ExtractLemmaId(formId, type);
+            var comboKey = GetComboKey(formId, type);
+            var categoryKey = GetCachedCategoryKey(lemmaId, type, categoryCache);
+            if (LemmaOk(lemmaId) && ComboOk(comboKey) && CategoryOk(categoryKey))
+            {
+                if (i != idx)
+                    (untried[idx], untried[i]) = (untried[i], untried[idx]);
+                idx++;
+                return new PracticeItem(formId, type, lemmaId, PracticeItemSource.NewForm, 0.5, MasteryLevel: 1);
+            }
+        }
+
+        // Pass 2: Lemma + combo (drop category)
+        for (int i = idx; i < endIdx; i++)
+        {
+            var formId = untried[i];
+            var lemmaId = ExtractLemmaId(formId, type);
+            var comboKey = GetComboKey(formId, type);
+            if (LemmaOk(lemmaId) && ComboOk(comboKey))
+            {
+                if (i != idx)
+                    (untried[idx], untried[i]) = (untried[i], untried[idx]);
+                idx++;
+                return new PracticeItem(formId, type, lemmaId, PracticeItemSource.NewForm, 0.5, MasteryLevel: 1);
+            }
+        }
+
+        // Pass 3: Combo only (for small lemma pools)
+        for (int i = idx; i < endIdx; i++)
+        {
+            var formId = untried[i];
+            var lemmaId = ExtractLemmaId(formId, type);
+            var comboKey = GetComboKey(formId, type);
+            if (ComboOk(comboKey))
+            {
+                if (i != idx)
+                    (untried[idx], untried[i]) = (untried[i], untried[idx]);
+                idx++;
+                return new PracticeItem(formId, type, lemmaId, PracticeItemSource.NewForm, 0.5, MasteryLevel: 1);
+            }
+        }
+
+        // Pass 4: Lemma only
+        for (int i = idx; i < endIdx; i++)
+        {
+            var formId = untried[i];
+            var lemmaId = ExtractLemmaId(formId, type);
+            if (LemmaOk(lemmaId))
+            {
+                if (i != idx)
+                    (untried[idx], untried[i]) = (untried[i], untried[idx]);
+                idx++;
+                return new PracticeItem(formId, type, lemmaId, PracticeItemSource.NewForm, 0.5, MasteryLevel: 1);
+            }
+        }
+
+        // Pass 5: Any
+        if (idx < untried.Count)
+        {
+            var formId = untried[idx];
+            var lemmaId = ExtractLemmaId(formId, type);
+            idx++;
+            return new PracticeItem(formId, type, lemmaId, PracticeItemSource.NewForm, 0.5, MasteryLevel: 1);
+        }
+
+        return null;
+    }
+
+    #endregion
+
+    #region Helpers
+
+    /// <summary>
+    /// Calculates effective gap scaled to pool size.
+    ///
+    /// You can't space items farther apart than the pool allows. Examples:
+    /// - 1 unique item → gap=0 (can't avoid repeating the only item)
+    /// - 2 unique items → gap=1 achieves ABAB pattern (best possible)
+    /// - 3 unique items → gap=2 achieves ABCABC pattern
+    /// - 10+ unique items → can use full idealGap
+    ///
+    /// The formula uniqueCount-1 represents the maximum gap achievable:
+    /// with N items, you can have at most N-1 different items between repetitions.
+    /// </summary>
+    static int EffectiveGap(int idealGap, int uniqueCount)
+    {
+        if (uniqueCount <= 1) return 0;  // No spacing possible with 0 or 1 items
+        return Math.Min(idealGap, uniqueCount - 1);
+    }
+
+    /// <summary>
+    /// Fisher-Yates shuffle using instance random (deterministic when seeded).
+    /// </summary>
+    void ShuffleList<T>(List<T> list)
+    {
+        for (int i = list.Count - 1; i > 0; i--)
+        {
+            int j = _random.Next(i + 1);
+            (list[i], list[j]) = (list[j], list[i]);
+        }
+    }
+
+    #endregion
 
     /// <summary>
     /// Gets due forms for review, filtered by eligible set.
@@ -278,59 +617,6 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                 .Select(f => new FormMasteryData(f.FormId, f.MasteryLevel, f.NextDueUtc))
                 .ToList();
         }
-    }
-
-    /// <summary>
-    /// Gets hardest combinations as a lookup dictionary.
-    /// Uses type-specific repository methods.
-    /// </summary>
-    Dictionary<string, double> GetHardestCombinations(PracticeType type)
-    {
-        if (type == PracticeType.Declension)
-        {
-            return _userData.GetHardestNounCombinations(limit: 20)
-                .ToDictionary(c => c.ComboKey, c => c.DifficultyScore);
-        }
-        else
-        {
-            return _userData.GetHardestVerbCombinations(limit: 20)
-                .ToDictionary(c => c.ComboKey, c => c.DifficultyScore);
-        }
-    }
-
-    /// <summary>
-    /// Calculates a 0.0-1.0 priority score for a due form. Higher = more urgent.
-    ///
-    /// Factors (weighted to sum to ~1.0 max):
-    /// - Overdue time:  0.0-0.3 (3+ days overdue = max)
-    /// - Low mastery:   0.0-0.45 (level 1 = 0.45, level 10 = 0.0)
-    /// - Hard combo:    0.0-0.3 (boost if this grammatical combo is difficult)
-    ///
-    /// Example: A level-2 form that's 2 days overdue in a hard combo:
-    ///   0.2 (overdue) + 0.4 (low mastery) + 0.2 (hard combo) = 0.8
-    /// </summary>
-    static double CalculatePriority(FormMasteryData form, Dictionary<string, double> hardCombos, PracticeType type, DateTime now)
-    {
-        double priority = 0.0;
-
-        // Factor 1: Overdue time (more overdue = higher priority)
-        // 0.1 per day overdue, capped at 0.3 (3+ days)
-        var overdueDays = (now - form.NextDueUtc).TotalDays;
-        priority += Math.Min(0.3, Math.Max(0, overdueDays) * 0.1);
-
-        // Factor 2: Low mastery level (struggling = higher priority)
-        // Level 1 → 0.45, Level 10 → 0.0
-        priority += (10 - form.MasteryLevel) * 0.05;
-
-        // Factor 3: Combination difficulty boost
-        // If user struggles with this grammatical combo (e.g., "gen_masc_pl"), boost priority
-        var comboKey = GetComboKey(form.FormId, type);
-        if (hardCombos.TryGetValue(comboKey, out var difficulty))
-        {
-            priority += difficulty * 0.3;
-        }
-
-        return Math.Min(1.0, priority);
     }
 
     public List<long> GetEligibleFormIds(PracticeType type)
@@ -504,17 +790,17 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
     /// <summary>
     /// Extracts lemmaId from a packed formId by removing the trailing grammar digits.
+    /// Uses the GrammarDivisor constants defined in Declension/Conjugation classes.
     /// </summary>
     static int ExtractLemmaId(long formId, PracticeType type)
     {
         // FormId is a packed integer: lemmaId in high digits, grammar slots in low digits.
-        // Declension: LLLLL_CGNX (5+4 digits) → divide by 10,000
-        // Conjugation: LLLLL_TPNRX (5+5 digits) → divide by 100,000
-        // Where L=lemma, C=case, G=gender, N=number, X=ending, T=tense, P=person, R=reflexive
+        // Declension: LLLLL_CGNX (5+4 digits) → divide by GrammarDivisor (10,000)
+        // Conjugation: LLLLL_TPNRX (5+5 digits) → divide by GrammarDivisor (100,000)
         return type switch
         {
-            PracticeType.Declension => (int)(formId / 10_000),
-            PracticeType.Conjugation => (int)(formId / 100_000),
+            PracticeType.Declension => (int)(formId / Declension.GrammarDivisor),
+            PracticeType.Conjugation => (int)(formId / Conjugation.GrammarDivisor),
             _ => 0
         };
     }
@@ -526,311 +812,97 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
             : Conjugation.ComboKeyFromId(formId);
     }
 
-    #region Category Balancing
+    /// <summary>
+    /// Gets the category key for a form ID with memoization.
+    ///
+    /// WHY CACHE: For nouns, GetCategoryKey calls _nouns.GetLemma() which does a DB lookup.
+    /// During queue building, we scan up to 100 forms per slot across 5 passes, so the same
+    /// lemmaId may be looked up dozens of times. Caching by lemmaId eliminates this overhead.
+    ///
+    /// WHY BY LEMMA: All forms of a noun share the same pattern (category), so we cache by
+    /// lemmaId rather than formId. This also means the cache is smaller and has better hit rates.
+    ///
+    /// Both nouns and verbs require GetLemma() DB lookups to retrieve their pattern.
+    /// </summary>
+    string GetCachedCategoryKey(int lemmaId, PracticeType type, Dictionary<int, string> cache)
+    {
+        if (cache.TryGetValue(lemmaId, out var cached))
+            return cached;
+
+        var key = GetCategoryKey(lemmaId, type);
+        cache[lemmaId] = key;
+        return key;
+    }
 
     /// <summary>
-    /// Gets the category key for a form ID.
-    /// - Nouns: NounPattern name (e.g., "AMasc", "ĀFem")
-    /// - Verbs: "Tense_Voice" (e.g., "Present_Active", "Future_Reflexive")
+    /// Gets the category key for a lemma (uncached - prefer GetCachedCategoryKey).
+    /// Category = inflection pattern, which is inherent to the lemma and determines endings.
+    /// - Nouns: NounPattern (e.g., "AMasc", "ĀFem")
+    /// - Verbs: VerbPattern (e.g., "Class1", "Irregular")
     /// </summary>
-    string GetCategoryKey(long formId, PracticeType type)
+    string GetCategoryKey(int lemmaId, PracticeType type)
     {
         if (type == PracticeType.Declension)
         {
-            var lemmaId = ExtractLemmaId(formId, type);
             var lemma = _nouns.GetLemma(lemmaId);
-            if (lemma == null) return "Unknown";
+            if (lemma == null)
+                throw new InvalidOperationException($"Noun lemma {lemmaId} not found in database");
 
             var noun = (Noun)lemma.Primary;
-            // Use parent base pattern for variants/irregulars to group them together
+            // Use parent base pattern for variants/irregulars to group them together.
+            // E.g., "a_masc_irregular" → "AMasc" so all -a masculine nouns cluster.
             var pattern = noun.Pattern.IsBase() ? noun.Pattern : noun.Pattern.ParentBase();
             return pattern.ToString();
         }
         else
         {
-            var parsed = Conjugation.ParseId(formId);
-            return $"{parsed.Tense}_{parsed.Voice}";
-        }
-    }
+            var lemma = _verbs.GetLemma(lemmaId);
+            if (lemma == null)
+                throw new InvalidOperationException($"Verb lemma {lemmaId} not found in database");
 
-    /// <summary>
-    /// Groups forms by grammatical category for balanced selection.
-    /// </summary>
-    Dictionary<string, CategoryForms> GroupFormsByCategory(
-        PracticeType type,
-        List<FormMasteryData> dueForms,
-        List<long> untriedIds)
-    {
-        var categories = new Dictionary<string, CategoryForms>();
-
-        // Group due forms by category
-        foreach (var form in dueForms)
-        {
-            var key = GetCategoryKey(form.FormId, type);
-            if (!categories.TryGetValue(key, out var cat))
-            {
-                cat = new CategoryForms(key, [], []);
-                categories[key] = cat;
-            }
-            cat.DueForms.Add(form);
-        }
-
-        // Group untried forms by category
-        foreach (var formId in untriedIds)
-        {
-            var key = GetCategoryKey(formId, type);
-            if (!categories.TryGetValue(key, out var cat))
-            {
-                cat = new CategoryForms(key, [], []);
-                categories[key] = cat;
-            }
-            cat.UntriedForms.Add(formId);
-        }
-
-        return categories;
-    }
-
-    /// <summary>
-    /// Selects a category using weighted random selection with minimum floor.
-    ///
-    /// Each category's weight = max(relevant count, floor weight).
-    /// Floor weight = 3% of total relevant forms, ensuring rare patterns appear regularly.
-    ///
-    /// The getWeight function extracts the relevant count for the selection stage:
-    /// - For new form selection: UntriedForms.Count
-    /// - For review selection: remaining reviews in scoredByCategory
-    /// </summary>
-    string SelectCategory(Dictionary<string, CategoryForms> categories, Func<CategoryForms, int> getWeight)
-    {
-        if (categories.Count == 0) return string.Empty;
-        if (categories.Count == 1) return categories.Keys.First();
-
-        var totalRelevant = categories.Values.Sum(getWeight);
-        // Use ceiling + min 1 to ensure floor is never 0 for small form counts
-        var floorWeight = Math.Max(1, (int)Math.Ceiling(totalRelevant * MinCategoryFloor));
-
-        // Build weighted list with floor, tracking which got boosted
-        var weights = new List<(string Key, int Weight, bool Boosted)>();
-        foreach (var (key, cat) in categories)
-        {
-            var natural = getWeight(cat);
-            if (natural == 0) continue;
-            var weight = Math.Max(natural, floorWeight);
-            weights.Add((key, weight, weight > natural));
-        }
-
-        if (weights.Count == 0) return string.Empty;
-
-        // Weighted random selection
-        var total = weights.Sum(w => w.Weight);
-        var roll = _random.Next(total);
-        var acc = 0;
-
-        string selected = weights.Last().Key;
-        foreach (var (key, weight, _) in weights)
-        {
-            acc += weight;
-            if (roll < acc)
-            {
-                selected = key;
-                break;
-            }
-        }
-
-        LogFloorBoost(weights, floorWeight, totalRelevant, selected);
-
-        return selected;
-    }
-
-    /// <summary>
-    /// Selects a new form with anti-repetition preference.
-    /// Prioritizes forms that differ in both lemma AND combo from previous.
-    /// Falls back gracefully: different-both → different-either → any.
-    /// </summary>
-    long SelectNewForm(List<long> untried, PracticeType type, int lastLemmaId, string lastComboKey)
-    {
-        // First try: different lemma AND different combo
-        var best = untried
-            .Where(id => ExtractLemmaId(id, type) != lastLemmaId && GetComboKey(id, type) != lastComboKey)
-            .ToList();
-        if (best.Count > 0)
-            return best[_random.Next(best.Count)];
-
-        // Second try: different lemma OR different combo
-        var good = untried
-            .Where(id => ExtractLemmaId(id, type) != lastLemmaId || GetComboKey(id, type) != lastComboKey)
-            .ToList();
-        if (good.Count > 0)
-            return good[_random.Next(good.Count)];
-
-        // Fallback: any
-        return untried[_random.Next(untried.Count)];
-    }
-
-    /// <summary>
-    /// Selects a review form with anti-repetition preference, maintaining priority order.
-    /// Returns (form, priority, index) - caller removes by index to preserve other items.
-    ///
-    /// IMPORTANT: Items not selected are NOT skipped - they remain available for later.
-    /// This fixes the original bug where advancing index would discard skipped items.
-    /// </summary>
-    (FormMasteryData Form, double Priority, int Index) SelectReview(
-        List<(FormMasteryData Form, double Priority)> scoredDue,
-        PracticeType type,
-        int lastLemmaId,
-        string lastComboKey)
-    {
-        // First try: find highest-priority item with different lemma AND different combo
-        for (int i = 0; i < scoredDue.Count; i++)
-        {
-            var (form, priority) = scoredDue[i];
-            var lemmaId = ExtractLemmaId(form.FormId, type);
-            var comboKey = GetComboKey(form.FormId, type);
-            if (lemmaId != lastLemmaId && comboKey != lastComboKey)
-                return (form, priority, i);
-        }
-
-        // Second try: different lemma OR different combo
-        for (int i = 0; i < scoredDue.Count; i++)
-        {
-            var (form, priority) = scoredDue[i];
-            var lemmaId = ExtractLemmaId(form.FormId, type);
-            var comboKey = GetComboKey(form.FormId, type);
-            if (lemmaId != lastLemmaId || comboKey != lastComboKey)
-                return (form, priority, i);
-        }
-
-        // Fallback: just take highest priority (first item)
-        return (scoredDue[0].Form, scoredDue[0].Priority, 0);
-    }
-
-    #endregion
-
-    /// <summary>
-    /// Shuffles the queue while maintaining priority ordering.
-    ///
-    /// Problem: Pure priority ordering is predictable and boring.
-    /// Solution: Divide into tiers, shuffle within each tier, then interleave.
-    ///
-    /// Tiers (based on priority score):
-    /// - High (0.7-1.0): Overdue/struggling forms that need immediate attention
-    /// - Medium (0.4-0.7): Regular reviews
-    /// - Low (0.0-0.4): Well-learned forms or new introductions
-    ///
-    /// Interleave pattern: H-M-L-H-M-L...
-    /// This ensures high-priority items dominate early positions while
-    /// mixing in easier items for psychological relief.
-    /// Falls back to next available tier when one is exhausted.
-    ///
-    /// Post-shuffle: Swaps adjacent items with same lemma/combo to maintain variety.
-    /// </summary>
-    List<PracticeItem> ShuffleWithPriorityBias(List<PracticeItem> queue)
-    {
-        // Tier boundaries chosen to match priority score distribution:
-        // - High (≥0.7): 2+ days overdue OR low mastery + hard combo
-        // - Medium (0.4-0.7): typical due reviews, new forms (0.5)
-        // - Low (<0.4): well-learned forms slightly past due
-        var tier1 = queue.Where(i => i.Priority >= 0.7).OrderBy(_ => _random.Next()).ToList();
-        var tier2 = queue.Where(i => i.Priority is >= 0.4 and < 0.7).OrderBy(_ => _random.Next()).ToList();
-        var tier3 = queue.Where(i => i.Priority < 0.4).OrderBy(_ => _random.Next()).ToList();
-
-        var result = new List<PracticeItem>();
-        int i1 = 0, i2 = 0, i3 = 0;
-        int index = 0;
-
-        // Interleave: H-M-L-H-M-L... ensures variety while keeping urgent items frequent.
-        // Fallback chain: if preferred tier empty, try next available.
-        while (result.Count < queue.Count)
-        {
-            if (index % 3 == 0 && i1 < tier1.Count)
-                result.Add(tier1[i1++]);
-            else if (index % 3 == 1 && i2 < tier2.Count)
-                result.Add(tier2[i2++]);
-            else if (index % 3 == 2 && i3 < tier3.Count)
-                result.Add(tier3[i3++]);
-            // Fallback chain when preferred tier exhausted
-            else if (i1 < tier1.Count)
-                result.Add(tier1[i1++]);
-            else if (i2 < tier2.Count)
-                result.Add(tier2[i2++]);
-            else if (i3 < tier3.Count)
-                result.Add(tier3[i3++]);
-
-            index++;
-        }
-
-        // Post-shuffle: break up adjacent same-lemma or same-combo pairs
-        FixAdjacentCollisions(result);
-
-        return result;
-    }
-
-    /// <summary>
-    /// Swaps adjacent items that share lemma or grammar combo with a later non-colliding item.
-    /// Best-effort: if no swap candidate exists, leaves the collision in place.
-    /// </summary>
-    void FixAdjacentCollisions(List<PracticeItem> items)
-    {
-        for (int i = 1; i < items.Count; i++)
-        {
-            var prev = items[i - 1];
-            var curr = items[i];
-
-            // Check for collision: same lemma OR same grammar combo
-            var prevCombo = GetComboKey(prev.FormId, prev.Type);
-            var currCombo = GetComboKey(curr.FormId, curr.Type);
-
-            if (curr.LemmaId == prev.LemmaId || currCombo == prevCombo)
-            {
-                // Find a swap candidate further ahead that doesn't collide with prev
-                for (int j = i + 1; j < items.Count; j++)
-                {
-                    var candidate = items[j];
-                    var candidateCombo = GetComboKey(candidate.FormId, candidate.Type);
-
-                    // Candidate must not collide with prev
-                    if (candidate.LemmaId != prev.LemmaId && candidateCombo != prevCombo)
-                    {
-                        (items[i], items[j]) = (items[j], items[i]);
-                        break;
-                    }
-                }
-            }
+            var verb = (Verb)lemma.Primary;
+            // Use parent regular pattern for irregulars to group them together.
+            var pattern = verb.Pattern.IsIrregular() ? verb.Pattern.ParentRegular() : verb.Pattern;
+            return pattern.ToString();
         }
     }
 
     #region Debug Logging
 
     /// <summary>
-    /// Logs queue summary with category distribution. No-op in release builds.
+    /// Logs level bucket distribution. No-op in release builds.
+    /// </summary>
+    static void LogLevelBuckets(List<List<FormMasteryData>> buckets)
+    {
+#if DEBUG
+        var counts = buckets.Select((b, i) =>
+        {
+            var (min, max) = LevelBuckets[i];
+            return $"L{min}-{max}:{b.Count}";
+        });
+        System.Diagnostics.Debug.WriteLine($"[Queue] Level buckets: {string.Join(", ", counts)}");
+#endif
+    }
+
+    /// <summary>
+    /// Logs queue summary. No-op in release builds.
     /// </summary>
     void LogQueueSummary(List<PracticeItem> queue, PracticeType type)
     {
 #if DEBUG
         var newCount = queue.Count(q => q.Source == PracticeItemSource.NewForm);
         var reviewCount = queue.Count - newCount;
-        var categoryDist = queue
-            .GroupBy(q => GetCategoryKey(q.FormId, type))
-            .OrderByDescending(g => g.Count())
-            .Select(g => $"{g.Key}:{g.Count()}")
-            .Take(8);
-        System.Diagnostics.Debug.WriteLine($"[Queue] Built {queue.Count} items: {newCount} new, {reviewCount} reviews");
-        System.Diagnostics.Debug.WriteLine($"[Queue] Category distribution: {string.Join(", ", categoryDist)}");
-#endif
-    }
 
-    /// <summary>
-    /// Logs when floor boost is applied to rare categories. No-op in release builds.
-    /// </summary>
-    static void LogFloorBoost(List<(string Key, int Weight, bool Boosted)> weights, int floorWeight, int totalForms, string selected)
-    {
-#if DEBUG
-        var boosted = weights.Where(w => w.Boosted).Select(w => w.Key).ToList();
-        if (boosted.Count > 0)
-        {
-            System.Diagnostics.Debug.WriteLine($"[Queue] Floor boost: {boosted.Count} categories boosted " +
-                $"(floor={floorWeight}, total={totalForms}), selected={selected}");
-        }
+        // Group by mastery level
+        var levelDist = queue
+            .Where(q => q.Source != PracticeItemSource.NewForm)
+            .GroupBy(q => q.MasteryLevel)
+            .OrderBy(g => g.Key)
+            .Select(g => $"L{g.Key}:{g.Count()}");
+
+        System.Diagnostics.Debug.WriteLine($"[Queue] Built {queue.Count} items: {newCount} new, {reviewCount} reviews");
+        if (reviewCount > 0)
+            System.Diagnostics.Debug.WriteLine($"[Queue] Level distribution: {string.Join(", ", levelDist)}");
 #endif
     }
 

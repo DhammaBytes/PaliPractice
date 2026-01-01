@@ -15,6 +15,12 @@ namespace PaliPractice.Models.Inflection;
 public class Conjugation
 {
     /// <summary>
+    /// Divisor to extract lemmaId from formId: formId / GrammarDivisor = lemmaId.
+    /// FormId format: LLLLL_TPNVE (5 digits lemma + 5 digits grammar).
+    /// </summary>
+    public const long GrammarDivisor = 100_000;
+
+    /// <summary>
     /// Stable ID for the lemma group (70001-99999 for verbs).
     /// </summary>
     public int LemmaId { get; init; }

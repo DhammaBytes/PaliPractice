@@ -67,9 +67,10 @@ public abstract class PracticeHistoryBase : IPracticeHistory
 
     /// <summary>
     /// New level as percentage (0-100) for progress bar display.
+    /// Capped at 100% (level 11 = retired shows as 100%).
     /// </summary>
     [Ignore]
-    public int NewLevelPercent => NewLevel * 10;
+    public int NewLevelPercent => Math.Min(NewLevel, 10) * 10;
 }
 
 /// <summary>

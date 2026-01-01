@@ -141,11 +141,9 @@ public static class LayoutConstants
         public const double DebugText = 10;
         public const double TranslationPagination = 11;
         public const double TranslationPlaceholder = 24;
-        public const double TranslationArrowIcon = 14;
         public const double DailyGoalText = 14;
         public const double RevealButton = 16;
     }
-
 
     #endregion
 
@@ -215,8 +213,6 @@ public static class LayoutConstants
         public const double TranslationHorizontal = 24;
         public const double TranslationVertical = 16;
         public const double TranslationContent = 8;
-        public const double TranslationArrowHorizontal = 8;
-        public const double TranslationArrowVertical = 6;
 
         // Example section
         public const double ExampleSection = 4;
@@ -241,8 +237,6 @@ public static class LayoutConstants
     /// </summary>
     public static class Sizes
     {
-        public const double RankBadgeCornerRadius = 12;
-        
         public const double PlaceholderHeight = 2;
         public const double PlaceholderBorderThickness = 2;
         

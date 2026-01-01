@@ -219,7 +219,8 @@ public class UserDataRepositoryTests
 
         // Verify interface properties (FormText resolved on load, not stored)
         record.FormId.Should().Be(2222222222L);
-        record.IsImproved.Should().BeFalse(); // Hard decreases level
+        // First practice is always an improvement: 0 (unpracticed) → 3 (default-1 for hard)
+        record.IsImproved.Should().BeTrue();
     }
 
     #endregion

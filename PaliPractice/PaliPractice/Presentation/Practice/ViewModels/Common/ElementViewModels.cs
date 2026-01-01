@@ -9,13 +9,13 @@ namespace PaliPractice.Presentation.Practice.ViewModels.Common;
 [Bindable]
 public partial class DailyGoalViewModel : ObservableObject
 {
-    readonly UserDataRepository _userData;
+    readonly IUserDataRepository _userData;
     readonly PracticeType _practiceType;
 
     [ObservableProperty] string _dailyGoalText = "0/50";
     [ObservableProperty] double _dailyProgress = 0.0;
 
-    public DailyGoalViewModel(UserDataRepository userData, PracticeType practiceType)
+    public DailyGoalViewModel(IUserDataRepository userData, PracticeType practiceType)
     {
         _userData = userData;
         _practiceType = practiceType;

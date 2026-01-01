@@ -9,7 +9,7 @@ namespace PaliPractice.Services.Database.Repositories;
 /// Repository for noun data access and caching.
 /// Caches are loaded lazily on first access.
 /// </summary>
-public class NounRepository
+public class NounRepository : INounRepository
 {
     /// <summary>
     /// Maximum number of ending variants for noun forms.
@@ -71,9 +71,10 @@ public class NounRepository
                         g => (ILemma)new Lemma(g.First().Lemma, g.Cast<IWord>()));
                 System.Diagnostics.Debug.WriteLine($"[NounRepo] Built {_lemmas.Count} lemmas");
 
-                // Pre-sort for rank-based queries
+                // Pre-sort for rank-based queries (tie-breaker ensures determinism)
                 _lemmasByRank = _lemmas.Values
                     .OrderByDescending(l => l.EbtCount)
+                    .ThenBy(l => l.LemmaId)
                     .ToList();
 
                 _isCacheLoaded = true;

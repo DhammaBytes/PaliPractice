@@ -14,8 +14,8 @@ public sealed class ConjugationPracticeProvider : IPracticeProvider
     static readonly TimeSpan StalenessThreshold = TimeSpan.FromHours(1);
 
     readonly IPracticeQueueBuilder _queueBuilder;
-    readonly UserDataRepository _userData;
-    readonly VerbRepository _verbs;
+    readonly IUserDataRepository _userData;
+    readonly IVerbRepository _verbs;
 
     List<PracticeItem> _queue = [];
     int _currentIndex = -1;

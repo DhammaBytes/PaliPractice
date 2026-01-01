@@ -1,5 +1,6 @@
 using PaliPractice.Models.Inflection;
 using PaliPractice.Models.Words;
+using PaliPractice.Services.Database;
 using PaliPractice.Services.Database.Repositories;
 using PaliPractice.Services.UserData;
 
@@ -33,9 +34,9 @@ record FormMasteryData(long FormId, int MasteryLevel, DateTime NextDueUtc);
 /// </summary>
 public class PracticeQueueBuilder : IPracticeQueueBuilder
 {
-    readonly UserDataRepository _userData;
-    readonly NounRepository _nouns;
-    readonly VerbRepository _verbs;
+    readonly IUserDataRepository _userData;
+    readonly INounRepository _nouns;
+    readonly IVerbRepository _verbs;
     Random _random = new();  // Re-seeded per build for determinism
 
     // Introduce new forms gradually: 1 new form every 4-6 reviews.
@@ -52,10 +53,11 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
     // Level buckets for round-robin difficulty mixing.
     // Instead of always showing struggling items first (which is discouraging),
     // we rotate through buckets to interleave easy wins with challenging items.
+    // Note: Level 0 = unpracticed (new forms), Level 4 = default after first practice.
     static readonly (int Min, int Max)[] LevelBuckets =
     [
         (1, 2),   // Struggling - items user finds difficult
-        (3, 4),   // Learning - includes level 4, the default for new items
+        (3, 4),   // Learning - items around first-practice level
         (5, 6),   // Developing - gaining confidence
         (7, 8),   // Strong - approaching mastery
         (9, 10),  // Practiced - near retirement (level 11 = retired forever)
@@ -68,7 +70,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         _verbs = db.Verbs;
     }
 
-    public List<PracticeItem> BuildQueue(PracticeType type, int count)
+    public List<PracticeItem> BuildQueue(PracticeType type, int count, DateTime? seedDate = null)
     {
         System.Diagnostics.Debug.WriteLine($"[Queue] BuildQueue({type}, {count})");
 
@@ -76,11 +78,11 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         // This ensures reproducibility for testing and prevents queue "churn" during a session.
         // We use a custom hash because HashCode.Combine is not stable across processes/restarts.
         // The 397 multiplier is a common prime that provides good distribution.
-        var today = DateTime.UtcNow.Date;
+        var today = (seedDate ?? DateTime.UtcNow).Date;
         var daysSinceEpoch = (int)(today - DateTime.UnixEpoch).TotalDays;
         var seed = unchecked(daysSinceEpoch * 397 ^ (int)type);
         _random = new Random(seed);
-        System.Diagnostics.Debug.WriteLine($"[Queue] Seeded with {seed} (date={DateTime.UtcNow.Date:yyyy-MM-dd}, type={type})");
+        System.Diagnostics.Debug.WriteLine($"[Queue] Seeded with {seed} (date={today:yyyy-MM-dd}, type={type})");
 
         var queue = new List<PracticeItem>();
 
@@ -123,7 +125,11 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         // gets picked before the one due yesterday, even though we rotate through buckets.
         var levelBuckets = GroupByLevelBucket(dueForReview);
         foreach (var bucket in levelBuckets)
-            bucket.Sort((a, b) => a.NextDueUtc.CompareTo(b.NextDueUtc));
+            bucket.Sort((a, b) =>
+            {
+                var cmp = a.NextDueUtc.CompareTo(b.NextDueUtc);
+                return cmp != 0 ? cmp : a.FormId.CompareTo(b.FormId);  // Tie-breaker for determinism
+            });
 
         LogLevelBuckets(levelBuckets);
 
@@ -501,7 +507,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                 if (i != idx)
                     (untried[idx], untried[i]) = (untried[i], untried[idx]);
                 idx++;
-                return new PracticeItem(formId, type, lemmaId, PracticeItemSource.NewForm, 0.5, MasteryLevel: 1);
+                return PracticeItem.NewForm(formId, type, lemmaId);
             }
         }
 
@@ -516,7 +522,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                 if (i != idx)
                     (untried[idx], untried[i]) = (untried[i], untried[idx]);
                 idx++;
-                return new PracticeItem(formId, type, lemmaId, PracticeItemSource.NewForm, 0.5, MasteryLevel: 1);
+                return PracticeItem.NewForm(formId, type, lemmaId);
             }
         }
 
@@ -531,7 +537,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                 if (i != idx)
                     (untried[idx], untried[i]) = (untried[i], untried[idx]);
                 idx++;
-                return new PracticeItem(formId, type, lemmaId, PracticeItemSource.NewForm, 0.5, MasteryLevel: 1);
+                return PracticeItem.NewForm(formId, type, lemmaId);
             }
         }
 
@@ -545,7 +551,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                 if (i != idx)
                     (untried[idx], untried[i]) = (untried[i], untried[idx]);
                 idx++;
-                return new PracticeItem(formId, type, lemmaId, PracticeItemSource.NewForm, 0.5, MasteryLevel: 1);
+                return PracticeItem.NewForm(formId, type, lemmaId);
             }
         }
 
@@ -555,7 +561,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
             var formId = untried[idx];
             var lemmaId = ExtractLemmaId(formId, type);
             idx++;
-            return new PracticeItem(formId, type, lemmaId, PracticeItemSource.NewForm, 0.5, MasteryLevel: 1);
+            return PracticeItem.NewForm(formId, type, lemmaId);
         }
 
         return null;

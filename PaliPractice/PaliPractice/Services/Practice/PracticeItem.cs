@@ -1,3 +1,5 @@
+using PaliPractice.Services.UserData;
+
 namespace PaliPractice.Services.Practice;
 
 /// <summary>
@@ -29,12 +31,19 @@ public enum PracticeItemSource
 /// <param name="LemmaId">The lemma ID for looking up the word.</param>
 /// <param name="Source">Where this item came from (review, new, etc.).</param>
 /// <param name="Priority">Higher = more urgent (0.0 to 1.0 range).</param>
-/// <param name="MasteryLevel">Current mastery level (1-10, 1 for new forms).</param>
+/// <param name="MasteryLevel">Current mastery level (0=unpracticed, 1-10=practicing, 11=retired).</param>
 public record PracticeItem(
     long FormId,
     PracticeType Type,
     int LemmaId,
     PracticeItemSource Source,
     double Priority,
-    int MasteryLevel = 1
-);
+    int MasteryLevel = CooldownCalculator.UnpracticedLevel
+)
+{
+    /// <summary>
+    /// Creates a practice item for a form that has never been practiced.
+    /// </summary>
+    public static PracticeItem NewForm(long formId, PracticeType type, int lemmaId) =>
+        new(formId, type, lemmaId, PracticeItemSource.NewForm, Priority: 0.5);
+}

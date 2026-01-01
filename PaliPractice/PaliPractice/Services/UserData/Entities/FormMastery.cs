@@ -18,8 +18,10 @@ public abstract class FormMasteryBase
     public long FormId { get; set; }
 
     /// <summary>
-    /// Mastery level 1-10. Default: 5.
-    /// 1 = struggling (1 day cooldown), 10 = mastered (~8.5 months cooldown).
+    /// Mastery level 1-10 for practiced forms.
+    /// 1 = struggling (1 day cooldown), 10 = mastered (~8.5 months).
+    /// Default is level 4 (first practice level).
+    /// Level 0 = unpracticed, level 11 = retired.
     /// </summary>
     [Column("mastery_level")]
     public int MasteryLevel { get; set; } = CooldownCalculator.DefaultLevel;

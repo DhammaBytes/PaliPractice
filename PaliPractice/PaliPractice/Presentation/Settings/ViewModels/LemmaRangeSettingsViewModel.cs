@@ -17,7 +17,7 @@ public record LemmaRangeNavigationData(PracticeType PracticeType);
 public partial class LemmaRangeSettingsViewModel : ObservableObject
 {
     readonly INavigator _navigator;
-    readonly UserDataRepository _userData;
+    readonly IUserDataRepository _userData;
     readonly PracticeType _practiceType;
     bool _isLoading = true;
 

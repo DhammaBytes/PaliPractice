@@ -11,7 +11,7 @@ namespace PaliPractice.Services.Database.Repositories;
 /// Repository for user data access (mastery, difficulty, settings, history).
 /// Uses type-specific tables for nouns and verbs.
 /// </summary>
-public class UserDataRepository
+public class UserDataRepository : IUserDataRepository
 {
     readonly SQLiteConnection _connection;
 
@@ -45,7 +45,7 @@ public class UserDataRepository
                OR (mastery_level = 8 AND last_practiced_utc <= ?)
                OR (mastery_level = 9 AND last_practiced_utc <= ?)
                OR (mastery_level = 10 AND last_practiced_utc <= ?)
-            ORDER BY last_practiced_utc
+            ORDER BY last_practiced_utc, form_id
             LIMIT ?";
 
         // Calculate cutoff date for each level: form is due when last_practiced + cooldown <= now
@@ -122,9 +122,9 @@ public class UserDataRepository
 
         if (existing == null)
         {
-            // First practice of this form
-            oldLevel = CooldownCalculator.DefaultLevel;
-            newLevel = CooldownCalculator.AdjustLevel(oldLevel, wasEasy);
+            // First practice of this form: was unpracticed (0), now starts at default (4) +/- adjustment
+            oldLevel = CooldownCalculator.UnpracticedLevel;
+            newLevel = CooldownCalculator.AdjustLevel(CooldownCalculator.DefaultLevel, wasEasy);
 
             var record = new NounsFormMastery
             {
@@ -188,9 +188,9 @@ public class UserDataRepository
 
         if (existing == null)
         {
-            // First practice of this form
-            oldLevel = CooldownCalculator.DefaultLevel;
-            newLevel = CooldownCalculator.AdjustLevel(oldLevel, wasEasy);
+            // First practice of this form: was unpracticed (0), now starts at default (4) +/- adjustment
+            oldLevel = CooldownCalculator.UnpracticedLevel;
+            newLevel = CooldownCalculator.AdjustLevel(CooldownCalculator.DefaultLevel, wasEasy);
 
             var record = new VerbsFormMastery
             {
@@ -410,6 +410,7 @@ public class UserDataRepository
 
     /// <summary>
     /// Gets an enum list setting. If empty after parsing, rewrites the default and returns it.
+    /// Returns items in canonical order (sorted by enum value) for deterministic iteration.
     /// </summary>
     public List<T> GetEnumListOrResetDefault<T>(string key, T[] defaults) where T : struct, Enum
     {
@@ -417,13 +418,13 @@ public class UserDataRepository
         var parsed = SettingsHelpers.FromCsv<T>(csv);
 
         if (parsed.Count > 0)
-            return parsed;
+            return parsed.OrderBy(e => e).ToList();  // Canonical order for determinism
 
         // Empty or invalid - rewrite defaults
         System.Diagnostics.Debug.WriteLine($"[UserData] Setting '{key}' was empty/invalid, resetting to defaults");
         var defaultCsv = SettingsHelpers.ToCsv(defaults);
         SetSetting(key, defaultCsv);
-        return defaults.ToList();
+        return defaults.OrderBy(e => e).ToList();  // Canonical order for determinism
     }
 
     /// <summary>

@@ -2,6 +2,7 @@ using PaliPractice.Models.Words;
 using PaliPractice.Presentation.Grammar.ViewModels;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Services.Database.Repositories;
+using PaliPractice.Services.UserData;
 
 namespace PaliPractice.Presentation.Practice.ViewModels.Common;
 
@@ -15,7 +16,7 @@ namespace PaliPractice.Presentation.Practice.ViewModels.Common;
 public abstract partial class PracticeViewModelBase : ObservableObject
 {
     protected readonly ILogger Logger;
-    protected readonly UserDataRepository UserData;
+    protected readonly IUserDataRepository UserData;
 
     [ObservableProperty] bool _canRateCard;
     [ObservableProperty] string _alternativeForms = string.Empty;
@@ -67,7 +68,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     protected PracticeViewModelBase(
         IPracticeProvider provider,
-        UserDataRepository userData,
+        IUserDataRepository userData,
         FlashCardViewModel flashCard,
         INavigator navigator,
         ILogger logger)
@@ -135,7 +136,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
             return;
         }
 
-        var masteryLevel = _provider.Current?.MasteryLevel ?? 1;
+        var masteryLevel = _provider.Current?.MasteryLevel ?? CooldownCalculator.UnpracticedLevel;
         var root = lemma.Primary.Details?.Root;
         FlashCard.DisplayWord(lemma.Primary, _provider.CurrentIndex, _provider.TotalCount, masteryLevel, root);
 

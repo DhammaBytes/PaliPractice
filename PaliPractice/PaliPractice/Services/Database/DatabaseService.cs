@@ -19,17 +19,17 @@ public interface IDatabaseService
     /// <summary>
     /// Repository for noun data (lemmas, forms, attestations).
     /// </summary>
-    NounRepository Nouns { get; }
+    INounRepository Nouns { get; }
 
     /// <summary>
     /// Repository for verb data (lemmas, forms, attestations).
     /// </summary>
-    VerbRepository Verbs { get; }
+    IVerbRepository Verbs { get; }
 
     /// <summary>
     /// Repository for user data (mastery, settings, history).
     /// </summary>
-    UserDataRepository UserData { get; }
+    IUserDataRepository UserData { get; }
 
     /// <summary>
     /// True if a critical failure occurred during provisioning.
@@ -54,9 +54,9 @@ public class DatabaseService : IDatabaseService
     /// </summary>
     public const int BundleVersion = 1;
 
-    public NounRepository Nouns { get; }
-    public VerbRepository Verbs { get; }
-    public UserDataRepository UserData { get; }
+    public INounRepository Nouns { get; }
+    public IVerbRepository Verbs { get; }
+    public IUserDataRepository UserData { get; }
 
     public bool HasFatalFailure => _provisionLog.Any(e => e.IsFailure);
     public IReadOnlyList<DatabaseProvisionedEvent> ProvisionLog => _provisionLog;

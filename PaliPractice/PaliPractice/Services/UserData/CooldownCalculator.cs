@@ -8,25 +8,28 @@ namespace PaliPractice.Services.UserData;
 ///
 /// Level | Cooldown  | Description
 /// ------|-----------|------------
+///   0   | n/a       | Unpracticed (never seen)
 ///   1   | 1 day     | Struggling
 ///   2   | 1.9 days  | Very weak
 ///   3   | 3.4 days  | Weak
-///   4   | 6.3 days  | Default for new forms
+///   4   | 6.3 days  | Default for first practice
 ///   5   | 12 days   | Below average
 ///   6   | 22 days   | Average
 ///   7   | 40 days   | Good
 ///   8   | 74 days   | Strong
 ///   9   | 137 days  | Very strong
 ///  10   | 254 days  | Mastered (~8.5 months)
+///  11   | n/a       | Retired (excluded forever)
 /// </summary>
 public static class CooldownCalculator
 {
     public const double BaseHours = 24.0;  // 1 day minimum
     public const double Multiplier = 1.85; // Reaches ~254 days at level 10
-    public const int MinLevel = 1;
+    public const int UnpracticedLevel = 0; // Display level for forms never practiced
+    public const int MinLevel = 1;         // Minimum level for practiced forms
     public const int MaxLevel = 10;
-    public const int RetiredLevel = 11;  // Forms at this level are excluded from practice forever
-    public const int DefaultLevel = 4;
+    public const int RetiredLevel = 11;    // Forms at this level are excluded from practice forever
+    public const int DefaultLevel = 4;     // Starting level when first practiced
 
     /// <summary>
     /// Pre-calculated cooldown hours for each level (index 0 = level 1).

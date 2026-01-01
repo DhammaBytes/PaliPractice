@@ -8,7 +8,7 @@ namespace PaliPractice.Presentation.Settings.ViewModels;
 public partial class DeclensionSettingsViewModel : ObservableObject
 {
     readonly INavigator _navigator;
-    readonly UserDataRepository _userData;
+    readonly IUserDataRepository _userData;
     bool _isLoading = true;
 
     // Pattern labels by gender (base patterns only - variants/irregulars inherit from parent)

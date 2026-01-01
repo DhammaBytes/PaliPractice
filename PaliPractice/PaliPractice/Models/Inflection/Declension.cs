@@ -69,14 +69,14 @@ public class Declension
     /// <summary>
     /// Parses a FormId back into its component parts.
     /// </summary>
-    public static (int LemmaId, Case Case, Gender Gender, Number Number, int EndingId) ParseId(int formId)
+    public static (int LemmaId, Case Case, Gender Gender, Number Number, int EndingId) ParseId(long formId)
     {
         return (
-            formId / LemmaDivisor,
+            (int)(formId / LemmaDivisor),
             (Case)(formId % LemmaDivisor / 1_000),
             (Gender)(formId % 1_000 / 100),
             (Number)(formId % 100 / 10),
-            formId % 10
+            (int)(formId % 10)
         );
     }
 

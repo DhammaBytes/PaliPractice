@@ -14,8 +14,8 @@ public sealed class DeclensionPracticeProvider : IPracticeProvider
     static readonly TimeSpan StalenessThreshold = TimeSpan.FromHours(1);
 
     readonly IPracticeQueueBuilder _queueBuilder;
-    readonly UserDataRepository _userData;
-    readonly NounRepository _nouns;
+    readonly IUserDataRepository _userData;
+    readonly INounRepository _nouns;
 
     List<PracticeItem> _queue = [];
     int _currentIndex = -1;

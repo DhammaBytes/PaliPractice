@@ -12,8 +12,9 @@ public interface IPracticeQueueBuilder
     /// </summary>
     /// <param name="type">Declension or Conjugation</param>
     /// <param name="count">Number of items to queue (typically daily goal)</param>
+    /// <param name="seedDate">Optional date for deterministic seeding (default: today UTC)</param>
     /// <returns>List of practice items ordered for the session.</returns>
-    List<PracticeItem> BuildQueue(PracticeType type, int count);
+    List<PracticeItem> BuildQueue(PracticeType type, int count, DateTime? seedDate = null);
 
     /// <summary>
     /// Get all eligible form IDs (corpus-attested, matching current settings).

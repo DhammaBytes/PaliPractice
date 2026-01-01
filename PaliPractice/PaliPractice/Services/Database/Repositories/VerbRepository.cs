@@ -19,7 +19,7 @@ class NonReflexiveVerb
 /// Repository for verb data access and caching.
 /// Caches are loaded lazily on first access.
 /// </summary>
-public class VerbRepository
+public class VerbRepository : IVerbRepository
 {
     /// <summary>
     /// Maximum number of ending variants for verb forms.
@@ -89,9 +89,10 @@ public class VerbRepository
                         g => g.Key, ILemma (g) => new Lemma(g.First().Lemma, g));
                 System.Diagnostics.Debug.WriteLine($"[VerbRepo] Built {_lemmas.Count} lemmas");
 
-                // Pre-sort for rank-based queries
+                // Pre-sort for rank-based queries (tie-breaker ensures determinism)
                 _lemmasByRank = _lemmas.Values
                     .OrderByDescending(l => l.EbtCount)
+                    .ThenBy(l => l.LemmaId)
                     .ToList();
 
                 _isCacheLoaded = true;

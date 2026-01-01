@@ -65,12 +65,6 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     /// </summary>
     protected abstract PracticeType CurrentPracticeType { get; }
 
-    /// <summary>
-    /// Record the practice result with combination difficulty update.
-    /// Subclasses implement to call the appropriate difficulty update method.
-    /// </summary>
-    protected abstract void RecordCombinationDifficulty(bool wasHard);
-
     protected PracticeViewModelBase(
         IPracticeProvider provider,
         UserDataRepository userData,
@@ -221,9 +215,6 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
         // Record to SRS system (FormText resolved on history load, not stored)
         UserData.RecordPracticeResult(current.FormId, CurrentPracticeType, wasEasy);
-
-        // Update combination difficulty
-        RecordCombinationDifficulty(wasHard: !wasEasy);
 
         // Update daily progress
         UserData.IncrementProgress(CurrentPracticeType);

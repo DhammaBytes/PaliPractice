@@ -82,12 +82,6 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
         UpdateBadges(_currentConjugation);
     }
 
-    protected override void RecordCombinationDifficulty(bool wasHard)
-    {
-        var reflexive = _currentVoice == Voice.Reflexive;
-        UserData.UpdateConjugationDifficulty(_currentTense, _currentPerson, _currentNumber, reflexive, wasHard);
-    }
-
     void UpdateBadges(Conjugation c)
     {
         // Person badge

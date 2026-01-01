@@ -15,9 +15,6 @@ public class UserDataRepository
 {
     readonly SQLiteConnection _connection;
 
-    // Exponential moving average factor for difficulty updates
-    const double DifficultyAlpha = 0.3;
-
     // Key to track if defaults have been initialized
     const string SettingsInitializedKey = "system.settings_initialized";
 
@@ -266,104 +263,6 @@ public class UserDataRepository
             .ToList();
     }
 
-    // === Noun Combination Difficulty ===
-
-    public NounsCombinationDifficulty? GetNounDifficulty(string comboKey)
-    {
-        return _connection.Table<NounsCombinationDifficulty>()
-            .FirstOrDefault(c => c.ComboKey == comboKey);
-    }
-
-    public NounsCombinationDifficulty? GetDeclensionDifficulty(Case @case, Gender gender, Number number)
-    {
-        return GetNounDifficulty(Declension.ComboKey(@case, gender, number));
-    }
-
-    public void UpdateDeclensionDifficulty(Case @case, Gender gender, Number number, bool wasHard)
-    {
-        var key = Declension.ComboKey(@case, gender, number);
-        var existing = GetNounDifficulty(key);
-
-        if (existing == null)
-        {
-            existing = NounsCombinationDifficulty.Create(@case, gender, number);
-            UpdateNounDifficultyScore(existing, wasHard);
-            _connection.Insert(existing);
-        }
-        else
-        {
-            UpdateNounDifficultyScore(existing, wasHard);
-            _connection.Update(existing);
-        }
-    }
-
-    void UpdateNounDifficultyScore(NounsCombinationDifficulty combo, bool wasHard)
-    {
-        // Exponential moving average: new_score = alpha * observation + (1-alpha) * old_score
-        var observation = wasHard ? 1.0 : 0.0;
-        combo.DifficultyScore = DifficultyAlpha * observation + (1 - DifficultyAlpha) * combo.DifficultyScore;
-        combo.TotalAttempts++;
-        combo.LastUpdatedUtc = DateTime.UtcNow;
-    }
-
-    public List<NounsCombinationDifficulty> GetHardestNounCombinations(int limit = 10)
-    {
-        return _connection.Table<NounsCombinationDifficulty>()
-            .OrderByDescending(c => c.DifficultyScore)
-            .Take(limit)
-            .ToList();
-    }
-
-    // === Verb Combination Difficulty ===
-
-    public VerbsCombinationDifficulty? GetVerbDifficulty(string comboKey)
-    {
-        return _connection.Table<VerbsCombinationDifficulty>()
-            .FirstOrDefault(c => c.ComboKey == comboKey);
-    }
-
-    public VerbsCombinationDifficulty? GetConjugationDifficulty(Tense tense, Person person, Number number, bool reflexive)
-    {
-        var voice = reflexive ? Voice.Reflexive : Voice.Active;
-        return GetVerbDifficulty(Conjugation.ComboKey(tense, person, number, voice));
-    }
-
-    public void UpdateConjugationDifficulty(Tense tense, Person person, Number number, bool reflexive, bool wasHard)
-    {
-        var voice = reflexive ? Voice.Reflexive : Voice.Active;
-        var key = Conjugation.ComboKey(tense, person, number, voice);
-        var existing = GetVerbDifficulty(key);
-
-        if (existing == null)
-        {
-            existing = VerbsCombinationDifficulty.Create(tense, person, number, reflexive);
-            UpdateVerbDifficultyScore(existing, wasHard);
-            _connection.Insert(existing);
-        }
-        else
-        {
-            UpdateVerbDifficultyScore(existing, wasHard);
-            _connection.Update(existing);
-        }
-    }
-
-    void UpdateVerbDifficultyScore(VerbsCombinationDifficulty combo, bool wasHard)
-    {
-        // Exponential moving average: new_score = alpha * observation + (1-alpha) * old_score
-        var observation = wasHard ? 1.0 : 0.0;
-        combo.DifficultyScore = DifficultyAlpha * observation + (1 - DifficultyAlpha) * combo.DifficultyScore;
-        combo.TotalAttempts++;
-        combo.LastUpdatedUtc = DateTime.UtcNow;
-    }
-
-    public List<VerbsCombinationDifficulty> GetHardestVerbCombinations(int limit = 10)
-    {
-        return _connection.Table<VerbsCombinationDifficulty>()
-            .OrderByDescending(c => c.DifficultyScore)
-            .Take(limit)
-            .ToList();
-    }
-
     // === Type-Dispatching Helper Methods ===
     // These methods dispatch to type-specific implementations for backwards compatibility.
 
@@ -383,10 +282,9 @@ public class UserDataRepository
     /// </summary>
     public List<IPracticeHistory> GetRecentHistory(PracticeType type, int limit = 50)
     {
-        if (type == PracticeType.Declension)
-            return GetRecentNounHistory(limit).Cast<IPracticeHistory>().ToList();
-        else
-            return GetRecentVerbHistory(limit).Cast<IPracticeHistory>().ToList();
+        return type == PracticeType.Declension 
+            ? GetRecentNounHistory(limit).Cast<IPracticeHistory>().ToList()
+            : GetRecentVerbHistory(limit).Cast<IPracticeHistory>().ToList();
     }
 
     // === Settings ===

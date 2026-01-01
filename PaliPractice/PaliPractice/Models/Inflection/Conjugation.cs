@@ -15,10 +15,10 @@ namespace PaliPractice.Models.Inflection;
 public class Conjugation
 {
     /// <summary>
-    /// Divisor to extract lemmaId from formId: formId / GrammarDivisor = lemmaId.
+    /// Divisor to extract lemmaId from formId: formId / LemmaDivisor = lemmaId.
     /// FormId format: LLLLL_TPNVE (5 digits lemma + 5 digits grammar).
     /// </summary>
-    public const long GrammarDivisor = 100_000;
+    public const long LemmaDivisor = 100_000;
 
     /// <summary>
     /// Stable ID for the lemma group (70001-99999 for verbs).
@@ -64,7 +64,7 @@ public class Conjugation
     public static long ResolveId(int lemmaId, Tense tense, Person person, Number number, Voice voice, int endingId)
     {
         return
-            (long)lemmaId * 100_000 +
+            (long)lemmaId * LemmaDivisor +
             (int)tense * 10_000 +
             (int)person * 1_000 +
             (int)number * 100 +
@@ -78,8 +78,8 @@ public class Conjugation
     public static (int LemmaId, Tense Tense, Person Person, Number Number, Voice Voice, int EndingId) ParseId(long formId)
     {
         return (
-            (int)(formId / 100_000),
-            (Tense)(formId % 100_000 / 10_000),
+            (int)(formId / LemmaDivisor),
+            (Tense)(formId % LemmaDivisor / 10_000),
             (Person)(formId % 10_000 / 1_000),
             (Number)(formId % 1_000 / 100),
             (Voice)(formId % 100 / 10),

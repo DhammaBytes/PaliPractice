@@ -15,10 +15,10 @@ namespace PaliPractice.Models.Inflection;
 public class Declension
 {
     /// <summary>
-    /// Divisor to extract lemmaId from formId: formId / GrammarDivisor = lemmaId.
+    /// Divisor to extract lemmaId from formId: formId / LemmaDivisor = lemmaId.
     /// FormId format: LLLLL_CGNE (5 digits lemma + 4 digits grammar).
     /// </summary>
-    public const int GrammarDivisor = 10_000;
+    public const int LemmaDivisor = 10_000;
 
     /// <summary>
     /// Stable ID for the lemma group (10001-69999 for nouns).
@@ -59,7 +59,7 @@ public class Declension
     public static int ResolveId(int lemmaId, Case @case, Gender gender, Number number, int endingId)
     {
         return
-            lemmaId * 10_000 +
+            lemmaId * LemmaDivisor +
             (int)@case * 1_000 +
             (int)gender * 100 +
             (int)number * 10 +
@@ -72,8 +72,8 @@ public class Declension
     public static (int LemmaId, Case Case, Gender Gender, Number Number, int EndingId) ParseId(int formId)
     {
         return (
-            formId / 10_000,
-            (Case)(formId % 10_000 / 1_000),
+            formId / LemmaDivisor,
+            (Case)(formId % LemmaDivisor / 1_000),
             (Gender)(formId % 1_000 / 100),
             (Number)(formId % 100 / 10),
             formId % 10

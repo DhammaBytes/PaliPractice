@@ -799,8 +799,8 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         // Conjugation: LLLLL_TPNRX (5+5 digits) → divide by GrammarDivisor (100,000)
         return type switch
         {
-            PracticeType.Declension => (int)(formId / Declension.GrammarDivisor),
-            PracticeType.Conjugation => (int)(formId / Conjugation.GrammarDivisor),
+            PracticeType.Declension => (int)(formId / Declension.LemmaDivisor),
+            PracticeType.Conjugation => (int)(formId / Conjugation.LemmaDivisor),
             _ => 0
         };
     }

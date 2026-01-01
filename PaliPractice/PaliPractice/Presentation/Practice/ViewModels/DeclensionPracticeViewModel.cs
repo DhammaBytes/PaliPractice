@@ -74,11 +74,6 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
         UpdateBadges(_currentDeclension);
     }
 
-    protected override void RecordCombinationDifficulty(bool wasHard)
-    {
-        UserData.UpdateDeclensionDifficulty(_currentCase, _currentGender, _currentNumber, wasHard);
-    }
-
     void UpdateBadges(Declension d)
     {
         // Gender badge

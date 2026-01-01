@@ -280,12 +280,10 @@ public class DatabaseService : IDatabaseService
     {
         // Create noun-specific tables
         connection.CreateTable<NounsFormMastery>();
-        connection.CreateTable<NounsCombinationDifficulty>();
         connection.CreateTable<NounsPracticeHistory>();
 
         // Create verb-specific tables
         connection.CreateTable<VerbsFormMastery>();
-        connection.CreateTable<VerbsCombinationDifficulty>();
         connection.CreateTable<VerbsPracticeHistory>();
 
         // Create shared tables
@@ -295,8 +293,6 @@ public class DatabaseService : IDatabaseService
         // Create indices for efficient querying
         connection.Execute("CREATE INDEX IF NOT EXISTS idx_nouns_mastery_level ON nouns_form_mastery(mastery_level)");
         connection.Execute("CREATE INDEX IF NOT EXISTS idx_verbs_mastery_level ON verbs_form_mastery(mastery_level)");
-        connection.Execute("CREATE INDEX IF NOT EXISTS idx_nouns_difficulty ON nouns_combination_difficulty(difficulty_score DESC)");
-        connection.Execute("CREATE INDEX IF NOT EXISTS idx_verbs_difficulty ON verbs_combination_difficulty(difficulty_score DESC)");
         connection.Execute("CREATE INDEX IF NOT EXISTS idx_nouns_history_date ON nouns_practice_history(practiced_utc DESC)");
         connection.Execute("CREATE INDEX IF NOT EXISTS idx_verbs_history_date ON verbs_practice_history(practiced_utc DESC)");
     }

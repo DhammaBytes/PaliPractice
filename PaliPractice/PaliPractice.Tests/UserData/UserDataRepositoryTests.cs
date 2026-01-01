@@ -26,8 +26,6 @@ public class UserDataRepositoryTests
         _connection.CreateTable<VerbsFormMastery>();
         _connection.CreateTable<NounsPracticeHistory>();
         _connection.CreateTable<VerbsPracticeHistory>();
-        _connection.CreateTable<NounsCombinationDifficulty>();
-        _connection.CreateTable<VerbsCombinationDifficulty>();
         _connection.CreateTable<UserSetting>();
         _connection.CreateTable<DailyProgress>();
 
@@ -191,71 +189,6 @@ public class UserDataRepositoryTests
         history.Should().HaveCount(1);
         history[0].FormId.Should().Be(2222222222L);
         // FormText is resolved on load via InflectionService, not stored in DB
-    }
-
-    #endregion
-
-    #region Combination Difficulty Tests
-
-    [Test]
-    public void UpdateDeclensionDifficulty_NewCombo_CreatesRecord()
-    {
-        _repository.UpdateDeclensionDifficulty(Case.Genitive, Gender.Masculine, Number.Singular, wasHard: true);
-
-        var difficulty = _repository.GetDeclensionDifficulty(Case.Genitive, Gender.Masculine, Number.Singular);
-        difficulty.Should().NotBeNull();
-        difficulty!.DifficultyScore.Should().BeGreaterThan(0.5);
-        difficulty.TotalAttempts.Should().Be(1);
-    }
-
-    [Test]
-    public void UpdateDeclensionDifficulty_ExistingCombo_UpdatesScore()
-    {
-        // First: hard
-        _repository.UpdateDeclensionDifficulty(Case.Genitive, Gender.Masculine, Number.Singular, wasHard: true);
-        var firstScore = _repository.GetDeclensionDifficulty(Case.Genitive, Gender.Masculine, Number.Singular)!.DifficultyScore;
-
-        // Second: easy (should lower score)
-        _repository.UpdateDeclensionDifficulty(Case.Genitive, Gender.Masculine, Number.Singular, wasHard: false);
-        var secondScore = _repository.GetDeclensionDifficulty(Case.Genitive, Gender.Masculine, Number.Singular)!.DifficultyScore;
-
-        secondScore.Should().BeLessThan(firstScore);
-    }
-
-    [Test]
-    public void UpdateConjugationDifficulty_NewCombo_CreatesRecord()
-    {
-        _repository.UpdateConjugationDifficulty(Tense.Present, Person.Third, Number.Singular, reflexive: false, wasHard: true);
-
-        var difficulty = _repository.GetConjugationDifficulty(Tense.Present, Person.Third, Number.Singular, reflexive: false);
-        difficulty.Should().NotBeNull();
-        difficulty!.TotalAttempts.Should().Be(1);
-    }
-
-    [Test]
-    public void GetHardestNounCombinations_ReturnsOrderedByDifficulty()
-    {
-        // Add two combos with different difficulties
-        _repository.UpdateDeclensionDifficulty(Case.Genitive, Gender.Masculine, Number.Singular, wasHard: true);
-        _repository.UpdateDeclensionDifficulty(Case.Nominative, Gender.Masculine, Number.Singular, wasHard: false);
-
-        var hardest = _repository.GetHardestNounCombinations(limit: 10);
-
-        hardest.Should().HaveCount(2);
-        hardest[0].DifficultyScore.Should().BeGreaterThan(hardest[1].DifficultyScore);
-    }
-
-    [Test]
-    public void GetHardestVerbCombinations_ReturnsOrderedByDifficulty()
-    {
-        // Add two combos with different difficulties
-        _repository.UpdateConjugationDifficulty(Tense.Present, Person.Third, Number.Singular, reflexive: false, wasHard: true);
-        _repository.UpdateConjugationDifficulty(Tense.Present, Person.First, Number.Singular, reflexive: false, wasHard: false);
-
-        var hardest = _repository.GetHardestVerbCombinations(limit: 10);
-
-        hardest.Should().HaveCount(2);
-        hardest[0].DifficultyScore.Should().BeGreaterThan(hardest[1].DifficultyScore);
     }
 
     #endregion

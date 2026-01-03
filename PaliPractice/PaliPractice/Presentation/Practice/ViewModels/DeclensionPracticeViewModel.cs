@@ -1,6 +1,7 @@
 using PaliPractice.Models.Inflection;
 using PaliPractice.Models.Words;
 using PaliPractice.Presentation.Practice.Providers;
+using PaliPractice.Presentation.Settings.ViewModels;
 using PaliPractice.Services.Grammar;
 using PaliPractice.Themes;
 
@@ -47,6 +48,9 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
         _inflectionService = inflectionService;
         _ = InitializeAsync();
     }
+
+    public override ICommand GoToSettingsCommand =>
+        new AsyncRelayCommand(() => Navigator.NavigateViewModelAsync<DeclensionSettingsViewModel>(this));
 
     protected override void PrepareCardAnswer(ILemma lemma, object parameters)
     {

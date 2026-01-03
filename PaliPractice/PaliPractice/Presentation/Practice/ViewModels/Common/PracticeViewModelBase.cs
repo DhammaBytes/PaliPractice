@@ -25,8 +25,13 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     public DailyGoalViewModel DailyGoal { get; }
     public ExampleCarouselViewModel ExampleCarousel { get; }
 
+    /// <summary>
+    /// Raised when the practice queue is exhausted (no more forms available).
+    /// </summary>
+    public event EventHandler? QueueExhausted;
+
     readonly IPracticeProvider _provider;
-    readonly INavigator _navigator;
+    protected readonly INavigator Navigator;
 
     // Commands - stored as fields to maintain reference for NotifyCanExecuteChanged
     readonly RelayCommand _hardCommand;
@@ -76,7 +81,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         _provider = provider;
         UserData = userData;
         FlashCard = flashCard;
-        _navigator = navigator;
+        Navigator = navigator;
         Logger = logger;
         DailyGoal = new DailyGoalViewModel(userData, CurrentPracticeType);
         ExampleCarousel = new ExampleCarouselViewModel();
@@ -105,7 +110,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
             await _provider.LoadAsync(ct);
             if (_provider.TotalCount == 0)
             {
-                FlashCard.ErrorMessage = "No forms to practice. Check your settings.";
+                QueueExhausted?.Invoke(this, EventArgs.Empty);
                 return;
             }
 
@@ -175,10 +180,11 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     }
 
     // Commands
-    public ICommand GoBackCommand => new AsyncRelayCommand(() => _navigator.NavigateBackAsync(this));
+    public ICommand GoBackCommand => new AsyncRelayCommand(() => Navigator.NavigateBackAsync(this));
     public ICommand GoToHistoryCommand => new AsyncRelayCommand(() =>
-        _navigator.NavigateViewModelAsync<HistoryViewModel>(this, data: new HistoryNavigationData(CurrentPracticeType)));
+        Navigator.NavigateViewModelAsync<HistoryViewModel>(this, data: new HistoryNavigationData(CurrentPracticeType)));
     public ICommand GoToInflectionTableCommand => new AsyncRelayCommand(NavigateToInflectionTable);
+    public abstract ICommand GoToSettingsCommand { get; }
     public ICommand HardCommand => _hardCommand;
     public ICommand EasyCommand => _easyCommand;
     public ICommand RevealCommand => _revealCommand;
@@ -188,7 +194,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         var lemma = _provider.GetCurrentLemma();
         if (lemma == null) return;
 
-        await _navigator.NavigateViewModelAsync<InflectionTableViewModel>(
+        await Navigator.NavigateViewModelAsync<InflectionTableViewModel>(
             this, data: new InflectionTableNavigationData(lemma, CurrentPracticeType));
     }
 
@@ -226,11 +232,11 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     {
         if (!_provider.MoveNext())
         {
-            // Queue exhausted - could show completion screen
             Logger.LogInformation("Practice queue exhausted");
             CanRateCard = false;
             _hardCommand.NotifyCanExecuteChanged();
             _easyCommand.NotifyCanExecuteChanged();
+            QueueExhausted?.Invoke(this, EventArgs.Empty);
             return;
         }
 

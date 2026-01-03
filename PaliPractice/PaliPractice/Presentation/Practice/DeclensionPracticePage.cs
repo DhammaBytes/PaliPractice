@@ -1,17 +1,23 @@
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
+using PaliPractice.Presentation.Practice.ViewModels;
 using static PaliPractice.Presentation.Common.TextHelpers;
 
 namespace PaliPractice.Presentation.Practice;
 
 public sealed partial class DeclensionPracticePage : Page
 {
+    DeclensionPracticeViewModel? _viewModel;
+
     public DeclensionPracticePage()
     {
         var elements = new ResponsiveElements();
         var heightClass = LayoutConstants.GetCurrentHeightClass();
 
-        DeclensionPracticePageMarkup.DataContext<ViewModels.DeclensionPracticeViewModel>(this, (page, _) => page
+        Unloaded += OnUnloaded;
+        DataContextChanged += OnDataContextChanged;
+
+        DeclensionPracticePageMarkup.DataContext<DeclensionPracticeViewModel>(this, (page, _) => page
             .NavigationCacheMode<DeclensionPracticePage>(NavigationCacheMode.Required)
             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
             .Content(BuildPageLayout(elements, heightClass))
@@ -19,6 +25,45 @@ public sealed partial class DeclensionPracticePage : Page
 
         HeightResponsiveHelper.AttachResponsiveHandler(
             hc => PracticePageBuilder.ApplyResponsiveValues(elements, hc));
+    }
+
+    void OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        if (_viewModel != null)
+        {
+            _viewModel.QueueExhausted -= OnQueueExhausted;
+            _viewModel = null;
+        }
+    }
+
+    void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+    {
+        if (_viewModel != null)
+            _viewModel.QueueExhausted -= OnQueueExhausted;
+
+        if (args.NewValue is DeclensionPracticeViewModel vm)
+        {
+            _viewModel = vm;
+            _viewModel.QueueExhausted += OnQueueExhausted;
+        }
+    }
+
+    async void OnQueueExhausted(object? sender, EventArgs e)
+    {
+        var dialog = new ContentDialog
+        {
+            Title = "All forms completed",
+            Content = "You've practiced all available forms. Adjust your settings to add more, or come back later when reviews are due.",
+            PrimaryButtonText = "Exit",
+            SecondaryButtonText = "Settings",
+            XamlRoot = XamlRoot
+        };
+
+        var result = await dialog.ShowAsync();
+        if (result == ContentDialogResult.Secondary)
+            _viewModel?.GoToSettingsCommand.Execute(null);
+        else
+            _viewModel?.GoBackCommand.Execute(null);
     }
 
     static Grid BuildPageLayout(ResponsiveElements elements, HeightClass heightClass)

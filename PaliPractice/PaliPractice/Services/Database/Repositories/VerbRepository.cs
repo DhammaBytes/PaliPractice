@@ -213,6 +213,12 @@ public class VerbRepository : IVerbRepository
     // }
 
     /// <summary>
+    /// Preload caches to avoid lazy loading delay on first access.
+    /// Safe to call multiple times - subsequent calls are no-ops.
+    /// </summary>
+    public void Preload() => EnsureCacheLoaded();
+
+    /// <summary>
     /// Ensure details are loaded for the lemma.
     /// Fetches from DB if not already loaded.
     /// </summary>

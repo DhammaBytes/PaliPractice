@@ -41,6 +41,12 @@ public interface IDatabaseService
     /// Log of all provisioning events for diagnostics.
     /// </summary>
     IReadOnlyList<DatabaseProvisionedEvent> ProvisionLog { get; }
+
+    /// <summary>
+    /// Preload repository caches in advance to avoid lazy loading delay.
+    /// Safe to call from background thread.
+    /// </summary>
+    void PreloadCaches();
 }
 
 /// <summary>
@@ -60,6 +66,12 @@ public class DatabaseService : IDatabaseService
 
     public bool HasFatalFailure => _provisionLog.Any(e => e.IsFailure);
     public IReadOnlyList<DatabaseProvisionedEvent> ProvisionLog => _provisionLog;
+
+    public void PreloadCaches()
+    {
+        Nouns.Preload();
+        Verbs.Preload();
+    }
 
     readonly List<DatabaseProvisionedEvent> _provisionLog = [];
     readonly IBundledFileProvider _bundledFileProvider;

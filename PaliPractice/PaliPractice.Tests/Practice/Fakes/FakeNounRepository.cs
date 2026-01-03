@@ -117,4 +117,9 @@ public class FakeNounRepository : INounRepository
     {
         // No-op for tests - details are pre-loaded
     }
+
+    public void Preload()
+    {
+        throw new NotImplementedException();
+    }
 }

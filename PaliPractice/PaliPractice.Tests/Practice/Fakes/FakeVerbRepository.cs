@@ -125,4 +125,9 @@ public class FakeVerbRepository : IVerbRepository
     {
         // No-op for tests - details are pre-loaded
     }
+
+    public void Preload()
+    {
+        throw new NotImplementedException();
+    }
 }

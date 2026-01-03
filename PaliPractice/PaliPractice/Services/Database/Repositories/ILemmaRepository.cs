@@ -28,4 +28,9 @@ public interface ILemmaRepository
     /// Ensure details are loaded for the lemma.
     /// </summary>
     void EnsureDetails(ILemma lemma);
+
+    /// <summary>
+    /// Preload caches to avoid lazy loading delay on first access.
+    /// </summary>
+    void Preload();
 }

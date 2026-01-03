@@ -20,6 +20,10 @@ public class FakeDatabaseService : IDatabaseService
     public IUserDataRepository UserData => FakeUserData;
     public bool HasFatalFailure => false;
     public IReadOnlyList<DatabaseProvisionedEvent> ProvisionLog => [];
+    public void PreloadCaches()
+    {
+        throw new NotImplementedException();
+    }
 
     public FakeDatabaseService()
     {

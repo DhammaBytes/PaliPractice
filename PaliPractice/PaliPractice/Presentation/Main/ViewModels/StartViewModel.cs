@@ -1,5 +1,6 @@
 using PaliPractice.Presentation.Practice.ViewModels;
 using PaliPractice.Presentation.Settings.ViewModels;
+using PaliPractice.Services.Database;
 
 namespace PaliPractice.Presentation.Main.ViewModels;
 
@@ -8,7 +9,7 @@ public class StartViewModel : ObservableObject
 {
     readonly INavigator _navigator;
 
-    public StartViewModel(INavigator navigator)
+    public StartViewModel(INavigator navigator, IDatabaseService databaseService)
     {
         _navigator = navigator;
 
@@ -17,6 +18,9 @@ public class StartViewModel : ObservableObject
         GoToSettingsCommand = new AsyncRelayCommand(GoToSettings);
         GoToHelpCommand = new AsyncRelayCommand(GoToHelp);
         GoToAboutCommand = new AsyncRelayCommand(GoToAbout);
+
+        // Preload repository caches in background (fire-and-forget)
+        _ = Task.Run(databaseService.PreloadCaches);
     }
 
     public string Title => "Pāli Practice";

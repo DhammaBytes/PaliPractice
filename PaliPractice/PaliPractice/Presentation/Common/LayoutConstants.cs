@@ -16,7 +16,7 @@ public static class LayoutConstants
     #region Width/Height Constraints
 
     public const double ContentMaxWidth = 450;
-    public const double ContentMaxHeight = 900;
+    // public const double ContentMaxHeight = 900;
 
     // Translation block width as percentage of card width
     public const double TranslationWidthRatio = 0.76;
@@ -62,27 +62,47 @@ public static class LayoutConstants
     /// All sizes are precisely defined for each screen bracket.
     /// </summary>
     public readonly record struct PracticeFontSizes(
+        // Card content
         double Word,            // Main word (lemma)
         double Answer,          // Primary answer
         double AnswerSecondary, // Alternative forms
         double Badge,           // Badge text and icon
         double BadgeHint,       // Declension case hint
+        // Card header
+        double PaliRoot,        // √Root display
+        double Level,           // Level indicator
+        // Translation block
         double Translation,     // Translation text
+        double TranslationPagination, // Page indicator (1/3)
+        double TranslationDots, // "…" placeholder
+        // Example section
         double SuttaExample,    // Sutta example sentence
         double SuttaReference,  // Sutta reference
-        double Button           // Action button text
+        // Buttons and footer
+        double Button,          // Action button text (Hard/Easy)
+        double RevealButton,    // Reveal button text
+        double DailyGoal,       // Daily goal text
+        // Debug
+        double Debug            // Size bracket debug text
     )
     {
         static readonly PracticeFontSizes Tall = new(
-            Word: 35,
-            Answer: 29,
-            AnswerSecondary: 20,
-            Badge: 15,
-            BadgeHint: 15,
+            Word: 32,
+            Answer: 30,
+            AnswerSecondary: 22,
+            Badge: 16,
+            BadgeHint: 16,
+            PaliRoot: 15,
+            Level: 14,
             Translation: 18,
+            TranslationPagination: 12,
+            TranslationDots: 26,
             SuttaExample: 17,
             SuttaReference: 15,
-            Button: 18
+            Button: 18,
+            RevealButton: 17,
+            DailyGoal: 14,
+            Debug: 10
         );
 
         static readonly PracticeFontSizes Medium = new(
@@ -91,10 +111,17 @@ public static class LayoutConstants
             AnswerSecondary: 18,
             Badge: 15,
             BadgeHint: 15,
+            PaliRoot: 15,
+            Level: 14,
             Translation: 17,
+            TranslationPagination: 11,
+            TranslationDots: 24,
             SuttaExample: 16,
             SuttaReference: 14,
-            Button: 17
+            Button: 17,
+            RevealButton: 16,
+            DailyGoal: 14,
+            Debug: 10
         );
 
         static readonly PracticeFontSizes Short = new(
@@ -103,10 +130,17 @@ public static class LayoutConstants
             AnswerSecondary: 17,
             Badge: 15,
             BadgeHint: 15,
+            PaliRoot: 14,
+            Level: 13,
             Translation: 16,
+            TranslationPagination: 11,
+            TranslationDots: 22,
             SuttaExample: 15,
             SuttaReference: 13,
-            Button: 16
+            Button: 16,
+            RevealButton: 15,
+            DailyGoal: 13,
+            Debug: 10
         );
 
         static readonly PracticeFontSizes Minimum = new(
@@ -115,10 +149,17 @@ public static class LayoutConstants
             AnswerSecondary: 16,
             Badge: 15,
             BadgeHint: 15,
+            PaliRoot: 13,
+            Level: 12,
             Translation: 15,
+            TranslationPagination: 10,
+            TranslationDots: 20,
             SuttaExample: 14,
             SuttaReference: 12,
-            Button: 15
+            Button: 15,
+            RevealButton: 14,
+            DailyGoal: 12,
+            Debug: 10
         );
 
         public static PracticeFontSizes Get(HeightClass heightClass) => heightClass switch
@@ -130,102 +171,103 @@ public static class LayoutConstants
         };
     }
 
-    /// <summary>
-    /// Fixed font sizes (not responsive).
-    /// </summary>
-    public static class FixedFonts
-    {
-        public const double PaliRoot = 15;
-        public const double Level = 14;
-        
-        public const double DebugText = 10;
-        public const double TranslationPagination = 11;
-        public const double TranslationPlaceholder = 24;
-        public const double DailyGoalText = 14;
-        public const double RevealButton = 16;
-    }
-
     #endregion
 
     #region Gaps
 
     /// <summary>
-    /// Unified gap values for padding, margins, and spacing throughout the layout.
+    /// Gap values for padding, margins, and spacing throughout the layout.
+    /// Naming convention: suffix indicates UI property (Padding/Margin/Spacing).
     /// </summary>
     public static class Gaps
     {
-        #region Responsive gaps
+        // === Responsive (height-dependent) ===
 
         /// <summary>
-        /// Primary gap - used for content padding, section margins, button columns.
-        /// Controls: content area sides, card-to-translation, translation-to-example, nav-to-dailygoal, easy/hard spacing.
+        /// Main content spacing - used for content area margins, section spacing, button column gaps.
         /// </summary>
-        public static double Primary(HeightClass h) => h switch
+        public static double ContentSpacing(HeightClass h) => h switch
         {
             HeightClass.Tall or HeightClass.Medium => 16,
             HeightClass.Short => 12,
             _ => 10
         };
 
-        /// <summary>
-        /// Card internal padding.
-        /// </summary>
-        public static double Card(HeightClass h) => h switch
+        // === Card ===
+
+        /// <summary>Internal padding of the practice card.</summary>
+        public static double CardPadding(HeightClass h) => h switch
         {
             HeightClass.Tall or HeightClass.Medium => 24,
             HeightClass.Short => 20,
             _ => 16
         };
 
-        /// <summary>
-        /// Badge internal padding (horizontal, vertical).
-        /// </summary>
-        public static Thickness Badge(HeightClass h) => new(6, 3, 6, 3);
+        /// <summary>Spacing between card child elements (word, answer, badges).</summary>
+        public const double CardContentSpacing = 12;
 
-        /// <summary>
-        /// Spacing between badges.
-        /// </summary>
-        public static double BadgeSpacing(HeightClass h) => h switch
+        // === Badge ===
+
+        /// <summary>Spacing between badge icon and text inside a badge.</summary>
+        public const double BadgeIconTextSpacing = 6;
+
+        /// <summary>Padding inside the badge border.</summary>
+        public static readonly Thickness BadgePadding = new(6, 3, 6, 3);
+
+        /// <summary>Spacing between badges in the badge row.</summary>
+        public static double BadgeRowSpacing(HeightClass h) => h switch
         {
             HeightClass.Tall or HeightClass.Medium => 8,
             _ => 6
         };
 
-        #endregion
+        // === Word Section ===
 
-        #region Fixed gaps
+        /// <summary>Margin above the main word.</summary>
+        public const double WordMarginTop = 16;
 
-        // Card internal
-        public const double CardInternal = 12;
+        /// <summary>Margin below the main word.</summary>
+        public const double WordMarginBottom = 8;
 
-        // Word section
-        public const double WordTop = 16;
-        public const double WordBottom = 8;
+        // === Answer Section ===
 
-        // Answer section
-        public const double AnswerTop = 8;
-        public const double AnswerLines = 4;
+        /// <summary>Margin above the answer container.</summary>
+        public const double AnswerMarginTop = 8;
 
-        // Badge
-        public const double BadgeInternal = 6;
+        /// <summary>Spacing between answer lines.</summary>
+        public const double AnswerLineSpacing = 4;
 
-        // Translation block
-        public const double TranslationHorizontal = 24;
-        public const double TranslationVertical = 16;
-        public const double TranslationContent = 8;
+        // === Translation Block ===
 
-        // Example section
-        public const double ExampleSection = 4;
+        /// <summary>Horizontal padding inside translation block.</summary>
+        public const double TranslationPaddingH = 24;
 
-        // Buttons
-        public const double ButtonContent = 8;
-        public const double ActionButtonHorizontal = 16;
-        public const double ActionButtonVertical = 12;
+        /// <summary>Vertical padding inside translation block.</summary>
+        public const double TranslationPaddingV = 16;
 
-        // Daily goal
-        public const double DailyGoal = 8;
+        /// <summary>Spacing between translation text and pagination.</summary>
+        public const double TranslationContentSpacing = 8;
 
-        #endregion
+        // === Example Section ===
+
+        /// <summary>Spacing between example sentence and reference text.</summary>
+        public const double ExampleLineSpacing = 4;
+
+        // === Buttons ===
+
+        /// <summary>Spacing between button icon and text.</summary>
+        public const double ButtonIconTextSpacing = 8;
+
+        /// <summary>Horizontal padding for action buttons (reveal, hard, easy).</summary>
+        public const double ActionButtonPaddingH = 16;
+
+        /// <summary>Vertical padding for action buttons.</summary>
+        public const double ActionButtonPaddingV = 12;
+
+        // === Daily Goal ===
+
+        /// <summary>Spacing between daily goal text and progress bar.</summary>
+        public const double DailyGoalSpacing = 8;
     }
 
     #endregion
@@ -237,10 +279,16 @@ public static class LayoutConstants
     /// </summary>
     public static class Sizes
     {
+        /// <summary>Height of the underline shown before answer is revealed.</summary>
         public const double PlaceholderHeight = 2;
+
+        /// <summary>Border thickness for the answer placeholder underline.</summary>
         public const double PlaceholderBorderThickness = 2;
-        
+
+        /// <summary>Height of the daily goal progress bar.</summary>
         public const double ProgressBarHeight = 6;
+
+        /// <summary>Corner radius for the daily goal progress bar.</summary>
         public const double ProgressBarCornerRadius = 3;
     }
 

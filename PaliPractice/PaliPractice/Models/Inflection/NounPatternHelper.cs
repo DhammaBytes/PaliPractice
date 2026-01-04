@@ -107,259 +107,256 @@ public static class NounPatternHelper
         }
     }
 
-    extension(NounPattern pattern)
+    /// <summary>
+    /// Returns true if the pattern is None or a breakpoint marker (_VariantMasc, etc.).
+    /// These values should never appear in runtime data.
+    /// </summary>
+    public static bool IsMarkerOrNone(this NounPattern pattern)
+        => pattern == NounPattern.None || pattern.ToString().StartsWith('_');
+
+    /// <summary>
+    /// Converts enum to database string: NounPattern.AMasc → "a masc"
+    /// Throws for None or marker patterns.
+    /// </summary>
+    public static string ToDbString(this NounPattern pattern) => pattern switch
     {
-        /// <summary>
-        /// Returns true if the pattern is None or a breakpoint marker (_VariantMasc, etc.).
-        /// These values should never appear in runtime data.
-        /// </summary>
-        public bool IsMarkerOrNone()
-            => pattern == NounPattern.None || pattern.ToString().StartsWith('_');
+        // Base Masculine
+        NounPattern.AMasc => "a masc",
+        NounPattern.IMasc => "i masc",
+        NounPattern.ĪMasc => "ī masc",
+        NounPattern.UMasc => "u masc",
+        NounPattern.ŪMasc => "ū masc",
+        NounPattern.ArMasc => "ar masc",
+        NounPattern.AntMasc => "ant masc",
+        NounPattern.AsMasc => "as masc",
 
-        /// <summary>
-        /// Converts enum to database string: NounPattern.AMasc → "a masc"
-        /// Throws for None or marker patterns.
-        /// </summary>
-        public string ToDbString() => pattern switch
-        {
-            // Base Masculine
-            NounPattern.AMasc => "a masc",
-            NounPattern.IMasc => "i masc",
-            NounPattern.ĪMasc => "ī masc",
-            NounPattern.UMasc => "u masc",
-            NounPattern.ŪMasc => "ū masc",
-            NounPattern.ArMasc => "ar masc",
-            NounPattern.AntMasc => "ant masc",
-            NounPattern.AsMasc => "as masc",
+        // Variant Masculine
+        NounPattern.A2Masc => "a2 masc",
+        NounPattern.AMascEast => "a masc east",
+        NounPattern.AMascPl => "a masc pl",
+        NounPattern.AntaMasc => "anta masc",
+        NounPattern.Ar2Masc => "ar2 masc",
+        NounPattern.ĪMascPl => "ī masc pl",
+        NounPattern.UMascPl => "u masc pl",
 
-            // Variant Masculine
-            NounPattern.A2Masc => "a2 masc",
-            NounPattern.AMascEast => "a masc east",
-            NounPattern.AMascPl => "a masc pl",
-            NounPattern.AntaMasc => "anta masc",
-            NounPattern.Ar2Masc => "ar2 masc",
-            NounPattern.ĪMascPl => "ī masc pl",
-            NounPattern.UMascPl => "u masc pl",
+        // Base Feminine
+        NounPattern.ĀFem => "ā fem",
+        NounPattern.IFem => "i fem",
+        NounPattern.ĪFem => "ī fem",
+        NounPattern.UFem => "u fem",
+        NounPattern.ArFem => "ar fem",
 
-            // Base Feminine
-            NounPattern.ĀFem => "ā fem",
-            NounPattern.IFem => "i fem",
-            NounPattern.ĪFem => "ī fem",
-            NounPattern.UFem => "u fem",
-            NounPattern.ArFem => "ar fem",
+        // Base Neuter
+        NounPattern.ANeut => "a nt",
+        NounPattern.INeut => "i nt",
+        NounPattern.UNeut => "u nt",
 
-            // Base Neuter
-            NounPattern.ANeut => "a nt",
-            NounPattern.INeut => "i nt",
-            NounPattern.UNeut => "u nt",
+        // Variant Neuter
+        NounPattern.ANeutEast => "a nt east",
+        NounPattern.ANeutIrreg => "a nt irreg", // not irregular according to DPD inflection_templates
+        NounPattern.ANeutPl => "a nt pl",
 
-            // Variant Neuter
-            NounPattern.ANeutEast => "a nt east",
-            NounPattern.ANeutIrreg => "a nt irreg", // not irregular according to DPD inflection_templates
-            NounPattern.ANeutPl => "a nt pl",
+        // Irregular Masculine
+        NounPattern.AddhaMasc => "addha masc",
+        NounPattern.ArahantMasc => "arahant masc",
+        NounPattern.BhavantMasc => "bhavant masc",
+        NounPattern.BrahmaMasc => "brahma masc",
+        NounPattern.GoMasc => "go masc",
+        NounPattern.JantuMasc => "jantu masc",
+        NounPattern.RājaMasc => "rāja masc",
+        NounPattern.SantaMasc => "santa masc",
+        NounPattern.YuvaMasc => "yuva masc",
 
-            // Irregular Masculine
-            NounPattern.AddhaMasc => "addha masc",
-            NounPattern.ArahantMasc => "arahant masc",
-            NounPattern.BhavantMasc => "bhavant masc",
-            NounPattern.BrahmaMasc => "brahma masc",
-            NounPattern.GoMasc => "go masc",
-            NounPattern.JantuMasc => "jantu masc",
-            NounPattern.RājaMasc => "rāja masc",
-            NounPattern.SantaMasc => "santa masc",
-            NounPattern.YuvaMasc => "yuva masc",
+        // Irregular Feminine
+        NounPattern.JātiFem => "jāti fem",
+        NounPattern.MātarFem => "mātar fem",
+        NounPattern.NadīFem => "nadī fem",
+        NounPattern.ParisāFem => "parisā fem",
+        NounPattern.PokkharaṇīFem => "pokkharaṇī fem",
+        NounPattern.RattiFem => "ratti fem",
 
-            // Irregular Feminine
-            NounPattern.JātiFem => "jāti fem",
-            NounPattern.MātarFem => "mātar fem",
-            NounPattern.NadīFem => "nadī fem",
-            NounPattern.ParisāFem => "parisā fem",
-            NounPattern.PokkharaṇīFem => "pokkharaṇī fem",
-            NounPattern.RattiFem => "ratti fem",
+        // Irregular Neuter
+        NounPattern.KammaNeut => "kamma nt",
 
-            // Irregular Neuter
-            NounPattern.KammaNeut => "kamma nt",
+        _ => throw new ArgumentOutOfRangeException(nameof(pattern), pattern, "Unknown or marker pattern")
+    };
 
-            _ => throw new ArgumentOutOfRangeException(nameof(pattern), pattern, "Unknown or marker pattern")
-        };
+    /// <summary>
+    /// Gets UI display label (stem only): NounPattern.AMasc → "a"
+    /// </summary>
+    public static string ToDisplayLabel(this NounPattern pattern)
+        => pattern.ToDbString().Split(' ')[0];
 
-        /// <summary>
-        /// Gets UI display label (stem only): NounPattern.AMasc → "a"
-        /// </summary>
-        public string ToDisplayLabel()
-            => pattern.ToDbString().Split(' ')[0];
+    /// <summary>
+    /// Returns true if the pattern is truly irregular (pattern > _Irregular).
+    /// Irregular patterns have forms that must be read from database.
+    /// </summary>
+    public static bool IsIrregular(this NounPattern pattern)
+        => pattern > NounPattern._Irregular;
 
-        /// <summary>
-        /// Returns true if the pattern is truly irregular (pattern > _Irregular).
-        /// Irregular patterns have forms that must be read from database.
-        /// </summary>
-        public bool IsIrregular()
-            => pattern > NounPattern._Irregular;
+    /// <summary>
+    /// Returns true if the pattern is a variant (alternate ending tables).
+    /// Variant patterns use stem+ending construction but with non-standard endings.
+    /// </summary>
+    public static bool IsVariant(this NounPattern pattern) => pattern switch
+    {
+        > NounPattern._VariantMasc and < NounPattern._BaseFem => true,
+        > NounPattern._VariantFem and < NounPattern._BaseNeut => true,
+        > NounPattern._VariantNeut and < NounPattern._Irregular => true,
+        _ => false
+    };
 
-        /// <summary>
-        /// Returns true if the pattern is a variant (alternate ending tables).
-        /// Variant patterns use stem+ending construction but with non-standard endings.
-        /// </summary>
-        public bool IsVariant() => pattern switch
-        {
-            > NounPattern._VariantMasc and < NounPattern._BaseFem => true,
-            > NounPattern._VariantFem and < NounPattern._BaseNeut => true,
-            > NounPattern._VariantNeut and < NounPattern._Irregular => true,
-            _ => false
-        };
+    /// <summary>
+    /// Returns true if the pattern is a base pattern (standard stem+ending).
+    /// Excludes None, breakpoint markers, variants, and irregulars.
+    /// </summary>
+    public static bool IsBase(this NounPattern pattern)
+        => !pattern.IsMarkerOrNone() && !pattern.IsIrregular() && !pattern.IsVariant();
 
-        /// <summary>
-        /// Returns true if the pattern is a base pattern (standard stem+ending).
-        /// Excludes None, breakpoint markers, variants, and irregulars.
-        /// </summary>
-        public bool IsBase()
-            => !pattern.IsMarkerOrNone() && !pattern.IsIrregular() && !pattern.IsVariant();
+    /// <summary>
+    /// Gets the pattern type classification.
+    /// Throws for None or marker patterns.
+    /// </summary>
+    public static PatternType GetPatternType(this NounPattern pattern)
+    {
+        if (pattern.IsMarkerOrNone())
+            throw new InvalidOperationException($"Cannot get PatternType for marker/None: {pattern}");
 
-        /// <summary>
-        /// Gets the pattern type classification.
-        /// Throws for None or marker patterns.
-        /// </summary>
-        public PatternType GetPatternType()
-        {
-            if (pattern.IsMarkerOrNone())
-                throw new InvalidOperationException($"Cannot get PatternType for marker/None: {pattern}");
-
-            if (pattern.IsIrregular()) return PatternType.Irregular;
-            if (pattern.IsVariant()) return PatternType.Variant;
-            return PatternType.Base;
-        }
-
-        /// <summary>
-        /// Returns true if the pattern is plural-only (lacks singular forms).
-        /// These are true "pluralia tantum" nouns.
-        /// </summary>
-        public bool IsPluralOnly() => pattern is
-            NounPattern.AMascPl or
-            NounPattern.ĪMascPl or
-            NounPattern.UMascPl or
-            NounPattern.ANeutPl;
-
-        /// <summary>
-        /// Gets the gender for a pattern using breakpoint comparisons.
-        /// Variants are within gender ranges, only irregulars need parent lookup.
-        /// Throws for None or marker patterns.
-        /// </summary>
-        public Gender GetGender()
-        {
-            if (pattern.IsMarkerOrNone())
-                throw new InvalidOperationException($"Cannot get Gender for marker/None: {pattern}");
-
-            // Only irregulars need parent lookup (they're after _Irregular marker)
-            if (pattern.IsIrregular())
-                return pattern.ParentBase().GetGender();
-
-            // Base + Variant patterns use breakpoint comparisons
-            // Masculine: 101-199 (base + variant)
-            if (pattern < NounPattern._BaseFem)
-                return Gender.Masculine;
-            // Feminine: 201-299 (base + variant reserved)
-            if (pattern < NounPattern._BaseNeut)
-                return Gender.Feminine;
-            // Neuter: 301-399 (base + variant)
-            return Gender.Neuter;
-        }
-
-        /// <summary>
-        /// Gets the example lemma ("like X") for this pattern from DPD inflection_templates.
-        /// For irregular patterns marked as "irreg" in DPD, returns the pattern's own stem.
-        /// </summary>
-        public string GetLikeExample() => pattern switch
-        {
-            // Base Masculine
-            NounPattern.AMasc => "dhamma",
-            NounPattern.IMasc => "gahapati",
-            NounPattern.ĪMasc => "udāyī",
-            NounPattern.UMasc => "bhikkhu",
-            NounPattern.ŪMasc => "lokavidū",
-            NounPattern.ArMasc => "satthar",
-            NounPattern.AntMasc => "bhagavant",
-            NounPattern.AsMasc => "manas",
-
-            // Variant Masculine
-            NounPattern.A2Masc => "atta",
-            NounPattern.AMascEast => "bāle",
-            NounPattern.AMascPl => "samaṇabrāhmaṇā",
-            NounPattern.AntaMasc => "bhadanta",
-            NounPattern.Ar2Masc => "pitar",
-            NounPattern.ĪMascPl => "vajjī",
-            NounPattern.UMascPl => "bahū",
-
-            // Base Feminine
-            NounPattern.ĀFem => "vedanā",
-            NounPattern.IFem => "āpatti",
-            NounPattern.ĪFem => "bhikkhunī",
-            NounPattern.UFem => "vāyodhātu",
-            NounPattern.ArFem => "dhītar",
-
-            // Base Neuter
-            NounPattern.ANeut => "citta",
-            NounPattern.INeut => "sappi",
-            NounPattern.UNeut => "cakkhu",
-
-            // Variant Neuter
-            NounPattern.ANeutEast => "sukhadukkha",
-            NounPattern.ANeutIrreg => "camma",
-            NounPattern.ANeutPl => "pañcindriyāni",
-
-            // Irregular patterns - use pattern stem as example
-            NounPattern.AddhaMasc => "addha",
-            NounPattern.ArahantMasc => "arahant",
-            NounPattern.BhavantMasc => "bhavant",
-            NounPattern.BrahmaMasc => "brahma",
-            NounPattern.GoMasc => "go",
-            NounPattern.JantuMasc => "jantu",
-            NounPattern.RājaMasc => "rāja",
-            NounPattern.SantaMasc => "santa",
-            NounPattern.YuvaMasc => "yuva",
-            NounPattern.JātiFem => "jāti",
-            NounPattern.MātarFem => "mātar",
-            NounPattern.NadīFem => "nadī",
-            NounPattern.ParisāFem => "parisā",
-            NounPattern.PokkharaṇīFem => "pokkharaṇī",
-            NounPattern.RattiFem => "ratti",
-            NounPattern.KammaNeut => "kamma",
-
-            _ => throw new InvalidOperationException($"No like example for pattern: {pattern}")
-        };
-
-        /// <summary>
-        /// Gets the parent base pattern for a variant or irregular pattern.
-        /// Throws if called on a base or breakpoint pattern.
-        /// </summary>
-        public NounPattern ParentBase() => pattern switch
-        {
-            // Variant Masculine → base patterns
-            NounPattern.A2Masc or NounPattern.AMascEast or NounPattern.AMascPl => NounPattern.AMasc,
-            NounPattern.AntaMasc => NounPattern.AntMasc,
-            NounPattern.Ar2Masc => NounPattern.ArMasc,
-            NounPattern.ĪMascPl => NounPattern.ĪMasc,
-            NounPattern.UMascPl => NounPattern.UMasc,
-
-            // Variant Neuter → base patterns
-            NounPattern.ANeutEast or NounPattern.ANeutIrreg or NounPattern.ANeutPl => NounPattern.ANeut,
-
-            // Irregular Masculine → base patterns
-            NounPattern.AddhaMasc or NounPattern.BrahmaMasc or
-            NounPattern.GoMasc or NounPattern.RājaMasc or NounPattern.YuvaMasc => NounPattern.AMasc,
-            NounPattern.JantuMasc => NounPattern.UMasc,
-            NounPattern.ArahantMasc or NounPattern.BhavantMasc or NounPattern.SantaMasc => NounPattern.AntMasc,
-
-            // Irregular Feminine → base patterns
-            NounPattern.JātiFem or NounPattern.RattiFem => NounPattern.IFem,
-            NounPattern.MātarFem => NounPattern.ArFem,
-            NounPattern.NadīFem or NounPattern.PokkharaṇīFem => NounPattern.ĪFem,
-            NounPattern.ParisāFem => NounPattern.ĀFem,
-
-            // Irregular Neuter → base patterns
-            NounPattern.KammaNeut => NounPattern.ANeut,
-
-            // Base or breakpoint patterns have no parent
-            _ => throw new InvalidOperationException($"{pattern} is not a variant or irregular pattern")
-        };
+        if (pattern.IsIrregular()) return PatternType.Irregular;
+        if (pattern.IsVariant()) return PatternType.Variant;
+        return PatternType.Base;
     }
+
+    /// <summary>
+    /// Returns true if the pattern is plural-only (lacks singular forms).
+    /// These are true "pluralia tantum" nouns.
+    /// </summary>
+    public static bool IsPluralOnly(this NounPattern pattern) => pattern is
+        NounPattern.AMascPl or
+        NounPattern.ĪMascPl or
+        NounPattern.UMascPl or
+        NounPattern.ANeutPl;
+
+    /// <summary>
+    /// Gets the gender for a pattern using breakpoint comparisons.
+    /// Variants are within gender ranges, only irregulars need parent lookup.
+    /// Throws for None or marker patterns.
+    /// </summary>
+    public static Gender GetGender(this NounPattern pattern)
+    {
+        if (pattern.IsMarkerOrNone())
+            throw new InvalidOperationException($"Cannot get Gender for marker/None: {pattern}");
+
+        // Only irregulars need parent lookup (they're after _Irregular marker)
+        if (pattern.IsIrregular())
+            return pattern.ParentBase().GetGender();
+
+        // Base + Variant patterns use breakpoint comparisons
+        // Masculine: 101-199 (base + variant)
+        if (pattern < NounPattern._BaseFem)
+            return Gender.Masculine;
+        // Feminine: 201-299 (base + variant reserved)
+        if (pattern < NounPattern._BaseNeut)
+            return Gender.Feminine;
+        // Neuter: 301-399 (base + variant)
+        return Gender.Neuter;
+    }
+
+    /// <summary>
+    /// Gets the example lemma ("like X") for this pattern from DPD inflection_templates.
+    /// For irregular patterns marked as "irreg" in DPD, returns the pattern's own stem.
+    /// </summary>
+    public static string GetLikeExample(this NounPattern pattern) => pattern switch
+    {
+        // Base Masculine
+        NounPattern.AMasc => "dhamma",
+        NounPattern.IMasc => "gahapati",
+        NounPattern.ĪMasc => "udāyī",
+        NounPattern.UMasc => "bhikkhu",
+        NounPattern.ŪMasc => "lokavidū",
+        NounPattern.ArMasc => "satthar",
+        NounPattern.AntMasc => "bhagavant",
+        NounPattern.AsMasc => "manas",
+
+        // Variant Masculine
+        NounPattern.A2Masc => "atta",
+        NounPattern.AMascEast => "bāle",
+        NounPattern.AMascPl => "samaṇabrāhmaṇā",
+        NounPattern.AntaMasc => "bhadanta",
+        NounPattern.Ar2Masc => "pitar",
+        NounPattern.ĪMascPl => "vajjī",
+        NounPattern.UMascPl => "bahū",
+
+        // Base Feminine
+        NounPattern.ĀFem => "vedanā",
+        NounPattern.IFem => "āpatti",
+        NounPattern.ĪFem => "bhikkhunī",
+        NounPattern.UFem => "vāyodhātu",
+        NounPattern.ArFem => "dhītar",
+
+        // Base Neuter
+        NounPattern.ANeut => "citta",
+        NounPattern.INeut => "sappi",
+        NounPattern.UNeut => "cakkhu",
+
+        // Variant Neuter
+        NounPattern.ANeutEast => "sukhadukkha",
+        NounPattern.ANeutIrreg => "camma",
+        NounPattern.ANeutPl => "pañcindriyāni",
+
+        // Irregular patterns - use pattern stem as example
+        NounPattern.AddhaMasc => "addha",
+        NounPattern.ArahantMasc => "arahant",
+        NounPattern.BhavantMasc => "bhavant",
+        NounPattern.BrahmaMasc => "brahma",
+        NounPattern.GoMasc => "go",
+        NounPattern.JantuMasc => "jantu",
+        NounPattern.RājaMasc => "rāja",
+        NounPattern.SantaMasc => "santa",
+        NounPattern.YuvaMasc => "yuva",
+        NounPattern.JātiFem => "jāti",
+        NounPattern.MātarFem => "mātar",
+        NounPattern.NadīFem => "nadī",
+        NounPattern.ParisāFem => "parisā",
+        NounPattern.PokkharaṇīFem => "pokkharaṇī",
+        NounPattern.RattiFem => "ratti",
+        NounPattern.KammaNeut => "kamma",
+
+        _ => throw new InvalidOperationException($"No like example for pattern: {pattern}")
+    };
+
+    /// <summary>
+    /// Gets the parent base pattern for a variant or irregular pattern.
+    /// Throws if called on a base or breakpoint pattern.
+    /// </summary>
+    public static NounPattern ParentBase(this NounPattern pattern) => pattern switch
+    {
+        // Variant Masculine → base patterns
+        NounPattern.A2Masc or NounPattern.AMascEast or NounPattern.AMascPl => NounPattern.AMasc,
+        NounPattern.AntaMasc => NounPattern.AntMasc,
+        NounPattern.Ar2Masc => NounPattern.ArMasc,
+        NounPattern.ĪMascPl => NounPattern.ĪMasc,
+        NounPattern.UMascPl => NounPattern.UMasc,
+
+        // Variant Neuter → base patterns
+        NounPattern.ANeutEast or NounPattern.ANeutIrreg or NounPattern.ANeutPl => NounPattern.ANeut,
+
+        // Irregular Masculine → base patterns
+        NounPattern.AddhaMasc or NounPattern.BrahmaMasc or
+        NounPattern.GoMasc or NounPattern.RājaMasc or NounPattern.YuvaMasc => NounPattern.AMasc,
+        NounPattern.JantuMasc => NounPattern.UMasc,
+        NounPattern.ArahantMasc or NounPattern.BhavantMasc or NounPattern.SantaMasc => NounPattern.AntMasc,
+
+        // Irregular Feminine → base patterns
+        NounPattern.JātiFem or NounPattern.RattiFem => NounPattern.IFem,
+        NounPattern.MātarFem => NounPattern.ArFem,
+        NounPattern.NadīFem or NounPattern.PokkharaṇīFem => NounPattern.ĪFem,
+        NounPattern.ParisāFem => NounPattern.ĀFem,
+
+        // Irregular Neuter → base patterns
+        NounPattern.KammaNeut => NounPattern.ANeut,
+
+        // Base or breakpoint patterns have no parent
+        _ => throw new InvalidOperationException($"{pattern} is not a variant or irregular pattern")
+    };
 }

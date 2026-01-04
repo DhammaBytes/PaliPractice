@@ -56,25 +56,23 @@ public static class VerbPatternHelper
         }
     }
 
-    extension(VerbPattern pattern)
+    /// <summary>
+    /// Returns true if the pattern is None or a breakpoint marker (_Irregular).
+    /// These values should never appear in runtime data.
+    /// </summary>
+    public static bool IsMarkerOrNone(this VerbPattern pattern)
+        => pattern == VerbPattern.None || pattern == VerbPattern._Irregular;
+
+    /// <summary>
+    /// Converts enum to database string: VerbPattern.Ati → "ati pr"
+    /// Throws for None or marker patterns.
+    /// </summary>
+    public static string ToDbString(this VerbPattern pattern)
     {
-        /// <summary>
-        /// Returns true if the pattern is None or a breakpoint marker (_Irregular).
-        /// These values should never appear in runtime data.
-        /// </summary>
-        public bool IsMarkerOrNone()
-            => pattern == VerbPattern.None || pattern == VerbPattern._Irregular;
+        if (pattern.IsMarkerOrNone())
+            throw new InvalidOperationException($"Cannot convert marker/None to db string: {pattern}");
 
-        /// <summary>
-        /// Converts enum to database string: VerbPattern.Ati → "ati pr"
-        /// Throws for None or marker patterns.
-        /// </summary>
-        public string ToDbString()
-        {
-            if (pattern.IsMarkerOrNone())
-                throw new InvalidOperationException($"Cannot convert marker/None to db string: {pattern}");
-
-            return pattern switch
+        return pattern switch
         {
             // Regular (traditional order: a, ā, e, o)
             VerbPattern.Ati => "ati pr",
@@ -99,67 +97,66 @@ public static class VerbPatternHelper
             VerbPattern.Karoti => "karoti pr",
 
             _ => throw new ArgumentOutOfRangeException(nameof(pattern), pattern, "Unknown pattern")
-            };
-        }
-
-        /// <summary>
-        /// Gets UI display label (stem only): VerbPattern.Ati → "ati"
-        /// </summary>
-        public string ToDisplayLabel()
-            => pattern.ToDbString().Split(' ')[0];
-
-        /// <summary>
-        /// Returns true if the pattern is irregular (pattern > _Irregular).
-        /// </summary>
-        public bool IsIrregular()
-            => pattern > VerbPattern._Irregular;
-
-        /// <summary>
-        /// Gets the example lemma ("like X") for this pattern from DPD inflection_templates.
-        /// For irregular patterns marked as "irreg" in DPD, returns the pattern's own stem.
-        /// </summary>
-        public string GetLikeExample() => pattern switch
-        {
-            // Regular patterns
-            VerbPattern.Ati => "bhavati",
-            VerbPattern.Āti => "pajānāti",
-            VerbPattern.Eti => "vadeti",
-            VerbPattern.Oti => "byākaroti",
-
-            // Irregular patterns - use pattern stem as example
-            VerbPattern.Atthi => "atthi",
-            VerbPattern.Dakkhati => "dakkhati",
-            VerbPattern.Dammi => "dammi",
-            VerbPattern.Hanati => "hanati",
-            VerbPattern.Hoti => "hoti",
-            VerbPattern.Kubbati => "kubbati",
-            VerbPattern.Natthi => "natthi",
-            VerbPattern.Eti2 => "eti",
-            VerbPattern.Brūti => "brūti",
-            VerbPattern.Karoti => "karoti",
-
-            _ => throw new InvalidOperationException($"No like example for pattern: {pattern}")
-        };
-
-        /// <summary>
-        /// Gets the parent regular pattern for an irregular.
-        /// Throws if called on a regular or breakpoint pattern.
-        /// </summary>
-        public VerbPattern ParentRegular() => pattern switch
-        {
-            // Irregulars → Ati
-            VerbPattern.Atthi or VerbPattern.Dakkhati or VerbPattern.Dammi or
-            VerbPattern.Hanati or VerbPattern.Hoti or VerbPattern.Kubbati or
-            VerbPattern.Natthi => VerbPattern.Ati,
-
-            // Irregulars → Eti
-            VerbPattern.Eti2 => VerbPattern.Eti,
-
-            // Irregulars → Oti
-            VerbPattern.Brūti or VerbPattern.Karoti => VerbPattern.Oti,
-
-            // Regular or breakpoint patterns have no parent
-            _ => throw new InvalidOperationException($"{pattern} is not an irregular pattern")
         };
     }
+
+    /// <summary>
+    /// Gets UI display label (stem only): VerbPattern.Ati → "ati"
+    /// </summary>
+    public static string ToDisplayLabel(this VerbPattern pattern)
+        => pattern.ToDbString().Split(' ')[0];
+
+    /// <summary>
+    /// Returns true if the pattern is irregular (pattern > _Irregular).
+    /// </summary>
+    public static bool IsIrregular(this VerbPattern pattern)
+        => pattern > VerbPattern._Irregular;
+
+    /// <summary>
+    /// Gets the example lemma ("like X") for this pattern from DPD inflection_templates.
+    /// For irregular patterns marked as "irreg" in DPD, returns the pattern's own stem.
+    /// </summary>
+    public static string GetLikeExample(this VerbPattern pattern) => pattern switch
+    {
+        // Regular patterns
+        VerbPattern.Ati => "bhavati",
+        VerbPattern.Āti => "pajānāti",
+        VerbPattern.Eti => "vadeti",
+        VerbPattern.Oti => "byākaroti",
+
+        // Irregular patterns - use pattern stem as example
+        VerbPattern.Atthi => "atthi",
+        VerbPattern.Dakkhati => "dakkhati",
+        VerbPattern.Dammi => "dammi",
+        VerbPattern.Hanati => "hanati",
+        VerbPattern.Hoti => "hoti",
+        VerbPattern.Kubbati => "kubbati",
+        VerbPattern.Natthi => "natthi",
+        VerbPattern.Eti2 => "eti",
+        VerbPattern.Brūti => "brūti",
+        VerbPattern.Karoti => "karoti",
+
+        _ => throw new InvalidOperationException($"No like example for pattern: {pattern}")
+    };
+
+    /// <summary>
+    /// Gets the parent regular pattern for an irregular.
+    /// Throws if called on a regular or breakpoint pattern.
+    /// </summary>
+    public static VerbPattern ParentRegular(this VerbPattern pattern) => pattern switch
+    {
+        // Irregulars → Ati
+        VerbPattern.Atthi or VerbPattern.Dakkhati or VerbPattern.Dammi or
+        VerbPattern.Hanati or VerbPattern.Hoti or VerbPattern.Kubbati or
+        VerbPattern.Natthi => VerbPattern.Ati,
+
+        // Irregulars → Eti
+        VerbPattern.Eti2 => VerbPattern.Eti,
+
+        // Irregulars → Oti
+        VerbPattern.Brūti or VerbPattern.Karoti => VerbPattern.Oti,
+
+        // Regular or breakpoint patterns have no parent
+        _ => throw new InvalidOperationException($"{pattern} is not an irregular pattern")
+    };
 }

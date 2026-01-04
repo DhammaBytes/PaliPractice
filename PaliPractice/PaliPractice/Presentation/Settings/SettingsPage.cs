@@ -45,8 +45,12 @@ public sealed partial class SettingsPage : Page
                                             v => v.GoToConjugationSettingsCommand)
                                     ),
 
-                                    // Feedback section
-                                    SettingsSection.Build("Feedback",
+                                    // About & Support section
+                                    SettingsSection.Build("About & Support",
+                                        SettingsRow.BuildNavigation<SettingsViewModel>(
+                                            "About Pāli Practice",
+                                            "\uE946", // Info
+                                            v => v.GoToAboutCommand),
                                         SettingsRow.BuildAction<SettingsViewModel>(
                                             "Contact us",
                                             "\uE715", // Message

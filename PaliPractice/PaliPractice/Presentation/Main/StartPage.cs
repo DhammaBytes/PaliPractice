@@ -100,6 +100,26 @@ public sealed partial class StartPage : Page
                                                             )
                                                     )),
 
+                                            // Statistics Button
+                                            new SquircleButton()
+                                                .HorizontalAlignment(HorizontalAlignment.Stretch)
+                                                .HorizontalContentAlignment(HorizontalAlignment.Left)
+                                                .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
+                                                .Padding(20, 16)
+                                                .Command(() => vm.GoToStatisticsCommand)
+                                                .Child(new StackPanel()
+                                                    .Orientation(Orientation.Horizontal)
+                                                    .Spacing(12)
+                                                    .Children(
+                                                        new FontIcon()
+                                                            .Glyph("\uE9D9") // BarChartHorizontal
+                                                            .FontSize(24),
+                                                        RegularText()
+                                                            .Text("Statistics")
+                                                            .FontSize(18)
+                                                            .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+                                                    )),
+
                                             // Settings Button
                                             new SquircleButton()
                                                 .HorizontalAlignment(HorizontalAlignment.Stretch)
@@ -120,50 +140,25 @@ public sealed partial class StartPage : Page
                                                             .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
                                                     )),
 
-                                            // Help and About buttons (50/50 split)
-                                            new Grid()
-                                                .ColumnDefinitions("*,12,*")
-                                                .Children(
-                                                    // Help Button
-                                                    new SquircleButton()
-                                                        .Grid(column: 0)
-                                                        .HorizontalAlignment(HorizontalAlignment.Stretch)
-                                                        .Fill(ThemeResource.Get<Brush>("SurfaceBrush")) 
-                                                        .Padding(16, 12)
-                                                        .Command(() => vm.GoToHelpCommand)
-                                                        .Child(new StackPanel()
-                                                            .Orientation(Orientation.Horizontal)
-                                                            .Spacing(8)
-                                                            .Children(
-                                                                new FontIcon()
-                                                                    .Glyph("\uE897")
-                                                                    .FontSize(20),
-                                                                RegularText()
-                                                                    .Text("Help")
-                                                                    .FontSize(16)
-                                                                    .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                                                            )),
-
-                                                    // About Button
-                                                    new SquircleButton()
-                                                        .Grid(column: 2)
-                                                        .HorizontalAlignment(HorizontalAlignment.Stretch)
-                                                        .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
-                                                        .Padding(16, 12)
-                                                        .Command(() => vm.GoToAboutCommand)
-                                                        .Child(new StackPanel()
-                                                            .Orientation(Orientation.Horizontal)
-                                                            .Spacing(8)
-                                                            .Children(
-                                                                new FontIcon()
-                                                                    .Glyph("\uE946")
-                                                                    .FontSize(20),
-                                                                RegularText()
-                                                                    .Text("About")
-                                                                    .FontSize(16)
-                                                                    .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                                                            ))
-                                                )
+                                            // Help Button
+                                            new SquircleButton()
+                                                .HorizontalAlignment(HorizontalAlignment.Stretch)
+                                                .HorizontalContentAlignment(HorizontalAlignment.Left)
+                                                .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
+                                                .Padding(20, 16)
+                                                .Command(() => vm.GoToHelpCommand)
+                                                .Child(new StackPanel()
+                                                    .Orientation(Orientation.Horizontal)
+                                                    .Spacing(12)
+                                                    .Children(
+                                                        new FontIcon()
+                                                            .Glyph("\uE897")
+                                                            .FontSize(24),
+                                                        RegularText()
+                                                            .Text("Help")
+                                                            .FontSize(18)
+                                                            .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+                                                    ))
                                         )
                                 )
                         )

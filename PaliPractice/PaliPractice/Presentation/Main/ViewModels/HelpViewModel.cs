@@ -65,4 +65,10 @@ This app focuses on forms most useful for beginner-to-intermediate students. It 
 
 These forms vary considerably across verbs and often require learning on a word-by-word basis. This does not fit well within the current practice format. A dedicated trainer for these forms may be added in future versions.
 """;
+
+    public static string FaqAboutApp => """
+**Where can I get more information about the app?**
+
+See the About section in Settings for details about the app, its data sources, licensing, and how to contact us.
+""";
 }

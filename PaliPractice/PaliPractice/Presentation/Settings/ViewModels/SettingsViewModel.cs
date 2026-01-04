@@ -1,3 +1,4 @@
+using PaliPractice.Presentation.Main.ViewModels;
 using PaliPractice.Services.Feedback;
 
 namespace PaliPractice.Presentation.Settings.ViewModels;
@@ -27,8 +28,14 @@ public partial class SettingsViewModel : ObservableObject
     public ICommand GoBackCommand => new AsyncRelayCommand(() => _navigator.NavigateBackAsync(this));
     public ICommand GoToConjugationSettingsCommand => new AsyncRelayCommand(GoToConjugationSettings);
     public ICommand GoToDeclensionSettingsCommand => new AsyncRelayCommand(GoToDeclensionSettings);
+    public ICommand GoToAboutCommand => new AsyncRelayCommand(GoToAbout);
     public ICommand ContactUsCommand => new AsyncRelayCommand(ContactUsAsync);
     public ICommand RateAppCommand => new AsyncRelayCommand(RateAppAsync);
+
+    async Task GoToAbout()
+    {
+        await _navigator.NavigateViewModelAsync<AboutViewModel>(this);
+    }
 
     async Task GoToConjugationSettings()
     {

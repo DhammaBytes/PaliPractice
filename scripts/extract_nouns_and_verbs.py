@@ -173,7 +173,7 @@ class NounVerbExtractor:
     """Extract nouns and verbs with grammatical categorization."""
 
     def __init__(self, output_db_path: str = "../PaliPractice/PaliPractice/Data/pali.db",
-                 noun_limit: int = 3000, verb_limit: int = 2000):
+                 noun_limit: int = 1500, verb_limit: int = 750):
         self.output_db_path = output_db_path
         self.noun_limit = noun_limit
         self.verb_limit = verb_limit
@@ -375,7 +375,8 @@ class NounVerbExtractor:
             DpdHeadword.sutta_1 != '',
             ~DpdHeadword.meaning_1.contains('(gram)'),
             ~DpdHeadword.meaning_1.contains('(abhi)'),
-            ~DpdHeadword.meaning_1.contains('(comm)'),
+            ~DpdHeadword.meaning_1.startswith('(comm)'),
+            ~DpdHeadword.meaning_1.contains('??'),
             ~DpdHeadword.meaning_1.contains('in reference to'),
             ~DpdHeadword.meaning_1.contains('people of'),
             ~DpdHeadword.meaning_1.contains('name of'),
@@ -490,7 +491,7 @@ class NounVerbExtractor:
             DpdHeadword.sutta_1 != '',
             ~DpdHeadword.meaning_1.contains('(gram)'),
             ~DpdHeadword.meaning_1.contains('(abhi)'),
-            ~DpdHeadword.meaning_1.contains('(comm)'),
+            ~DpdHeadword.meaning_1.startswith('(comm)'),
             ~DpdHeadword.meaning_1.contains('in reference to'),
             ~DpdHeadword.meaning_1.contains('name of'),
             ~DpdHeadword.meaning_1.contains('names of'),
@@ -983,14 +984,14 @@ Examples:
     parser.add_argument(
         "--nouns",
         type=int,
-        default=3000,
-        help="Number of unique noun lemmas to extract (default: 3000)"
+        default=1500,
+        help="Number of unique noun lemmas to extract (default: 1500)"
     )
     parser.add_argument(
         "--verbs",
         type=int,
-        default=2000,
-        help="Number of unique verb lemmas to extract (default: 2000)"
+        default=750,
+        help="Number of unique verb lemmas to extract (default: 750)"
     )
 
     args = parser.parse_args()

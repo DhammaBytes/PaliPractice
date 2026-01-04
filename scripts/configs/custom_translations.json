@@ -1,10 +1,246 @@
 {
-  "6981": {
-    "lemma_1": "appamāda",
-    "preferred": "heedfulness"
+  "primary": {
+    "4127": {
+      "lemma_1": "anicca 1",
+      "preferred": "inconstant"
+    },
+    "5217": {
+      "lemma_1": "anusaya",
+      "preferred": "obsession (for)"
+    },
+    "6981": {
+      "lemma_1": "appamāda",
+      "preferred": "heedfulness"
+    },
+    "11459": {
+      "lemma_1": "ātappa",
+      "preferred": "ardency"
+    },
+    "12198": {
+      "lemma_1": "āyatana 1",
+      "preferred": "sense medium"
+    },
+    "12812": {
+      "lemma_1": "āsava 1.2",
+      "preferred": "effluent"
+    },
+    "12813": {
+      "lemma_1": "āsava 1.3",
+      "preferred": "effluent"
+    },
+    "15683": {
+      "lemma_1": "upadhi 1",
+      "preferred": "acquisition"
+    },
+    "16316": {
+      "lemma_1": "upādāna 2",
+      "preferred": "clinging"
+    },
+    "16449": {
+      "lemma_1": "upekkhā",
+      "preferred": "equanimity"
+    },
+    "18553": {
+      "lemma_1": "ottappa",
+      "preferred": "compunction"
+    },
+    "20959": {
+      "lemma_1": "kāma 3",
+      "preferred": "sensuality"
+    },
+    "22620": {
+      "lemma_1": "kusala 1",
+      "preferred": "skilful"
+    },
+    "27033": {
+      "lemma_1": "cetanā",
+      "preferred": "intention"
+    },
+    "27053": {
+      "lemma_1": "cetas",
+      "preferred": "awareness"
+    },
+    "27150": {
+      "lemma_1": "cetovimutti 1",
+      "preferred": "awareness-release"
+    },
+    "28748": {
+      "lemma_1": "jhāna 1",
+      "preferred": "absorption"
+    },
+    "32875": {
+      "lemma_1": "dukkha 1",
+      "preferred": "stressful"
+    },
+    "32877": {
+      "lemma_1": "dukkha 3",
+      "preferred": "stress"
+    },
+    "37569": {
+      "lemma_1": "nibbāna 1",
+      "preferred": "unbinding"
+    },
+    "38615": {
+      "lemma_1": "nīvaraṇa 1",
+      "preferred": "hindrance"
+    },
+    "38616": {
+      "lemma_1": "nīvaraṇa 2",
+      "preferred": "hindrance"
+    },
+    "39702": {
+      "lemma_1": "pajānāti",
+      "preferred": "discerns"
+    },
+    "39994": {
+      "lemma_1": "paññā 1",
+      "preferred": "discernment"
+    },
+    "39995": {
+      "lemma_1": "paññā 2",
+      "preferred": "with discernment"
+    },
+    "40109": {
+      "lemma_1": "paññāvimutti",
+      "preferred": "discernment-release"
+    },
+    "42686": {
+      "lemma_1": "pamāda 1",
+      "preferred": "heedlessness"
+    },
+    "53212": {
+      "lemma_1": "mettā",
+      "preferred": "goodwill"
+    },
+    "56595": {
+      "lemma_1": "saṅkappa 1",
+      "preferred": "resolve"
+    },
+    "56712": {
+      "lemma_1": "saṅkhata",
+      "preferred": "fabricated"
+    },
+    "56770": {
+      "lemma_1": "saṅkhāra 3",
+      "preferred": "thought construct"
+    },
+    "56771": {
+      "lemma_1": "saṅkhāra 4",
+      "preferred": "fabrication"
+    },
+    "57625": {
+      "lemma_1": "satipaṭṭhāna 1",
+      "preferred": "establishing of mindfulness"
+    },
+    "57626": {
+      "lemma_1": "satipaṭṭhāna 2",
+      "preferred": "establishing of mindfulness"
+    },
+    "58070": {
+      "lemma_1": "saddhā 2",
+      "preferred": "conviction"
+    },
+    "59177": {
+      "lemma_1": "samaṇa 1",
+      "preferred": "contemplative"
+    },
+    "59985": {
+      "lemma_1": "samudaya 1",
+      "preferred": "origination"
+    },
+    "60223": {
+      "lemma_1": "sampajañña 1",
+      "preferred": "alertness"
+    },
+    "60607": {
+      "lemma_1": "sambodhi",
+      "preferred": "self-awakening"
+    },
+    "67428": {
+      "lemma_1": "vicāra 1",
+      "preferred": "evaluation"
+    },
+    "67624": {
+      "lemma_1": "vijjā 1",
+      "preferred": "clear knowing"
+    },
+    "68871": {
+      "lemma_1": "virāga 1.1",
+      "preferred": "dispassion"
+    },
+    "68921": {
+      "lemma_1": "viriya",
+      "preferred": "persistence"
+    },
+    "69888": {
+      "lemma_1": "vīmaṃsā 1",
+      "preferred": "discrimination"
+    },
+    "71265": {
+      "lemma_1": "hiri 1",
+      "preferred": "shame"
+    }
   },
-  "39994": {
-    "lemma_1": "paññā 1",
-    "preferred": "discernment"
+  "replace": {
+    "3545": {
+      "lemma_1": "anatta 2",
+      "target": "non-self",
+      "preferred": "not-self; non-self"
+    },
+    "8928": {
+      "lemma_1": "arahant",
+      "target": "awakened being",
+      "preferred": "awakened being; worthy one"
+    },
+    "8943": {
+      "lemma_1": "arahaṃ",
+      "target": "awakened being",
+      "preferred": "awakened being; worthy one"
+    },
+    "9320": {
+      "lemma_1": "asaṅkhata 1",
+      "target": "unconditioned",
+      "preferred": "unconditioned; unfabricated"
+    },
+    "10520": {
+      "lemma_1": "avijjā",
+      "target": "ignorance",
+      "preferred": "ignorance; lack of skill"
+    },
+    "47295": {
+      "lemma_1": "pettivisaya",
+      "target": "ghost realm",
+      "preferred": "hungry ghost realm"
+    },
+    "51099": {
+      "lemma_1": "manas",
+      "target": "intellect",
+      "preferred": "intellect; heart (in poetry)"
+    },
+    "59116": {
+      "lemma_1": "sama 1.1",
+      "target": "balanced",
+      "preferred": "balanced; harmonious"
+    },
+    "67692": {
+      "lemma_1": "viññāṇa 1",
+      "target": "consciousness",
+      "preferred": "(sensory) consciousness"
+    },
+    "69151": {
+      "lemma_1": "visama 3",
+      "target": "wrong",
+      "preferred": "wrong; dissonant"
+    },
+    "71783": {
+      "lemma_1": "anicca 2",
+      "target": "inconstance",
+      "preferred": "inconstancy"
+    },
+    "85793": {
+      "lemma_1": "asaṅkhata 2",
+      "target": "the unconditioned",
+      "preferred": "the unconditioned; the unfabricated"
+    }
   }
 }

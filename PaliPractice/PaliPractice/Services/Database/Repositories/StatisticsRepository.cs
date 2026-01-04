@@ -234,12 +234,30 @@ public class StatisticsRepository : IStatisticsRepository
         return new PracticeTypeStatsDto
         {
             TotalPracticed = _connection.Table<NounsFormMastery>().Count(),
-            DueForReview = _userData.GetDueNounForms(1000).Count,
+            DueForReview = CountDueNounForms(),
             Distribution = GetNounSrsDistribution(),
             StrongestCombos = GetStrongestNounCombos(5),
             WeakestCombos = GetWeakestNounCombos(5),
             PeriodStats = GetNounPeriodStats()
         };
+    }
+
+    /// <summary>
+    /// Counts all due noun forms without loading them into memory.
+    /// </summary>
+    int CountDueNounForms() => CountDueForms("nouns_form_mastery");
+
+    /// <summary>
+    /// Counts all due forms in a table using centralized WHERE clause.
+    /// </summary>
+    int CountDueForms(string tableName)
+    {
+        var sql = $"SELECT COUNT(*) FROM {tableName} WHERE {CooldownCalculator.DueFormsWhereClause}";
+        var cutoffs = CooldownCalculator.GetDueCutoffParams();
+
+        return _connection.ExecuteScalar<int>(sql,
+            cutoffs[0], cutoffs[1], cutoffs[2], cutoffs[3], cutoffs[4],
+            cutoffs[5], cutoffs[6], cutoffs[7], cutoffs[8], cutoffs[9]);
     }
 
     public SrsDistributionDto GetNounSrsDistribution()
@@ -256,9 +274,16 @@ public class StatisticsRepository : IStatisticsRepository
         };
     }
 
+    /// <summary>
+    /// Minimum number of forms required for a combo to be included in stats.
+    /// Combos with fewer forms are not statistically meaningful.
+    /// </summary>
+    const int MinFormsPerCombo = 3;
+
     public List<ComboStatDto> GetStrongestNounCombos(int count = 5)
     {
         return PadToCount(GetNounComboStats()
+            .Where(c => c.FormCount >= MinFormsPerCombo)
             .OrderByDescending(c => c.AverageMastery)
             .Take(count)
             .ToList(), count);
@@ -267,6 +292,7 @@ public class StatisticsRepository : IStatisticsRepository
     public List<ComboStatDto> GetWeakestNounCombos(int count = 5)
     {
         return PadToCount(GetNounComboStats()
+            .Where(c => c.FormCount >= MinFormsPerCombo)
             .OrderBy(c => c.AverageMastery)
             .Take(count)
             .ToList(), count);
@@ -304,9 +330,9 @@ public class StatisticsRepository : IStatisticsRepository
 
     public PeriodStatsDto GetNounPeriodStats()
     {
-        var now = DateTime.UtcNow;
-        var todayStart = now.Date;
-        var weekAgo = todayStart.AddDays(-7);
+        // Use logical day boundaries (5am local time) for consistency with DailyProgress
+        var todayStart = DailyProgress.TodayStartUtc;
+        var weekAgo = DailyProgress.GetDayStartUtc(6); // 6 days ago = 7 day window including today
 
         var history = _connection.Table<NounsPracticeHistory>().ToList();
 
@@ -325,13 +351,18 @@ public class StatisticsRepository : IStatisticsRepository
         return new PracticeTypeStatsDto
         {
             TotalPracticed = _connection.Table<VerbsFormMastery>().Count(),
-            DueForReview = _userData.GetDueVerbForms(1000).Count,
+            DueForReview = CountDueVerbForms(),
             Distribution = GetVerbSrsDistribution(),
             StrongestCombos = GetStrongestVerbCombos(5),
             WeakestCombos = GetWeakestVerbCombos(5),
             PeriodStats = GetVerbPeriodStats()
         };
     }
+
+    /// <summary>
+    /// Counts all due verb forms without loading them into memory.
+    /// </summary>
+    int CountDueVerbForms() => CountDueForms("verbs_form_mastery");
 
     public SrsDistributionDto GetVerbSrsDistribution()
     {
@@ -350,6 +381,7 @@ public class StatisticsRepository : IStatisticsRepository
     public List<ComboStatDto> GetStrongestVerbCombos(int count = 5)
     {
         return PadToCount(GetVerbComboStats()
+            .Where(c => c.FormCount >= MinFormsPerCombo)
             .OrderByDescending(c => c.AverageMastery)
             .Take(count)
             .ToList(), count);
@@ -358,6 +390,7 @@ public class StatisticsRepository : IStatisticsRepository
     public List<ComboStatDto> GetWeakestVerbCombos(int count = 5)
     {
         return PadToCount(GetVerbComboStats()
+            .Where(c => c.FormCount >= MinFormsPerCombo)
             .OrderBy(c => c.AverageMastery)
             .Take(count)
             .ToList(), count);
@@ -388,9 +421,9 @@ public class StatisticsRepository : IStatisticsRepository
 
     public PeriodStatsDto GetVerbPeriodStats()
     {
-        var now = DateTime.UtcNow;
-        var todayStart = now.Date;
-        var weekAgo = todayStart.AddDays(-7);
+        // Use logical day boundaries (5am local time) for consistency with DailyProgress
+        var todayStart = DailyProgress.TodayStartUtc;
+        var weekAgo = DailyProgress.GetDayStartUtc(6); // 6 days ago = 7 day window including today
 
         var history = _connection.Table<VerbsPracticeHistory>().ToList();
 

@@ -212,14 +212,14 @@ public class UserDataRepositoryTests
     [Test]
     public void VerbsPracticeHistory_ImplementsIPracticeHistory()
     {
-        _repository.RecordVerbPracticeResult(2222222222L, wasEasy: false);
+        _repository.RecordVerbPracticeResult(2222222222L, wasEasy: true);
 
         var history = _repository.GetRecentHistory(PracticeType.Conjugation, limit: 10);
         var record = history[0];
 
         // Verify interface properties (FormText resolved on load, not stored)
         record.FormId.Should().Be(2222222222L);
-        // First practice is always an improvement: 0 (unpracticed) → 3 (default-1 for hard)
+        // First practice with easy: 4 → 5, an improvement
         record.IsImproved.Should().BeTrue();
     }
 

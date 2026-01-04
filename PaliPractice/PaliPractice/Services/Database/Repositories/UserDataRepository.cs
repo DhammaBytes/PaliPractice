@@ -24,32 +24,18 @@ public class UserDataRepository : IUserDataRepository
     }
 
     /// <summary>
-    /// Builds a SQL query for due forms with pre-calculated cutoff dates for each mastery level.
-    /// Uses 10 OR conditions to filter forms without loading all into memory.
+    /// Queries due forms with pre-calculated cutoff dates for each mastery level.
+    /// Uses centralized WHERE clause from CooldownCalculator.
     /// </summary>
     List<T> QueryDueForms<T>(string tableName, int limit) where T : new()
     {
-        var now = DateTime.UtcNow;
-        var cooldowns = CooldownCalculator.GetCooldownHoursLookup();
-
-        // Build 10 OR conditions, one per mastery level
         var sql = $@"
             SELECT * FROM {tableName}
-            WHERE (mastery_level = 1 AND last_practiced_utc <= ?)
-               OR (mastery_level = 2 AND last_practiced_utc <= ?)
-               OR (mastery_level = 3 AND last_practiced_utc <= ?)
-               OR (mastery_level = 4 AND last_practiced_utc <= ?)
-               OR (mastery_level = 5 AND last_practiced_utc <= ?)
-               OR (mastery_level = 6 AND last_practiced_utc <= ?)
-               OR (mastery_level = 7 AND last_practiced_utc <= ?)
-               OR (mastery_level = 8 AND last_practiced_utc <= ?)
-               OR (mastery_level = 9 AND last_practiced_utc <= ?)
-               OR (mastery_level = 10 AND last_practiced_utc <= ?)
+            WHERE {CooldownCalculator.DueFormsWhereClause}
             ORDER BY last_practiced_utc, form_id
             LIMIT ?";
 
-        // Calculate cutoff date for each level: form is due when last_practiced + cooldown <= now
-        var cutoffs = cooldowns.Select(hours => now.AddHours(-hours)).ToArray();
+        var cutoffs = CooldownCalculator.GetDueCutoffParams();
 
         return _connection.Query<T>(sql,
             cutoffs[0], cutoffs[1], cutoffs[2], cutoffs[3], cutoffs[4],

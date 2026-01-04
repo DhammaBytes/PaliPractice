@@ -82,4 +82,28 @@ public static class CooldownCalculator
         else
             return Math.Max(MinLevel, currentLevel - 1);
     }
+
+    /// <summary>
+    /// SQL WHERE clause for finding due forms. Use with GetDueCutoffParams().
+    /// </summary>
+    public const string DueFormsWhereClause = @"
+        (mastery_level = 1 AND last_practiced_utc <= ?)
+     OR (mastery_level = 2 AND last_practiced_utc <= ?)
+     OR (mastery_level = 3 AND last_practiced_utc <= ?)
+     OR (mastery_level = 4 AND last_practiced_utc <= ?)
+     OR (mastery_level = 5 AND last_practiced_utc <= ?)
+     OR (mastery_level = 6 AND last_practiced_utc <= ?)
+     OR (mastery_level = 7 AND last_practiced_utc <= ?)
+     OR (mastery_level = 8 AND last_practiced_utc <= ?)
+     OR (mastery_level = 9 AND last_practiced_utc <= ?)
+     OR (mastery_level = 10 AND last_practiced_utc <= ?)";
+
+    /// <summary>
+    /// Gets the 10 cutoff DateTime parameters for DueFormsWhereClause.
+    /// </summary>
+    public static DateTime[] GetDueCutoffParams()
+    {
+        var now = DateTime.UtcNow;
+        return CooldownHoursLookup.Select(hours => now.AddHours(-hours)).ToArray();
+    }
 }

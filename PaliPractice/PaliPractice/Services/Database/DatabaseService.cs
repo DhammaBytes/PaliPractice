@@ -32,6 +32,11 @@ public interface IDatabaseService
     IUserDataRepository UserData { get; }
 
     /// <summary>
+    /// Repository for aggregated statistics.
+    /// </summary>
+    IStatisticsRepository Statistics { get; }
+
+    /// <summary>
     /// True if a critical failure occurred during provisioning.
     /// App should show an error screen if true.
     /// </summary>
@@ -63,6 +68,7 @@ public class DatabaseService : IDatabaseService
     public INounRepository Nouns { get; }
     public IVerbRepository Verbs { get; }
     public IUserDataRepository UserData { get; }
+    public IStatisticsRepository Statistics { get; }
 
     public bool HasFatalFailure => _provisionLog.Any(e => e.IsFailure);
     public IReadOnlyList<DatabaseProvisionedEvent> ProvisionLog => _provisionLog;
@@ -99,6 +105,7 @@ public class DatabaseService : IDatabaseService
         Nouns = new NounRepository(paliDb);
         Verbs = new VerbRepository(paliDb);
         UserData = new UserDataRepository(userDataDb);
+        Statistics = new StatisticsRepository(userDataDb, UserData);
 
         // Initialize default settings if first run
         UserData.InitializeDefaultsIfNeeded();

@@ -11,25 +11,28 @@ public enum HeightClass
     Minimum
 }
 
+/// <summary>
+/// Layout constants for the app. All values use expression-bodied properties
+/// to support hot reload during development.
+/// </summary>
 public static class LayoutConstants
 {
     #region Width/Height Constraints
 
-    public const double ContentMaxWidth = 450;
-    // public const double ContentMaxHeight = 900;
+    public static double ContentMaxWidth => 450;
 
     // Translation block width as percentage of card width
-    public const double TranslationWidthRatio = 0.76;
-    public const double AnswerPlaceholderWidthRatio = 0.5;
+    public static double TranslationWidthRatio => 0.76;
+    public static double AnswerPlaceholderWidthRatio => 0.5;
 
     #endregion
 
     #region Height Breakpoints
-    
-    // lower limits
-    const double HeightTall = 800;
-    const double HeightMedium = 700; // iPhone 8+ (414×736), iPad Mini (744×1133), taller old Androids
-    const double HeightShort = 600; // iPhone 8 (375×667, old Androids (360×640), old desktops (1024×768, 1280×720)
+
+    // Lower limits for height classes
+    static double HeightTall => 800;
+    static double HeightMedium => 700; // iPhone 8+ (414×736), iPad Mini (744×1133), taller old Androids
+    static double HeightShort => 600; // iPhone 8 (375×667), old Androids (360×640), old desktops (1024×768, 1280×720)
     // anything smaller: iPhone 5s (320×568)
 
     /// <summary>
@@ -38,9 +41,9 @@ public static class LayoutConstants
     /// </summary>
     static HeightClass GetHeightClass(double windowHeight) => windowHeight switch
     {
-        >= HeightTall => HeightClass.Tall,
-        >= HeightMedium => HeightClass.Medium,
-        >= HeightShort => HeightClass.Short,
+        >= 800 => HeightClass.Tall,
+        >= 700 => HeightClass.Medium,
+        >= 600 => HeightClass.Short,
         _ => HeightClass.Minimum
     };
 
@@ -50,7 +53,7 @@ public static class LayoutConstants
     public static HeightClass GetCurrentHeightClass()
     {
         var window = App.MainWindow;
-        return GetHeightClass(window?.Bounds.Height ?? HeightMedium);
+        return GetHeightClass(window?.Bounds.Height ?? 700);
     }
 
     #endregion
@@ -86,7 +89,7 @@ public static class LayoutConstants
         double Debug            // Size bracket debug text
     )
     {
-        static readonly PracticeFontSizes Tall = new(
+        static PracticeFontSizes Tall => new(
             Word: 32,
             Answer: 30,
             AnswerSecondary: 22,
@@ -105,7 +108,7 @@ public static class LayoutConstants
             Debug: 10
         );
 
-        static readonly PracticeFontSizes Medium = new(
+        static PracticeFontSizes Medium => new(
             Word: 34,
             Answer: 28,
             AnswerSecondary: 18,
@@ -124,7 +127,7 @@ public static class LayoutConstants
             Debug: 10
         );
 
-        static readonly PracticeFontSizes Short = new(
+        static PracticeFontSizes Short => new(
             Word: 32,
             Answer: 26,
             AnswerSecondary: 17,
@@ -143,7 +146,7 @@ public static class LayoutConstants
             Debug: 10
         );
 
-        static readonly PracticeFontSizes Minimum = new(
+        static PracticeFontSizes Minimum => new(
             Word: 29,
             Answer: 24,
             AnswerSecondary: 16,
@@ -204,15 +207,15 @@ public static class LayoutConstants
         };
 
         /// <summary>Spacing between card child elements (word, answer, badges).</summary>
-        public const double CardContentSpacing = 12;
+        public static double CardContentSpacing => 12;
 
         // === Badge ===
 
         /// <summary>Spacing between badge icon and text inside a badge.</summary>
-        public const double BadgeIconTextSpacing = 6;
+        public static double BadgeIconTextSpacing => 6;
 
         /// <summary>Padding inside the badge border.</summary>
-        public static readonly Thickness BadgePadding = new(6, 3, 6, 3);
+        public static Thickness BadgePadding => new(6, 3, 6, 3);
 
         /// <summary>Spacing between badges in the badge row.</summary>
         public static double BadgeRowSpacing(HeightClass h) => h switch
@@ -224,50 +227,50 @@ public static class LayoutConstants
         // === Word Section ===
 
         /// <summary>Margin above the main word.</summary>
-        public const double WordMarginTop = 16;
+        public static double WordMarginTop => 16;
 
         /// <summary>Margin below the main word.</summary>
-        public const double WordMarginBottom = 8;
+        public static double WordMarginBottom => 8;
 
         // === Answer Section ===
 
         /// <summary>Margin above the answer container.</summary>
-        public const double AnswerMarginTop = 8;
+        public static double AnswerMarginTop => 8;
 
         /// <summary>Spacing between answer lines.</summary>
-        public const double AnswerLineSpacing = 4;
+        public static double AnswerLineSpacing => 4;
 
         // === Translation Block ===
 
         /// <summary>Horizontal padding inside translation block.</summary>
-        public const double TranslationPaddingH = 24;
+        public static double TranslationPaddingH => 24;
 
         /// <summary>Vertical padding inside translation block.</summary>
-        public const double TranslationPaddingV = 16;
+        public static double TranslationPaddingV => 16;
 
         /// <summary>Spacing between translation text and pagination.</summary>
-        public const double TranslationContentSpacing = 8;
+        public static double TranslationContentSpacing => 8;
 
         // === Example Section ===
 
         /// <summary>Spacing between example sentence and reference text.</summary>
-        public const double ExampleLineSpacing = 4;
+        public static double ExampleLineSpacing => 4;
 
         // === Buttons ===
 
         /// <summary>Spacing between button icon and text.</summary>
-        public const double ButtonIconTextSpacing = 8;
+        public static double ButtonIconTextSpacing => 8;
 
         /// <summary>Horizontal padding for action buttons (reveal, hard, easy).</summary>
-        public const double ActionButtonPaddingH = 16;
+        public static double ActionButtonPaddingH => 16;
 
         /// <summary>Vertical padding for action buttons.</summary>
-        public const double ActionButtonPaddingV = 12;
+        public static double ActionButtonPaddingV => 12;
 
         // === Daily Goal ===
 
         /// <summary>Spacing between daily goal text and progress bar.</summary>
-        public const double DailyGoalSpacing = 8;
+        public static double DailyGoalSpacing => 8;
     }
 
     #endregion
@@ -280,16 +283,16 @@ public static class LayoutConstants
     public static class Sizes
     {
         /// <summary>Height of the underline shown before answer is revealed.</summary>
-        public const double PlaceholderHeight = 2;
+        public static double PlaceholderHeight => 2;
 
         /// <summary>Border thickness for the answer placeholder underline.</summary>
-        public const double PlaceholderBorderThickness = 2;
+        public static double PlaceholderBorderThickness => 2;
 
         /// <summary>Height of the daily goal progress bar.</summary>
-        public const double ProgressBarHeight = 6;
+        public static double ProgressBarHeight => 6;
 
         /// <summary>Corner radius for the daily goal progress bar.</summary>
-        public const double ProgressBarCornerRadius = 3;
+        public static double ProgressBarCornerRadius => 3;
     }
 
     #endregion

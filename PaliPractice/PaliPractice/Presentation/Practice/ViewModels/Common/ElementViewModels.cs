@@ -1,5 +1,6 @@
 using PaliPractice.Models.Words;
 using PaliPractice.Services.Database.Repositories;
+using PaliPractice.Services.UserData;
 
 namespace PaliPractice.Presentation.Practice.ViewModels.Common;
 
@@ -69,7 +70,9 @@ public partial class FlashCardViewModel : ObservableObject
     {
         Question = word.Lemma;
         ProgressText = $"{currentIndex + 1}/{totalCount}";
-        Level = masteryLevel;
+        Level = masteryLevel == CooldownCalculator.UnpracticedLevel
+            ? CooldownCalculator.DefaultLevel
+            : masteryLevel;
         Root = root ?? string.Empty;
     }
 

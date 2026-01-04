@@ -112,7 +112,7 @@ public sealed partial class AboutPage : Page
     /// Builds a section with optional title and rich content with clickable links.
     /// Titles are centered, content is left-aligned.
     /// </summary>
-    static Border BuildRichSection(string? title, string content)
+    static SquircleBorder BuildRichSection(string? title, string content)
     {
         var children = new List<UIElement>();
 
@@ -130,12 +130,11 @@ public sealed partial class AboutPage : Page
 
         children.Add(CreateRichContent(content, fontSize: BodyFontSize));
 
-        return new Border()
-            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .CornerRadius(8)
-            .Padding(SectionPadding)
+        return new SquircleBorder()
+            .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
             .Child(
                 new StackPanel()
+                    .Padding(SectionPadding)
                     .Spacing(12)
                     .Children(children.ToArray())
             );

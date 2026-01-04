@@ -119,13 +119,12 @@ public sealed partial class StatisticsPage : Page
             .Spacing(16)
             .Children(
                 BuildSectionHeader("Overview", "\uE9D9"),
-                new Border()
+                new SquircleBorder()
                     .HorizontalAlignment(HorizontalAlignment.Stretch)
-                    .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-                    .CornerRadius(12)
-                    .Padding(16)
+                    .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
                     .Child(
                         new StackPanel()
+                            .Padding(16)
                             .HorizontalAlignment(HorizontalAlignment.Stretch)
                             .Spacing(20)
                             .Children(
@@ -185,13 +184,12 @@ public sealed partial class StatisticsPage : Page
             .Spacing(16)
             .Children(
                 BuildSectionHeader(title, icon),
-                new Border()
+                new SquircleBorder()
                     .HorizontalAlignment(HorizontalAlignment.Stretch)
-                    .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-                    .CornerRadius(12)
-                    .Padding(16)
+                    .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
                     .Child(
                         new StackPanel()
+                            .Padding(16)
                             .HorizontalAlignment(HorizontalAlignment.Stretch)
                             .Spacing(20)
                             .Children(

@@ -95,6 +95,12 @@ When modifying code:
   - `PaliText()` - For Pali words and inflected forms (uses LibertinusSans font)
 - Add `using static PaliPractice.Presentation.Common.TextHelpers;` to use these helpers directly
 
+**UI Shapes Guidelines:**
+- For rounded backgrounds and buttons, use squircle helpers from `Presentation/Common/Squircle/`:
+  - `SquircleBorder` - For card backgrounds (use `.Fill()` instead of `.Background()`)
+  - `SquircleButton` - For buttons with squircle shape
+- Squircles provide smoother, more natural curves than standard `CornerRadius`
+
 For database changes:
 - Modify extraction script in scripts/extract_nouns_and_verbs.py
 - Run validation with scripts/validate_db.py
@@ -213,3 +219,36 @@ public sealed partial class PracticePage : Page
 ### Binding 101
 
 It is important to consider that within the `DataContext` method the vm property will **always** be null.
+
+### Accessing ViewModel Outside Bindings
+
+When you need to imperatively access the ViewModel (e.g., to populate UI elements that can't use bindings), **never use the `Loaded` event**. The `Loaded` event may fire before `DataContext` is set.
+
+**Use `DataContextChanged` instead:**
+```csharp
+public sealed partial class MyPage : Page
+{
+    readonly StackPanel _dynamicContent = new();
+
+    public MyPage()
+    {
+        this.DataContext<MyViewModel>((page, vm) => page
+            .Content(_dynamicContent));
+
+        // WRONG: DataContext may be null when Loaded fires
+        // Loaded += (s, e) => { if (DataContext is MyViewModel vm) ... };
+
+        // CORRECT: DataContextChanged fires when ViewModel is assigned
+        DataContextChanged += OnDataContextChanged;
+    }
+
+    void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs e)
+    {
+        if (e.NewValue is not MyViewModel vm) return;
+
+        // Safe to access vm properties here
+        foreach (var item in vm.Items)
+            _dynamicContent.Children.Add(BuildItemRow(item));
+    }
+}
+```

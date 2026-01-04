@@ -37,7 +37,7 @@
             <SolidColorBrush x:Key="OnSuccessContainerBrush" Color="#1B5E20"/>
 
             <!-- Background and Surface Colors -->
-            <SolidColorBrush x:Key="BackgroundBrush" Color="#FCFBFF"/>
+            <SolidColorBrush x:Key="BackgroundBrush" Color="#F0EFF4"/>
             <SolidColorBrush x:Key="OnBackgroundBrush" Color="#1C1B1F"/>
             <SolidColorBrush x:Key="OnBackgroundMediumBrush" Color="#8B8494"/>
             <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF"/>
@@ -139,7 +139,7 @@
             <SolidColorBrush x:Key="OnSuccessContainerBrush" Color="#1B5E20"/>
 
             <!-- Background and Surface Colors -->
-            <SolidColorBrush x:Key="BackgroundBrush" Color="#FCFBFF"/>
+            <SolidColorBrush x:Key="BackgroundBrush" Color="#F0EFF4"/>
             <SolidColorBrush x:Key="OnBackgroundBrush" Color="#1C1B1F"/>
             <SolidColorBrush x:Key="OnBackgroundMediumBrush" Color="#8B8494"/>
             <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF"/>

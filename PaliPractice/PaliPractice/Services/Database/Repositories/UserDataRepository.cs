@@ -122,8 +122,8 @@ public class UserDataRepository : IUserDataRepository
 
         if (existing == null)
         {
-            // First practice of this form: was unpracticed (0), now starts at default (4) +/- adjustment
-            oldLevel = CooldownCalculator.UnpracticedLevel;
+            // First practice: starts at default level (4), then adjusts based on result
+            oldLevel = CooldownCalculator.DefaultLevel;
             newLevel = CooldownCalculator.AdjustLevel(CooldownCalculator.DefaultLevel, wasEasy);
 
             var record = new NounsFormMastery
@@ -188,8 +188,8 @@ public class UserDataRepository : IUserDataRepository
 
         if (existing == null)
         {
-            // First practice of this form: was unpracticed (0), now starts at default (4) +/- adjustment
-            oldLevel = CooldownCalculator.UnpracticedLevel;
+            // First practice: starts at default level (4), then adjusts based on result
+            oldLevel = CooldownCalculator.DefaultLevel;
             newLevel = CooldownCalculator.AdjustLevel(CooldownCalculator.DefaultLevel, wasEasy);
 
             var record = new VerbsFormMastery

@@ -24,10 +24,9 @@ public static class SettingsSection
                 .Margin(16, 8, 16, 4)
         );
 
-        // Add border container for items
+        // Add border container for items (edge-to-edge, no rounded corners)
         var itemsContainer = new Border()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .CornerRadius(8)
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
             .Child(
                 new StackPanel()

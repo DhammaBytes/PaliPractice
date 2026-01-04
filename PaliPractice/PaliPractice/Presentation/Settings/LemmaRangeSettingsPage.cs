@@ -32,7 +32,6 @@ public sealed partial class LemmaRangeSettingsPage : Page
                         .Content(
                             new StackPanel()
                                 .MaxWidth(LayoutConstants.ContentMaxWidth)
-                                .Padding(16, 0)
                                 .Spacing(16)
                                 .Children(
                                     // Practice range section with RadioButtons
@@ -76,9 +75,9 @@ public sealed partial class LemmaRangeSettingsPage : Page
                     .FontSize(14)
                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
                     .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"))
-                    .Margin(0, 8, 0, 4),
+                    .Margin(16, 8, 16, 4),
                 new Border()
-                    .CornerRadius(8)
+                    .HorizontalAlignment(HorizontalAlignment.Stretch)
                     .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
                     .Padding(16, 8)
                     .Child(radioButtons)
@@ -161,9 +160,9 @@ public sealed partial class LemmaRangeSettingsPage : Page
                 .FontSize(14)
                 .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
                 .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"))
-                .Margin(0, 8, 0, 4),
+                .Margin(16, 8, 16, 4),
             new Border()
-                .CornerRadius(8)
+                .HorizontalAlignment(HorizontalAlignment.Stretch)
                 .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
                 .Padding(16, 12)
                 .Child(

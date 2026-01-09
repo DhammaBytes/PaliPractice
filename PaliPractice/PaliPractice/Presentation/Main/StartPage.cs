@@ -100,26 +100,6 @@ public sealed partial class StartPage : Page
                                                             )
                                                     )),
 
-                                            // Statistics Button
-                                            new SquircleButton()
-                                                .HorizontalAlignment(HorizontalAlignment.Stretch)
-                                                .HorizontalContentAlignment(HorizontalAlignment.Left)
-                                                .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
-                                                .Padding(20, 16)
-                                                .Command(() => vm.GoToStatisticsCommand)
-                                                .Child(new StackPanel()
-                                                    .Orientation(Orientation.Horizontal)
-                                                    .Spacing(12)
-                                                    .Children(
-                                                        new FontIcon()
-                                                            .Glyph("\uE9D9") // BarChartHorizontal
-                                                            .FontSize(24),
-                                                        RegularText()
-                                                            .Text("Statistics")
-                                                            .FontSize(18)
-                                                            .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                                                    )),
-
                                             // Settings Button
                                             new SquircleButton()
                                                 .HorizontalAlignment(HorizontalAlignment.Stretch)
@@ -140,30 +120,56 @@ public sealed partial class StartPage : Page
                                                             .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
                                                     )),
 
-                                            // Help Button
-                                            new SquircleButton()
-                                                .HorizontalAlignment(HorizontalAlignment.Stretch)
-                                                .HorizontalContentAlignment(HorizontalAlignment.Left)
-                                                .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
-                                                .Padding(20, 16)
-                                                .Command(() => vm.GoToHelpCommand)
-                                                .Child(new StackPanel()
-                                                    .Orientation(Orientation.Horizontal)
-                                                    .Spacing(12)
-                                                    .Children(
-                                                        new FontIcon()
-                                                            .Glyph("\uE897")
-                                                            .FontSize(24),
-                                                        RegularText()
-                                                            .Text("Help")
-                                                            .FontSize(18)
-                                                            .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                                                    ))
-                                        )
+                                            // Stats and Help row (side by side)
+                                            new Grid()
+                                                .ColumnDefinitions("*,16,*")
+                                                .Children(
+                                                    // Stats Button
+                                                    new SquircleButton()
+                                                        .Grid(column: 0)
+                                                        .HorizontalAlignment(HorizontalAlignment.Stretch)
+                                                        .HorizontalContentAlignment(HorizontalAlignment.Center)
+                                                        .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
+                                                        .Padding(16, 16)
+                                                        .Command(() => vm.GoToStatisticsCommand)
+                                                        .Child(new StackPanel()
+                                                            .Orientation(Orientation.Horizontal)
+                                                            .Spacing(8)
+                                                            .Children(
+                                                                new FontIcon()
+                                                                    .Glyph("\uE9D9")
+                                                                    .FontSize(24),
+                                                                RegularText()
+                                                                    .Text("Stats")
+                                                                    .FontSize(18)
+                                                                    .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+                                                            )),
+
+                                                    // Help Button
+                                                    new SquircleButton()
+                                                        .Grid(column: 2)
+                                                        .HorizontalAlignment(HorizontalAlignment.Stretch)
+                                                        .HorizontalContentAlignment(HorizontalAlignment.Center)
+                                                        .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
+                                                        .Padding(16, 16)
+                                                        .Command(() => vm.GoToHelpCommand)
+                                                        .Child(new StackPanel()
+                                                            .Orientation(Orientation.Horizontal)
+                                                            .Spacing(8)
+                                                            .Children(
+                                                                new FontIcon()
+                                                                    .Glyph("\uE897")
+                                                                    .FontSize(24),
+                                                                RegularText()
+                                                                    .Text("Help")
+                                                                    .FontSize(18)
+                                                                    .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+                                                            ))
+                                                )
                                 )
                         )
                 )
             )
-        );
+        ));
     }
 }

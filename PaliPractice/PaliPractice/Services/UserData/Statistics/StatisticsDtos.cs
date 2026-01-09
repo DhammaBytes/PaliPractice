@@ -38,8 +38,8 @@ public record GeneralStatsDto
 /// </summary>
 public record CalendarDayDto
 {
-    /// <summary>Date in YYYY-MM-DD format.</summary>
-    public required string Date { get; init; }
+    /// <summary>Date in YYYYMMDD integer format.</summary>
+    public required int Date { get; init; }
 
     /// <summary>Number of declensions practiced this day.</summary>
     public int DeclensionsCount { get; init; }

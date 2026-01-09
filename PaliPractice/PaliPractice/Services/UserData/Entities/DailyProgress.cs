@@ -15,11 +15,11 @@ public class DailyProgress
     public const int DayStartHour = 5;
 
     /// <summary>
-    /// Date in YYYY-MM-DD format (based on logical day, not calendar day).
+    /// Date in YYYYMMDD integer format (based on logical day, not calendar day).
     /// </summary>
     [PrimaryKey]
     [Column("date")]
-    public string Date { get; set; } = string.Empty;
+    public int Date { get; set; }
 
     [Column("declensions_completed")]
     public int DeclensionsCompleted { get; set; }
@@ -28,20 +28,32 @@ public class DailyProgress
     public int ConjugationsCompleted { get; set; }
 
     /// <summary>
-    /// Gets the current "logical day" date key.
+    /// Gets the current "logical day" date key as YYYYMMDD integer.
     /// The day resets at 5am local time, so practice between midnight and 5am
     /// counts toward the previous day's goal.
     /// </summary>
-    public static string TodayKey
+    public static int TodayKey
     {
         get
         {
             var now = DateTime.Now;
             // If before 5am, consider it still "yesterday"
             var logicalDate = now.Hour < DayStartHour ? now.Date.AddDays(-1) : now.Date;
-            return logicalDate.ToString("yyyy-MM-dd");
+            return ToDateKey(logicalDate);
         }
     }
+
+    /// <summary>
+    /// Converts a DateTime to YYYYMMDD integer format.
+    /// </summary>
+    public static int ToDateKey(DateTime date) =>
+        date.Year * 10000 + date.Month * 100 + date.Day;
+
+    /// <summary>
+    /// Converts a YYYYMMDD integer to DateTime.
+    /// </summary>
+    public static DateTime FromDateKey(int dateKey) =>
+        new(dateKey / 10000, (dateKey / 100) % 100, dateKey % 100);
 
     /// <summary>
     /// Create a new progress record for today.

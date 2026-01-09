@@ -374,10 +374,10 @@ public class StatisticsRepositoryTests
     [Test]
     public void CalendarDayDto_Intensity_CalculatesCorrectly()
     {
-        var noActivity = new CalendarDayDto { Date = "2024-01-01", DeclensionsCount = 0, ConjugationsCount = 0 };
-        var lightActivity = new CalendarDayDto { Date = "2024-01-02", DeclensionsCount = 10, ConjugationsCount = 5 };
-        var mediumActivity = new CalendarDayDto { Date = "2024-01-03", DeclensionsCount = 20, ConjugationsCount = 10 };
-        var heavyActivity = new CalendarDayDto { Date = "2024-01-04", DeclensionsCount = 25, ConjugationsCount = 20 };
+        var noActivity = new CalendarDayDto { Date = 20240101, DeclensionsCount = 0, ConjugationsCount = 0 };
+        var lightActivity = new CalendarDayDto { Date = 20240102, DeclensionsCount = 10, ConjugationsCount = 5 };
+        var mediumActivity = new CalendarDayDto { Date = 20240103, DeclensionsCount = 20, ConjugationsCount = 10 };
+        var heavyActivity = new CalendarDayDto { Date = 20240104, DeclensionsCount = 25, ConjugationsCount = 20 };
 
         noActivity.Intensity.Should().Be(0);
         lightActivity.Intensity.Should().Be(1); // 15 total
@@ -475,14 +475,14 @@ public class StatisticsRepositoryTests
     #region Helper Methods
 
     /// <summary>
-    /// Gets the date string for N days ago in YYYY-MM-DD format.
+    /// Gets the date key for N days ago in YYYYMMDD integer format.
     /// </summary>
-    static string DaysAgo(int days)
+    static int DaysAgo(int days)
     {
-        return DateTime.Now.AddDays(-days).ToString("yyyy-MM-dd");
+        return DailyProgress.ToDateKey(DateTime.Now.AddDays(-days));
     }
 
-    void InsertProgress(string dateKey, int declensions, int conjugations)
+    void InsertProgress(int dateKey, int declensions, int conjugations)
     {
         _connection.Insert(new DailyProgress
         {

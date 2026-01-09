@@ -30,26 +30,24 @@ public class StatisticsRepository : IStatisticsRepository
         // Get first and last day of the month
         var firstDay = new DateTime(targetYear, targetMonth, 1);
         var lastDay = firstDay.AddMonths(1).AddDays(-1);
-        var firstDayStr = firstDay.ToString("yyyy-MM-dd");
-        var lastDayStr = lastDay.ToString("yyyy-MM-dd");
+        var firstDayKey = DailyProgress.ToDateKey(firstDay);
+        var lastDayKey = DailyProgress.ToDateKey(lastDay);
 
-        // Fetch all daily_progress and filter in memory (SQLite lacks string.Compare support)
-        var allProgress = _connection.Table<DailyProgress>().ToList();
-        var rows = allProgress
-            .Where(p => string.CompareOrdinal(p.Date, firstDayStr) >= 0 &&
-                       string.CompareOrdinal(p.Date, lastDayStr) <= 0)
+        // Fetch daily_progress in range using integer comparison
+        var rows = _connection.Table<DailyProgress>()
+            .Where(p => p.Date >= firstDayKey && p.Date <= lastDayKey)
             .ToList();
 
         // Build calendar with all days of the month
         var result = new List<CalendarDayDto>();
         for (var day = firstDay; day <= lastDay; day = day.AddDays(1))
         {
-            var dateStr = day.ToString("yyyy-MM-dd");
-            var progress = rows.FirstOrDefault(r => r.Date == dateStr);
+            var dateKey = DailyProgress.ToDateKey(day);
+            var progress = rows.FirstOrDefault(r => r.Date == dateKey);
 
             result.Add(new CalendarDayDto
             {
-                Date = dateStr,
+                Date = dateKey,
                 DeclensionsCount = progress?.DeclensionsCompleted ?? 0,
                 ConjugationsCount = progress?.ConjugationsCompleted ?? 0
             });
@@ -63,26 +61,24 @@ public class StatisticsRepository : IStatisticsRepository
         var today = DateTime.Now.Date;
         var startDate = today.AddDays(-29); // 30 days including today
 
-        var startDateStr = startDate.ToString("yyyy-MM-dd");
-        var endDateStr = today.ToString("yyyy-MM-dd");
+        var startDateKey = DailyProgress.ToDateKey(startDate);
+        var endDateKey = DailyProgress.ToDateKey(today);
 
-        // Fetch all daily_progress and filter in memory (SQLite lacks string.Compare support)
-        var allProgress = _connection.Table<DailyProgress>().ToList();
-        var rows = allProgress
-            .Where(p => string.CompareOrdinal(p.Date, startDateStr) >= 0 &&
-                       string.CompareOrdinal(p.Date, endDateStr) <= 0)
+        // Fetch daily_progress in range using integer comparison
+        var rows = _connection.Table<DailyProgress>()
+            .Where(p => p.Date >= startDateKey && p.Date <= endDateKey)
             .ToList();
 
         // Build calendar with all 30 days
         var result = new List<CalendarDayDto>();
         for (var day = startDate; day <= today; day = day.AddDays(1))
         {
-            var dateStr = day.ToString("yyyy-MM-dd");
-            var progress = rows.FirstOrDefault(r => r.Date == dateStr);
+            var dateKey = DailyProgress.ToDateKey(day);
+            var progress = rows.FirstOrDefault(r => r.Date == dateKey);
 
             result.Add(new CalendarDayDto
             {
-                Date = dateStr,
+                Date = dateKey,
                 DeclensionsCount = progress?.DeclensionsCompleted ?? 0,
                 ConjugationsCount = progress?.ConjugationsCompleted ?? 0
             });
@@ -113,8 +109,8 @@ public class StatisticsRepository : IStatisticsRepository
 
         for (int i = 1; i < allDays.Count; i++)
         {
-            var prevDate = DateTime.Parse(allDays[i - 1]);
-            var currDate = DateTime.Parse(allDays[i]);
+            var prevDate = DailyProgress.FromDateKey(allDays[i - 1]);
+            var currDate = DailyProgress.FromDateKey(allDays[i]);
 
             if ((currDate - prevDate).Days == 1)
             {
@@ -180,11 +176,11 @@ public class StatisticsRepository : IStatisticsRepository
         int verbGoal = requireGoalMet ? _userData.GetDailyGoal(PracticeType.Conjugation) : 0;
 
         int streak = 0;
-        var expectedDate = DateTime.Parse(todayKey);
+        var expectedDate = DailyProgress.FromDateKey(todayKey);
 
         foreach (var day in query)
         {
-            var dayDate = DateTime.Parse(day.Date);
+            var dayDate = DailyProgress.FromDateKey(day.Date);
 
             // Check if this is the expected consecutive day
             if (dayDate != expectedDate)

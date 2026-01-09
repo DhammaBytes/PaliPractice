@@ -1,5 +1,6 @@
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Statistics.ViewModels;
+using PaliPractice.Services.UserData.Entities;
 using PaliPractice.Services.UserData.Statistics;
 using Microsoft.UI.Xaml.Media;
 using static PaliPractice.Presentation.Common.TextHelpers;
@@ -503,7 +504,7 @@ public sealed partial class StatisticsPage : Page
             {
                 if (s is Border b && b.DataContext is CalendarDayDto day)
                 {
-                    var date = DateTime.Parse(day.Date);
+                    var date = DailyProgress.FromDateKey(day.Date);
                     ToolTipService.SetToolTip(b, $"{date:ddd, MMM d}\nNouns: {day.DeclensionsCount}\nVerbs: {day.ConjugationsCount}");
                 }
             };

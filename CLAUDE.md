@@ -80,6 +80,14 @@ The app uses a normalized SQLite database:
 4. **UI Construction**: C# Markup fluent API instead of XAML
 5. **Localization**: Supports 6 languages (en, es, fr, pt, th, ru)
 
+### State Management
+- **Minimize mutable state**: Only introduce new state when absolutely necessary; prefer derived/computed values over stored state
+- **Avoid state duplication**: Maintain a single source of truth; never store the same information in multiple places
+- **Prefer enums over constants**: Use enums for finite sets of related values instead of multiple booleans or string/int constants
+- **Favor pure functions**: Pass data as explicit parameters rather than relying on instance state; this improves testability and reduces side effects
+- **Reuse existing state**: Before adding a new boolean or flag, check if existing state can express the same condition
+- **Avoid state explosion**: Multiple independent booleans create exponential state combinations; consolidate into enums or state objects when states are mutually exclusive
+
 ### Working with the Codebase
 
 When modifying code:

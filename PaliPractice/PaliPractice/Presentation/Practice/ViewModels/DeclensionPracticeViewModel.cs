@@ -23,17 +23,17 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
     // Badge display properties for Gender
     [ObservableProperty] string _genderLabel = string.Empty;
     [ObservableProperty] Color _genderColor = Colors.Transparent;
-    [ObservableProperty] string? _genderGlyph;
+    [ObservableProperty] string? _genderIconPath;
 
     // Badge display properties for Number
     [ObservableProperty] string _numberLabel = string.Empty;
     [ObservableProperty] Color _numberColor = Colors.Transparent;
-    [ObservableProperty] string? _numberGlyph;
+    [ObservableProperty] string? _numberIconPath;
 
     // Badge display properties for Case
     [ObservableProperty] string _caseLabel = string.Empty;
     [ObservableProperty] Color _caseColor = Colors.Transparent;
-    [ObservableProperty] string? _caseGlyph;
+    [ObservableProperty] string? _caseIconPath;
     [ObservableProperty] string _caseHint = string.Empty;
 
     public DeclensionPracticeViewModel(
@@ -89,7 +89,7 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
             _ => d.Gender.ToString()
         };
         GenderColor = OptionPresentation.GetChipColor(d.Gender);
-        GenderGlyph = OptionPresentation.GetGlyph(d.Gender);
+        GenderIconPath = BadgeIcons.GetIconPath(d.Gender);
 
         // Number badge
         NumberLabel = d.Number switch
@@ -99,12 +99,12 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
             _ => d.Number.ToString()
         };
         NumberColor = OptionPresentation.GetChipColor(d.Number);
-        NumberGlyph = OptionPresentation.GetGlyph(d.Number);
+        NumberIconPath = BadgeIcons.GetIconPath(d.Number);
 
         // Case badge
         CaseLabel = d.Case.ToString();
         CaseColor = OptionPresentation.GetChipColor(d.Case);
-        CaseGlyph = "\uE8C8"; // Placeholder icon (Tag)
+        CaseIconPath = BadgeIcons.GetIconPath(d.Case);
         CaseHint = d.Case switch
         {
             Case.Nominative => "who? what? (subject)",
@@ -135,15 +135,15 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
     {
         GenderLabel = noun.Gender.ToString();
         GenderColor = OptionPresentation.GetChipColor(noun.Gender);
-        GenderGlyph = OptionPresentation.GetGlyph(noun.Gender);
+        GenderIconPath = BadgeIcons.GetIconPath(noun.Gender);
 
         NumberLabel = "Singular";
         NumberColor = OptionPresentation.GetChipColor(Number.Singular);
-        NumberGlyph = OptionPresentation.GetGlyph(Number.Singular);
+        NumberIconPath = BadgeIcons.GetIconPath(Number.Singular);
 
         CaseLabel = "Nominative";
         CaseColor = OptionPresentation.GetChipColor(Case.Nominative);
-        CaseGlyph = "\uE8C8";
+        CaseIconPath = BadgeIcons.GetIconPath(Case.Nominative);
         CaseHint = "who? what? (subject)";
     }
 

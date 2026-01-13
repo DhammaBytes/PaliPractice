@@ -3,6 +3,7 @@ using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Settings.Controls;
 using PaliPractice.Presentation.Settings.ViewModels;
 using PaliPractice.Services.UserData;
+using PaliPractice.Themes;
 
 namespace PaliPractice.Presentation.Settings;
 
@@ -63,16 +64,20 @@ public sealed partial class ConjugationSettingsPage : Page
 
                                     // Tense section
                                     SettingsSection.Build("Tense",
-                                        SettingsRow.BuildToggleWithHint<ConjugationSettingsViewModel>(
+                                        SettingsRow.BuildToggleWithIconAndHint<ConjugationSettingsViewModel>(
+                                            BadgeIcons.GetIconPath(Tense.Present),
                                             "Present", "present/habitual actions, general truths",
                                             v => v.Present, v => v.CanDisablePresent),
-                                        SettingsRow.BuildToggleWithHint<ConjugationSettingsViewModel>(
+                                        SettingsRow.BuildToggleWithIconAndHint<ConjugationSettingsViewModel>(
+                                            BadgeIcons.GetIconPath(Tense.Imperative),
                                             "Imperative", "commands, requests, encouragements",
                                             v => v.Imperative, v => v.CanDisableImperative),
-                                        SettingsRow.BuildToggleWithHint<ConjugationSettingsViewModel>(
-                                            "Optative", "wishes, ‘may/might’, ‘should/ought to’",
+                                        SettingsRow.BuildToggleWithIconAndHint<ConjugationSettingsViewModel>(
+                                            BadgeIcons.GetIconPath(Tense.Optative),
+                                            "Optative", "wishes, 'may/might', 'should/ought to'",
                                             v => v.Optative, v => v.CanDisableOptative),
-                                        SettingsRow.BuildToggleWithHint<ConjugationSettingsViewModel>(
+                                        SettingsRow.BuildToggleWithIconAndHint<ConjugationSettingsViewModel>(
+                                            BadgeIcons.GetIconPath(Tense.Future),
                                             "Future", "actions yet to happen, predictions",
                                             v => v.Future, v => v.CanDisableFuture)
                                     ),

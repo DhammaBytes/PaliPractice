@@ -24,22 +24,22 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
     // Badge display properties for Person
     [ObservableProperty] string _personLabel = string.Empty;
     [ObservableProperty] Color _personColor = Colors.Transparent;
-    [ObservableProperty] string? _personGlyph;
+    [ObservableProperty] string? _personIconPath;
 
     // Badge display properties for Number
     [ObservableProperty] string _numberLabel = string.Empty;
     [ObservableProperty] Color _numberColor = Colors.Transparent;
-    [ObservableProperty] string? _numberGlyph;
+    [ObservableProperty] string? _numberIconPath;
 
     // Badge display properties for Tense
     [ObservableProperty] string _tenseLabel = string.Empty;
     [ObservableProperty] Color _tenseColor = Colors.Transparent;
-    [ObservableProperty] string? _tenseGlyph;
+    [ObservableProperty] string? _tenseIconPath;
 
     // Badge display properties for Voice (only shown for reflexive)
     [ObservableProperty] string _voiceLabel = string.Empty;
     [ObservableProperty] Color _voiceColor = Colors.Transparent;
-    [ObservableProperty] string? _voiceGlyph;
+    [ObservableProperty] string? _voiceIconPath;
     [ObservableProperty] bool _isReflexive;
 
     public ConjugationPracticeViewModel(
@@ -97,7 +97,7 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
             _ => c.Person.ToString()
         };
         PersonColor = OptionPresentation.GetChipColor(c.Person);
-        PersonGlyph = OptionPresentation.GetGlyph(c.Person);
+        PersonIconPath = BadgeIcons.GetIconPath(c.Person);
 
         // Number badge
         NumberLabel = c.Number switch
@@ -107,18 +107,18 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
             _ => c.Number.ToString()
         };
         NumberColor = OptionPresentation.GetChipColor(c.Number);
-        NumberGlyph = OptionPresentation.GetGlyph(c.Number);
+        NumberIconPath = BadgeIcons.GetIconPath(c.Number);
 
         // Tense badge
         TenseLabel = c.Tense.ToString();
         TenseColor = OptionPresentation.GetChipColor(c.Tense);
-        TenseGlyph = "\uE8C8"; // Placeholder icon (Tag)
+        TenseIconPath = BadgeIcons.GetIconPath(c.Tense);
 
         // Voice badge (only visible for reflexive)
         IsReflexive = c.Voice == Voice.Reflexive;
         VoiceLabel = "Reflexive";
         VoiceColor = OptionPresentation.GetChipColor(Voice.Reflexive);
-        VoiceGlyph = OptionPresentation.GetGlyph(Voice.Reflexive);
+        VoiceIconPath = BadgeIcons.GetIconPath(Voice.Reflexive);
     }
 
     protected override string GetAlternativeForms()
@@ -137,15 +137,15 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
     {
         PersonLabel = "3rd";
         PersonColor = OptionPresentation.GetChipColor(Person.Third);
-        PersonGlyph = OptionPresentation.GetGlyph(Person.Third);
+        PersonIconPath = BadgeIcons.GetIconPath(Person.Third);
 
         NumberLabel = "Singular";
         NumberColor = OptionPresentation.GetChipColor(Number.Singular);
-        NumberGlyph = OptionPresentation.GetGlyph(Number.Singular);
+        NumberIconPath = BadgeIcons.GetIconPath(Number.Singular);
 
         TenseLabel = "Present";
         TenseColor = OptionPresentation.GetChipColor(Tense.Present);
-        TenseGlyph = "\uE8C8";
+        TenseIconPath = BadgeIcons.GetIconPath(Tense.Present);
 
         IsReflexive = false;
     }

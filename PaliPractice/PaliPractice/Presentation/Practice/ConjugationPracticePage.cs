@@ -87,17 +87,17 @@ public sealed partial class ConjugationPracticePage : Page
 
         // Build the 4th (optional) voice badge - only visible for reflexive
         var voiceBadge = PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(heightClass,
-            vm => vm.VoiceGlyph, vm => vm.VoiceLabel, vm => vm.VoiceColor);
+            vm => vm.VoiceIconPath, vm => vm.VoiceLabel, vm => vm.VoiceColor);
         voiceBadge.badge.BoolToVisibility<SquircleBorder, ViewModels.ConjugationPracticeViewModel>(
             vm => vm.IsReflexive);
 
         var badges = PracticePageBuilder.CreateBadgeSet(heightClass,
             PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(heightClass,
-                vm => vm.TenseGlyph, vm => vm.TenseLabel, vm => vm.TenseColor),
+                vm => vm.TenseIconPath, vm => vm.TenseLabel, vm => vm.TenseColor),
             PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(heightClass,
-                vm => vm.PersonGlyph, vm => vm.PersonLabel, vm => vm.PersonColor),
+                vm => vm.PersonIconPath, vm => vm.PersonLabel, vm => vm.PersonColor),
             PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(heightClass,
-                vm => vm.NumberGlyph, vm => vm.NumberLabel, vm => vm.NumberColor),
+                vm => vm.NumberIconPath, vm => vm.NumberLabel, vm => vm.NumberColor),
             voiceBadge
         );
 

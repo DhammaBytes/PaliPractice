@@ -417,6 +417,72 @@ public static class SettingsRow
     }
 
     /// <summary>
+    /// Builds a settings row with an SVG icon, label, hint, and toggle switch.
+    /// Icon is aligned with the label text (first row).
+    /// </summary>
+    public static Grid BuildToggleWithIconAndHint<TDC>(
+        string? iconPath,
+        string label,
+        string hint,
+        Expression<Func<TDC, bool>> isOnExpr,
+        Expression<Func<TDC, bool>> isEnabledExpr)
+    {
+        var toggle = new ToggleSwitch()
+            .OnContent("")
+            .OffContent("")
+            .MinWidth(0)
+            .VerticalAlignment(VerticalAlignment.Center)
+            .Grid(column: 1);
+        toggle.IsOn<TDC>(isOnExpr);
+        toggle.SetBinding(Control.IsEnabledProperty, Bind.Path(isEnabledExpr));
+
+        // Build label row with optional icon
+        var labelRowChildren = new List<UIElement>();
+        if (!string.IsNullOrEmpty(iconPath))
+        {
+            var icon = new Image()
+                .Height(16)
+                .Stretch(Stretch.Uniform)
+                .VerticalAlignment(VerticalAlignment.Center)
+                .Margin(0, 0, 8, 0)
+                .Source(new Microsoft.UI.Xaml.Media.Imaging.SvgImageSource(new Uri(iconPath)));
+            labelRowChildren.Add(icon);
+        }
+        labelRowChildren.Add(
+            RegularText()
+                .Text(label)
+                .FontSize(16)
+                .VerticalAlignment(VerticalAlignment.Center)
+        );
+
+        var labelRow = new StackPanel()
+            .Orientation(Orientation.Horizontal)
+            .Children(labelRowChildren.ToArray());
+
+        var labelStack = new StackPanel()
+            .Spacing(2)
+            .VerticalAlignment(VerticalAlignment.Center)
+            .HorizontalAlignment(HorizontalAlignment.Left)
+            .Grid(column: 0)
+            .Margin(0, 0, 12, 0)
+            .Children(
+                labelRow,
+                RegularText()
+                    .Text(hint)
+                    .FontSize(12)
+                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                    .TextWrapping(TextWrapping.Wrap)
+            );
+
+        return new Grid()
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .ColumnDefinitions("*,Auto")
+            .Padding(16, 12)
+            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .Children(labelStack, toggle);
+    }
+
+    /// <summary>
     /// Builds a settings row with a label, hint, and dropdown (ComboBox).
     /// </summary>
     public static Grid BuildDropdownWithHint(

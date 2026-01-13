@@ -15,31 +15,6 @@ public static class OptionPresentation
     static readonly Color CaseColor = Color.FromArgb(255, 255, 243, 224);
     static readonly Color DefaultColor = Color.FromArgb(255, 255, 0, 255);
 
-    public static string? GetGlyph<T>(T value) where T : struct, Enum => value switch
-    {
-        Number.Singular => "\uE77B",
-        Number.Plural => "\uE716",
-
-        Person.First => "\uE77B",
-        Person.Second => "\uE748",
-        Person.Third => "\uE716",
-
-        Gender.Masculine => "\uE71A",
-        Gender.Neuter => "\uE734",
-        Gender.Feminine => "\uE716",
-
-        Voice.Active => "\uE768",     // Arrow pointing out (action directed outward)
-        Voice.Reflexive => "\uE74C",  // Arrow pointing back (action on self)
-
-        _ => null
-    };
-
-    /// <summary>
-    /// Gets the glyph for reflexive voice indicator.
-    /// </summary>
-    public static string GetReflexiveGlyph(bool reflexive) =>
-        reflexive ? "\uE74C" : "\uE768";
-
     public static Color GetChipColor<T>(T value) where T : struct, Enum => value switch
     {
         Number.Singular => NumberColor,

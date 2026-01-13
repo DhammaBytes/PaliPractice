@@ -88,11 +88,11 @@ public sealed partial class DeclensionPracticePage : Page
 
         var badges = PracticePageBuilder.CreateBadgeSet(heightClass,
             PracticePageBuilder.BuildBadge<ViewModels.DeclensionPracticeViewModel>(heightClass,
-                vm => vm.CaseGlyph, vm => vm.CaseLabel, vm => vm.CaseColor),
+                vm => vm.CaseIconPath, vm => vm.CaseLabel, vm => vm.CaseColor),
             PracticePageBuilder.BuildBadge<ViewModels.DeclensionPracticeViewModel>(heightClass,
-                vm => vm.GenderGlyph, vm => vm.GenderLabel, vm => vm.GenderColor),
+                vm => vm.GenderIconPath, vm => vm.GenderLabel, vm => vm.GenderColor),
             PracticePageBuilder.BuildBadge<ViewModels.DeclensionPracticeViewModel>(heightClass,
-                vm => vm.NumberGlyph, vm => vm.NumberLabel, vm => vm.NumberColor)
+                vm => vm.NumberIconPath, vm => vm.NumberLabel, vm => vm.NumberColor)
         );
 
         var fonts = LayoutConstants.PracticeFontSizes.Get(heightClass);

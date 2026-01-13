@@ -3,6 +3,7 @@ using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Settings.Controls;
 using PaliPractice.Presentation.Settings.ViewModels;
 using PaliPractice.Services.UserData;
+using PaliPractice.Themes;
 
 namespace PaliPractice.Presentation.Settings;
 
@@ -59,28 +60,36 @@ public sealed partial class DeclensionSettingsPage : Page
 
                                     // Case section
                                     SettingsSection.Build("Case",
-                                        SettingsRow.BuildToggleWithHint<DeclensionSettingsViewModel>(
+                                        SettingsRow.BuildToggleWithIconAndHint<DeclensionSettingsViewModel>(
+                                            BadgeIcons.GetIconPath(Case.Nominative),
                                             "Nominative", "who? what? (subject)",
                                             v => v.Nominative, v => v.CanDisableNominative),
-                                        SettingsRow.BuildToggleWithHint<DeclensionSettingsViewModel>(
+                                        SettingsRow.BuildToggleWithIconAndHint<DeclensionSettingsViewModel>(
+                                            BadgeIcons.GetIconPath(Case.Accusative),
                                             "Accusative", "whom? what? (object, destination of action)",
                                             v => v.Accusative, v => v.CanDisableAccusative),
-                                        SettingsRow.BuildToggleWithHint<DeclensionSettingsViewModel>(
+                                        SettingsRow.BuildToggleWithIconAndHint<DeclensionSettingsViewModel>(
+                                            BadgeIcons.GetIconPath(Case.Instrumental),
                                             "Instrumental", "with whom? by whom? by what means? (passive, association)",
                                             v => v.Instrumental, v => v.CanDisableInstrumental),
-                                        SettingsRow.BuildToggleWithHint<DeclensionSettingsViewModel>(
+                                        SettingsRow.BuildToggleWithIconAndHint<DeclensionSettingsViewModel>(
+                                            BadgeIcons.GetIconPath(Case.Dative),
                                             "Dative", "for whom? to whom? to what? (purpose, recipient)",
                                             v => v.Dative, v => v.CanDisableDative),
-                                        SettingsRow.BuildToggleWithHint<DeclensionSettingsViewModel>(
+                                        SettingsRow.BuildToggleWithIconAndHint<DeclensionSettingsViewModel>(
+                                            BadgeIcons.GetIconPath(Case.Ablative),
                                             "Ablative", "from whom? from where? from what? (cause, origin)",
                                             v => v.Ablative, v => v.CanDisableAblative),
-                                        SettingsRow.BuildToggleWithHint<DeclensionSettingsViewModel>(
+                                        SettingsRow.BuildToggleWithIconAndHint<DeclensionSettingsViewModel>(
+                                            BadgeIcons.GetIconPath(Case.Genitive),
                                             "Genitive", "whose? of whom? of what? (possession)",
                                             v => v.Genitive, v => v.CanDisableGenitive),
-                                        SettingsRow.BuildToggleWithHint<DeclensionSettingsViewModel>(
+                                        SettingsRow.BuildToggleWithIconAndHint<DeclensionSettingsViewModel>(
+                                            BadgeIcons.GetIconPath(Case.Locative),
                                             "Locative", "in whom? where? when? (position, relation, time)",
                                             v => v.Locative, v => v.CanDisableLocative),
-                                        SettingsRow.BuildToggleWithHint<DeclensionSettingsViewModel>(
+                                        SettingsRow.BuildToggleWithIconAndHint<DeclensionSettingsViewModel>(
+                                            BadgeIcons.GetIconPath(Case.Vocative),
                                             "Vocative", "O, …! (direct address)",
                                             v => v.Vocative, v => v.CanDisableVocative)
                                     )

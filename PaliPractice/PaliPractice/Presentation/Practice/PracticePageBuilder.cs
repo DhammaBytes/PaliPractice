@@ -37,7 +37,7 @@ public record BadgeSet(
     StackPanel Panel,
     SquircleBorder[] Borders,
     TextBlock[] TextBlocks,
-    FontIcon[] Icons
+    Image[] Icons
 );
 
 #endregion
@@ -422,22 +422,24 @@ public static class PracticePageBuilder
     #region Badges
 
     /// <summary>
-    /// Builds a grammar badge with icon and text.
+    /// Builds a grammar badge with SVG icon and text.
+    /// Icon is left-aligned with consistent spacing to text.
     /// </summary>
-    public static (FontIcon icon, TextBlock text, SquircleBorder badge) BuildBadge<TVM>(
+    public static (Image icon, TextBlock text, SquircleBorder badge) BuildBadge<TVM>(
         HeightClass heightClass,
-        Expression<Func<TVM, string?>> glyphPath,
+        Expression<Func<TVM, string?>> iconPath,
         Expression<Func<TVM, string>> labelPath,
         Expression<Func<TVM, Color>> colorPath)
     {
         var fonts = LayoutConstants.PracticeFontSizes.Get(heightClass);
-        
-        var icon = new FontIcon()
-            .FontSize(fonts.Badge)
-            .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+
+        // SVG icon - height matches badge font size, width is automatic based on aspect ratio
+        var icon = new Image()
+            .Height(fonts.Badge)
+            .Stretch(Stretch.Uniform)
+            .HorizontalAlignment(HorizontalAlignment.Left)
             .VerticalAlignment(VerticalAlignment.Center)
-            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
-            .GlyphWithVisibility<TVM>(glyphPath);
+            .SourceWithVisibility<TVM>(iconPath);
 
         var text = RegularText()
             .FontSize(fonts.Badge)
@@ -464,7 +466,7 @@ public static class PracticePageBuilder
     /// </summary>
     public static BadgeSet CreateBadgeSet(
         HeightClass heightClass,
-        params (FontIcon icon, TextBlock text, SquircleBorder badge)[] badges)
+        params (Image icon, TextBlock text, SquircleBorder badge)[] badges)
     {
         var panel = new StackPanel()
             .Orientation(Orientation.Horizontal)
@@ -863,7 +865,7 @@ public static class PracticePageBuilder
             textBlock.FontSize = fonts.Badge;
 
         foreach (var icon in elements.BadgeIcons)
-            icon.FontSize = fonts.Badge;
+            icon.Height = fonts.Badge;
 
         // Badge hint
         elements.BadgeHintTextBlock?.FontSize = fonts.BadgeHint;
@@ -915,6 +917,6 @@ public class ResponsiveElements
     public TextBlock? DebugTextBlock { get; set; }
     public List<SquircleBorder> BadgeBorders { get; } = [];
     public List<TextBlock> BadgeTextBlocks { get; } = [];
-    public List<FontIcon> BadgeIcons { get; } = [];
+    public List<Image> BadgeIcons { get; } = [];
     public List<(FontIcon Icon, TextBlock Text)> ButtonElements { get; } = [];
 }

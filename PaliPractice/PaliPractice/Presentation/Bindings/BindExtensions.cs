@@ -172,6 +172,31 @@ public static class BindExtensions
     }
 
     /// <summary>
+    /// Binds Image.Source to a string path (e.g., "ms-appx:///Assets/Svg/icon.svg")
+    /// </summary>
+    public static Image Source<TDC>(this Image image, Expression<Func<TDC, string?>> path)
+    {
+        var binding = Bind.Path(path);
+        binding.Converter = StringToImageSourceConverter.Instance;
+        image.SetBinding(Image.SourceProperty, binding);
+        return image;
+    }
+
+    /// <summary>
+    /// Binds Image.Source to a string path and visibility to whether the path is non-null/non-empty
+    /// </summary>
+    public static Image SourceWithVisibility<TDC>(this Image image, Expression<Func<TDC, string?>> path)
+    {
+        var binding = Bind.Path(path);
+        binding.Converter = StringToImageSourceConverter.Instance;
+        image.SetBinding(Image.SourceProperty, binding);
+        var visBinding = Bind.Path(path);
+        visBinding.Converter = StringNullOrEmptyToVisibilityConverter.Instance;
+        image.SetBinding(UIElement.VisibilityProperty, visBinding);
+        return image;
+    }
+
+    /// <summary>
     /// Binds ToggleSwitch.IsOn to a bool property path (TwoWay binding)
     /// </summary>
     public static ToggleSwitch IsOn<TDC>(this ToggleSwitch toggle, Expression<Func<TDC, bool>> path)

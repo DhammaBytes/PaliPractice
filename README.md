@@ -33,7 +33,7 @@ The app's icon shows the quail from SN 47:6, the Sakuṇagghi Sutta ("The Hawk")
 
 You can read the full sutta here: https://www.dhammatalks.org/suttas/SN/SN47_6.html
 
-Illustration by [Irina Mir](https://www.instagram.com/irmirx/)
+Icon illustration and app design by [Irina Mir](https://www.instagram.com/irmirx/)
 
 ## License
 

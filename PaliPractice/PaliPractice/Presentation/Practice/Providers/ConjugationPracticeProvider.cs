@@ -7,11 +7,14 @@ namespace PaliPractice.Presentation.Practice.Providers;
 
 /// <summary>
 /// Provides conjugation practice items using the SRS queue.
-/// Includes staleness detection to rebuild queue when SRS data becomes stale.
+/// Builds queue at 120% of daily goal and silently rebuilds when exhausted.
 /// </summary>
 public sealed class ConjugationPracticeProvider : IPracticeProvider
 {
-    static readonly TimeSpan StalenessThreshold = TimeSpan.FromHours(1);
+    /// <summary>
+    /// Build queue with 20% buffer over daily goal to avoid hitting the edge exactly.
+    /// </summary>
+    const double QueueBufferMultiplier = 1.2;
 
     readonly IPracticeQueueBuilder _queueBuilder;
     readonly IUserDataRepository _userData;
@@ -19,7 +22,6 @@ public sealed class ConjugationPracticeProvider : IPracticeProvider
 
     List<PracticeItem> _queue = [];
     int _currentIndex = -1;
-    DateTime _queueBuiltUtc;
 
     public ConjugationPracticeProvider(
         IPracticeQueueBuilder queueBuilder,
@@ -41,29 +43,38 @@ public sealed class ConjugationPracticeProvider : IPracticeProvider
     public Task LoadAsync(CancellationToken ct = default)
     {
         var dailyGoal = _userData.GetDailyGoal(PracticeType.Conjugation);
-        _queue = _queueBuilder.BuildQueue(PracticeType.Conjugation, dailyGoal);
+        var queueSize = (int)(dailyGoal * QueueBufferMultiplier);
+        _queue = _queueBuilder.BuildQueue(PracticeType.Conjugation, queueSize);
         _currentIndex = _queue.Count > 0 ? 0 : -1;
-        _queueBuiltUtc = DateTime.UtcNow;
 
+        System.Diagnostics.Debug.WriteLine($"[ConjugationProvider] Built queue with {_queue.Count} items (goal={dailyGoal}, requested={queueSize})");
         return Task.CompletedTask;
     }
 
     public bool MoveNext()
     {
-        if (_currentIndex >= _queue.Count - 1)
+        if (_currentIndex < _queue.Count - 1)
         {
-            // Queue exhausted - check if we should rebuild due to staleness
-            if (DateTime.UtcNow - _queueBuiltUtc > StalenessThreshold)
-            {
-                System.Diagnostics.Debug.WriteLine("[ConjugationProvider] Queue stale, rebuilding...");
-                LoadAsync().GetAwaiter().GetResult();
-                return _queue.Count > 0;
-            }
-            return false;
+            _currentIndex++;
+            return true;
         }
 
-        _currentIndex++;
-        return true;
+        // Queue exhausted - silently try to rebuild
+        System.Diagnostics.Debug.WriteLine("[ConjugationProvider] Queue exhausted, attempting silent rebuild...");
+        var dailyGoal = _userData.GetDailyGoal(PracticeType.Conjugation);
+        var queueSize = (int)(dailyGoal * QueueBufferMultiplier);
+        _queue = _queueBuilder.BuildQueue(PracticeType.Conjugation, queueSize);
+
+        if (_queue.Count > 0)
+        {
+            _currentIndex = 0;
+            System.Diagnostics.Debug.WriteLine($"[ConjugationProvider] Silent rebuild successful: {_queue.Count} items");
+            return true;
+        }
+
+        // Pool truly exhausted - no more forms available
+        System.Diagnostics.Debug.WriteLine("[ConjugationProvider] Pool exhausted - no forms available");
+        return false;
     }
 
     public ILemma? GetCurrentLemma()

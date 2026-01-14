@@ -1,6 +1,8 @@
+using Microsoft.UI.Xaml.Media;
 using PaliPractice.Models.Words;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Practice.ViewModels.Common.Entries;
+using PaliPractice.Themes;
 
 namespace PaliPractice.Presentation.Practice.ViewModels.Common;
 
@@ -16,6 +18,12 @@ public partial class ExampleCarouselViewModel : ObservableObject
 
     IReadOnlyList<TranslationEntry> _entries = [];
     IReadOnlyList<string> _formsToAvoid = [];
+    string _rawMeaning = string.Empty;
+
+    // Text balancing parameters (set by UI layer)
+    double _availableWidth;
+    double _fontSize = 18;
+    FontFamily _fontFamily = new(FontPaths.SourceSans);
 
     [ObservableProperty] int _currentIndex;
     [ObservableProperty] int _totalTranslations;
@@ -72,10 +80,23 @@ public partial class ExampleCarouselViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Updates the available width for text balancing.
+    /// Call this when the translation container width changes.
+    /// </summary>
+    public void UpdateAvailableWidth(double width, double fontSize, FontFamily fontFamily)
+    {
+        _availableWidth = width;
+        _fontSize = fontSize;
+        _fontFamily = fontFamily;
+        RebalanceMeaning();
+    }
+
     void UpdateCurrentDisplay()
     {
         if (_entries.Count == 0)
         {
+            _rawMeaning = string.Empty;
             CurrentMeaning = string.Empty;
             CurrentReference = string.Empty;
             CurrentExample = string.Empty;
@@ -84,10 +105,19 @@ public partial class ExampleCarouselViewModel : ObservableObject
         }
 
         var entry = _entries[CurrentIndex];
-        CurrentMeaning = TextBalancer.Balance(entry.Meaning);
+        _rawMeaning = entry.Meaning;
+        RebalanceMeaning();
         CurrentReference = entry.CurrentExample.Reference;
         CurrentExample = entry.CurrentExample.Example;
         PaginationText = $"{CurrentIndex + 1} of {TotalTranslations}";
+    }
+
+    void RebalanceMeaning()
+    {
+        if (_availableWidth > 0 && !string.IsNullOrEmpty(_rawMeaning))
+            CurrentMeaning = TextBalancer.Balance(_rawMeaning, _availableWidth, _fontSize, _fontFamily);
+        else
+            CurrentMeaning = _rawMeaning;
     }
 
     [RelayCommand]

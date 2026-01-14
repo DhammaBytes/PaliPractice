@@ -87,11 +87,11 @@ public class SquircleBorder : ContentControl
         nameof(RadiusMode),
         typeof(SquircleRadiusMode),
         typeof(SquircleBorder),
-        new PropertyMetadata(SquircleRadiusMode.Harmonized, OnShapePropertyChanged));
+        new PropertyMetadata(SquircleRadiusMode.CardLarge, OnShapePropertyChanged));
 
     /// <summary>
     /// The radius calculation mode for the squircle shape.
-    /// Defaults to Harmonized for visually consistent corners across all sizes.
+    /// Defaults to CardLarge (13px).
     /// </summary>
     public SquircleRadiusMode RadiusMode
     {

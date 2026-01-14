@@ -13,7 +13,6 @@ namespace PaliPractice.Presentation.Common.Squircle;
 /// <code>
 /// new SquircleButton()
 ///     .Fill(ThemeResource.Get&lt;Brush&gt;("PrimaryBrush"))
-///     .RadiusMode(SquircleRadiusMode.Harmonized)
 ///     .Padding(20, 16)
 ///     .Command(() => vm.SomeCommand)
 ///     .Child(new TextBlock().Text("Click me"))
@@ -56,10 +55,11 @@ public class SquircleButton : Button
         nameof(RadiusMode),
         typeof(SquircleRadiusMode),
         typeof(SquircleButton),
-        new PropertyMetadata(SquircleRadiusMode.Harmonized, OnShapePropertyChanged));
+        new PropertyMetadata(SquircleRadiusMode.ButtonMedium, OnShapePropertyChanged));
 
     /// <summary>
     /// The radius calculation mode for the squircle shape.
+    /// Defaults to ButtonMedium (10px).
     /// </summary>
     public SquircleRadiusMode RadiusMode
     {

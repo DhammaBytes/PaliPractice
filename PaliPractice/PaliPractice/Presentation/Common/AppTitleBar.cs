@@ -60,8 +60,8 @@ public static class AppTitleBar
             .Fill(ThemeResource.Get<Brush>("SecondaryButtonBrush"))
             .Stroke(ThemeResource.Get<Brush>("OutlineBrush"))
             .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
-            .RadiusMode(SquircleRadiusMode.NearPill)
-            .Padding(12, 8)
+            .RadiusMode(SquircleRadiusMode.Pill) // More pill-like corners
+            .Padding(12, 10) // +2pt vertical padding
             .WithPillShadow();
         centerButton.SetBinding(ButtonBase.CommandProperty, Bind.Path(centerClickCommand));
         centerButton.Child(new StackPanel()
@@ -145,18 +145,23 @@ public static class AppTitleBar
             .Children(titleLayer, buttonsLayer);
     }
 
+    // Shared width for Back/History buttons so they match
+    const double NavButtonMinWidth = 100;
+
     static SquircleButton CreateBackButton<TDC>(Expression<Func<TDC, ICommand>> commandPath)
     {
         var button = new SquircleButton()
             .Fill(ThemeResource.Get<Brush>("SecondaryButtonBrush"))
             .Stroke(ThemeResource.Get<Brush>("OutlineBrush"))
             .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
-            .RadiusMode(SquircleRadiusMode.NearPill)
-            .Padding(12, 8)
+            .RadiusMode(SquircleRadiusMode.Pill) // More pill-like corners
+            .Padding(12, 10) // +2pt vertical padding
+            .MinWidth(NavButtonMinWidth) // Match History button width
             .WithPillShadow();
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
         button.Child(new StackPanel()
             .Orientation(Orientation.Horizontal)
+            .HorizontalAlignment(HorizontalAlignment.Center) // Center content in button
             .Spacing(6)
             .Children(
                 new FontIcon()
@@ -180,12 +185,14 @@ public static class AppTitleBar
             .Fill(ThemeResource.Get<Brush>("SecondaryButtonBrush"))
             .Stroke(ThemeResource.Get<Brush>("OutlineBrush"))
             .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
-            .RadiusMode(SquircleRadiusMode.NearPill)
-            .Padding(12, 8)
+            .RadiusMode(SquircleRadiusMode.Pill) // More pill-like corners
+            .Padding(12, 10) // +2pt vertical padding
+            .MinWidth(NavButtonMinWidth) // Match Back button width
             .WithPillShadow();
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
         button.Child(new StackPanel()
             .Orientation(Orientation.Horizontal)
+            .HorizontalAlignment(HorizontalAlignment.Center) // Center content in button
             .Spacing(6)
             .Children(
                 new FontIcon()

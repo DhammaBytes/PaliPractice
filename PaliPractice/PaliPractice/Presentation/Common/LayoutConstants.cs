@@ -199,7 +199,7 @@ public static class LayoutConstants
 
         // === Card ===
 
-        /// <summary>Internal padding of the practice card.</summary>
+        /// <summary>Internal padding of the practice card (sides).</summary>
         public static double CardPadding(HeightClass h) => h switch
         {
             HeightClass.Tall or HeightClass.Medium => 24,
@@ -207,8 +207,24 @@ public static class LayoutConstants
             _ => 16
         };
 
+        /// <summary>Top padding of the practice card (25% smaller than sides).</summary>
+        public static double CardPaddingTop(HeightClass h) => h switch
+        {
+            HeightClass.Tall or HeightClass.Medium => 18, // 24 * 0.75
+            HeightClass.Short => 15, // 20 * 0.75
+            _ => 12 // 16 * 0.75
+        };
+
+        /// <summary>Bottom padding of the practice card (10% smaller than sides).</summary>
+        public static double CardPaddingBottom(HeightClass h) => h switch
+        {
+            HeightClass.Tall or HeightClass.Medium => 22, // 24 * 0.9
+            HeightClass.Short => 18, // 20 * 0.9
+            _ => 14 // 16 * 0.9
+        };
+
         /// <summary>Spacing between card child elements (word, answer, badges).</summary>
-        public static double CardContentSpacing => 12;
+        public static double CardContentSpacing => 10;
 
         // === Badge ===
 
@@ -228,15 +244,15 @@ public static class LayoutConstants
         // === Word Section ===
 
         /// <summary>Margin above the main word.</summary>
-        public static double WordMarginTop => 16;
+        public static double WordMarginTop => 12;
 
         /// <summary>Margin below the main word.</summary>
-        public static double WordMarginBottom => 8;
+        public static double WordMarginBottom => 6;
 
         // === Answer Section ===
 
         /// <summary>Margin above the answer container.</summary>
-        public static double AnswerMarginTop => 8;
+        public static double AnswerMarginTop => 6;
 
         /// <summary>Spacing between answer lines.</summary>
         public static double AnswerLineSpacing => 4;
@@ -266,12 +282,20 @@ public static class LayoutConstants
         public static double ActionButtonPaddingH => 16;
 
         /// <summary>Vertical padding for action buttons.</summary>
-        public static double ActionButtonPaddingV => 12;
+        public static double ActionButtonPaddingV => 10;
 
         // === Daily Goal ===
 
         /// <summary>Spacing between daily goal text and progress bar.</summary>
         public static double DailyGoalSpacing => 6;
+
+        /// <summary>Top margin above daily goal bar (spacing from nav buttons).</summary>
+        public static double NavToDailyGoalMargin(HeightClass h) => h switch
+        {
+            HeightClass.Tall or HeightClass.Medium => 13, // 16 * 0.8
+            HeightClass.Short => 10, // 12 * 0.8
+            _ => 8 // 10 * 0.8
+        };
     }
 
     #endregion

@@ -68,9 +68,10 @@
             <SolidColorBrush x:Key="StartNavButtonStrokeBrush" Color="#672000" Opacity="0.1"/>
             <SolidColorBrush x:Key="HardButtonBrush" Color="#EA9B81"/>
             <SolidColorBrush x:Key="HardButtonStrokeBrush" Color="#672000" Opacity="0.1"/>
+            <SolidColorBrush x:Key="OnHardButtonBrush" Color="#672000"/>
             <SolidColorBrush x:Key="EasyButtonBrush" Color="#98C78C"/>
             <SolidColorBrush x:Key="EasyButtonStrokeBrush" Color="#293F1C" Opacity="0.1"/>
-            <SolidColorBrush x:Key="EasyButtonTextBrush" Color="#293F1C"/>
+            <SolidColorBrush x:Key="OnEasyButtonBrush" Color="#293F1C"/>
 
             <!-- Progress Bar -->
             <SolidColorBrush x:Key="ProgressFillBrush" Color="#C76034"/>
@@ -145,9 +146,10 @@
             <SolidColorBrush x:Key="StartNavButtonStrokeBrush" Color="#FFB896" Opacity="0.1"/>
             <SolidColorBrush x:Key="HardButtonBrush" Color="#8A4030"/>
             <SolidColorBrush x:Key="HardButtonStrokeBrush" Color="#FFB896" Opacity="0.1"/>
+            <SolidColorBrush x:Key="OnHardButtonBrush" Color="#FFB896"/>
             <SolidColorBrush x:Key="EasyButtonBrush" Color="#3A5A30"/>
             <SolidColorBrush x:Key="EasyButtonStrokeBrush" Color="#A8D898" Opacity="0.1"/>
-            <SolidColorBrush x:Key="EasyButtonTextBrush" Color="#A8D898"/>
+            <SolidColorBrush x:Key="OnEasyButtonBrush" Color="#A8D898"/>
 
             <!-- Progress Bar -->
             <SolidColorBrush x:Key="ProgressFillBrush" Color="#FFB080"/>
@@ -222,9 +224,10 @@
             <SolidColorBrush x:Key="StartNavButtonStrokeBrush" Color="#672000" Opacity="0.1"/>
             <SolidColorBrush x:Key="HardButtonBrush" Color="#EA9B81"/>
             <SolidColorBrush x:Key="HardButtonStrokeBrush" Color="#672000" Opacity="0.1"/>
+            <SolidColorBrush x:Key="OnHardButtonBrush" Color="#672000"/>
             <SolidColorBrush x:Key="EasyButtonBrush" Color="#98C78C"/>
             <SolidColorBrush x:Key="EasyButtonStrokeBrush" Color="#293F1C" Opacity="0.1"/>
-            <SolidColorBrush x:Key="EasyButtonTextBrush" Color="#293F1C"/>
+            <SolidColorBrush x:Key="OnEasyButtonBrush" Color="#293F1C"/>
 
             <!-- Progress Bar -->
             <SolidColorBrush x:Key="ProgressFillBrush" Color="#C76034"/>

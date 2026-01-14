@@ -333,7 +333,6 @@ public static class PracticePageBuilder
 
         var alternativeFormsTextBlock = PaliText()
             .FontSize(fonts.AnswerSecondary)
-            .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .TextAlignment(TextAlignment.Center)
             .TextWrapping(TextWrapping.NoWrap)
@@ -376,9 +375,8 @@ public static class PracticePageBuilder
             .Height(LayoutConstants.Sizes.PlaceholderHeight)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .VerticalAlignment(VerticalAlignment.Center)
-            .BorderBrush(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
+            .BorderBrush(ThemeResource.Get<Brush>("OutlineBrush"))
             .BorderThickness(0, 0, 0, LayoutConstants.Sizes.PlaceholderBorderThickness)
-            .Opacity(0.5)
             .BoolToVisibility<Border, TVM>(isRevealedPath, invert: true);
 
         var answerContainer = new Grid()
@@ -497,6 +495,7 @@ public static class PracticePageBuilder
         var translationTextBlock = RegularText()
             .TextWithin<ExampleCarouselViewModel>(c => c.CurrentMeaning)
             .FontSize(fonts.Translation)
+            .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
             .TextWrapping(TextWrapping.Wrap)
             .TextAlignment(TextAlignment.Center)
             .HorizontalAlignment(HorizontalAlignment.Center)
@@ -668,8 +667,8 @@ public static class PracticePageBuilder
         LayoutConstants.PracticeFontSizes fonts,
         HeightClass heightClass)
     {
-        var (hardIcon, hardText, hardButton) = BuildActionButton<TVM>("Hard", "\uE711", hardCommand, "HardButtonBrush", "OnBackgroundBrush", fonts);
-        var (easyIcon, easyText, easyButton) = BuildActionButton<TVM>("Easy", "\uE73E", easyCommand, "EasyButtonBrush", "EasyButtonTextBrush", fonts);
+        var (hardIcon, hardText, hardButton) = BuildActionButton<TVM>("Hard", "\uE711", hardCommand, "HardButtonBrush", "HardButtonStrokeBrush", "OnHardButtonBrush", fonts);
+        var (easyIcon, easyText, easyButton) = BuildActionButton<TVM>("Easy", "\uE73E", easyCommand, "EasyButtonBrush", "EasyButtonStrokeBrush", "OnEasyButtonBrush", fonts);
 
         var contentPadding = LayoutConstants.Gaps.ContentSpacing(heightClass);
         var container = new Grid()
@@ -700,8 +699,11 @@ public static class PracticePageBuilder
     {
         var button = new SquircleButton()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .Fill(ThemeResource.Get<Brush>("PrimaryBrush"))
-            .Padding(LayoutConstants.Gaps.ActionButtonPaddingH, LayoutConstants.Gaps.ActionButtonPaddingV);
+            .Fill(ThemeResource.Get<Brush>("StartNavButtonBrush"))
+            .Stroke(ThemeResource.Get<Brush>("StartNavButtonStrokeBrush"))
+            .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
+            .Padding(LayoutConstants.Gaps.ActionButtonPaddingH, LayoutConstants.Gaps.ActionButtonPaddingV)
+            .WithStartNavShadow();
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
         return button
             .Child(new StackPanel()
@@ -712,11 +714,13 @@ public static class PracticePageBuilder
                     new FontIcon()
                         .Glyph("\uE7B3") // Eye icon
                         .FontSize(fonts.RevealButton)
-                        .Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush")),
+                        .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+                        .Foreground(ThemeResource.Get<Brush>("TextPrimaryBrush")),
                     RegularText()
                         .Text("Reveal Answer")
                         .FontSize(fonts.RevealButton)
-                        .Foreground(ThemeResource.Get<Brush>("OnPrimaryBrush"))
+                        .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+                        .Foreground(ThemeResource.Get<Brush>("TextPrimaryBrush"))
                 ));
     }
 
@@ -725,6 +729,7 @@ public static class PracticePageBuilder
         string glyph,
         Expression<Func<TVM, ICommand>> commandPath,
         string fillBrushKey,
+        string strokeBrushKey,
         string textBrushKey,
         LayoutConstants.PracticeFontSizes fonts)
     {
@@ -743,6 +748,8 @@ public static class PracticePageBuilder
         var button = new SquircleButton()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Fill(ThemeResource.Get<Brush>(fillBrushKey))
+            .Stroke(ThemeResource.Get<Brush>(strokeBrushKey))
+            .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
             .Padding(LayoutConstants.Gaps.ActionButtonPaddingH, LayoutConstants.Gaps.ActionButtonPaddingV)
             .WithHardEasyShadow();
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));

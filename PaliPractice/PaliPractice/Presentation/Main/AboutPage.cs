@@ -51,27 +51,34 @@ public sealed partial class AboutPage : Page
                                         .FontSize(32)
                                         .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
                                         .HorizontalAlignment(HorizontalAlignment.Center)
-                                        .Foreground(ThemeResource.Get<Brush>("PrimaryBrush")),
+                                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
 
                                     // Description section (title-less, with clickable links)
                                     BuildRichSection(null, AboutViewModel.Description),
 
                                     // Contact button
-                                    new Button()
-                                        .Content(
-                                            new StackPanel()
-                                                .Orientation(Orientation.Horizontal)
-                                                .Spacing(8)
-                                                .Children(
-                                                    new FontIcon()
-                                                        .Glyph("\uE715") // Message
-                                                        .FontSize(16),
-                                                    RegularText()
-                                                        .Text("Contact DhammaBytes")
-                                                        .FontSize(14)
-                                                ))
+                                    new SquircleButton()
+                                        .Fill(ThemeResource.Get<Brush>("SecondaryButtonBrush"))
+                                        .Stroke(ThemeResource.Get<Brush>("OutlineBrush"))
+                                        .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
+                                        .RadiusMode(SquircleRadiusMode.NearPill)
+                                        .Padding(12, 8)
+                                        .WithPillShadow()
                                         .HorizontalAlignment(HorizontalAlignment.Center)
-                                        .Command(() => vm.ContactUsCommand),
+                                        .Command(() => vm.ContactUsCommand)
+                                        .Child(new StackPanel()
+                                            .Orientation(Orientation.Horizontal)
+                                            .Spacing(6)
+                                            .Children(
+                                                new FontIcon()
+                                                    .Glyph("\uE715") // Message
+                                                    .FontSize(16)
+                                                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
+                                                RegularText()
+                                                    .Text("Contact DhammaBytes")
+                                                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+                                                    .VerticalAlignment(VerticalAlignment.Center)
+                                            )),
 
                                     // App Icon section (with clickable links)
                                     BuildRichSection(AboutViewModel.IconTitle, AboutViewModel.IconDescription),
@@ -94,12 +101,12 @@ public sealed partial class AboutPage : Page
                                                 .FontSize(TitleFontSize)
                                                 .FontStyle(Windows.UI.Text.FontStyle.Italic)
                                                 .HorizontalAlignment(HorizontalAlignment.Center)
-                                                .Foreground(ThemeResource.Get<Brush>("PrimaryBrush")),
+                                                .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
                                             RegularText()
                                                 .Text(AboutViewModel.BlessingEnglish)
                                                 .FontSize(TitleFontSize - 1)
                                                 .HorizontalAlignment(HorizontalAlignment.Center)
-                                                .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"))
+                                                .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
                                         )
                                 )
                         )

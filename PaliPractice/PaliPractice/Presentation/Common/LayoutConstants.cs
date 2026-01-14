@@ -89,79 +89,80 @@ public static class LayoutConstants
         double Debug            // Size bracket debug text
     )
     {
+        // Fixed font sizes per user specification (same across all height classes)
         static PracticeFontSizes Tall => new(
-            Word: 32,
+            Word: 33,
             Answer: 30,
             AnswerSecondary: 22,
             Badge: 16,
             BadgeHint: 16,
-            PaliRoot: 15,
-            Level: 14,
+            PaliRoot: 18,
+            Level: 16,
             Translation: 18,
             TranslationPagination: 12,
             TranslationDots: 26,
-            SuttaExample: 17,
-            SuttaReference: 15,
-            Button: 18,
-            RevealButton: 17,
-            DailyGoal: 14,
+            SuttaExample: 18,
+            SuttaReference: 16,
+            Button: 20,
+            RevealButton: 20,
+            DailyGoal: 15,
             Debug: 10
         );
 
         static PracticeFontSizes Medium => new(
-            Word: 34,
-            Answer: 28,
-            AnswerSecondary: 18,
-            Badge: 15,
-            BadgeHint: 15,
-            PaliRoot: 15,
-            Level: 14,
-            Translation: 17,
-            TranslationPagination: 11,
-            TranslationDots: 24,
-            SuttaExample: 16,
-            SuttaReference: 14,
-            Button: 17,
-            RevealButton: 16,
-            DailyGoal: 14,
+            Word: 33,
+            Answer: 30,
+            AnswerSecondary: 22,
+            Badge: 16,
+            BadgeHint: 16,
+            PaliRoot: 18,
+            Level: 16,
+            Translation: 18,
+            TranslationPagination: 12,
+            TranslationDots: 26,
+            SuttaExample: 18,
+            SuttaReference: 16,
+            Button: 20,
+            RevealButton: 20,
+            DailyGoal: 15,
             Debug: 10
         );
 
         static PracticeFontSizes Short => new(
-            Word: 32,
-            Answer: 26,
-            AnswerSecondary: 17,
-            Badge: 15,
-            BadgeHint: 15,
-            PaliRoot: 14,
-            Level: 13,
-            Translation: 16,
-            TranslationPagination: 11,
-            TranslationDots: 22,
-            SuttaExample: 15,
-            SuttaReference: 13,
-            Button: 16,
-            RevealButton: 15,
-            DailyGoal: 13,
+            Word: 33,
+            Answer: 30,
+            AnswerSecondary: 22,
+            Badge: 16,
+            BadgeHint: 16,
+            PaliRoot: 18,
+            Level: 16,
+            Translation: 18,
+            TranslationPagination: 12,
+            TranslationDots: 26,
+            SuttaExample: 18,
+            SuttaReference: 16,
+            Button: 20,
+            RevealButton: 20,
+            DailyGoal: 15,
             Debug: 10
         );
 
         static PracticeFontSizes Minimum => new(
-            Word: 29,
-            Answer: 24,
-            AnswerSecondary: 16,
-            Badge: 15,
-            BadgeHint: 15,
-            PaliRoot: 13,
-            Level: 12,
-            Translation: 15,
-            TranslationPagination: 10,
-            TranslationDots: 20,
-            SuttaExample: 14,
-            SuttaReference: 12,
-            Button: 15,
-            RevealButton: 14,
-            DailyGoal: 12,
+            Word: 33,
+            Answer: 30,
+            AnswerSecondary: 22,
+            Badge: 16,
+            BadgeHint: 16,
+            PaliRoot: 18,
+            Level: 16,
+            Translation: 18,
+            TranslationPagination: 12,
+            TranslationDots: 26,
+            SuttaExample: 18,
+            SuttaReference: 16,
+            Button: 20,
+            RevealButton: 20,
+            DailyGoal: 15,
             Debug: 10
         );
 
@@ -270,7 +271,7 @@ public static class LayoutConstants
         // === Daily Goal ===
 
         /// <summary>Spacing between daily goal text and progress bar.</summary>
-        public static double DailyGoalSpacing => 8;
+        public static double DailyGoalSpacing => 6;
     }
 
     #endregion
@@ -289,7 +290,7 @@ public static class LayoutConstants
         public static double PlaceholderBorderThickness => 2;
 
         /// <summary>Height of the daily goal progress bar.</summary>
-        public static double ProgressBarHeight => 15;
+        public static double ProgressBarHeight => 8;
 
         /// <summary>Corner radius for the daily goal progress bar.</summary>
         public static double ProgressBarCornerRadius => 8;

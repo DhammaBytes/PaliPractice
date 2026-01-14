@@ -294,7 +294,6 @@ public static class SquircleGeometry
         SquircleRadiusMode.Pill => Math.Round(Math.Min(width, height) * 0.44), // Slightly less than max to create tiny flat sides
         SquircleRadiusMode.NearPill => Math.Round(Math.Min(width, height) * 0.40), // 85% of full pill for app bar buttons
         SquircleRadiusMode.SemiPill => Math.Round(Math.Min(width, height) * 0.30), // 60% of full pill (50% * 0.6)
-        SquircleRadiusMode.Natural => Math.Round(Math.Min(width, height) * 0.30),
         _ => CalculateHarmonizedRadius(width, height)
     };
 
@@ -367,12 +366,5 @@ public enum SquircleRadiusMode
     /// some vertical straight edges.
     /// Uses min(width, height) * 0.3.
     /// </summary>
-    SemiPill,
-
-    /// <summary>
-    /// Natural radius mode - uses approximately 30% of the smaller dimension.
-    /// Useful for elements that need to be visually rounder than Harmonized
-    /// but not as extreme as full Pill mode.
-    /// </summary>
-    Natural
+    SemiPill
 }

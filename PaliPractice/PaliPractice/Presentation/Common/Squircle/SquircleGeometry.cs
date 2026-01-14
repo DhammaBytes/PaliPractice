@@ -32,97 +32,59 @@ public static class SquircleGeometry
     /// </summary>
     public const float MaxSideRatio = 0.47f;
 
-    #region Harmonized Radius System
+    #region Radius Constants
+
     // ═══════════════════════════════════════════════════════════════════════════
-    // HARMONIZED CORNER RADIUS SYSTEM
+    // LOGARITHMIC RADIUS FORMULA
     // ═══════════════════════════════════════════════════════════════════════════
     //
-    // This system creates visually consistent corners across all UI element sizes
-    // using a saturating exponential curve. All elements share the same "curve
-    // family" - they look like they belong together even at different sizes.
+    // Formula: radius = A × ln(m + 1) + B
+    //
+    // This gives larger elements proportionally SMALLER corners (as percentage),
+    // which looks more balanced visually.
     //
     // ┌─────────────────────────────────────────────────────────────────────────┐
-    // │ FORMULA                                                                 │
-    // ├─────────────────────────────────────────────────────────────────────────┤
-    // │ r = Scale × Rref × (1 - e^(-m / (F × Rref)))                            │
-    // │                                                                         │
-    // │ Where:                                                                  │
-    // │   m     = min(width, height)  — the limiting dimension                  │
-    // │   Scale = uniform multiplier  — adjusts entire curve up/down            │
-    // │   Rref  = reference radius    — asymptote that large elements approach  │
-    // │   F     = falloff factor      — how quickly small elements catch up     │
+    // │ Element size │ Radius │ Percentage                                      │
+    // │──────────────┼────────┼─────────────────────────────────────────────────│
+    // │ 50px         │ ~6px   │ 12%                                             │
+    // │ 80px         │ ~8px   │ 10%                                             │
+    // │ 150px        │ ~11px  │ 7%                                              │
+    // │ 300px        │ ~15px  │ 5%                                              │
+    // │ 450px        │ ~17px  │ 4%                                              │
     // └─────────────────────────────────────────────────────────────────────────┘
     //
-    // ┌─────────────────────────────────────────────────────────────────────────┐
-    // │ EXAMPLE OUTPUTS (Scale=1.0, Rref=14, F=4)                               │
-    // ├─────────────────────────────────────────────────────────────────────────┤
-    // │ Element          │ Dimensions │ m (min) │ Radius │ % of height         │
-    // │──────────────────┼────────────┼─────────┼────────┼─────────────────────│
-    // │ Small badge      │ 100×30     │ 30      │ ~6px   │ 20%                 │
-    // │ Button           │ 150×50     │ 50      │ ~8px   │ 16%                 │
-    // │ Translation box  │ 300×80     │ 80      │ ~10px  │ 12%                 │
-    // │ Card             │ 450×300    │ 300     │ ~14px  │ 5%                  │
-    // └─────────────────────────────────────────────────────────────────────────┘
-    //
-    // ┌─────────────────────────────────────────────────────────────────────────┐
-    // │ SCALE FACTOR EXAMPLES                                                   │
-    // ├─────────────────────────────────────────────────────────────────────────┤
-    // │ To adjust the entire curve uniformly, change HarmonizedScale:           │
-    // │                                                                         │
-    // │ Scale │ Badge (30px) │ Button (50px) │ Box (80px) │ Card (300px)        │
-    // │───────┼──────────────┼───────────────┼────────────┼─────────────────────│
-    // │ 0.7   │ ~4px         │ ~6px          │ ~7px       │ ~10px    (sharper)  │
-    // │ 0.8   │ ~5px         │ ~6px          │ ~8px       │ ~11px               │
-    // │ 1.0   │ ~6px         │ ~8px          │ ~10px      │ ~14px    (default)  │
-    // │ 1.2   │ ~7px         │ ~10px         │ ~12px      │ ~17px               │
-    // │ 1.4   │ ~8px         │ ~11px         │ ~14px      │ ~20px    (rounder)  │
-    // └─────────────────────────────────────────────────────────────────────────┘
-    //
-    // ┌─────────────────────────────────────────────────────────────────────────┐
-    // │ TUNING GUIDE                                                            │
-    // ├─────────────────────────────────────────────────────────────────────────┤
-    // │ Problem                        │ Adjust                                 │
-    // │────────────────────────────────┼────────────────────────────────────────│
-    // │ Everything too round/sharp     │ Scale ↑/↓ (uniform change)             │
-    // │ Large elements not round enough│ Rref ↑ (e.g., 18)                      │
-    // │ Small elements too sharp       │ Falloff ↓ (e.g., 3) or MinRatio ↑      │
-    // │ Small elements becoming pills  │ MaxRatio ↓ (e.g., 0.28)                │
-    // └─────────────────────────────────────────────────────────────────────────┘
-    //
+    // To make everything rounder: increase LogA or LogB
+    // To make everything sharper: decrease LogA or LogB
     // ═══════════════════════════════════════════════════════════════════════════
 
-    /// <summary>
-    /// Uniform scale factor for the entire curve.
-    /// 1.0 = default, &gt;1.0 = rounder, &lt;1.0 = sharper.
-    /// This is the primary knob for adjusting the overall "roundness feel".
-    /// </summary>
-    const double HarmonizedScale = 1.0;
+    /// <summary>Logarithmic coefficient - controls curve steepness.</summary>
+    const double LogA = 5.0;
 
-    /// <summary>
-    /// Reference radius - the asymptotic value that large elements approach.
-    /// Increasing this makes large elements rounder (small elements less affected).
-    /// </summary>
-    const double HarmonizedRref = 14.0;
+    /// <summary>Logarithmic offset - shifts entire curve up/down.</summary>
+    const double LogB = -14.0;
 
-    /// <summary>
-    /// Falloff factor - controls curve steepness.
-    /// Lower values make small elements catch up to Rref faster.
-    /// Higher values keep small elements relatively sharper.
-    /// </summary>
-    const double HarmonizedFalloff = 4.0;
+    /// <summary>Minimum radius - prevents tiny elements from being too sharp.</summary>
+    const double MinRadius = 4.0;
 
-    /// <summary>
-    /// Minimum corner ratio - prevents very small elements from being too sharp.
-    /// Applied as: minRadius = elementSize × MinRatio
-    /// </summary>
-    const double HarmonizedMinRatio = 0.10;
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SEMANTIC PRESET VALUES
+    // ═══════════════════════════════════════════════════════════════════════════
+    //
+    // Fixed values for specific UI element categories.
+    // Use these when you want predictable, consistent corners regardless of size.
+    //
+    // ┌─────────────────────────────────────────────────────────────────────────┐
+    // │ Preset       │ Radius │ Use for                                         │
+    // │──────────────┼────────┼─────────────────────────────────────────────────│
+    // │ Card         │ 16px   │ Large cards (practice, stats, about)            │
+    // │ Surface      │ 10px   │ Medium surfaces (translation, nested panels)    │
+    // │ ActionButton │ 8px    │ Action buttons (reveal, hard, easy)             │
+    // └─────────────────────────────────────────────────────────────────────────┘
+    // ═══════════════════════════════════════════════════════════════════════════
 
-    /// <summary>
-    /// Maximum corner ratio - prevents elements from becoming pill-shaped.
-    /// Applied as: maxRadius = elementSize × MaxRatio × Scale
-    /// Note: Also scaled by HarmonizedScale to maintain proportions.
-    /// </summary>
-    const double HarmonizedMaxRatio = 0.32;
+    const double CardRadius = 12.0;
+    const double SurfaceRadius = 10.0;
+    const double ActionButtonRadius = 8.0;
 
     #endregion
 
@@ -288,49 +250,41 @@ public static class SquircleGeometry
     /// <summary>
     /// Calculates an appropriate radius based on dimensions and shape type.
     /// </summary>
-    public static double CalculateRadius(double width, double height, SquircleRadiusMode mode) => mode switch
-    {
-        SquircleRadiusMode.Harmonized => CalculateHarmonizedRadius(width, height),
-        SquircleRadiusMode.Pill => Math.Round(Math.Min(width, height) * 0.44), // Slightly less than max to create tiny flat sides
-        SquircleRadiusMode.NearPill => Math.Round(Math.Min(width, height) * 0.40), // 85% of full pill for app bar buttons
-        SquircleRadiusMode.SemiPill => Math.Round(Math.Min(width, height) * 0.30), // 60% of full pill (50% * 0.6)
-        _ => CalculateHarmonizedRadius(width, height)
-    };
-
-    /// <summary>
-    /// Calculates a harmonized radius using a saturating exponential curve.
-    /// All elements share the same curve family, creating visual consistency.
-    /// </summary>
-    /// <remarks>
-    /// Formula: r = Scale × Rref × (1 - exp(-m / (F × Rref)))
-    /// where m = min(width, height), Scale = uniform multiplier,
-    /// Rref = target radius, F = falloff factor.
-    ///
-    /// With default constants (Scale=1.0, Rref=14, F=4), this produces:
-    /// - Small elements (30px): ~6px radius
-    /// - Medium elements (80px): ~10px radius
-    /// - Large elements (300px): ~14px radius (approaches Rref asymptotically)
-    ///
-    /// To adjust the entire curve uniformly, change HarmonizedScale.
-    /// See the detailed documentation in the constants region above.
-    /// </remarks>
-    static double CalculateHarmonizedRadius(double width, double height)
+    public static double CalculateRadius(double width, double height, SquircleRadiusMode mode)
     {
         var m = Math.Min(width, height);
+        var maxAllowed = m * MaxSideRatio;
+
+        var radius = mode switch
+        {
+            // Logarithmic curve - larger elements get proportionally smaller corners
+            SquircleRadiusMode.Harmonized => CalculateLogarithmicRadius(m),
+
+            // Semantic presets - fixed values for specific UI categories
+            SquircleRadiusMode.Card => CardRadius,
+            SquircleRadiusMode.Surface => SurfaceRadius,
+            SquircleRadiusMode.ActionButton => ActionButtonRadius,
+
+            // Pill shapes - percentage of smaller dimension
+            SquircleRadiusMode.Pill => m * 0.44,
+            SquircleRadiusMode.NearPill => m * 0.40,
+
+            _ => CalculateLogarithmicRadius(m)
+        };
+
+        // Never exceed the geometric maximum
+        return Math.Round(Math.Min(radius, maxAllowed));
+    }
+
+    /// <summary>
+    /// Calculates radius using a logarithmic curve.
+    /// Larger elements get proportionally smaller corners (as percentage of size).
+    /// </summary>
+    static double CalculateLogarithmicRadius(double m)
+    {
         if (m <= 0) return 0;
-
-        // Saturating curve: approaches (Scale × Rref) as m grows large
-        var r = HarmonizedScale * HarmonizedRref * (1.0 - Math.Exp(-m / (HarmonizedFalloff * HarmonizedRref)));
-
-        // Clamp to prevent pills and too-sharp corners
-        // MaxRatio is also scaled to maintain proportions when Scale changes
-        var rMin = m * HarmonizedMinRatio;
-        var rMax = m * HarmonizedMaxRatio * HarmonizedScale;
-
-        // Ensure we never exceed the absolute maximum (prevents geometry overlap)
-        rMax = Math.Min(rMax, m * MaxSideRatio);
-
-        return Math.Round(Math.Clamp(r, rMin, rMax));
+        var r = LogA * Math.Log(m + 1) + LogB;
+        return Math.Max(r, MinRadius);
     }
 }
 
@@ -339,32 +293,46 @@ public static class SquircleGeometry
 /// </summary>
 public enum SquircleRadiusMode
 {
+    // ─────────────────────────────────────────────────────────────────────────
+    // DYNAMIC (size-based calculation)
+    // ─────────────────────────────────────────────────────────────────────────
+
     /// <summary>
-    /// Harmonized curve for all UI elements (default).
-    /// Uses a saturating exponential that creates visual consistency
-    /// across different element sizes.
+    /// Logarithmic curve (default). Larger elements get proportionally smaller
+    /// corners as a percentage of their size. Good general-purpose choice.
     /// </summary>
     Harmonized,
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // SEMANTIC PRESETS (fixed values)
+    // ─────────────────────────────────────────────────────────────────────────
+
     /// <summary>
-    /// Nearly fully rounded ends (capsule/pill shape) with tiny flat sides.
-    /// Uses min(width, height) * 0.44 to avoid sharp curve meeting points.
+    /// Fixed 16px radius. For large cards (practice, stats, about).
+    /// </summary>
+    Card,
+
+    /// <summary>
+    /// Fixed 10px radius. For medium surfaces (translation, nested panels).
+    /// </summary>
+    Surface,
+
+    /// <summary>
+    /// Fixed 8px radius. For action buttons (reveal, hard, easy).
+    /// </summary>
+    ActionButton,
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // PILL SHAPES (percentage of smaller dimension)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Nearly fully rounded (44% of height). Capsule/pill shape with tiny flat sides.
     /// </summary>
     Pill,
 
     /// <summary>
-    /// Near-pill shape (85% of full pill radius).
-    /// Very rounded buttons with minimal straight edges.
-    /// Good for app bar buttons that should be very rounded.
-    /// Uses min(width, height) * 0.4.
+    /// Very rounded (40% of height). Good for app bar buttons.
     /// </summary>
-    NearPill,
-
-    /// <summary>
-    /// Semi-pill shape (60% of full pill radius).
-    /// Creates buttons that are more rounded than Harmonized but retain
-    /// some vertical straight edges.
-    /// Uses min(width, height) * 0.3.
-    /// </summary>
-    SemiPill
+    NearPill
 }

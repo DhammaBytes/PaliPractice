@@ -67,7 +67,8 @@ public static class SquircleExtensions
     #region SquircleBorder Extensions
 
     /// <summary>
-    /// Sets the corner radius of the squircle.
+    /// Sets an explicit radius (overrides RadiusMode).
+    /// Use to match another element's corner radius ("copycat" pattern).
     /// </summary>
     public static SquircleBorder Radius(this SquircleBorder border, double radius)
     {

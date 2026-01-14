@@ -2,12 +2,11 @@ using ShapePath = Microsoft.UI.Xaml.Shapes.Path;
 
 namespace PaliPractice.Presentation.Common.Squircle;
 
-// Simple squircle button background
+// Default harmonized corners (auto-calculated based on size)
 // new SquircleBorder()
-//     .Fill(ThemeResource.Get<Brush>("PrimaryBrush"))
-//     .Radius(20)
+//     .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
 //     .Child(
-//         new TextBlock().Text("Click me")
+//         new TextBlock().Text("Card content")
 //     )
 //
 // Auto-calculated pill shape (like badges)
@@ -16,18 +15,16 @@ namespace PaliPractice.Presentation.Common.Squircle;
 //     .RadiusMode(SquircleRadiusMode.Pill)
 //     .Child(...)
 //
-// Only round top corners
+// Explicit radius (overrides RadiusMode)
 // new SquircleBorder()
 //     .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
 //     .Radius(24)
-//     .Corners(SquircleCorners.Top)
 //     .Child(...)
 //
-// With stroke border
+// Only round top corners
 // new SquircleBorder()
-//     .Stroke(ThemeResource.Get<Brush>("OutlineBrush"))
-//     .StrokeThickness(2)
-//     .Radius(16)
+//     .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
+//     .Corners(SquircleCorners.Top)
 //     .Child(...)
 
 /// <summary>
@@ -60,16 +57,17 @@ public class SquircleBorder : ContentControl
 
     public static readonly DependencyProperty RadiusProperty = DependencyProperty.Register(
         nameof(Radius),
-        typeof(double),
+        typeof(double?),
         typeof(SquircleBorder),
-        new PropertyMetadata(8.0, OnShapePropertyChanged));
+        new PropertyMetadata(null, OnShapePropertyChanged));
 
     /// <summary>
-    /// The corner radius for the squircle shape.
+    /// Explicit corner radius. If set, overrides RadiusMode calculation.
+    /// Use this to match another element's radius ("copycat" pattern).
     /// </summary>
-    public double Radius
+    public double? Radius
     {
-        get => (double)GetValue(RadiusProperty);
+        get => (double?)GetValue(RadiusProperty);
         set => SetValue(RadiusProperty, value);
     }
 
@@ -87,16 +85,17 @@ public class SquircleBorder : ContentControl
 
     public static readonly DependencyProperty RadiusModeProperty = DependencyProperty.Register(
         nameof(RadiusMode),
-        typeof(SquircleRadiusMode?),
+        typeof(SquircleRadiusMode),
         typeof(SquircleBorder),
-        new PropertyMetadata(null, OnShapePropertyChanged));
+        new PropertyMetadata(SquircleRadiusMode.Harmonized, OnShapePropertyChanged));
 
     /// <summary>
-    /// If set, overrides Radius with an auto-calculated value based on dimensions.
+    /// The radius calculation mode for the squircle shape.
+    /// Defaults to Harmonized for visually consistent corners across all sizes.
     /// </summary>
-    public SquircleRadiusMode? RadiusMode
+    public SquircleRadiusMode RadiusMode
     {
-        get => (SquircleRadiusMode?)GetValue(RadiusModeProperty);
+        get => (SquircleRadiusMode)GetValue(RadiusModeProperty);
         set => SetValue(RadiusModeProperty, value);
     }
 
@@ -247,9 +246,8 @@ public class SquircleBorder : ContentControl
             _borderPath.Height = height;
         }
 
-        var radius = RadiusMode.HasValue
-            ? SquircleGeometry.CalculateRadius(width, height, RadiusMode.Value)
-            : Radius;
+        // Explicit Radius takes precedence over RadiusMode calculation
+        var radius = Radius ?? SquircleGeometry.CalculateRadius(width, height, RadiusMode);
 
         var geometry = SquircleGeometry.Create(width, height, radius, Corners);
 

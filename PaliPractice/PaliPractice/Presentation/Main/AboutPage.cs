@@ -61,7 +61,7 @@ public sealed partial class AboutPage : Page
                                         .Fill(ThemeResource.Get<Brush>("SecondaryButtonBrush"))
                                         .Stroke(ThemeResource.Get<Brush>("OutlineBrush"))
                                         .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
-                                        .RadiusMode(SquircleRadiusMode.NearPill)
+                                        .RadiusMode(SquircleRadiusMode.ButtonNavigation)
                                         .Padding(12, 8)
                                         .WithPillShadow()
                                         .HorizontalAlignment(HorizontalAlignment.Center)

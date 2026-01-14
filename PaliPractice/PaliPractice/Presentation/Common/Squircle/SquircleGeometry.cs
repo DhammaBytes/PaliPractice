@@ -35,56 +35,27 @@ public static class SquircleGeometry
     #region Radius Constants
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // LOGARITHMIC RADIUS FORMULA
+    // FIXED RADIUS VALUES (based on Figma specs at 3x → points)
     // ═══════════════════════════════════════════════════════════════════════════
     //
-    // Formula: radius = A × ln(m + 1) + B
-    //
-    // This gives larger elements proportionally SMALLER corners (as percentage),
-    // which looks more balanced visually.
+    // Figma uses 40px and 30px at 3x scale, which translates to:
+    //   40px @ 3x = ~13px in points
+    //   30px @ 3x = ~10px in points
     //
     // ┌─────────────────────────────────────────────────────────────────────────┐
-    // │ Element size │ Radius │ Percentage                                      │
-    // │──────────────┼────────┼─────────────────────────────────────────────────│
-    // │ 50px         │ ~6px   │ 12%                                             │
-    // │ 80px         │ ~8px   │ 10%                                             │
-    // │ 150px        │ ~11px  │ 7%                                              │
-    // │ 300px        │ ~15px  │ 5%                                              │
-    // │ 450px        │ ~17px  │ 4%                                              │
-    // └─────────────────────────────────────────────────────────────────────────┘
-    //
-    // To make everything rounder: increase LogA or LogB
-    // To make everything sharper: decrease LogA or LogB
-    // ═══════════════════════════════════════════════════════════════════════════
-
-    /// <summary>Logarithmic coefficient - controls curve steepness.</summary>
-    const double LogA = 5.0;
-
-    /// <summary>Logarithmic offset - shifts entire curve up/down.</summary>
-    const double LogB = -14.0;
-
-    /// <summary>Minimum radius - prevents tiny elements from being too sharp.</summary>
-    const double MinRadius = 4.0;
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // SEMANTIC PRESET VALUES
-    // ═══════════════════════════════════════════════════════════════════════════
-    //
-    // Fixed values for specific UI element categories.
-    // Use these when you want predictable, consistent corners regardless of size.
-    //
-    // ┌─────────────────────────────────────────────────────────────────────────┐
-    // │ Preset       │ Radius │ Use for                                         │
-    // │──────────────┼────────┼─────────────────────────────────────────────────│
-    // │ Card         │ 16px   │ Large cards (practice, stats, about)            │
-    // │ Surface      │ 10px   │ Medium surfaces (translation, nested panels)    │
-    // │ ActionButton │ 8px    │ Action buttons (reveal, hard, easy)             │
+    // │ Mode             │ Radius │ Use for                                     │
+    // │──────────────────┼────────┼─────────────────────────────────────────────│
+    // │ CardLarge        │ 13px   │ Practice card, stats cards, about cards     │
+    // │ CardSmall        │ 13px   │ Translation background                      │
+    // │ ButtonLarge      │ 13px   │ Start page buttons                          │
+    // │ ButtonMedium     │ 10px   │ Reveal, Easy, Hard buttons                  │
+    // │ ButtonNavigation │ 40%    │ App bar buttons, contact button             │
+    // │ Pill             │ 44%    │ Badges, progress bars                       │
     // └─────────────────────────────────────────────────────────────────────────┘
     // ═══════════════════════════════════════════════════════════════════════════
 
-    const double CardRadius = 12.0;
-    const double SurfaceRadius = 10.0;
-    const double ActionButtonRadius = 8.0;
+    const double RadiusLarge = 13.0;   // 40px @ 3x
+    const double RadiusMedium = 10.0;  // 30px @ 3x
 
     #endregion
 
@@ -257,82 +228,59 @@ public static class SquircleGeometry
 
         var radius = mode switch
         {
-            // Logarithmic curve - larger elements get proportionally smaller corners
-            SquircleRadiusMode.Harmonized => CalculateLogarithmicRadius(m),
+            // Fixed values (13px - from Figma 40px @ 3x)
+            SquircleRadiusMode.CardLarge => RadiusLarge,
+            SquircleRadiusMode.CardSmall => RadiusLarge,
+            SquircleRadiusMode.ButtonLarge => RadiusLarge,
 
-            // Semantic presets - fixed values for specific UI categories
-            SquircleRadiusMode.Card => CardRadius,
-            SquircleRadiusMode.Surface => SurfaceRadius,
-            SquircleRadiusMode.ActionButton => ActionButtonRadius,
+            // Fixed values (10px - from Figma 30px @ 3x)
+            SquircleRadiusMode.ButtonMedium => RadiusMedium,
 
-            // Pill shapes - percentage of smaller dimension
+            // Percentage of smaller dimension
+            SquircleRadiusMode.ButtonNavigation => m * 0.40,
             SquircleRadiusMode.Pill => m * 0.44,
-            SquircleRadiusMode.NearPill => m * 0.40,
 
-            _ => CalculateLogarithmicRadius(m)
+            _ => RadiusLarge // Default to large card radius
         };
 
         // Never exceed the geometric maximum
         return Math.Round(Math.Min(radius, maxAllowed));
     }
-
-    /// <summary>
-    /// Calculates radius using a logarithmic curve.
-    /// Larger elements get proportionally smaller corners (as percentage of size).
-    /// </summary>
-    static double CalculateLogarithmicRadius(double m)
-    {
-        if (m <= 0) return 0;
-        var r = LogA * Math.Log(m + 1) + LogB;
-        return Math.Max(r, MinRadius);
-    }
 }
 
 /// <summary>
 /// Preset radius calculation modes for squircle elements.
+/// All values derived from Figma specs (3x scale → points).
 /// </summary>
 public enum SquircleRadiusMode
 {
     // ─────────────────────────────────────────────────────────────────────────
-    // DYNAMIC (size-based calculation)
+    // CARDS (fixed 13px - Figma 40px @ 3x)
     // ─────────────────────────────────────────────────────────────────────────
 
-    /// <summary>
-    /// Logarithmic curve (default). Larger elements get proportionally smaller
-    /// corners as a percentage of their size. Good general-purpose choice.
-    /// </summary>
-    Harmonized,
+    /// <summary>Practice card, stats cards, about cards.</summary>
+    CardLarge,
+
+    /// <summary>Translation background (narrower/shorter card).</summary>
+    CardSmall,
 
     // ─────────────────────────────────────────────────────────────────────────
-    // SEMANTIC PRESETS (fixed values)
+    // BUTTONS (fixed values)
     // ─────────────────────────────────────────────────────────────────────────
 
-    /// <summary>
-    /// Fixed 16px radius. For large cards (practice, stats, about).
-    /// </summary>
-    Card,
+    /// <summary>Start page buttons (13px - Figma 40px @ 3x).</summary>
+    ButtonLarge,
 
-    /// <summary>
-    /// Fixed 10px radius. For medium surfaces (translation, nested panels).
-    /// </summary>
-    Surface,
+    /// <summary>Reveal, Easy, Hard buttons (10px - Figma 30px @ 3x).</summary>
+    ButtonMedium,
 
-    /// <summary>
-    /// Fixed 8px radius. For action buttons (reveal, hard, easy).
-    /// </summary>
-    ActionButton,
+    /// <summary>App bar buttons, contact button (40% of height).</summary>
+    ButtonNavigation,
 
     // ─────────────────────────────────────────────────────────────────────────
-    // PILL SHAPES (percentage of smaller dimension)
+    // PILL (percentage-based)
     // ─────────────────────────────────────────────────────────────────────────
 
-    /// <summary>
-    /// Nearly fully rounded (44% of height). Capsule/pill shape with tiny flat sides.
-    /// </summary>
-    Pill,
-
-    /// <summary>
-    /// Very rounded (40% of height). Good for app bar buttons.
-    /// </summary>
-    NearPill
+    /// <summary>Badges, progress bars (44% of height).</summary>
+    Pill
 }

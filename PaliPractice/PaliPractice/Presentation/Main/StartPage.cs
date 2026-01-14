@@ -83,6 +83,7 @@ public sealed partial class StartPage : Page
         return new SquircleButton()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .HorizontalContentAlignment(HorizontalAlignment.Left)
+            .RadiusMode(SquircleRadiusMode.ButtonLarge)
             .Fill(ThemeResource.Get<Brush>("StartNavButtonBrush"))
             .Stroke(ThemeResource.Get<Brush>("StartNavButtonStrokeBrush"))
             .StrokeThickness(3) // Thicker to compensate for 10% opacity stroke
@@ -97,7 +98,7 @@ public sealed partial class StartPage : Page
                         .FontSize(24)
                         .Foreground(ThemeResource.Get<Brush>("TextPrimaryBrush")),
                     new StackPanel()
-                        .Spacing(2) // Tight spacing between title and subtitle
+                        .Spacing(1) // Tighter spacing between title and subtitle (40% smaller)
                         .Children(
                             RegularText()
                                 .Text(title)
@@ -124,6 +125,7 @@ public sealed partial class StartPage : Page
         return new SquircleButton()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .HorizontalContentAlignment(centerContent ? HorizontalAlignment.Center : HorizontalAlignment.Left)
+            .RadiusMode(SquircleRadiusMode.ButtonLarge)
             .Fill(ThemeResource.Get<Brush>("SecondaryButtonBrush"))
             .Stroke(ThemeResource.Get<Brush>("OutlineBrush"))
             .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)

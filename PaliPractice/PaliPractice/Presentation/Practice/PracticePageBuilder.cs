@@ -122,14 +122,17 @@ public static class PracticePageBuilder
 
         cardChildren.Add(answerContainer);
 
-        // Build card border with shadow
+        // Build card border with shadow (asymmetric padding: smaller top/bottom)
+        var cardPadSides = LayoutConstants.Gaps.CardPadding(heightClass);
+        var cardPadTop = LayoutConstants.Gaps.CardPaddingTop(heightClass);
+        var cardPadBottom = LayoutConstants.Gaps.CardPaddingBottom(heightClass);
         var cardBorder = new SquircleBorder()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
             .WithCardShadow()
             .Child(
                 new StackPanel()
-                    .Padding(LayoutConstants.Gaps.CardPadding(heightClass))
+                    .Padding(new Thickness(cardPadSides, cardPadTop, cardPadSides, cardPadBottom))
                     .Spacing(LayoutConstants.Gaps.CardContentSpacing)
                     .Children(cardChildren.ToArray())
             );
@@ -139,11 +142,18 @@ public static class PracticePageBuilder
         cardBorder.SizeChanged += (_, e) =>
         {
             var translationWidth = e.NewSize.Width * LayoutConstants.TranslationWidthRatio;
+            var textWidth = translationWidth - (LayoutConstants.Gaps.TranslationPaddingH * 2);
 
             elements.AnswerPlaceholder?.Width = e.NewSize.Width * LayoutConstants.AnswerPlaceholderWidthRatio;
 
             translationBorder.Width = translationWidth;
             exampleContainer.MaxWidth = translationWidth;
+
+            // Update text balancing width in the carousel ViewModel
+            if (translationText.DataContext is ExampleCarouselViewModel carousel)
+            {
+                carousel.UpdateAvailableWidth(textWidth, fonts.Translation, translationText.FontFamily);
+            }
         };
 
         // Compute content width from window (clamped to max)
@@ -498,7 +508,7 @@ public static class PracticePageBuilder
             .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
             .TextWrapping(TextWrapping.Wrap)
             .TextAlignment(TextAlignment.Center)
-            .HorizontalAlignment(HorizontalAlignment.Center)
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"));
 
         // Shadow reference for measuring single-line height (used to position arrows)
@@ -547,7 +557,7 @@ public static class PracticePageBuilder
                                 // Translation content - always participates in layout (uses Opacity)
                                 new StackPanel()
                                     .Spacing(LayoutConstants.Gaps.TranslationContentSpacing)
-                                    .HorizontalAlignment(HorizontalAlignment.Center)
+                                    .HorizontalAlignment(HorizontalAlignment.Stretch)
                                     .VerticalAlignment(VerticalAlignment.Center)
                                     .OpacityWithin<StackPanel, ExampleCarouselViewModel>(c => c.IsRevealed)
                                     .Children(
@@ -563,35 +573,42 @@ public static class PracticePageBuilder
                     )
             );
 
-        // Arrow buttons - circular white buttons with arrows and shadow
-        var prevButton = new SquircleButton()
-            .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .RadiusMode(SquircleRadiusMode.Pill) // Fully circular
-            .Padding(10)
+        // Arrow buttons - circular white buttons with arrows (using regular Button for true circles)
+        var buttonSize = 36.0;
+        var prevButton = new Button()
+            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .BorderBrush(ThemeResource.Get<Brush>("OutlineBrush"))
+            .BorderThickness(new Thickness(1))
+            .Width(buttonSize)
+            .Height(buttonSize)
+            .Padding(0)
+            .CornerRadius(new CornerRadius(buttonSize / 2)) // Perfect circle
             .VerticalAlignment(VerticalAlignment.Top)
             .HorizontalAlignment(HorizontalAlignment.Left)
-            .WithCardShadow()
             .Scope(carouselPath)
-            .CommandWithin<SquircleButton, ExampleCarouselViewModel>(c => c.PreviousCommand)
-            .VisibilityWithin<SquircleButton, ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
-            .OpacityWithin<SquircleButton, ExampleCarouselViewModel>(c => c.IsRevealed)
-            .Child(new FontIcon()
+            .CommandWithin<Button, ExampleCarouselViewModel>(c => c.PreviousCommand)
+            .VisibilityWithin<Button, ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
+            .OpacityWithin<Button, ExampleCarouselViewModel>(c => c.IsRevealed)
+            .Content(new FontIcon()
                 .Glyph("\uE76B") // ChevronLeft
                 .FontSize(16)
                 .Foreground(ThemeResource.Get<Brush>("TextPrimaryBrush")));
 
-        var nextButton = new SquircleButton()
-            .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .RadiusMode(SquircleRadiusMode.Pill) // Fully circular
-            .Padding(10)
+        var nextButton = new Button()
+            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .BorderBrush(ThemeResource.Get<Brush>("OutlineBrush"))
+            .BorderThickness(new Thickness(1))
+            .Width(buttonSize)
+            .Height(buttonSize)
+            .Padding(0)
+            .CornerRadius(new CornerRadius(buttonSize / 2)) // Perfect circle
             .VerticalAlignment(VerticalAlignment.Top)
             .HorizontalAlignment(HorizontalAlignment.Right)
-            .WithCardShadow()
             .Scope(carouselPath)
-            .CommandWithin<SquircleButton, ExampleCarouselViewModel>(c => c.NextCommand)
-            .VisibilityWithin<SquircleButton, ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
-            .OpacityWithin<SquircleButton, ExampleCarouselViewModel>(c => c.IsRevealed)
-            .Child(new FontIcon()
+            .CommandWithin<Button, ExampleCarouselViewModel>(c => c.NextCommand)
+            .VisibilityWithin<Button, ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
+            .OpacityWithin<Button, ExampleCarouselViewModel>(c => c.IsRevealed)
+            .Content(new FontIcon()
                 .Glyph("\uE76C") // ChevronRight
                 .FontSize(16)
                 .Foreground(ThemeResource.Get<Brush>("TextPrimaryBrush")));
@@ -776,23 +793,24 @@ public static class PracticePageBuilder
         LayoutConstants.PracticeFontSizes fonts)
     {
         var contentPadding = LayoutConstants.Gaps.ContentSpacing(heightClass);
+        var navToDailyGoalMargin = LayoutConstants.Gaps.NavToDailyGoalMargin(heightClass);
         var verticalPadding = contentPadding / 2;
 
-        // Custom progress bar using SquircleBorder for proper rounded ends
-        // The fill width is calculated based on progress percentage
+        // Custom progress bar using rounded Border (simpler than SquircleBorder, updates reliably)
         var progressHeight = LayoutConstants.Sizes.ProgressBarHeight;
+        var cornerRadius = new CornerRadius(progressHeight / 2);
 
-        var fillBorder = new SquircleBorder()
-            .RadiusMode(SquircleRadiusMode.Pill)
-            .Fill(ThemeResource.Get<Brush>("ProgressFillBrush"))
+        var fillBorder = new Border()
+            .Background(ThemeResource.Get<Brush>("ProgressFillBrush"))
             .Height(progressHeight)
+            .CornerRadius(cornerRadius)
             .HorizontalAlignment(HorizontalAlignment.Left)
             .MinWidth(progressHeight); // Ensure minimum width equals height for proper pill shape
 
-        var trackBorder = new SquircleBorder()
-            .RadiusMode(SquircleRadiusMode.Pill)
-            .Fill(ThemeResource.Get<Brush>("ProgressTrackBrush"))
+        var trackBorder = new Border()
+            .Background(ThemeResource.Get<Brush>("ProgressTrackBrush"))
             .Height(progressHeight)
+            .CornerRadius(cornerRadius)
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Child(fillBorder);
 
@@ -822,7 +840,7 @@ public static class PracticePageBuilder
 
         return new Border()
             // Transparent background - bar blends with page background
-            .Margin(0, contentPadding, 0, 0) // Top margin for gap from nav buttons
+            .Margin(0, navToDailyGoalMargin, 0, 0) // Top margin for gap from nav buttons (20% smaller)
             .Padding(contentPadding, verticalPadding, contentPadding, verticalPadding) // Centered vertically
             .Child(
                 new StackPanel().Spacing(LayoutConstants.Gaps.DailyGoalSpacing).Children(
@@ -865,11 +883,13 @@ public static class PracticePageBuilder
             elements.ContentArea.Padding(new Thickness(contentPadding));
         }
 
-        // Card padding
+        // Card padding (asymmetric: smaller top/bottom)
         if (elements.CardBorder is not null)
         {
-            var cardPad = LayoutConstants.Gaps.CardPadding(heightClass);
-            elements.CardBorder.Padding(new Thickness(cardPad));
+            var cardPadSides = LayoutConstants.Gaps.CardPadding(heightClass);
+            var cardPadTop = LayoutConstants.Gaps.CardPaddingTop(heightClass);
+            var cardPadBottom = LayoutConstants.Gaps.CardPaddingBottom(heightClass);
+            elements.CardBorder.Padding(new Thickness(cardPadSides, cardPadTop, cardPadSides, cardPadBottom));
         }
 
         // Badge spacing

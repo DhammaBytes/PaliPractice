@@ -35,7 +35,8 @@ public interface IPracticeProvider
 
     /// <summary>
     /// Move to the next item in the queue.
-    /// Returns false if no more items.
+    /// Silently rebuilds the queue if exhausted but more forms are available.
+    /// Returns false only when the pool is truly exhausted (no due or new forms).
     /// </summary>
     bool MoveNext();
 

@@ -32,6 +32,7 @@ public sealed partial class DeclensionPracticePage : Page
         if (_viewModel != null)
         {
             _viewModel.QueueExhausted -= OnQueueExhausted;
+            _viewModel.DailyGoalReached -= OnDailyGoalReached;
             _viewModel = null;
         }
     }
@@ -39,21 +40,26 @@ public sealed partial class DeclensionPracticePage : Page
     void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
     {
         if (_viewModel != null)
+        {
             _viewModel.QueueExhausted -= OnQueueExhausted;
+            _viewModel.DailyGoalReached -= OnDailyGoalReached;
+        }
 
         if (args.NewValue is DeclensionPracticeViewModel vm)
         {
             _viewModel = vm;
             _viewModel.QueueExhausted += OnQueueExhausted;
+            _viewModel.DailyGoalReached += OnDailyGoalReached;
         }
     }
 
     async void OnQueueExhausted(object? sender, EventArgs e)
     {
+        // Pool completely exhausted - no due or new forms available
         var dialog = new ContentDialog
         {
-            Title = "All forms completed",
-            Content = "You've practiced all available forms. Adjust your settings to add more, or come back later when reviews are due.",
+            Title = "All forms practiced",
+            Content = "Great work! You've practiced all available forms. Come back later when reviews are due, or adjust your settings to add more.",
             PrimaryButtonText = "Exit",
             SecondaryButtonText = "Settings",
             XamlRoot = XamlRoot
@@ -62,6 +68,25 @@ public sealed partial class DeclensionPracticePage : Page
         var result = await dialog.ShowAsync();
         if (result == ContentDialogResult.Secondary)
             _viewModel?.GoToSettingsCommand.Execute(null);
+        else
+            _viewModel?.GoBackCommand.Execute(null);
+    }
+
+    async void OnDailyGoalReached(object? sender, EventArgs e)
+    {
+        // Daily goal reached but more forms available
+        var dialog = new ContentDialog
+        {
+            Title = "Daily goal reached!",
+            Content = "Congratulations! You've completed your daily practice goal.",
+            PrimaryButtonText = "Continue",
+            SecondaryButtonText = "Exit",
+            XamlRoot = XamlRoot
+        };
+
+        var result = await dialog.ShowAsync();
+        if (result == ContentDialogResult.Primary)
+            _viewModel?.ContinuePracticeCommand.Execute(null);
         else
             _viewModel?.GoBackCommand.Execute(null);
     }

@@ -26,12 +26,20 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     public ExampleCarouselViewModel ExampleCarousel { get; }
 
     /// <summary>
-    /// Raised when the practice queue is exhausted (no more forms available).
+    /// Raised when the practice pool is completely exhausted (no due or new forms).
     /// </summary>
     public event EventHandler? QueueExhausted;
 
+    /// <summary>
+    /// Raised when the daily goal is reached for the first time this session.
+    /// </summary>
+    public event EventHandler? DailyGoalReached;
+
     readonly IPracticeProvider _provider;
     protected readonly INavigator Navigator;
+
+    // Track if we've already shown the daily goal congratulations this session
+    bool _dailyGoalNotified;
 
     // Commands - stored as fields to maintain reference for NotifyCanExecuteChanged
     readonly RelayCommand _hardCommand;
@@ -189,6 +197,12 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     public ICommand EasyCommand => _easyCommand;
     public ICommand RevealCommand => _revealCommand;
 
+    /// <summary>
+    /// Command for the Continue button in the daily goal dialog.
+    /// Does nothing - practice continues automatically.
+    /// </summary>
+    public ICommand ContinuePracticeCommand => new RelayCommand(() => { });
+
     async Task NavigateToInflectionTable()
     {
         var lemma = _provider.GetCurrentLemma();
@@ -226,6 +240,14 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         // Update daily progress
         UserData.IncrementProgress(CurrentPracticeType);
         DailyGoal.Refresh();
+
+        // Check if daily goal was just reached (first time this session)
+        if (!_dailyGoalNotified && UserData.IsDailyGoalMet(CurrentPracticeType))
+        {
+            _dailyGoalNotified = true;
+            Logger.LogInformation("Daily goal reached!");
+            DailyGoalReached?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     void MoveToNextCard()

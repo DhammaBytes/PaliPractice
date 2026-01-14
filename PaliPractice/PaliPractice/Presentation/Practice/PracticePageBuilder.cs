@@ -3,6 +3,7 @@ using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Themes;
 using static PaliPractice.Presentation.Common.TextHelpers;
+using static PaliPractice.Presentation.Common.ShadowHelper;
 using ExampleCarouselViewModel = PaliPractice.Presentation.Practice.ViewModels.Common.ExampleCarouselViewModel;
 
 namespace PaliPractice.Presentation.Practice;
@@ -122,14 +123,14 @@ public static class PracticePageBuilder
 
         cardChildren.Add(answerContainer);
 
-        // Build card border with shadow (asymmetric padding: smaller top/bottom)
+        // Build card border (asymmetric padding: smaller top/bottom)
+        // Shadow is applied via CardShadow wrapper when adding to grid
         var cardPadSides = LayoutConstants.Gaps.CardPadding(heightClass);
         var cardPadTop = LayoutConstants.Gaps.CardPaddingTop(heightClass);
         var cardPadBottom = LayoutConstants.Gaps.CardPaddingBottom(heightClass);
         var cardBorder = new SquircleBorder()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .WithCardShadow()
             .Child(
                 new StackPanel()
                     .Padding(new Thickness(cardPadSides, cardPadTop, cardPadSides, cardPadBottom))
@@ -207,7 +208,7 @@ public static class PracticePageBuilder
             .VerticalAlignment(VerticalAlignment.Stretch)
             .Padding(contentPadding, contentPadding, contentPadding, contentPadding)
             .Children(
-                cardBorder.Grid(row: 0),
+                CardShadow(cardBorder).Grid(row: 0),
                 translationContainer.Margin(0, contentPadding, 0, 0).Grid(row: 1),
                 exampleArea.Margin(0, contentPadding, 0, 0).Grid(row: 2)
             );
@@ -529,9 +530,9 @@ public static class PracticePageBuilder
             );
 
         // Translation border - width set dynamically based on card width
+        // Shadow is applied via CardShadow wrapper when adding to container
         var translationBorder = new SquircleBorder()
             .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .WithCardShadow()
             .Child(
                 new Border()
                     .Padding(LayoutConstants.Gaps.TranslationPaddingH, LayoutConstants.Gaps.TranslationPaddingV)
@@ -620,7 +621,7 @@ public static class PracticePageBuilder
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Children(
                 prevButton.Grid(column: 0),
-                translationBorder.Grid(column: 1).HorizontalAlignment(HorizontalAlignment.Center),
+                CardShadow(translationBorder).Grid(column: 1).HorizontalAlignment(HorizontalAlignment.Center),
                 nextButton.Grid(column: 2)
             );
 
@@ -693,8 +694,8 @@ public static class PracticePageBuilder
             .Padding(contentPadding, 0, contentPadding, 0) // No top/bottom padding (gaps handled by adjacent elements)
             .Children(
                 // Reveal button - visible when NOT revealed
-                BuildRevealButton(revealCommand, fonts)
-                    .BoolToVisibility<SquircleButton, TVM>(isRevealedPath, invert: true),
+                StartNavShadow(BuildRevealButton(revealCommand, fonts))
+                    .BoolToVisibility<Uno.Toolkit.UI.ShadowContainer, TVM>(isRevealedPath, invert: true),
 
                 // Hard/Easy buttons - visible when revealed
                 new Grid()
@@ -702,8 +703,8 @@ public static class PracticePageBuilder
                     .ColumnSpacing(contentPadding)
                     .BoolToVisibility<Grid, TVM>(isRevealedPath)
                     .Children(
-                        hardButton.Grid(column: 0),
-                        easyButton.Grid(column: 1)
+                        HardEasyShadow(hardButton).Grid(column: 0),
+                        HardEasyShadow(easyButton).Grid(column: 1)
                     )
             );
 
@@ -719,8 +720,7 @@ public static class PracticePageBuilder
             .Fill(ThemeResource.Get<Brush>("StartNavButtonBrush"))
             .Stroke(ThemeResource.Get<Brush>("StartNavButtonStrokeBrush"))
             .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
-            .Padding(LayoutConstants.Gaps.ActionButtonPaddingH, LayoutConstants.Gaps.ActionButtonPaddingV)
-            .WithStartNavShadow();
+            .Padding(LayoutConstants.Gaps.ActionButtonPaddingH, LayoutConstants.Gaps.ActionButtonPaddingV);
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
         return button
             .Child(new StackPanel()
@@ -767,8 +767,7 @@ public static class PracticePageBuilder
             .Fill(ThemeResource.Get<Brush>(fillBrushKey))
             .Stroke(ThemeResource.Get<Brush>(strokeBrushKey))
             .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
-            .Padding(LayoutConstants.Gaps.ActionButtonPaddingH, LayoutConstants.Gaps.ActionButtonPaddingV)
-            .WithHardEasyShadow();
+            .Padding(LayoutConstants.Gaps.ActionButtonPaddingH, LayoutConstants.Gaps.ActionButtonPaddingV);
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
         button.Child(new StackPanel()
             .Orientation(Orientation.Horizontal)

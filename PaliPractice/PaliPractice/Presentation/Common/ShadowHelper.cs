@@ -1,67 +1,70 @@
+using Uno.Toolkit.UI;
+
 namespace PaliPractice.Presentation.Common;
 
 /// <summary>
-/// Helper methods for adding drop shadows to UI elements using WinUI's ThemeShadow.
-/// Note: ThemeShadow provides consistent shadows but doesn't support custom colors.
-/// For colored shadows, ShadowContainer from Uno Toolkit would be needed,
-/// but requires restructuring the fluent API pattern.
+/// Helper methods for adding colored drop shadows using Uno Toolkit's ShadowContainer.
+/// Shadow colors are defined in ThemeResources.xaml and support light/dark themes.
 /// </summary>
 public static class ShadowHelper
 {
     /// <summary>
-    /// Adds a ThemeShadow to an element by setting Translation on the Z-axis.
-    /// The shadow is rendered automatically by WinUI on Skia platforms.
+    /// Gets a ShadowCollection from the application's theme resources.
     /// </summary>
-    /// <param name="element">The element to add shadow to.</param>
-    /// <param name="elevation">Z-axis elevation in pixels (affects shadow spread/blur).</param>
-    /// <returns>The same element with shadow applied.</returns>
-    public static T WithShadow<T>(this T element, double elevation = 16) where T : UIElement
+    static ShadowCollection? GetShadowResource(string resourceKey)
     {
-        if (element is FrameworkElement fe)
-        {
-            fe.Translation = new System.Numerics.Vector3(0, 0, (float)elevation);
-            fe.Shadow = new ThemeShadow();
-        }
-        return element;
+        if (Application.Current.Resources.TryGetValue(resourceKey, out var resource) && resource is ShadowCollection collection)
+            return collection;
+        return null;
     }
 
     /// <summary>
-    /// Adds a pill button shadow (app bar buttons: Back, History, All Forms).
+    /// Wraps content in a ShadowContainer with a pill button shadow (app bar buttons: Back, History, All Forms).
     /// </summary>
-    public static T WithPillShadow<T>(this T element, double cornerRadius = 14) where T : UIElement
+    public static ShadowContainer PillShadow(UIElement content)
     {
-        return element.WithShadow(elevation: 8);
+        var container = new ShadowContainer { Content = content };
+        container.Shadows = GetShadowResource("PillButtonShadow")!;
+        return container;
     }
 
     /// <summary>
-    /// Adds a start navigation button shadow (Nouns & Cases, Verbs & Tenses).
+    /// Wraps content in a ShadowContainer with a start navigation button shadow (Nouns & Cases, Verbs & Tenses).
     /// </summary>
-    public static T WithStartNavShadow<T>(this T element, double cornerRadius = 14) where T : UIElement
+    public static ShadowContainer StartNavShadow(UIElement content)
     {
-        return element.WithShadow(elevation: 12);
+        var container = new ShadowContainer { Content = content };
+        container.Shadows = GetShadowResource("StartNavButtonShadow")!;
+        return container;
     }
 
     /// <summary>
-    /// Adds a Hard/Easy button shadow.
+    /// Wraps content in a ShadowContainer with a Hard/Easy button shadow.
     /// </summary>
-    public static T WithHardEasyShadow<T>(this T element, double cornerRadius = 14) where T : UIElement
+    public static ShadowContainer HardEasyShadow(UIElement content)
     {
-        return element.WithShadow(elevation: 8);
+        var container = new ShadowContainer { Content = content };
+        container.Shadows = GetShadowResource("SecondaryButtonShadow")!;
+        return container;
     }
 
     /// <summary>
-    /// Adds a secondary button shadow (Settings, Stats, Help on Start page).
+    /// Wraps content in a ShadowContainer with a secondary button shadow (Settings, Stats, Help on Start page).
     /// </summary>
-    public static T WithSecondaryButtonShadow<T>(this T element, double cornerRadius = 14) where T : UIElement
+    public static ShadowContainer SecondaryButtonShadow(UIElement content)
     {
-        return element.WithPillShadow(cornerRadius);
+        var container = new ShadowContainer { Content = content };
+        container.Shadows = GetShadowResource("SecondaryButtonShadow")!;
+        return container;
     }
 
     /// <summary>
-    /// Adds a card shadow (practice card, translation box, arrow buttons).
+    /// Wraps content in a ShadowContainer with a card shadow (practice card, translation box).
     /// </summary>
-    public static T WithCardShadow<T>(this T element, double cornerRadius = 14) where T : UIElement
+    public static ShadowContainer CardShadow(UIElement content)
     {
-        return element.WithShadow(elevation: 20);
+        var container = new ShadowContainer { Content = content };
+        container.Shadows = GetShadowResource("CardShadow")!;
+        return container;
     }
 }

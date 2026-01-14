@@ -241,10 +241,10 @@ public class SquircleButton : Button
 
     void UpdateOverlayColor()
     {
-        // Use theme-aware overlay color instead of hardcoded black
-        // SurfaceTintBrush provides a warm tint that works well in both light and dark themes
-        var overlayBrush = Application.Current.Resources["SurfaceTintBrush"] as Brush
-            ?? new SolidColorBrush(Colors.Black);
+        // Use semi-transparent black for a neutral gray overlay effect
+        // At 8-12% opacity (set in template), this creates a subtle darkening
+        // that works well in both light and dark themes
+        var overlayBrush = new SolidColorBrush(Colors.Black);
 
         if (_hoverPath != null)
             _hoverPath.Fill = overlayBrush;

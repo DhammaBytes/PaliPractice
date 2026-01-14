@@ -2,7 +2,9 @@ namespace PaliPractice.Presentation.Common;
 
 /// <summary>
 /// Helper methods for adding drop shadows to UI elements using WinUI's ThemeShadow.
-/// Note: ThemeShadow doesn't support custom colors, but provides consistent visual depth.
+/// Note: ThemeShadow provides consistent shadows but doesn't support custom colors.
+/// For colored shadows, ShadowContainer from Uno Toolkit would be needed,
+/// but requires restructuring the fluent API pattern.
 /// </summary>
 public static class ShadowHelper
 {
@@ -57,7 +59,6 @@ public static class ShadowHelper
 
     /// <summary>
     /// Adds a card shadow (practice card, translation box, arrow buttons).
-    /// Based on Figma: X=0, Y=10, Blur=20, Color #F1D6C2 100%.
     /// </summary>
     public static T WithCardShadow<T>(this T element, double cornerRadius = 14) where T : UIElement
     {

@@ -235,7 +235,22 @@ public class SquircleButton : Button
         // Apply initial Fill, Stroke and geometry
         UpdateFill();
         UpdateStroke();
+        UpdateOverlayColor();
         UpdateGeometry();
+    }
+
+    void UpdateOverlayColor()
+    {
+        // Use theme-aware overlay color instead of hardcoded black
+        // SurfaceTintBrush provides a warm tint that works well in both light and dark themes
+        var overlayBrush = Application.Current.Resources["SurfaceTintBrush"] as Brush
+            ?? new SolidColorBrush(Colors.Black);
+
+        if (_hoverPath != null)
+            _hoverPath.Fill = overlayBrush;
+
+        if (_pressedPath != null)
+            _pressedPath.Fill = overlayBrush;
     }
 
     static void OnShapePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

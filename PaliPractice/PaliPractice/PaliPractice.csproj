@@ -50,6 +50,7 @@
     <ItemGroup>
       <PackageReference Include="Markdig" />
       <PackageReference Include="sqlite-net-pcl" />
+      <PackageReference Include="Uno.Toolkit.Skia.WinUI" />
     </ItemGroup>
 
     <!-- Desktop and WASM: Content with copy to output -->

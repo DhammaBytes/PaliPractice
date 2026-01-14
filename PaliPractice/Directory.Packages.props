@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageVersion Include="Markdig" Version="0.44.0" />
     <PackageVersion Include="sqlite-net-pcl" Version="1.9.172" />
+    <PackageVersion Include="Uno.Toolkit.Skia.WinUI" Version="8.3.2" />
     <PackageVersion Include="Microsoft.Data.Sqlite" Version="10.0.1" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4">
       <PrivateAssets>all</PrivateAssets>

@@ -6,7 +6,7 @@
         <!-- Light Theme -->
         <ResourceDictionary x:Key="Light">
             <!-- Background and Surface Colors -->
-            <SolidColorBrush x:Key="BackgroundBrush" Color="#FAEAD9"/>
+            <SolidColorBrush x:Key="BackgroundBrush" Color="#F7EEE5"/>
             <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF"/>
             <SolidColorBrush x:Key="SurfaceVariantBrush" Color="#FFF5EB"/>
             <SolidColorBrush x:Key="SurfaceInverseBrush" Color="#3D2518"/>
@@ -17,7 +17,7 @@
             <SolidColorBrush x:Key="OnBackgroundMediumBrush" Color="#9A6B52"/>
             <SolidColorBrush x:Key="OnSurfaceBrush" Color="#461200"/>
             <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="#7A5040"/>
-            <SolidColorBrush x:Key="OnSurfaceInverseBrush" Color="#FAEAD9"/>
+            <SolidColorBrush x:Key="OnSurfaceInverseBrush" Color="#F7EEE5"/>
             <SolidColorBrush x:Key="OnSurfaceDisabledBrush" Color="#C4A090"/>
 
             <!-- Text Hierarchy -->
@@ -59,13 +59,14 @@
             <SolidColorBrush x:Key="OnSuccessContainerBrush" Color="#1B5E20"/>
 
             <!-- Outline Colors -->
-            <SolidColorBrush x:Key="OutlineBrush" Color="#F1D6C2"/>
+            <SolidColorBrush x:Key="OutlineBrush" Color="#F0DED1"/>
             <SolidColorBrush x:Key="OutlineVariantBrush" Color="#E5C4B0"/>
 
             <!-- Button-Specific Colors -->
-            <SolidColorBrush x:Key="SecondaryButtonBrush" Color="#FBECDD"/>
-            <SolidColorBrush x:Key="StartNavButtonBrush" Color="#F6CAA2"/>
-            <SolidColorBrush x:Key="StartNavButtonStrokeBrush" Color="#672000" Opacity="0.1"/>
+            <SolidColorBrush x:Key="SecondaryButtonBrush" Color="#F8F0E8"/>
+            <SolidColorBrush x:Key="StartNavButtonBrush" Color="#F5D1B0"/>
+            <SolidColorBrush x:Key="StartNavButtonStrokeBrush" Color="#672000" Opacity="0.07"/>
+            <SolidColorBrush x:Key="StartNavButtonShadowBrush" Color="#F0DED1"/>
             <SolidColorBrush x:Key="HardButtonBrush" Color="#EA9B81"/>
             <SolidColorBrush x:Key="HardButtonStrokeBrush" Color="#672000" Opacity="0.1"/>
             <SolidColorBrush x:Key="OnHardButtonBrush" Color="#672000"/>
@@ -77,17 +78,15 @@
             <SolidColorBrush x:Key="ProgressFillBrush" Color="#C76034"/>
             <SolidColorBrush x:Key="ProgressTrackBrush" Color="#EFD1BD"/>
 
-            <!-- Shadow Colors -->
-            <SolidColorBrush x:Key="CardShadowBrush" Color="#F1D6C2"/>
         </ResourceDictionary>
 
-        <!-- Dark Theme (placeholder - to be refined later) -->
+        <!-- Dark Theme -->
         <ResourceDictionary x:Key="Dark">
             <!-- Background and Surface Colors -->
-            <SolidColorBrush x:Key="BackgroundBrush" Color="#2A1810"/>
+            <SolidColorBrush x:Key="BackgroundBrush" Color="#2D1C14"/>
             <SolidColorBrush x:Key="SurfaceBrush" Color="#3D2518"/>
             <SolidColorBrush x:Key="SurfaceVariantBrush" Color="#4A3025"/>
-            <SolidColorBrush x:Key="SurfaceInverseBrush" Color="#FAEAD9"/>
+            <SolidColorBrush x:Key="SurfaceInverseBrush" Color="#F7EEE5"/>
             <SolidColorBrush x:Key="SurfaceTintBrush" Color="#FFB896"/>
 
             <!-- Text Colors -->
@@ -95,7 +94,7 @@
             <SolidColorBrush x:Key="OnBackgroundMediumBrush" Color="#C9A090"/>
             <SolidColorBrush x:Key="OnSurfaceBrush" Color="#FFE8D8"/>
             <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="#D4B8A8"/>
-            <SolidColorBrush x:Key="OnSurfaceInverseBrush" Color="#2A1810"/>
+            <SolidColorBrush x:Key="OnSurfaceInverseBrush" Color="#2D1C14"/>
             <SolidColorBrush x:Key="OnSurfaceDisabledBrush" Color="#6A5A50"/>
 
             <!-- Text Hierarchy -->
@@ -137,13 +136,14 @@
             <SolidColorBrush x:Key="OnSuccessContainerBrush" Color="#C8E6C9"/>
 
             <!-- Outline Colors -->
-            <SolidColorBrush x:Key="OutlineBrush" Color="#6A5040"/>
-            <SolidColorBrush x:Key="OutlineVariantBrush" Color="#5A4030"/>
+            <SolidColorBrush x:Key="OutlineBrush" Color="#5A4538"/>
+            <SolidColorBrush x:Key="OutlineVariantBrush" Color="#4A3528"/>
 
             <!-- Button-Specific Colors -->
-            <SolidColorBrush x:Key="SecondaryButtonBrush" Color="#3D2518"/>
-            <SolidColorBrush x:Key="StartNavButtonBrush" Color="#5A4030"/>
-            <SolidColorBrush x:Key="StartNavButtonStrokeBrush" Color="#FFB896" Opacity="0.1"/>
+            <SolidColorBrush x:Key="SecondaryButtonBrush" Color="#3D2E26"/>
+            <SolidColorBrush x:Key="StartNavButtonBrush" Color="#5C4838"/>
+            <SolidColorBrush x:Key="StartNavButtonStrokeBrush" Color="#FFB896" Opacity="0.07"/>
+            <SolidColorBrush x:Key="StartNavButtonShadowBrush" Color="#1A0E08"/>
             <SolidColorBrush x:Key="HardButtonBrush" Color="#8A4030"/>
             <SolidColorBrush x:Key="HardButtonStrokeBrush" Color="#FFB896" Opacity="0.1"/>
             <SolidColorBrush x:Key="OnHardButtonBrush" Color="#FFB896"/>
@@ -155,14 +155,12 @@
             <SolidColorBrush x:Key="ProgressFillBrush" Color="#FFB080"/>
             <SolidColorBrush x:Key="ProgressTrackBrush" Color="#4A3525"/>
 
-            <!-- Shadow Colors -->
-            <SolidColorBrush x:Key="CardShadowBrush" Color="#4A3020"/>
         </ResourceDictionary>
 
         <!-- Default/HighContrast fallback (same as Light) -->
         <ResourceDictionary x:Key="Default">
             <!-- Background and Surface Colors -->
-            <SolidColorBrush x:Key="BackgroundBrush" Color="#FAEAD9"/>
+            <SolidColorBrush x:Key="BackgroundBrush" Color="#F7EEE5"/>
             <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF"/>
             <SolidColorBrush x:Key="SurfaceVariantBrush" Color="#FFF5EB"/>
             <SolidColorBrush x:Key="SurfaceInverseBrush" Color="#3D2518"/>
@@ -173,7 +171,7 @@
             <SolidColorBrush x:Key="OnBackgroundMediumBrush" Color="#9A6B52"/>
             <SolidColorBrush x:Key="OnSurfaceBrush" Color="#461200"/>
             <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="#7A5040"/>
-            <SolidColorBrush x:Key="OnSurfaceInverseBrush" Color="#FAEAD9"/>
+            <SolidColorBrush x:Key="OnSurfaceInverseBrush" Color="#F7EEE5"/>
             <SolidColorBrush x:Key="OnSurfaceDisabledBrush" Color="#C4A090"/>
 
             <!-- Text Hierarchy -->
@@ -215,13 +213,14 @@
             <SolidColorBrush x:Key="OnSuccessContainerBrush" Color="#1B5E20"/>
 
             <!-- Outline Colors -->
-            <SolidColorBrush x:Key="OutlineBrush" Color="#F1D6C2"/>
+            <SolidColorBrush x:Key="OutlineBrush" Color="#F0DED1"/>
             <SolidColorBrush x:Key="OutlineVariantBrush" Color="#E5C4B0"/>
 
             <!-- Button-Specific Colors -->
-            <SolidColorBrush x:Key="SecondaryButtonBrush" Color="#FBECDD"/>
-            <SolidColorBrush x:Key="StartNavButtonBrush" Color="#F6CAA2"/>
-            <SolidColorBrush x:Key="StartNavButtonStrokeBrush" Color="#672000" Opacity="0.1"/>
+            <SolidColorBrush x:Key="SecondaryButtonBrush" Color="#F8F0E8"/>
+            <SolidColorBrush x:Key="StartNavButtonBrush" Color="#F5D1B0"/>
+            <SolidColorBrush x:Key="StartNavButtonStrokeBrush" Color="#672000" Opacity="0.07"/>
+            <SolidColorBrush x:Key="StartNavButtonShadowBrush" Color="#F0DED1"/>
             <SolidColorBrush x:Key="HardButtonBrush" Color="#EA9B81"/>
             <SolidColorBrush x:Key="HardButtonStrokeBrush" Color="#672000" Opacity="0.1"/>
             <SolidColorBrush x:Key="OnHardButtonBrush" Color="#672000"/>
@@ -233,8 +232,6 @@
             <SolidColorBrush x:Key="ProgressFillBrush" Color="#C76034"/>
             <SolidColorBrush x:Key="ProgressTrackBrush" Color="#EFD1BD"/>
 
-            <!-- Shadow Colors -->
-            <SolidColorBrush x:Key="CardShadowBrush" Color="#F1D6C2"/>
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 

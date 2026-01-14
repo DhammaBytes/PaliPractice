@@ -1,6 +1,7 @@
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Main.ViewModels;
 using static PaliPractice.Presentation.Common.TextHelpers;
+using static PaliPractice.Presentation.Common.ShadowHelper;
 
 namespace PaliPractice.Presentation.Main;
 
@@ -41,29 +42,34 @@ public sealed partial class StartPage : Page
                                         .Children(
                                             // Declension Practice Button
                                             // Command must be set at call site for source generator to see the binding
-                                            BuildPracticeButton("\uE8D4", "Nouns & Cases", "Declension Practice")
-                                                .Command(() => vm.GoToDeclensionCommand),
+                                            StartNavShadow(
+                                                BuildPracticeButton("\uE8D4", "Nouns & Cases", "Declension Practice")
+                                                    .Command(() => vm.GoToDeclensionCommand)),
 
                                             // Conjugation Practice Button
-                                            BuildPracticeButton("\uE8F4", "Verbs & Tenses", "Conjugation Practice")
-                                                .Command(() => vm.GoToConjugationCommand),
+                                            StartNavShadow(
+                                                BuildPracticeButton("\uE8F4", "Verbs & Tenses", "Conjugation Practice")
+                                                    .Command(() => vm.GoToConjugationCommand)),
 
                                             // Settings Button
-                                            BuildSecondaryButton("\uE713", "Settings")
-                                                .Command(() => vm.GoToSettingsCommand),
+                                            SecondaryButtonShadow(
+                                                BuildSecondaryButton("\uE713", "Settings")
+                                                    .Command(() => vm.GoToSettingsCommand)),
 
                                             // Stats and Help row (side by side)
                                             new Grid()
                                                 .ColumnDefinitions("*,16,*")
                                                 .Children(
                                                     // Stats Button
-                                                    BuildSecondaryButton("\uE9D9", "Stats", centerContent: true)
-                                                        .Command(() => vm.GoToStatisticsCommand)
+                                                    SecondaryButtonShadow(
+                                                        BuildSecondaryButton("\uE9D9", "Stats", centerContent: true)
+                                                            .Command(() => vm.GoToStatisticsCommand))
                                                         .Grid(column: 0),
 
                                                     // Help Button
-                                                    BuildSecondaryButton("\uE897", "Help", centerContent: true)
-                                                        .Command(() => vm.GoToHelpCommand)
+                                                    SecondaryButtonShadow(
+                                                        BuildSecondaryButton("\uE897", "Help", centerContent: true)
+                                                            .Command(() => vm.GoToHelpCommand))
                                                         .Grid(column: 2)
                                                 )
                                 )
@@ -75,7 +81,7 @@ public sealed partial class StartPage : Page
 
     /// <summary>
     /// Builds a primary practice button (Nouns & Cases, Verbs & Tenses).
-    /// Uses StartNavButtonBrush fill with shadow.
+    /// Uses StartNavButtonBrush fill. Shadow is applied at call site via StartNavShadow wrapper.
     /// Note: Command must be set at call site for source generator to see the binding.
     /// </summary>
     static SquircleButton BuildPracticeButton(string glyph, string title, string subtitle)
@@ -88,7 +94,6 @@ public sealed partial class StartPage : Page
             .Stroke(ThemeResource.Get<Brush>("StartNavButtonStrokeBrush"))
             .StrokeThickness(3) // Thicker to compensate for 10% opacity stroke
             .Padding(20, 16)
-            .WithStartNavShadow()
             .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)
                 .Spacing(12)
@@ -117,7 +122,7 @@ public sealed partial class StartPage : Page
 
     /// <summary>
     /// Builds a secondary button (Settings, Stats, Help).
-    /// Uses BackgroundBrush fill with OutlineBrush stroke and shadow.
+    /// Uses BackgroundBrush fill with OutlineBrush stroke. Shadow is applied at call site via SecondaryButtonShadow wrapper.
     /// Note: Command must be set at call site for source generator to see the binding.
     /// </summary>
     static SquircleButton BuildSecondaryButton(string glyph, string label, bool centerContent = false)
@@ -130,7 +135,6 @@ public sealed partial class StartPage : Page
             .Stroke(ThemeResource.Get<Brush>("OutlineBrush"))
             .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
             .Padding(centerContent ? 16 : 20, 16)
-            .WithSecondaryButtonShadow()
             .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)
                 .Spacing(centerContent ? 6 : 12) // Tighter spacing for centered buttons

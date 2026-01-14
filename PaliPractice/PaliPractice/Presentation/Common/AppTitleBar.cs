@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
 using static PaliPractice.Presentation.Common.TextHelpers;
+using static PaliPractice.Presentation.Common.ShadowHelper;
 
 namespace PaliPractice.Presentation.Common;
 
@@ -61,8 +62,7 @@ public static class AppTitleBar
             .Stroke(ThemeResource.Get<Brush>("OutlineBrush"))
             .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
             .RadiusMode(SquircleRadiusMode.Pill) // More pill-like corners
-            .Padding(12, 10) // +2pt vertical padding
-            .WithPillShadow();
+            .Padding(12, 10); // +2pt vertical padding
         centerButton.SetBinding(ButtonBase.CommandProperty, Bind.Path(centerClickCommand));
         centerButton.Child(new StackPanel()
             .Orientation(Orientation.Horizontal)
@@ -81,7 +81,7 @@ public static class AppTitleBar
             ));
 
         return BuildCoreWithCenterElement(
-            centerButton,
+            PillShadow(centerButton),
             CreateBackButton(goBackCommand),
             CreateHistoryButton(goToHistoryCommand));
     }
@@ -101,11 +101,11 @@ public static class AppTitleBar
         var buttonsLayer = new Grid()
             .ColumnDefinitions("Auto,*,Auto")
             .Children(
-                leftButton.Grid(column: 0)
+                PillShadow(leftButton).Grid(column: 0)
             );
 
         if (rightButton is not null)
-            buttonsLayer.Children(rightButton.Grid(column: 2));
+            buttonsLayer.Children(PillShadow(rightButton).Grid(column: 2));
 
         // Stack layers: center behind, buttons on top
         // Transparent background - bar blends with page background
@@ -132,11 +132,11 @@ public static class AppTitleBar
         var buttonsLayer = new Grid()
             .ColumnDefinitions("Auto,*,Auto")
             .Children(
-                leftButton.Grid(column: 0)
+                PillShadow(leftButton).Grid(column: 0)
             );
 
         if (rightButton is not null)
-            buttonsLayer.Children(rightButton.Grid(column: 2));
+            buttonsLayer.Children(PillShadow(rightButton).Grid(column: 2));
 
         // Stack layers: title behind, buttons on top
         // Transparent background - bar blends with page background
@@ -156,8 +156,7 @@ public static class AppTitleBar
             .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
             .RadiusMode(SquircleRadiusMode.Pill) // More pill-like corners
             .Padding(12, 10) // +2pt vertical padding
-            .MinWidth(NavButtonMinWidth) // Match History button width
-            .WithPillShadow();
+            .MinWidth(NavButtonMinWidth); // Match History button width
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
         button.Child(new StackPanel()
             .Orientation(Orientation.Horizontal)
@@ -187,8 +186,7 @@ public static class AppTitleBar
             .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
             .RadiusMode(SquircleRadiusMode.Pill) // More pill-like corners
             .Padding(12, 10) // +2pt vertical padding
-            .MinWidth(NavButtonMinWidth) // Match Back button width
-            .WithPillShadow();
+            .MinWidth(NavButtonMinWidth); // Match Back button width
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
         button.Child(new StackPanel()
             .Orientation(Orientation.Horizontal)

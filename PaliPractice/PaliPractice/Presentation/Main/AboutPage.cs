@@ -3,6 +3,7 @@ using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Main.ViewModels;
 using static PaliPractice.Presentation.Common.TextHelpers;
 using static PaliPractice.Presentation.Common.RichTextHelper;
+using static PaliPractice.Presentation.Common.ShadowHelper;
 
 namespace PaliPractice.Presentation.Main;
 
@@ -54,43 +55,43 @@ public sealed partial class AboutPage : Page
                                         .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
 
                                     // Description section (title-less, with clickable links)
-                                    BuildRichSection(null, AboutViewModel.Description),
+                                    CardShadow(BuildRichSection(null, AboutViewModel.Description)),
 
                                     // Contact button
-                                    new SquircleButton()
-                                        .Fill(ThemeResource.Get<Brush>("SecondaryButtonBrush"))
-                                        .Stroke(ThemeResource.Get<Brush>("OutlineBrush"))
-                                        .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
-                                        .RadiusMode(SquircleRadiusMode.ButtonNavigation)
-                                        .Padding(12, 8)
-                                        .WithPillShadow()
-                                        .HorizontalAlignment(HorizontalAlignment.Center)
-                                        .Command(() => vm.ContactUsCommand)
-                                        .Child(new StackPanel()
-                                            .Orientation(Orientation.Horizontal)
-                                            .Spacing(6)
-                                            .Children(
-                                                new FontIcon()
-                                                    .Glyph("\uE715") // Message
-                                                    .FontSize(16)
-                                                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
-                                                RegularText()
-                                                    .Text("Contact DhammaBytes")
-                                                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
-                                                    .VerticalAlignment(VerticalAlignment.Center)
-                                            )),
+                                    PillShadow(
+                                        new SquircleButton()
+                                            .Fill(ThemeResource.Get<Brush>("SecondaryButtonBrush"))
+                                            .Stroke(ThemeResource.Get<Brush>("OutlineBrush"))
+                                            .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
+                                            .RadiusMode(SquircleRadiusMode.ButtonNavigation)
+                                            .Padding(12, 8)
+                                            .Command(() => vm.ContactUsCommand)
+                                            .Child(new StackPanel()
+                                                .Orientation(Orientation.Horizontal)
+                                                .Spacing(6)
+                                                .Children(
+                                                    new FontIcon()
+                                                        .Glyph("\uE715") // Message
+                                                        .FontSize(16)
+                                                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
+                                                    RegularText()
+                                                        .Text("Contact DhammaBytes")
+                                                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+                                                        .VerticalAlignment(VerticalAlignment.Center)
+                                                )))
+                                        .HorizontalAlignment(HorizontalAlignment.Center),
 
                                     // App Icon section (with clickable links)
-                                    BuildRichSection(AboutViewModel.IconTitle, AboutViewModel.IconDescription),
+                                    CardShadow(BuildRichSection(AboutViewModel.IconTitle, AboutViewModel.IconDescription)),
 
                                     // License section (with clickable links)
-                                    BuildRichSection(AboutViewModel.LicenseTitle, AboutViewModel.LicenseText),
+                                    CardShadow(BuildRichSection(AboutViewModel.LicenseTitle, AboutViewModel.LicenseText)),
 
                                     // Fonts section (plain text)
-                                    BuildRichSection(AboutViewModel.FontsTitle, AboutViewModel.FontsText),
+                                    CardShadow(BuildRichSection(AboutViewModel.FontsTitle, AboutViewModel.FontsText)),
 
                                     // Libraries section
-                                    BuildRichSection(AboutViewModel.LibrariesTitle, AboutViewModel.LibrariesText),
+                                    CardShadow(BuildRichSection(AboutViewModel.LibrariesTitle, AboutViewModel.LibrariesText)),
 
                                     // Blessing
                                     new StackPanel()

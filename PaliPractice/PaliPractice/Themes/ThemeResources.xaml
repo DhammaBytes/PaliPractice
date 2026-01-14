@@ -1,6 +1,7 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:utu="using:Uno.Toolkit.UI">
 
     <ResourceDictionary.ThemeDictionaries>
         <!-- Light Theme -->
@@ -77,6 +78,20 @@
             <!-- Progress Bar -->
             <SolidColorBrush x:Key="ProgressFillBrush" Color="#C76034"/>
             <SolidColorBrush x:Key="ProgressTrackBrush" Color="#EFD1BD"/>
+
+            <!-- Shadow Collections -->
+            <utu:ShadowCollection x:Key="CardShadow">
+                <utu:Shadow BlurRadius="20" OffsetY="10" Opacity="1" Color="#F0DED1"/>
+            </utu:ShadowCollection>
+            <utu:ShadowCollection x:Key="StartNavButtonShadow">
+                <utu:Shadow BlurRadius="20" OffsetY="10" Opacity="1" Color="#F0DED1"/>
+            </utu:ShadowCollection>
+            <utu:ShadowCollection x:Key="SecondaryButtonShadow">
+                <utu:Shadow BlurRadius="16" OffsetY="8" Opacity="0.6" Color="#F0DED1"/>
+            </utu:ShadowCollection>
+            <utu:ShadowCollection x:Key="PillButtonShadow">
+                <utu:Shadow BlurRadius="12" OffsetY="6" Opacity="0.6" Color="#F0DED1"/>
+            </utu:ShadowCollection>
 
         </ResourceDictionary>
 
@@ -155,6 +170,20 @@
             <SolidColorBrush x:Key="ProgressFillBrush" Color="#FFB080"/>
             <SolidColorBrush x:Key="ProgressTrackBrush" Color="#4A3525"/>
 
+            <!-- Shadow Collections -->
+            <utu:ShadowCollection x:Key="CardShadow">
+                <utu:Shadow BlurRadius="20" OffsetY="10" Opacity="1" Color="#1A0E08"/>
+            </utu:ShadowCollection>
+            <utu:ShadowCollection x:Key="StartNavButtonShadow">
+                <utu:Shadow BlurRadius="20" OffsetY="10" Opacity="1" Color="#1A0E08"/>
+            </utu:ShadowCollection>
+            <utu:ShadowCollection x:Key="SecondaryButtonShadow">
+                <utu:Shadow BlurRadius="16" OffsetY="8" Opacity="0.6" Color="#1A0E08"/>
+            </utu:ShadowCollection>
+            <utu:ShadowCollection x:Key="PillButtonShadow">
+                <utu:Shadow BlurRadius="12" OffsetY="6" Opacity="0.6" Color="#1A0E08"/>
+            </utu:ShadowCollection>
+
         </ResourceDictionary>
 
         <!-- Default/HighContrast fallback (same as Light) -->
@@ -231,6 +260,20 @@
             <!-- Progress Bar -->
             <SolidColorBrush x:Key="ProgressFillBrush" Color="#C76034"/>
             <SolidColorBrush x:Key="ProgressTrackBrush" Color="#EFD1BD"/>
+
+            <!-- Shadow Collections -->
+            <utu:ShadowCollection x:Key="CardShadow">
+                <utu:Shadow BlurRadius="20" OffsetY="10" Opacity="1" Color="#F0DED1"/>
+            </utu:ShadowCollection>
+            <utu:ShadowCollection x:Key="StartNavButtonShadow">
+                <utu:Shadow BlurRadius="20" OffsetY="10" Opacity="1" Color="#F0DED1"/>
+            </utu:ShadowCollection>
+            <utu:ShadowCollection x:Key="SecondaryButtonShadow">
+                <utu:Shadow BlurRadius="16" OffsetY="8" Opacity="0.6" Color="#F0DED1"/>
+            </utu:ShadowCollection>
+            <utu:ShadowCollection x:Key="PillButtonShadow">
+                <utu:Shadow BlurRadius="12" OffsetY="6" Opacity="0.6" Color="#F0DED1"/>
+            </utu:ShadowCollection>
 
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>

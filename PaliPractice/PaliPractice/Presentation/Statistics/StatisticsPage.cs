@@ -361,7 +361,7 @@ public sealed partial class StatisticsPage : Page
                 new FontIcon()
                     .Glyph(icon)
                     .FontSize(20)
-                    .Foreground(ThemeResource.Get<Brush>("PrimaryBrush")),
+                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
                 RegularText()
                     .Text(title)
                     .FontSize(18)
@@ -375,7 +375,7 @@ public sealed partial class StatisticsPage : Page
         var valueText = RegularText()
             .FontSize(24)
             .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
-            .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"));
+            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"));
         bindValue(valueText);
 
         return new StackPanel()
@@ -389,7 +389,7 @@ public sealed partial class StatisticsPage : Page
                     .Spacing(6)
                     .Children(
                         new FontIcon().Glyph(icon).FontSize(16)
-                            .Foreground(ThemeResource.Get<Brush>("PrimaryBrush")),
+                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
                         RegularText().Text(label).FontSize(12)
                             .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                     ),

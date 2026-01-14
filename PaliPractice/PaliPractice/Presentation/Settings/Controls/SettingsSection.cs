@@ -20,7 +20,7 @@ public static class SettingsSection
                 .Text(header)
                 .FontSize(14)
                 .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"))
+                .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
                 .Margin(16, 8, 16, 4)
         );
 

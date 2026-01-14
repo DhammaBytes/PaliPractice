@@ -1,3 +1,4 @@
+using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Main.ViewModels;
 using static PaliPractice.Presentation.Common.TextHelpers;
 
@@ -25,151 +26,120 @@ public sealed partial class StartPage : Page
                                 .Spacing(32)
                                 .MaxWidth(400)
                                 .Children(
-                                    // App icon
-                                    new Image()
-                                        .Source("ms-appx:///Assets/Svg/icon.svg")
-                                        .Width(120)
-                                        .Height(120)
-                                        .Stretch(Stretch.Uniform)
-                                        .HorizontalAlignment(HorizontalAlignment.Center),
-
-                                    // App title
+                                    // App title (no icon, larger font)
                                     PaliText()
                                         .Text("Pāli Practice")
-                                        .FontSize(36)
+                                        .FontSize(43)
                                         .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
                                         .HorizontalAlignment(HorizontalAlignment.Center)
                                         .TextAlignment(TextAlignment.Center)
-                                        .Foreground(ThemeResource.Get<Brush>("PrimaryBrush")),
+                                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
 
                                     // Practice buttons
                                     new StackPanel()
                                         .Spacing(16)
                                         .Children(
                                             // Declension Practice Button
-                                            new SquircleButton()
-                                                .HorizontalAlignment(HorizontalAlignment.Stretch)
-                                                .HorizontalContentAlignment(HorizontalAlignment.Left)
-                                                .Fill(ThemeResource.Get<Brush>("PrimaryBrush"))
-                                                .Padding(20, 16)
-                                                .Command(() => vm.GoToDeclensionCommand)
-                                                .Child(new StackPanel()
-                                                    .Orientation(Orientation.Horizontal)
-                                                    .Spacing(12)
-                                                    .Children(
-                                                        new FontIcon()
-                                                            .Glyph("\uE8D4")
-                                                            .FontSize(24),
-                                                        new StackPanel()
-                                                            .Children(
-                                                                RegularText()
-                                                                    .Text("Nouns & Cases")
-                                                                    .FontSize(18)
-                                                                    .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold),
-                                                                RegularText()
-                                                                    .Text("Declension Practice")
-                                                                    .FontSize(14)
-                                                                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
-                                                            )
-                                                    )),
+                                            // Command must be set at call site for source generator to see the binding
+                                            BuildPracticeButton("\uE8D4", "Nouns & Cases", "Declension Practice")
+                                                .Command(() => vm.GoToDeclensionCommand),
 
                                             // Conjugation Practice Button
-                                            new SquircleButton()
-                                                .HorizontalAlignment(HorizontalAlignment.Stretch)
-                                                .HorizontalContentAlignment(HorizontalAlignment.Left)
-                                                .Fill(ThemeResource.Get<Brush>("PrimaryBrush"))
-                                                .Padding(20, 16)
-                                                .Command(() => vm.GoToConjugationCommand)
-                                                .Child(new StackPanel()
-                                                    .Orientation(Orientation.Horizontal)
-                                                    .Spacing(12)
-                                                    .Children(
-                                                        new FontIcon()
-                                                            .Glyph("\uE8F4")
-                                                            .FontSize(24),
-                                                        new StackPanel()
-                                                            .Children(
-                                                                RegularText()
-                                                                    .Text("Verbs & Tenses")
-                                                                    .FontSize(18)
-                                                                    .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold),
-                                                                RegularText()
-                                                                    .Text("Conjugation Practice")
-                                                                    .FontSize(14)
-                                                                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
-                                                            )
-                                                    )),
+                                            BuildPracticeButton("\uE8F4", "Verbs & Tenses", "Conjugation Practice")
+                                                .Command(() => vm.GoToConjugationCommand),
 
                                             // Settings Button
-                                            new SquircleButton()
-                                                .HorizontalAlignment(HorizontalAlignment.Stretch)
-                                                .HorizontalContentAlignment(HorizontalAlignment.Left)
-                                                .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
-                                                .Padding(20, 16)
-                                                .Command(() => vm.GoToSettingsCommand)
-                                                .Child(new StackPanel()
-                                                    .Orientation(Orientation.Horizontal)
-                                                    .Spacing(12)
-                                                    .Children(
-                                                        new FontIcon()
-                                                            .Glyph("\uE713")
-                                                            .FontSize(24),
-                                                        RegularText()
-                                                            .Text("Settings")
-                                                            .FontSize(18)
-                                                            .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                                                    )),
+                                            BuildSecondaryButton("\uE713", "Settings")
+                                                .Command(() => vm.GoToSettingsCommand),
 
                                             // Stats and Help row (side by side)
                                             new Grid()
                                                 .ColumnDefinitions("*,16,*")
                                                 .Children(
                                                     // Stats Button
-                                                    new SquircleButton()
-                                                        .Grid(column: 0)
-                                                        .HorizontalAlignment(HorizontalAlignment.Stretch)
-                                                        .HorizontalContentAlignment(HorizontalAlignment.Center)
-                                                        .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
-                                                        .Padding(16, 16)
+                                                    BuildSecondaryButton("\uE9D9", "Stats", centerContent: true)
                                                         .Command(() => vm.GoToStatisticsCommand)
-                                                        .Child(new StackPanel()
-                                                            .Orientation(Orientation.Horizontal)
-                                                            .Spacing(8)
-                                                            .Children(
-                                                                new FontIcon()
-                                                                    .Glyph("\uE9D9")
-                                                                    .FontSize(24),
-                                                                RegularText()
-                                                                    .Text("Stats")
-                                                                    .FontSize(18)
-                                                                    .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                                                            )),
+                                                        .Grid(column: 0),
 
                                                     // Help Button
-                                                    new SquircleButton()
-                                                        .Grid(column: 2)
-                                                        .HorizontalAlignment(HorizontalAlignment.Stretch)
-                                                        .HorizontalContentAlignment(HorizontalAlignment.Center)
-                                                        .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
-                                                        .Padding(16, 16)
+                                                    BuildSecondaryButton("\uE897", "Help", centerContent: true)
                                                         .Command(() => vm.GoToHelpCommand)
-                                                        .Child(new StackPanel()
-                                                            .Orientation(Orientation.Horizontal)
-                                                            .Spacing(8)
-                                                            .Children(
-                                                                new FontIcon()
-                                                                    .Glyph("\uE897")
-                                                                    .FontSize(24),
-                                                                RegularText()
-                                                                    .Text("Help")
-                                                                    .FontSize(18)
-                                                                    .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                                                            ))
+                                                        .Grid(column: 2)
                                                 )
                                 )
                         )
                 )
             )
         ));
+    }
+
+    /// <summary>
+    /// Builds a primary practice button (Nouns & Cases, Verbs & Tenses).
+    /// Uses StartNavButtonBrush fill with shadow.
+    /// Note: Command must be set at call site for source generator to see the binding.
+    /// </summary>
+    static SquircleButton BuildPracticeButton(string glyph, string title, string subtitle)
+    {
+        return new SquircleButton()
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .HorizontalContentAlignment(HorizontalAlignment.Left)
+            .Fill(ThemeResource.Get<Brush>("StartNavButtonBrush"))
+            .Stroke(ThemeResource.Get<Brush>("StartNavButtonStrokeBrush"))
+            .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
+            .Padding(20, 16)
+            .WithStartNavShadow()
+            .Child(new StackPanel()
+                .Orientation(Orientation.Horizontal)
+                .Spacing(12)
+                .Children(
+                    new FontIcon()
+                        .Glyph(glyph)
+                        .FontSize(24)
+                        .Foreground(ThemeResource.Get<Brush>("TextPrimaryBrush")),
+                    new StackPanel()
+                        .Children(
+                            RegularText()
+                                .Text(title)
+                                .FontSize(18)
+                                .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+                                .Foreground(ThemeResource.Get<Brush>("TextPrimaryBrush")),
+                            RegularText()
+                                .Text(subtitle)
+                                .FontSize(14)
+                                .Opacity(0.6)
+                                .Foreground(ThemeResource.Get<Brush>("TextPrimaryBrush"))
+                        )
+                ));
+    }
+
+    /// <summary>
+    /// Builds a secondary button (Settings, Stats, Help).
+    /// Uses BackgroundBrush fill with OutlineBrush stroke and shadow.
+    /// Note: Command must be set at call site for source generator to see the binding.
+    /// </summary>
+    static SquircleButton BuildSecondaryButton(string glyph, string label, bool centerContent = false)
+    {
+        return new SquircleButton()
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .HorizontalContentAlignment(centerContent ? HorizontalAlignment.Center : HorizontalAlignment.Left)
+            .Fill(ThemeResource.Get<Brush>("SecondaryButtonBrush"))
+            .Stroke(ThemeResource.Get<Brush>("OutlineBrush"))
+            .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
+            .Padding(centerContent ? 16 : 20, 16)
+            .WithSecondaryButtonShadow()
+            .Child(new StackPanel()
+                .Orientation(Orientation.Horizontal)
+                .Spacing(centerContent ? 8 : 12)
+                .Children(
+                    new FontIcon()
+                        .Glyph(glyph)
+                        .FontSize(24)
+                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
+                    RegularText()
+                        .Text(label)
+                        .FontSize(18)
+                        .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+                ));
     }
 }

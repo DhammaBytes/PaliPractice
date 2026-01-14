@@ -44,6 +44,24 @@ public static class SquircleExtensions
         return button;
     }
 
+    /// <summary>
+    /// Sets the stroke brush.
+    /// </summary>
+    public static SquircleButton Stroke(this SquircleButton button, Brush stroke)
+    {
+        button.Stroke = stroke;
+        return button;
+    }
+
+    /// <summary>
+    /// Sets the stroke thickness.
+    /// </summary>
+    public static SquircleButton StrokeThickness(this SquircleButton button, double thickness)
+    {
+        button.StrokeThickness = thickness;
+        return button;
+    }
+
     #endregion
 
     #region SquircleBorder Extensions

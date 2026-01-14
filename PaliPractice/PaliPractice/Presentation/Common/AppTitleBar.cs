@@ -43,8 +43,12 @@ public static class AppTitleBar
         Expression<Func<TDC, ICommand>> goToHistoryCommand)
     {
         var centerButton = new SquircleButton()
-            .Fill(ThemeResource.Get<Brush>("BackgroundBrush"))
-            .Padding(12, 8);
+            .Fill(ThemeResource.Get<Brush>("SecondaryButtonBrush"))
+            .Stroke(ThemeResource.Get<Brush>("OutlineBrush"))
+            .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
+            .RadiusMode(SquircleRadiusMode.NearPill)
+            .Padding(12, 8)
+            .WithPillShadow();
         centerButton.SetBinding(ButtonBase.CommandProperty, Bind.Path(centerClickCommand));
         centerButton.Child(new StackPanel()
             .Orientation(Orientation.Horizontal)
@@ -52,10 +56,12 @@ public static class AppTitleBar
             .Children(
                 new FontIcon()
                     .Glyph("\uE8A7") // List/table icon
-                    .FontSize(14),
+                    .FontSize(14)
+                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
                 RegularText()
                     .Text("All Forms")
                     .FontSize(16)
+                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
                     .VerticalAlignment(VerticalAlignment.Center)
             ));
 
@@ -68,7 +74,7 @@ public static class AppTitleBar
     /// <summary>
     /// Core builder with a center element instead of text.
     /// </summary>
-    static Grid BuildCoreWithCenterElement(UIElement centerElement, SquircleButton leftButton, SquircleButton? rightButton)
+    static Grid BuildCoreWithCenterElement(UIElement centerElement, UIElement leftButton, UIElement? rightButton)
     {
         // Center layer: spans full width, centered element
         var centerLayer = new Grid()
@@ -87,8 +93,8 @@ public static class AppTitleBar
             buttonsLayer.Children(rightButton.Grid(column: 2));
 
         // Stack layers: center behind, buttons on top
+        // Transparent background - bar blends with page background
         return new Grid()
-            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
             .Padding(16, 8)
             .Children(centerLayer, buttonsLayer);
     }
@@ -96,13 +102,14 @@ public static class AppTitleBar
     /// <summary>
     /// Core builder: uses layered Grid to truly center title regardless of button widths.
     /// </summary>
-    static Grid BuildCore(string title, SquircleButton leftButton, SquircleButton? rightButton)
+    static Grid BuildCore(string title, UIElement leftButton, UIElement? rightButton)
     {
         // Title layer: spans full width, centered
         var titleLayer = RegularText()
             .Text(title)
             .FontSize(19)
             .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
+            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
             .HorizontalAlignment(HorizontalAlignment.Center)
             .VerticalAlignment(VerticalAlignment.Center);
 
@@ -117,8 +124,8 @@ public static class AppTitleBar
             buttonsLayer.Children(rightButton.Grid(column: 2));
 
         // Stack layers: title behind, buttons on top
+        // Transparent background - bar blends with page background
         return new Grid()
-            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
             .Padding(16, 8)
             .Children(titleLayer, buttonsLayer);
     }
@@ -126,40 +133,54 @@ public static class AppTitleBar
     static SquircleButton CreateBackButton<TDC>(Expression<Func<TDC, ICommand>> commandPath)
     {
         var button = new SquircleButton()
-            .Fill(ThemeResource.Get<Brush>("BackgroundBrush"))
-            .Padding(12, 8);
+            .Fill(ThemeResource.Get<Brush>("SecondaryButtonBrush"))
+            .Stroke(ThemeResource.Get<Brush>("OutlineBrush"))
+            .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
+            .RadiusMode(SquircleRadiusMode.NearPill)
+            .Padding(12, 8)
+            .WithPillShadow();
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
-        return button
-            .Child(new StackPanel()
-                .Orientation(Orientation.Horizontal)
-                .Spacing(6)
-                .Children(
-                    new FontIcon()
-                        .Glyph("\uE72B") // Back arrow
-                        .FontSize(16),
-                    RegularText()
-                        .Text("Back")
-                        .VerticalAlignment(VerticalAlignment.Center)
-                ));
+        button.Child(new StackPanel()
+            .Orientation(Orientation.Horizontal)
+            .Spacing(6)
+            .Children(
+                new FontIcon()
+                    .Glyph("\uE72B") // Back arrow
+                    .FontSize(16)
+                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
+                RegularText()
+                    .Text("Back")
+                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+                    .VerticalAlignment(VerticalAlignment.Center)
+            ));
+
+        return button;
     }
 
     static SquircleButton CreateHistoryButton<TDC>(Expression<Func<TDC, ICommand>> commandPath)
     {
         var button = new SquircleButton()
-            .Fill(ThemeResource.Get<Brush>("BackgroundBrush"))
-            .Padding(12, 8);
+            .Fill(ThemeResource.Get<Brush>("SecondaryButtonBrush"))
+            .Stroke(ThemeResource.Get<Brush>("OutlineBrush"))
+            .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
+            .RadiusMode(SquircleRadiusMode.NearPill)
+            .Padding(12, 8)
+            .WithPillShadow();
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
-        return button
-            .Child(new StackPanel()
-                .Orientation(Orientation.Horizontal)
-                .Spacing(6)
-                .Children(
-                    new FontIcon()
-                        .Glyph("\uE81C") // History/Clock icon
-                        .FontSize(16),
-                    RegularText()
-                        .Text("History")
-                        .VerticalAlignment(VerticalAlignment.Center)
-                ));
+        button.Child(new StackPanel()
+            .Orientation(Orientation.Horizontal)
+            .Spacing(6)
+            .Children(
+                new FontIcon()
+                    .Glyph("\uE81C") // History/Clock icon
+                    .FontSize(16)
+                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
+                RegularText()
+                    .Text("History")
+                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+                    .VerticalAlignment(VerticalAlignment.Center)
+            ));
+
+        return button;
     }
 }

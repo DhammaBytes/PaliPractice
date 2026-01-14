@@ -122,11 +122,12 @@ public static class PracticePageBuilder
 
         cardChildren.Add(answerContainer);
 
-        // Build card border
+        // Build card border with shadow
         var cardBorder = new SquircleBorder()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
-                        .Child(
+            .WithCardShadow()
+            .Child(
                 new StackPanel()
                     .Padding(LayoutConstants.Gaps.CardPadding(heightClass))
                     .Spacing(LayoutConstants.Gaps.CardContentSpacing)
@@ -403,8 +404,7 @@ public static class PracticePageBuilder
         var endingRun = new Run()
             .FontFamily(paliFont)
             .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
-            // Try different colors: Colors.Blue, Colors.DarkBlue, or custom RGB
-            .Foreground(new SolidColorBrush(Color.FromArgb(255, 11,83,148)));
+            .Foreground(ThemeResource.Get<Brush>("AccentBlueBrush"));
         endingRun.SetBinding(Run.TextProperty, Bind.Path(answerEndingPath));
 
         var textBlock = PaliText()
@@ -449,7 +449,7 @@ public static class PracticePageBuilder
             .Text<TVM>(labelPath);
 
         var badge = new SquircleBorder()
-            .RadiusMode(SquircleRadiusMode.Harmonized)
+            .RadiusMode(SquircleRadiusMode.Pill)
             .FillColor<TVM>(colorPath)
             .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)
@@ -521,7 +521,8 @@ public static class PracticePageBuilder
 
         // Translation border - width set dynamically based on card width
         var translationBorder = new SquircleBorder()
-            .Fill(ThemeResource.Get<Brush>("SurfaceBrush")) 
+            .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .WithCardShadow()
             .Child(
                 new Border()
                     .Padding(LayoutConstants.Gaps.TranslationPaddingH, LayoutConstants.Gaps.TranslationPaddingV)
@@ -563,12 +564,14 @@ public static class PracticePageBuilder
                     )
             );
 
-        // Arrow buttons styled like app bar buttons, aligned to content edges
+        // Arrow buttons - circular white buttons with arrows and shadow
         var prevButton = new SquircleButton()
             .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Padding(10, 8)
+            .RadiusMode(SquircleRadiusMode.Pill) // Fully circular
+            .Padding(10)
             .VerticalAlignment(VerticalAlignment.Top)
             .HorizontalAlignment(HorizontalAlignment.Left)
+            .WithCardShadow()
             .Scope(carouselPath)
             .CommandWithin<SquircleButton, ExampleCarouselViewModel>(c => c.PreviousCommand)
             .VisibilityWithin<SquircleButton, ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
@@ -576,13 +579,15 @@ public static class PracticePageBuilder
             .Child(new FontIcon()
                 .Glyph("\uE76B") // ChevronLeft
                 .FontSize(16)
-                .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")));
+                .Foreground(ThemeResource.Get<Brush>("TextPrimaryBrush")));
 
         var nextButton = new SquircleButton()
             .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Padding(10, 8)
+            .RadiusMode(SquircleRadiusMode.Pill) // Fully circular
+            .Padding(10)
             .VerticalAlignment(VerticalAlignment.Top)
             .HorizontalAlignment(HorizontalAlignment.Right)
+            .WithCardShadow()
             .Scope(carouselPath)
             .CommandWithin<SquircleButton, ExampleCarouselViewModel>(c => c.NextCommand)
             .VisibilityWithin<SquircleButton, ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
@@ -590,33 +595,7 @@ public static class PracticePageBuilder
             .Child(new FontIcon()
                 .Glyph("\uE76C") // ChevronRight
                 .FontSize(16)
-                .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")));
-
-        // Blend arrow button radii between natural and translation border radius
-        // 0 = natural (too small), 1 = full copy (too round), 0.5 = halfway
-        const double blendFactor = 0.3;
-        translationBorder.SizeChanged += (_, e) =>
-        {
-            var sourceRadius = SquircleGeometry.CalculateRadius(
-                e.NewSize.Width,
-                e.NewSize.Height,
-                SquircleRadiusMode.Harmonized);
-
-            // Blend each button's natural radius toward the source
-            if (prevButton.ActualWidth > 0 && prevButton.ActualHeight > 0)
-            {
-                var naturalRadius = SquircleGeometry.CalculateRadius(
-                    prevButton.ActualWidth, prevButton.ActualHeight, SquircleRadiusMode.Harmonized);
-                prevButton.Radius = naturalRadius + (sourceRadius - naturalRadius) * blendFactor;
-            }
-
-            if (nextButton.ActualWidth > 0 && nextButton.ActualHeight > 0)
-            {
-                var naturalRadius = SquircleGeometry.CalculateRadius(
-                    nextButton.ActualWidth, nextButton.ActualHeight, SquircleRadiusMode.Harmonized);
-                nextButton.Radius = naturalRadius + (sourceRadius - naturalRadius) * blendFactor;
-            }
-        };
+                .Foreground(ThemeResource.Get<Brush>("TextPrimaryBrush")));
 
         // Grid layout: arrows at edges, translation centered
         // This aligns arrow edges with card edges above
@@ -649,7 +628,7 @@ public static class PracticePageBuilder
             .TextWrapping(TextWrapping.Wrap)
             .TextAlignment(TextAlignment.Center)
             .HorizontalAlignment(HorizontalAlignment.Center)
-            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"));
+            .Foreground(ThemeResource.Get<Brush>("TextPrimaryBrush"));
 
         // Reference uses Viewbox to shrink font instead of wrapping
         var referenceTextBlock = PaliText()
@@ -657,7 +636,7 @@ public static class PracticePageBuilder
             .FontSize(fonts.SuttaReference)
             .TextWrapping(TextWrapping.NoWrap)
             .TextAlignment(TextAlignment.Center)
-            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"));
+            .Foreground(ThemeResource.Get<Brush>("TextSecondaryBrush"));
 
         var referenceViewbox = new Viewbox()
             .Stretch(Stretch.Uniform)
@@ -689,8 +668,8 @@ public static class PracticePageBuilder
         LayoutConstants.PracticeFontSizes fonts,
         HeightClass heightClass)
     {
-        var (hardIcon, hardText, hardButton) = BuildActionButton<TVM>("Hard", "\uE711", hardCommand, "SurfaceBrush", fonts);
-        var (easyIcon, easyText, easyButton) = BuildActionButton<TVM>("Easy", "\uE73E", easyCommand, "SurfaceBrush", fonts);
+        var (hardIcon, hardText, hardButton) = BuildActionButton<TVM>("Hard", "\uE711", hardCommand, "HardButtonBrush", "OnBackgroundBrush", fonts);
+        var (easyIcon, easyText, easyButton) = BuildActionButton<TVM>("Easy", "\uE73E", easyCommand, "EasyButtonBrush", "EasyButtonTextBrush", fonts);
 
         var contentPadding = LayoutConstants.Gaps.ContentSpacing(heightClass);
         var container = new Grid()
@@ -707,16 +686,12 @@ public static class PracticePageBuilder
                     .ColumnSpacing(contentPadding)
                     .BoolToVisibility<Grid, TVM>(isRevealedPath)
                     .Children(
-                        hardButton
-                            .Grid(column: 0)
-                            .HorizontalAlignment(HorizontalAlignment.Stretch),
-                        easyButton
-                            .Grid(column: 1)
-                            .HorizontalAlignment(HorizontalAlignment.Stretch)
+                        hardButton.Grid(column: 0),
+                        easyButton.Grid(column: 1)
                     )
             );
 
-        return ([(hardIcon, hardText), (easyIcon, easyText)], container);
+        return (new List<(FontIcon, TextBlock)> { (hardIcon, hardText), (easyIcon, easyText) }, container);
     }
 
     static SquircleButton BuildRevealButton<TVM>(
@@ -749,22 +724,27 @@ public static class PracticePageBuilder
         string label,
         string glyph,
         Expression<Func<TVM, ICommand>> commandPath,
-        string brushKey,
+        string fillBrushKey,
+        string textBrushKey,
         LayoutConstants.PracticeFontSizes fonts)
     {
         var iconElement = new FontIcon()
             .Glyph(glyph)
             .FontSize(fonts.Button)
-            .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold);
+            .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+            .Foreground(ThemeResource.Get<Brush>(textBrushKey));
 
         var textElement = RegularText()
             .Text(label)
             .FontSize(fonts.Button)
-            .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold);
+            .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+            .Foreground(ThemeResource.Get<Brush>(textBrushKey));
 
         var button = new SquircleButton()
-            .Fill(ThemeResource.Get<Brush>(brushKey))
-            .Padding(LayoutConstants.Gaps.ActionButtonPaddingH, LayoutConstants.Gaps.ActionButtonPaddingV);
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .Fill(ThemeResource.Get<Brush>(fillBrushKey))
+            .Padding(LayoutConstants.Gaps.ActionButtonPaddingH, LayoutConstants.Gaps.ActionButtonPaddingV)
+            .WithHardEasyShadow();
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
         button.Child(new StackPanel()
             .Orientation(Orientation.Horizontal)
@@ -790,8 +770,51 @@ public static class PracticePageBuilder
     {
         var contentPadding = LayoutConstants.Gaps.ContentSpacing(heightClass);
         var verticalPadding = contentPadding / 2;
+
+        // Custom progress bar using SquircleBorder for proper rounded ends
+        // The fill width is calculated based on progress percentage
+        var progressHeight = LayoutConstants.Sizes.ProgressBarHeight;
+
+        var fillBorder = new SquircleBorder()
+            .RadiusMode(SquircleRadiusMode.Pill)
+            .Fill(ThemeResource.Get<Brush>("ProgressFillBrush"))
+            .Height(progressHeight)
+            .HorizontalAlignment(HorizontalAlignment.Left)
+            .MinWidth(progressHeight); // Ensure minimum width equals height for proper pill shape
+
+        var trackBorder = new SquircleBorder()
+            .RadiusMode(SquircleRadiusMode.Pill)
+            .Fill(ThemeResource.Get<Brush>("ProgressTrackBrush"))
+            .Height(progressHeight)
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .Child(fillBorder);
+
+        // Update fill width when track size changes or progress changes
+        trackBorder.SizeChanged += (s, e) =>
+        {
+            if (trackBorder.DataContext is double progress)
+            {
+                var fillWidth = Math.Max(progressHeight, e.NewSize.Width * (progress / 100.0));
+                fillBorder.Width = fillWidth;
+            }
+        };
+
+        // Bind progress value and update width
+        fillBorder.SetBinding(FrameworkElement.DataContextProperty, Bind.Path(dailyProgress));
+        fillBorder.DataContextChanged += (s, e) =>
+        {
+            if (e.NewValue is double progress && trackBorder.ActualWidth > 0)
+            {
+                var fillWidth = Math.Max(progressHeight, trackBorder.ActualWidth * (progress / 100.0));
+                fillBorder.Width = fillWidth;
+            }
+        };
+
+        // Also store progress on track for SizeChanged handler
+        trackBorder.SetBinding(FrameworkElement.DataContextProperty, Bind.Path(dailyProgress));
+
         return new Border()
-            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+            // Transparent background - bar blends with page background
             .Margin(0, contentPadding, 0, 0) // Top margin for gap from nav buttons
             .Padding(contentPadding, verticalPadding, contentPadding, verticalPadding) // Centered vertically
             .Child(
@@ -800,19 +823,15 @@ public static class PracticePageBuilder
                         RegularText()
                             .Text("Daily goal")
                             .FontSize(fonts.DailyGoal)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                            .Foreground(ThemeResource.Get<Brush>("TextContentBrush"))
                             .Grid(column: 0),
                         RegularText()
                             .Text(dailyGoalText)
                             .FontSize(fonts.DailyGoal)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                            .Foreground(ThemeResource.Get<Brush>("TextContentBrush"))
                             .Grid(column: 1)
                     ),
-                    new ProgressBar()
-                        .Maximum(100)
-                        .Height(LayoutConstants.Sizes.ProgressBarHeight)
-                        .CornerRadius(LayoutConstants.Sizes.ProgressBarCornerRadius)
-                        .Value(dailyProgress)
+                    trackBorder
                 )
             );
     }

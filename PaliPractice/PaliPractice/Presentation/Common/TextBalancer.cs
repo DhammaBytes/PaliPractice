@@ -8,37 +8,39 @@ namespace PaliPractice.Presentation.Common;
 /// Balances text across multiple lines to avoid orphan words.
 /// Measures actual text width to determine where natural line breaks occur,
 /// then adjusts to prevent single words on the last line.
+///
+/// Goals:
+/// 1. Never break mid-phrase (only break after semicolons)
+/// 2. Avoid orphans (single word on last line) when possible
 /// </summary>
 public static class TextBalancer
 {
     // Cached measurement TextBlock (reused for performance)
+    // Note: Must only be called from UI thread (e.g., SizeChanged handlers)
     static TextBlock? _measureBlock;
+    static double _fontSize;
+    static FontFamily? _fontFamily;
 
     /// <summary>
     /// Balances text for display, avoiding orphaned words on the last line.
     /// Uses actual text measurement to determine line breaks.
     /// </summary>
-    /// <param name="text">The text to balance</param>
-    /// <param name="availableWidth">The available width for text</param>
-    /// <param name="fontSize">Font size being used</param>
-    /// <param name="fontFamily">Font family being used</param>
-    /// <returns>Balanced text with newlines inserted if needed</returns>
     public static string Balance(string? text, double availableWidth, double fontSize, FontFamily fontFamily)
     {
         if (string.IsNullOrWhiteSpace(text) || availableWidth <= 0)
             return text ?? string.Empty;
+
+        // Cache font settings for MeasureLine calls
+        _fontSize = fontSize;
+        _fontFamily = fontFamily;
 
         // Split into words
         var words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         if (words.Length <= 2)
             return text; // Too few words to have issues
 
-        // Measure each word's width
-        var wordWidths = MeasureWords(words, fontSize, fontFamily);
-        var spaceWidth = MeasureText(" ", fontSize, fontFamily);
-
-        // Simulate natural line wrapping
-        var lines = SimulateWrapping(words, wordWidths, spaceWidth, availableWidth);
+        // Simulate natural line wrapping using full line measurement
+        var lines = SimulateWrapping(words, availableWidth);
 
         // Single line - no rebalancing needed
         if (lines.Count < 2)
@@ -48,9 +50,8 @@ public static class TextBalancer
         // 1. Mid-phrase breaks (line break not at semicolon boundary)
         // 2. Orphan words (single word on last line)
         var hasMidPhraseBreak = false;
-        var hasOrphan = false;
+        var hasOrphan = lines[^1].Count == 1;
 
-        // Check for mid-phrase breaks: if a line ends without semicolon, it's mid-phrase
         for (var i = 0; i < lines.Count - 1; i++)
         {
             var lastWordInLine = lines[i][^1];
@@ -61,60 +62,57 @@ public static class TextBalancer
             }
         }
 
-        // Check for orphan on last line (single word)
-        if (lines[^1].Count == 1)
-            hasOrphan = true;
-
         if (!hasMidPhraseBreak && !hasOrphan)
             return text;
 
         // Try to rebalance by breaking at semicolon boundaries
-        // Pass hasOrphan flag to ensure we get 2+ words on last line when fixing orphans
-        var rebalanced = TryRebalance(words, wordWidths, spaceWidth, availableWidth, requireMultipleWordsOnLastLine: hasOrphan);
+        var rebalanced = TryRebalance(words, availableWidth);
         return rebalanced ?? text;
     }
 
-    static double[] MeasureWords(string[] words, double fontSize, FontFamily fontFamily)
-    {
-        var widths = new double[words.Length];
-        for (var i = 0; i < words.Length; i++)
-            widths[i] = MeasureText(words[i], fontSize, fontFamily);
-        return widths;
-    }
-
-    static double MeasureText(string text, double fontSize, FontFamily fontFamily)
+    /// <summary>
+    /// Measures a complete line string (more accurate than summing word widths due to kerning).
+    /// </summary>
+    static double MeasureLine(string line)
     {
         _measureBlock ??= new TextBlock();
-        _measureBlock.Text = text;
-        _measureBlock.FontSize = fontSize;
-        _measureBlock.FontFamily = fontFamily;
+        _measureBlock.Text = line;
+        _measureBlock.FontSize = _fontSize;
+        _measureBlock.FontFamily = _fontFamily;
         _measureBlock.FontWeight = FontWeights.Medium;
         _measureBlock.Measure(new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity));
         return _measureBlock.DesiredSize.Width;
     }
 
-    static List<List<string>> SimulateWrapping(string[] words, double[] widths, double spaceWidth, double availableWidth)
+    /// <summary>
+    /// Builds a line string from word range.
+    /// </summary>
+    static string BuildLine(string[] words, int start, int end)
+    {
+        return string.Join(" ", words.Skip(start).Take(end - start));
+    }
+
+    /// <summary>
+    /// Simulates natural word wrapping by measuring full lines.
+    /// </summary>
+    static List<List<string>> SimulateWrapping(string[] words, double availableWidth)
     {
         var lines = new List<List<string>>();
         var currentLine = new List<string>();
-        var currentWidth = 0.0;
 
         for (var i = 0; i < words.Length; i++)
         {
-            var wordWidth = widths[i];
-            var neededWidth = currentLine.Count > 0 ? spaceWidth + wordWidth : wordWidth;
+            // Try adding this word to current line
+            currentLine.Add(words[i]);
+            var lineText = string.Join(" ", currentLine);
+            var lineWidth = MeasureLine(lineText);
 
-            if (currentWidth + neededWidth > availableWidth && currentLine.Count > 0)
+            if (lineWidth > availableWidth && currentLine.Count > 1)
             {
-                // Start new line
-                lines.Add(currentLine);
+                // Doesn't fit - remove word and start new line
+                currentLine.RemoveAt(currentLine.Count - 1);
+                lines.Add(new List<string>(currentLine));
                 currentLine = [words[i]];
-                currentWidth = wordWidth;
-            }
-            else
-            {
-                currentLine.Add(words[i]);
-                currentWidth += neededWidth;
             }
         }
 
@@ -124,86 +122,86 @@ public static class TextBalancer
         return lines;
     }
 
-    static string? TryRebalance(string[] words, double[] widths, double spaceWidth, double availableWidth, bool requireMultipleWordsOnLastLine)
+    static string? TryRebalance(string[] words, double availableWidth)
     {
-        // Strategy: break only at semicolon boundaries, finding the optimal split
-        // that keeps all lines within width
-
         // Find all potential break points (after semicolons)
         var breakPoints = new List<int>();
         for (var i = 0; i < words.Length - 1; i++)
         {
             if (words[i].EndsWith(';'))
-                breakPoints.Add(i + 1); // Break after this word
+                breakPoints.Add(i + 1);
         }
 
         if (breakPoints.Count == 0)
-            return null; // No semicolon boundaries to break at
+            return null;
 
-        // Try to find the best break configuration
-        // Start by trying single break points (2 lines)
+        // Try single break (2 lines) with two-pass approach:
+        // Pass 1: Prefer breaks that leave 2+ words on last line
+        // Pass 2: Allow single word on last line if no better option
+        var singleBreakResult = TrySingleBreak(words, availableWidth, breakPoints, preferNonOrphan: true)
+                             ?? TrySingleBreak(words, availableWidth, breakPoints, preferNonOrphan: false);
+
+        if (singleBreakResult != null)
+            return singleBreakResult;
+
+        // Try multiple breaks for longer text
+        return TryMultipleBreaks(words, availableWidth, breakPoints);
+    }
+
+    static string? TrySingleBreak(string[] words, double availableWidth, List<int> breakPoints, bool preferNonOrphan)
+    {
+        // Iterate from end to find latest valid break point
         for (var bp = breakPoints.Count - 1; bp >= 0; bp--)
         {
             var breakAt = breakPoints[bp];
             var wordsOnLastLine = words.Length - breakAt;
 
-            // If we need multiple words on last line, skip break points that leave only 1
-            if (requireMultipleWordsOnLastLine && wordsOnLastLine < 2)
+            // In first pass, skip breaks that leave orphan
+            if (preferNonOrphan && wordsOnLastLine < 2)
                 continue;
 
-            // Calculate width of first line (before break)
-            var firstLineWidth = CalculateLineWidth(words, widths, spaceWidth, 0, breakAt);
+            var firstLine = BuildLine(words, 0, breakAt);
+            var lastLine = BuildLine(words, breakAt, words.Length);
 
-            // Calculate width of last line (after break)
-            var lastLineWidth = CalculateLineWidth(words, widths, spaceWidth, breakAt, words.Length);
-
-            // Good break: both lines fit
-            if (firstLineWidth <= availableWidth && lastLineWidth <= availableWidth)
-            {
-                var beforeBreak = string.Join(" ", words.Take(breakAt));
-                var afterBreak = string.Join(" ", words.Skip(breakAt));
-                return beforeBreak + "\n" + afterBreak;
-            }
+            // Measure actual line widths
+            if (MeasureLine(firstLine) <= availableWidth && MeasureLine(lastLine) <= availableWidth)
+                return firstLine + "\n" + lastLine;
         }
 
-        // If single break doesn't work, try multiple breaks
-        // Find all valid line segments (each ending at semicolon, fitting within width)
-        var result = TryMultipleBreaks(words, widths, spaceWidth, availableWidth, breakPoints, requireMultipleWordsOnLastLine);
-        return result;
+        return null;
     }
 
-    static double CalculateLineWidth(string[] words, double[] widths, double spaceWidth, int start, int end)
+    static string? TryMultipleBreaks(string[] words, double availableWidth, List<int> breakPoints)
     {
-        var width = 0.0;
-        for (var i = start; i < end; i++)
-            width += (i > start ? spaceWidth : 0) + widths[i];
-        return width;
+        // Two-pass: first try to avoid orphan, then allow it
+        return TryMultipleBreaksPass(words, availableWidth, breakPoints, avoidOrphan: true)
+            ?? TryMultipleBreaksPass(words, availableWidth, breakPoints, avoidOrphan: false);
     }
 
-    static string? TryMultipleBreaks(string[] words, double[] widths, double spaceWidth, double availableWidth, List<int> breakPoints, bool requireMultipleWordsOnLastLine)
+    static string? TryMultipleBreaksPass(string[] words, double availableWidth, List<int> breakPoints, bool avoidOrphan)
     {
-        // Greedy approach: build lines from start, breaking at semicolons when needed
+        // Greedy approach: pack lines from start, breaking at semicolons
         var lines = new List<string>();
         var currentStart = 0;
 
         foreach (var bp in breakPoints)
         {
-            var segmentWidth = CalculateLineWidth(words, widths, spaceWidth, currentStart, bp);
+            var segment = BuildLine(words, currentStart, bp);
+            var segmentWidth = MeasureLine(segment);
 
             if (segmentWidth > availableWidth && currentStart < bp)
             {
-                // This segment is too wide - need to find an earlier break
-                // Look for the last break point that fits
+                // Too wide - find earlier break that fits
                 var foundBreak = false;
                 for (var i = breakPoints.IndexOf(bp) - 1; i >= 0; i--)
                 {
                     var earlierBp = breakPoints[i];
                     if (earlierBp <= currentStart) break;
 
-                    var earlierWidth = CalculateLineWidth(words, widths, spaceWidth, currentStart, earlierBp);
-                    if (earlierWidth <= availableWidth)
+                    var earlierSegment = BuildLine(words, currentStart, earlierBp);
+                    if (MeasureLine(earlierSegment) <= availableWidth)
                     {
-                        lines.Add(string.Join(" ", words.Skip(currentStart).Take(earlierBp - currentStart)));
+                        lines.Add(earlierSegment);
                         currentStart = earlierBp;
                         foundBreak = true;
                         break;
@@ -211,57 +209,54 @@ public static class TextBalancer
                 }
 
                 if (!foundBreak)
-                {
-                    // Can't break properly at semicolons - fall back to natural wrap
                     return null;
-                }
             }
         }
 
-        // Add remaining words as last line
+        // Handle remaining words
         if (currentStart < words.Length)
         {
             var lastLineWordCount = words.Length - currentStart;
-            var lastLineWidth = CalculateLineWidth(words, widths, spaceWidth, currentStart, words.Length);
+            var lastLine = BuildLine(words, currentStart, words.Length);
+            var lastLineWidth = MeasureLine(lastLine);
 
-            // Check if we need to rebreak for orphan prevention or width
+            // Check if we need to rebreak
             var needsRebreak = lastLineWidth > availableWidth ||
-                              (requireMultipleWordsOnLastLine && lastLineWordCount < 2);
+                              (avoidOrphan && lastLineWordCount < 2);
 
             if (needsRebreak)
             {
-                // Try to find a better break point
+                // Try to find better break point
                 for (var i = breakPoints.Count - 1; i >= 0; i--)
                 {
                     var bp = breakPoints[i];
-                    if (bp <= currentStart) continue;
-                    if (bp >= words.Length) continue;
+                    if (bp <= currentStart || bp >= words.Length) continue;
 
                     var wordsAfterBp = words.Length - bp;
-                    if (requireMultipleWordsOnLastLine && wordsAfterBp < 2)
-                        continue;
+                    if (avoidOrphan && wordsAfterBp < 2) continue;
 
-                    var beforeWidth = CalculateLineWidth(words, widths, spaceWidth, currentStart, bp);
-                    var afterWidth = CalculateLineWidth(words, widths, spaceWidth, bp, words.Length);
+                    var beforeLine = BuildLine(words, currentStart, bp);
+                    var afterLine = BuildLine(words, bp, words.Length);
 
-                    if (beforeWidth <= availableWidth && afterWidth <= availableWidth)
+                    if (MeasureLine(beforeLine) <= availableWidth && MeasureLine(afterLine) <= availableWidth)
                     {
-                        lines.Add(string.Join(" ", words.Skip(currentStart).Take(bp - currentStart)));
-                        lines.Add(string.Join(" ", words.Skip(bp)));
+                        lines.Add(beforeLine);
+                        lines.Add(afterLine);
                         return string.Join("\n", lines);
                     }
                 }
 
-                // If we couldn't fix the issue and it's just an orphan (not width), accept it
-                if (lastLineWidth <= availableWidth)
+                // Couldn't fix orphan but line fits - accept it (only in second pass)
+                if (!avoidOrphan && lastLineWidth <= availableWidth)
                 {
-                    lines.Add(string.Join(" ", words.Skip(currentStart)));
+                    lines.Add(lastLine);
                     return lines.Count > 1 ? string.Join("\n", lines) : null;
                 }
 
-                return null; // Can't fit
+                return null;
             }
-            lines.Add(string.Join(" ", words.Skip(currentStart)));
+
+            lines.Add(lastLine);
         }
 
         return lines.Count > 1 ? string.Join("\n", lines) : null;

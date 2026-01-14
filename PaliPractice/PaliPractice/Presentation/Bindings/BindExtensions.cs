@@ -325,4 +325,13 @@ public static class BindWithin
         element.SetBinding(UIElement.OpacityProperty, binding);
         return element;
     }
+
+    /// <summary>
+    /// Binds TextBlock.FontSize to a double property within the current DataContext scope
+    /// </summary>
+    public static TextBlock FontSizeWithin<TScope>(this TextBlock textBlock, Expression<Func<TScope, double>> path)
+    {
+        textBlock.SetBinding(TextBlock.FontSizeProperty, BindExtensions.Relative(path));
+        return textBlock;
+    }
 }

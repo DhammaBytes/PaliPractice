@@ -291,7 +291,10 @@ public static class SquircleGeometry
     public static double CalculateRadius(double width, double height, SquircleRadiusMode mode) => mode switch
     {
         SquircleRadiusMode.Harmonized => CalculateHarmonizedRadius(width, height),
-        SquircleRadiusMode.Pill => Math.Round(Math.Min(width, height) * MaxSideRatio),
+        SquircleRadiusMode.Pill => Math.Round(Math.Min(width, height) * 0.44), // Slightly less than max to create tiny flat sides
+        SquircleRadiusMode.NearPill => Math.Round(Math.Min(width, height) * 0.40), // 85% of full pill for app bar buttons
+        SquircleRadiusMode.SemiPill => Math.Round(Math.Min(width, height) * 0.30), // 60% of full pill (50% * 0.6)
+        SquircleRadiusMode.Natural => Math.Round(Math.Min(width, height) * 0.30),
         _ => CalculateHarmonizedRadius(width, height)
     };
 
@@ -345,8 +348,31 @@ public enum SquircleRadiusMode
     Harmonized,
 
     /// <summary>
-    /// Fully rounded ends (capsule/pill shape).
-    /// Uses min(width, height) * MaxSideRatio.
+    /// Nearly fully rounded ends (capsule/pill shape) with tiny flat sides.
+    /// Uses min(width, height) * 0.44 to avoid sharp curve meeting points.
     /// </summary>
-    Pill
+    Pill,
+
+    /// <summary>
+    /// Near-pill shape (85% of full pill radius).
+    /// Very rounded buttons with minimal straight edges.
+    /// Good for app bar buttons that should be very rounded.
+    /// Uses min(width, height) * 0.4.
+    /// </summary>
+    NearPill,
+
+    /// <summary>
+    /// Semi-pill shape (60% of full pill radius).
+    /// Creates buttons that are more rounded than Harmonized but retain
+    /// some vertical straight edges.
+    /// Uses min(width, height) * 0.3.
+    /// </summary>
+    SemiPill,
+
+    /// <summary>
+    /// Natural radius mode - uses approximately 30% of the smaller dimension.
+    /// Useful for elements that need to be visually rounder than Harmonized
+    /// but not as extreme as full Pill mode.
+    /// </summary>
+    Natural
 }

@@ -72,7 +72,7 @@ public sealed partial class HelpPage : Page
                     .FontWeight(isMainTitle
                         ? Microsoft.UI.Text.FontWeights.Bold
                         : Microsoft.UI.Text.FontWeights.SemiBold)
-                    .Foreground(ThemeResource.Get<Brush>("PrimaryBrush")),
+                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
                 CreateRichContent(content, fontSize: BodyFontSize)
             );
     }
@@ -89,7 +89,7 @@ public sealed partial class HelpPage : Page
                 .Text(title)
                 .FontSize(TitleFontSize)
                 .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"))
+                .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
                 .Margin(0, 0, 0, TitleToContentSpacing)
         };
 

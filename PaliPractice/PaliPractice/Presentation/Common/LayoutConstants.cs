@@ -289,10 +289,13 @@ public static class LayoutConstants
         public static double PlaceholderBorderThickness => 2;
 
         /// <summary>Height of the daily goal progress bar.</summary>
-        public static double ProgressBarHeight => 6;
+        public static double ProgressBarHeight => 15;
 
         /// <summary>Corner radius for the daily goal progress bar.</summary>
-        public static double ProgressBarCornerRadius => 3;
+        public static double ProgressBarCornerRadius => 8;
+
+        /// <summary>Default stroke thickness for squircle buttons with borders.</summary>
+        public static double ButtonStrokeThickness => 2;
     }
 
     #endregion

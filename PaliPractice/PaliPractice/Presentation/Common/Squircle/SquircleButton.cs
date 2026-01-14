@@ -35,6 +35,7 @@ public class SquircleButton : Button
     ShapePath? _backgroundPath;
     ShapePath? _hoverPath;
     ShapePath? _pressedPath;
+    ShapePath? _borderPath;
 
     public SquircleButton()
     {
@@ -95,6 +96,36 @@ public class SquircleButton : Button
     {
         get => (Brush?)GetValue(FillProperty);
         set => SetValue(FillProperty, value);
+    }
+
+    public static readonly DependencyProperty StrokeProperty = DependencyProperty.Register(
+        nameof(Stroke),
+        typeof(Brush),
+        typeof(SquircleButton),
+        new PropertyMetadata(null, OnStrokeChanged));
+
+    /// <summary>
+    /// The border stroke brush.
+    /// </summary>
+    public Brush? Stroke
+    {
+        get => (Brush?)GetValue(StrokeProperty);
+        set => SetValue(StrokeProperty, value);
+    }
+
+    public static readonly DependencyProperty StrokeThicknessProperty = DependencyProperty.Register(
+        nameof(StrokeThickness),
+        typeof(double),
+        typeof(SquircleButton),
+        new PropertyMetadata(1.0, OnStrokeChanged));
+
+    /// <summary>
+    /// The border stroke thickness.
+    /// </summary>
+    public double StrokeThickness
+    {
+        get => (double)GetValue(StrokeThicknessProperty);
+        set => SetValue(StrokeThicknessProperty, value);
     }
 
     #endregion
@@ -169,6 +200,7 @@ public class SquircleButton : Button
                     <Path x:Name="PART_Background"/>
                     <Path x:Name="PART_Hover" Fill="Black" Opacity="0"/>
                     <Path x:Name="PART_Pressed" Fill="Black" Opacity="0"/>
+                    <Path x:Name="PART_Border"/>
                     <ContentPresenter
                         Content="{TemplateBinding Content}"
                         Padding="{TemplateBinding Padding}"
@@ -198,9 +230,11 @@ public class SquircleButton : Button
         _backgroundPath = GetTemplateChild("PART_Background") as ShapePath;
         _hoverPath = GetTemplateChild("PART_Hover") as ShapePath;
         _pressedPath = GetTemplateChild("PART_Pressed") as ShapePath;
+        _borderPath = GetTemplateChild("PART_Border") as ShapePath;
 
-        // Apply initial Fill and geometry
+        // Apply initial Fill, Stroke and geometry
         UpdateFill();
+        UpdateStroke();
         UpdateGeometry();
     }
 
@@ -220,6 +254,15 @@ public class SquircleButton : Button
         }
     }
 
+    static void OnStrokeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d is SquircleButton button)
+        {
+            button.UpdateStroke();
+            button.UpdateGeometry(); // Border geometry needs updating when stroke changes
+        }
+    }
+
     void OnSizeChanged(object sender, SizeChangedEventArgs e)
     {
         UpdateGeometry();
@@ -233,12 +276,23 @@ public class SquircleButton : Button
         }
     }
 
+    void UpdateStroke()
+    {
+        if (_borderPath != null)
+        {
+            _borderPath.Stroke = Stroke;
+            _borderPath.StrokeThickness = StrokeThickness;
+            _borderPath.Fill = null; // Border has no fill, only stroke
+        }
+    }
+
     /// <summary>
     /// Updates the squircle geometry on all Path elements based on current size.
     /// </summary>
     /// <remarks>
-    /// All three paths share the same geometry instance since they need identical shapes.
+    /// All paths share the same geometry instance since they need identical shapes.
     /// The squircle is generated using iOS 7-style superellipse curves.
+    /// The border uses an inset geometry to account for stroke thickness.
     /// See <see cref="SquircleGeometry"/> for the mathematical details.
     /// </remarks>
     void UpdateGeometry()
@@ -252,17 +306,46 @@ public class SquircleButton : Button
         // Explicit Radius takes precedence over RadiusMode calculation
         var radius = Radius ?? SquircleGeometry.CalculateRadius(width, height, RadiusMode);
 
-        // Generate the squircle PathGeometry (reused for all paths)
-        var geometry = SquircleGeometry.Create(width, height, radius);
+        // When we have a stroke, inset all shapes to fit within the stroke
+        var hasStroke = Stroke != null && StrokeThickness > 0;
+        var inset = hasStroke ? StrokeThickness / 2 : 0;
 
-        // Apply same geometry to all three paths
+        // Background and overlays should be inset to fit inside the border stroke
+        var fillWidth = Math.Max(0, width - StrokeThickness);
+        var fillHeight = Math.Max(0, height - StrokeThickness);
+        var fillRadius = Math.Max(0, radius - inset);
+
+        // Generate the fill geometry (used for background, hover, pressed)
+        PathGeometry fillGeometry;
+        if (hasStroke)
+        {
+            fillGeometry = SquircleGeometry.Create(fillWidth, fillHeight, fillRadius);
+            fillGeometry.Transform = new TranslateTransform { X = inset, Y = inset };
+        }
+        else
+        {
+            fillGeometry = SquircleGeometry.Create(width, height, radius);
+        }
+
+        // Apply fill geometry to background and overlay paths
         if (_backgroundPath != null)
-            _backgroundPath.Data = geometry;
+            _backgroundPath.Data = fillGeometry;
 
         if (_hoverPath != null)
-            _hoverPath.Data = geometry;
+            _hoverPath.Data = fillGeometry;
 
         if (_pressedPath != null)
-            _pressedPath.Data = geometry;
+            _pressedPath.Data = fillGeometry;
+
+        // Border uses the same inset geometry for the stroke
+        if (_borderPath != null && hasStroke)
+        {
+            // Border stroke is centered on the path, so use same geometry as fill
+            _borderPath.Data = fillGeometry;
+        }
+        else if (_borderPath != null)
+        {
+            _borderPath.Data = null;
+        }
     }
 }

@@ -113,7 +113,7 @@ public static class SettingsRow
                             .Glyph(iconGlyph)
                             .FontSize(16)
                             .VerticalAlignment(VerticalAlignment.Center)
-                            .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"))
+                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
                             .Margin(0, 0, 12, 0)
                             .Grid(column: 0),
                         RegularText()
@@ -572,7 +572,7 @@ public static class SettingsRow
                             .Glyph(iconGlyph)
                             .FontSize(16)
                             .VerticalAlignment(VerticalAlignment.Center)
-                            .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"))
+                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
                             .Margin(0, 0, 12, 0)
                             .Grid(column: 0),
                         RegularText()

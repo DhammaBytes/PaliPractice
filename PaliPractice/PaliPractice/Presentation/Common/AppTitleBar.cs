@@ -19,6 +19,20 @@ public static class AppTitleBar
     }
 
     /// <summary>
+    /// Builds a title bar with back button and custom center element.
+    /// Used when the title needs special formatting (e.g., PaliText for lemma names).
+    /// </summary>
+    public static Grid BuildWithCenterElement<TDC>(
+        UIElement centerElement,
+        Expression<Func<TDC, ICommand>> goBackCommand)
+    {
+        return BuildCoreWithCenterElement(
+            centerElement,
+            CreateBackButton(goBackCommand),
+            rightButton: null);
+    }
+
+    /// <summary>
     /// Builds a title bar with back and history buttons.
     /// Used for practice pages (Declension, Conjugation).
     /// </summary>
@@ -56,11 +70,12 @@ public static class AppTitleBar
             .Children(
                 new FontIcon()
                     .Glyph("\uE8A7") // List/table icon
-                    .FontSize(14)
+                    .FontSize(16)
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
                 RegularText()
                     .Text("All Forms")
                     .FontSize(16)
+                    .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
                     .VerticalAlignment(VerticalAlignment.Center)
             ));
@@ -150,6 +165,8 @@ public static class AppTitleBar
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
                 RegularText()
                     .Text("Back")
+                    .FontSize(16)
+                    .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
                     .VerticalAlignment(VerticalAlignment.Center)
             ));
@@ -177,6 +194,8 @@ public static class AppTitleBar
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
                 RegularText()
                     .Text("History")
+                    .FontSize(16)
+                    .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
                     .VerticalAlignment(VerticalAlignment.Center)
             ));

@@ -29,7 +29,7 @@ public sealed partial class StartPage : Page
                                     // App title (no icon, larger font)
                                     PaliText()
                                         .Text("Pāli Practice")
-                                        .FontSize(43)
+                                        .FontSize(48)
                                         .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
                                         .HorizontalAlignment(HorizontalAlignment.Center)
                                         .TextAlignment(TextAlignment.Center)
@@ -85,7 +85,7 @@ public sealed partial class StartPage : Page
             .HorizontalContentAlignment(HorizontalAlignment.Left)
             .Fill(ThemeResource.Get<Brush>("StartNavButtonBrush"))
             .Stroke(ThemeResource.Get<Brush>("StartNavButtonStrokeBrush"))
-            .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
+            .StrokeThickness(3) // Thicker to compensate for 10% opacity stroke
             .Padding(20, 16)
             .WithStartNavShadow()
             .Child(new StackPanel()
@@ -97,16 +97,18 @@ public sealed partial class StartPage : Page
                         .FontSize(24)
                         .Foreground(ThemeResource.Get<Brush>("TextPrimaryBrush")),
                     new StackPanel()
+                        .Spacing(2) // Tight spacing between title and subtitle
                         .Children(
                             RegularText()
                                 .Text(title)
-                                .FontSize(18)
+                                .FontSize(22)
                                 .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
                                 .Foreground(ThemeResource.Get<Brush>("TextPrimaryBrush")),
                             RegularText()
                                 .Text(subtitle)
-                                .FontSize(14)
+                                .FontSize(16)
                                 .Opacity(0.6)
+                                .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
                                 .Foreground(ThemeResource.Get<Brush>("TextPrimaryBrush"))
                         )
                 ));
@@ -129,7 +131,7 @@ public sealed partial class StartPage : Page
             .WithSecondaryButtonShadow()
             .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)
-                .Spacing(centerContent ? 8 : 12)
+                .Spacing(centerContent ? 6 : 12) // Tighter spacing for centered buttons
                 .Children(
                     new FontIcon()
                         .Glyph(glyph)
@@ -137,7 +139,7 @@ public sealed partial class StartPage : Page
                         .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
                     RegularText()
                         .Text(label)
-                        .FontSize(18)
+                        .FontSize(22)
                         .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
                         .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
                 ));

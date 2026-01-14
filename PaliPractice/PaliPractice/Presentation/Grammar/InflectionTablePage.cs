@@ -24,7 +24,8 @@ public sealed partial class InflectionTablePage : Page
             .FontSize(22)
             .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
             .HorizontalAlignment(HorizontalAlignment.Center)
-            .VerticalAlignment(VerticalAlignment.Center);
+            .VerticalAlignment(VerticalAlignment.Center)
+            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"));
         _headerTextBlock = RegularText()
             .FontSize(16)
             .TextWrapping(TextWrapping.Wrap);
@@ -41,7 +42,8 @@ public sealed partial class InflectionTablePage : Page
                 .RowDefinitions("Auto,*")
                 .Children(
                     // Row 0: Title bar with back button (full width)
-                    BuildTitleBar(vm)
+                    AppTitleBar.BuildWithCenterElement<InflectionTableViewModel>(
+                            _titleTextBlock!, vm => vm.GoBackCommand)
                         .Grid(row: 0),
 
                     // Row 1: Centered content container (header info + table)
@@ -122,41 +124,6 @@ public sealed partial class InflectionTablePage : Page
                 }
             }
         }
-    }
-
-    Grid BuildTitleBar(InflectionTableViewModel vm)
-    {
-        var backButton = new SquircleButton()
-            .Fill(ThemeResource.Get<Brush>("SecondaryButtonBrush"))
-            .Stroke(ThemeResource.Get<Brush>("OutlineBrush"))
-            .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
-            .RadiusMode(SquircleRadiusMode.NearPill)
-            .Padding(12, 8)
-            .WithPillShadow();
-        backButton.SetBinding(ButtonBase.CommandProperty, new Binding { Path = new PropertyPath("GoBackCommand") });
-        backButton.Child(new StackPanel()
-            .Orientation(Orientation.Horizontal)
-            .Spacing(6)
-            .Children(
-                new FontIcon()
-                    .Glyph("\uE72B")
-                    .FontSize(16)
-                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
-                RegularText()
-                    .Text("Back")
-                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
-                    .VerticalAlignment(VerticalAlignment.Center)
-            ));
-
-        // Transparent background - bar blends with page background
-        return new Grid()
-            .Padding(16, 8)
-            .Children(
-                _titleTextBlock!,
-                new Grid()
-                    .ColumnDefinitions("Auto,*")
-                    .Children(backButton.Grid(column: 0))
-            );
     }
 
     Border BuildHeaderInfo()

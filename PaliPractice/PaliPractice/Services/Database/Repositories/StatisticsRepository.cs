@@ -225,6 +225,8 @@ public class StatisticsRepository : IStatisticsRepository
 
     // === Noun Statistics ===
 
+    public int GetNounPracticedCount() => _connection.Table<NounsFormMastery>().Count();
+
     public PracticeTypeStatsDto GetNounStats()
     {
         return new PracticeTypeStatsDto
@@ -341,6 +343,8 @@ public class StatisticsRepository : IStatisticsRepository
     }
 
     // === Verb Statistics ===
+
+    public int GetVerbPracticedCount() => _connection.Table<VerbsFormMastery>().Count();
 
     public PracticeTypeStatsDto GetVerbStats()
     {

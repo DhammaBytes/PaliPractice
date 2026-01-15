@@ -50,6 +50,9 @@ public interface IStatisticsRepository
 
     // === Noun Statistics ===
 
+    /// <summary>Gets total unique noun forms practiced (lightweight query).</summary>
+    int GetNounPracticedCount();
+
     /// <summary>Gets complete noun practice statistics.</summary>
     PracticeTypeStatsDto GetNounStats();
 
@@ -66,6 +69,9 @@ public interface IStatisticsRepository
     PeriodStatsDto GetNounPeriodStats();
 
     // === Verb Statistics ===
+
+    /// <summary>Gets total unique verb forms practiced (lightweight query).</summary>
+    int GetVerbPracticedCount();
 
     /// <summary>Gets complete verb practice statistics.</summary>
     PracticeTypeStatsDto GetVerbStats();

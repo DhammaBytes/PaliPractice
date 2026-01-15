@@ -109,10 +109,17 @@ public sealed class StoreReviewService : IStoreReviewService
         }
 
         // Check minimum practice (either nouns OR verbs, not combined)
-        var nounStats = _db.Statistics.GetNounStats();
-        var verbStats = _db.Statistics.GetVerbStats();
-        var totalNounsPracticed = nounStats.TotalPracticed;
-        var totalVerbsPracticed = verbStats.TotalPracticed;
+        int totalNounsPracticed, totalVerbsPracticed;
+        try
+        {
+            totalNounsPracticed = _db.Statistics.GetNounPracticedCount();
+            totalVerbsPracticed = _db.Statistics.GetVerbPracticedCount();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to get practice counts, skipping review prompt");
+            return false;
+        }
 
         var hasEnoughPractice = totalNounsPracticed >= MinPracticeItems ||
                                totalVerbsPracticed >= MinPracticeItems;

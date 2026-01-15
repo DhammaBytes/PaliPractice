@@ -9,7 +9,11 @@ using PaliPractice.Services.Feedback;
 using PaliPractice.Services.Feedback.Providers;
 using PaliPractice.Services.Grammar;
 using PaliPractice.Services.Practice;
+using PaliPractice.Services.UserData;
+using Uno.Toolkit.UI;
 using AboutPage = PaliPractice.Presentation.Main.AboutPage;
+using AppearanceSettingsPage = PaliPractice.Presentation.Settings.AppearanceSettingsPage;
+using AppearanceSettingsViewModel = PaliPractice.Presentation.Settings.ViewModels.AppearanceSettingsViewModel;
 using ConjugationPracticePage = PaliPractice.Presentation.Practice.ConjugationPracticePage;
 using ConjugationPracticeViewModel = PaliPractice.Presentation.Practice.ViewModels.ConjugationPracticeViewModel;
 using ConjugationSettingsPage = PaliPractice.Presentation.Settings.ConjugationSettingsPage;
@@ -67,6 +71,9 @@ public partial class App : Application
         // Load Uno.UI.Toolkit Resources
         Resources.Build(r => r.Merged(
             new ToolkitResources()));
+
+        // Override control accent colors (must be after XamlControlsResources)
+        ApplyAccentColorOverrides();
         var builder = this.CreateBuilder(args)
             // Add navigation support for toolkit controls such as TabBar and NavigationView
             .UseToolkitNavigation()
@@ -136,6 +143,7 @@ public partial class App : Application
                     services.AddTransient<DeclensionPracticeViewModel>();
                     services.AddTransient<ConjugationPracticeViewModel>();
                     services.AddTransient<SettingsViewModel>();
+                    services.AddTransient<AppearanceSettingsViewModel>();
                     services.AddTransient<ConjugationSettingsViewModel>();
                     services.AddTransient<DeclensionSettingsViewModel>();
                     services.AddTransient<LemmaRangeSettingsViewModel>();
@@ -159,6 +167,24 @@ public partial class App : Application
         // MainWindow.SetWindowIcon();
 
         Host = await builder.NavigateAsync<Shell>();
+
+        // Apply saved theme preference (after navigation so XamlRoot is available)
+        ApplySavedTheme();
+    }
+
+    void ApplySavedTheme()
+    {
+        if (Host is null || MainWindow?.Content is not FrameworkElement root) return;
+
+        var db = Host.Services.GetRequiredService<IDatabaseService>();
+        var savedTheme = db.UserData.GetSetting(SettingsKeys.AppearanceTheme, SettingsKeys.DefaultAppearanceTheme);
+
+        // Only apply if not System (0 = follow device)
+        if (savedTheme == 0) return;
+
+        // Use SystemThemeHelper from Uno.Toolkit as recommended by docs
+        // savedTheme: 1 = Light, 2 = Dark
+        SystemThemeHelper.SetRootTheme(root.XamlRoot, darkMode: savedTheme == 2);
     }
 
     static void ResizeWindowForDesktop(Window window)
@@ -208,6 +234,40 @@ public partial class App : Application
         };
     }
 
+    /// <summary>
+    /// Applies custom accent colors to WinUI controls (ToggleSwitch, CheckBox, RadioButton).
+    /// Must be called after XamlControlsResources is loaded.
+    /// </summary>
+    void ApplyAccentColorOverrides()
+    {
+        // Light theme accent: warm orange-brown (#C76034)
+        // Dark theme accent: light orange (#FFB080)
+        var lightAccent = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 199, 96, 52));
+        var lightAccentHover = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 216, 112, 69));
+        var lightAccentPressed = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 176, 80, 40));
+
+        // ToggleSwitch
+        Resources["ToggleSwitchFillOn"] = lightAccent;
+        Resources["ToggleSwitchFillOnPointerOver"] = lightAccentHover;
+        Resources["ToggleSwitchFillOnPressed"] = lightAccentPressed;
+
+        // CheckBox
+        Resources["CheckBoxCheckBackgroundFillChecked"] = lightAccent;
+        Resources["CheckBoxCheckBackgroundFillCheckedPointerOver"] = lightAccentHover;
+        Resources["CheckBoxCheckBackgroundFillCheckedPressed"] = lightAccentPressed;
+        Resources["CheckBoxCheckBackgroundStrokeChecked"] = lightAccent;
+        Resources["CheckBoxCheckBackgroundStrokeCheckedPointerOver"] = lightAccentHover;
+        Resources["CheckBoxCheckBackgroundStrokeCheckedPressed"] = lightAccentPressed;
+
+        // RadioButton
+        Resources["RadioButtonOuterEllipseFillChecked"] = lightAccent;
+        Resources["RadioButtonOuterEllipseFillCheckedPointerOver"] = lightAccentHover;
+        Resources["RadioButtonOuterEllipseFillCheckedPressed"] = lightAccentPressed;
+        Resources["RadioButtonOuterEllipseStrokeChecked"] = lightAccent;
+        Resources["RadioButtonOuterEllipseStrokeCheckedPointerOver"] = lightAccentHover;
+        Resources["RadioButtonOuterEllipseStrokeCheckedPressed"] = lightAccentPressed;
+    }
+
     static void RegisterRoutes(IViewRegistry views, IRouteRegistry routes)
     {
         views.Register(
@@ -218,6 +278,7 @@ public partial class App : Application
             new ViewMap<HelpPage, HelpViewModel>(),
             new ViewMap<AboutPage, AboutViewModel>(),
             new ViewMap<SettingsPage, SettingsViewModel>(),
+            new ViewMap<AppearanceSettingsPage, AppearanceSettingsViewModel>(),
             new ViewMap<StatisticsPage, StatisticsViewModel>(),
             new ViewMap<ConjugationSettingsPage, ConjugationSettingsViewModel>(),
             new ViewMap<DeclensionSettingsPage, DeclensionSettingsViewModel>(),
@@ -236,6 +297,7 @@ public partial class App : Application
                     new RouteMap("Help", View: views.FindByViewModel<HelpViewModel>()),
                     new RouteMap("About", View: views.FindByViewModel<AboutViewModel>()),
                     new RouteMap("Settings", View: views.FindByViewModel<SettingsViewModel>()),
+                    new RouteMap("Appearance", View: views.FindByViewModel<AppearanceSettingsViewModel>()),
                     new RouteMap("Statistics", View: views.FindByViewModel<StatisticsViewModel>()),
                     new RouteMap("ConjugationSettings", View: views.FindByViewModel<ConjugationSettingsViewModel>()),
                     new RouteMap("DeclensionSettings", View: views.FindByViewModel<DeclensionSettingsViewModel>()),

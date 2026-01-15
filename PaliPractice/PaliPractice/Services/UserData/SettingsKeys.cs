@@ -37,6 +37,16 @@ public static class SettingsKeys
     public const string VerbsPatterns = "verbs.patterns";
 
     // ═══════════════════════════════════════════
+    // APPEARANCE Settings
+    // ═══════════════════════════════════════════
+
+    /// <summary>Theme selection: 0=System, 1=Light, 2=Dark</summary>
+    public const string AppearanceTheme = "appearance.theme";
+
+    /// <summary>Glassy style toggle (placeholder for future UI effect)</summary>
+    public const string AppearanceGlassyStyle = "appearance.glassy_style";
+
+    // ═══════════════════════════════════════════
     // Default Values (as typed arrays)
     // Use SettingsHelpers.ToCsv() to convert to strings for storage.
     // ═══════════════════════════════════════════
@@ -44,6 +54,10 @@ public static class SettingsKeys
     public const int DefaultDailyGoal = 50;
     public const int DefaultLemmaMin = 1;
     public const int DefaultLemmaMax = 100;
+
+    // Appearance defaults
+    public const int DefaultAppearanceTheme = 0;  // System
+    public const bool DefaultAppearanceGlassyStyle = false;
 
     // Nouns: Beginner cases
     public static readonly Case[] NounsDefaultCases =

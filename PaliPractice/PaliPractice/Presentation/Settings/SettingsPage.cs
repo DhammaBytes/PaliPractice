@@ -30,7 +30,10 @@ public sealed partial class SettingsPage : Page
                                 .Children(
                                     // General section
                                     SettingsSection.Build("General",
-                                        SettingsRow.BuildPlaceholder("Appearance", "\uE790") // ColorSolid
+                                        SettingsRow.BuildNavigation<SettingsViewModel>(
+                                            "Appearance",
+                                            "\uE790", // ColorSolid
+                                            v => v.GoToAppearanceCommand)
                                     ),
 
                                     // Practice settings sections
@@ -66,7 +69,7 @@ public sealed partial class SettingsPage : Page
                                     // Review explanation (only visible on supported platforms)
                                     RegularText()
                                         .Text("If you have a minute, please leave a review for Pāli Practice. Even one sentence is valuable feedback and it helps other Pāli learners discover the app on the store.")
-                                        .FontSize(12)
+                                        .FontSize(13)
                                         .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                                         .TextWrapping(TextWrapping.Wrap)
                                         .Margin(16, -12, 16, 16)

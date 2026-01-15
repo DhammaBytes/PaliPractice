@@ -88,7 +88,7 @@ public static class StorePlatformHelper
                 return false;
 
             var receiptPath = System.IO.Path.Combine(contentsPath, "_MASReceipt", "receipt");
-            return System.IO.File.Exists(receiptPath);
+            return File.Exists(receiptPath);
         }
         catch
         {

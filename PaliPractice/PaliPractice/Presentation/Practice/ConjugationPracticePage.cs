@@ -92,7 +92,7 @@ public sealed partial class ConjugationPracticePage : Page
 
     static Grid BuildPageLayout(ResponsiveElements elements, HeightClass heightClass)
     {
-        var config = new PracticePageConfig<ViewModels.ConjugationPracticeViewModel>(
+        var config = new PracticePageConfig<ConjugationPracticeViewModel>(
             Title: "Conjugation Practice",
             FlashCardPath: vm => vm.FlashCard,
             AnswerStemPath: vm => vm.FlashCard.AnswerStem,
@@ -111,17 +111,17 @@ public sealed partial class ConjugationPracticePage : Page
         );
 
         // Build the 4th (optional) voice badge - only visible for reflexive
-        var voiceBadge = PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(heightClass,
+        var voiceBadge = PracticePageBuilder.BuildBadge<ConjugationPracticeViewModel>(heightClass,
             vm => vm.VoiceIconPath, vm => vm.VoiceLabel, vm => vm.VoiceColor);
-        voiceBadge.badge.BoolToVisibility<SquircleBorder, ViewModels.ConjugationPracticeViewModel>(
+        voiceBadge.badge.BoolToVisibility<SquircleBorder, ConjugationPracticeViewModel>(
             vm => vm.IsReflexive);
 
         var badges = PracticePageBuilder.CreateBadgeSet(heightClass,
-            PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(heightClass,
+            PracticePageBuilder.BuildBadge<ConjugationPracticeViewModel>(heightClass,
                 vm => vm.TenseIconPath, vm => vm.TenseLabel, vm => vm.TenseColor),
-            PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(heightClass,
+            PracticePageBuilder.BuildBadge<ConjugationPracticeViewModel>(heightClass,
                 vm => vm.PersonIconPath, vm => vm.PersonLabel, vm => vm.PersonColor),
-            PracticePageBuilder.BuildBadge<ViewModels.ConjugationPracticeViewModel>(heightClass,
+            PracticePageBuilder.BuildBadge<ConjugationPracticeViewModel>(heightClass,
                 vm => vm.NumberIconPath, vm => vm.NumberLabel, vm => vm.NumberColor),
             voiceBadge
         );

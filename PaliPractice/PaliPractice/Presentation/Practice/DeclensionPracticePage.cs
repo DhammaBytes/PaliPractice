@@ -93,7 +93,7 @@ public sealed partial class DeclensionPracticePage : Page
 
     static Grid BuildPageLayout(ResponsiveElements elements, HeightClass heightClass)
     {
-        var config = new PracticePageConfig<ViewModels.DeclensionPracticeViewModel>(
+        var config = new PracticePageConfig<DeclensionPracticeViewModel>(
             Title: "Declension Practice",
             FlashCardPath: vm => vm.FlashCard,
             AnswerStemPath: vm => vm.FlashCard.AnswerStem,
@@ -112,17 +112,17 @@ public sealed partial class DeclensionPracticePage : Page
         );
 
         var badges = PracticePageBuilder.CreateBadgeSet(heightClass,
-            PracticePageBuilder.BuildBadge<ViewModels.DeclensionPracticeViewModel>(heightClass,
+            PracticePageBuilder.BuildBadge<DeclensionPracticeViewModel>(heightClass,
                 vm => vm.CaseIconPath, vm => vm.CaseLabel, vm => vm.CaseColor),
-            PracticePageBuilder.BuildBadge<ViewModels.DeclensionPracticeViewModel>(heightClass,
+            PracticePageBuilder.BuildBadge<DeclensionPracticeViewModel>(heightClass,
                 vm => vm.GenderIconPath, vm => vm.GenderLabel, vm => vm.GenderColor),
-            PracticePageBuilder.BuildBadge<ViewModels.DeclensionPracticeViewModel>(heightClass,
+            PracticePageBuilder.BuildBadge<DeclensionPracticeViewModel>(heightClass,
                 vm => vm.NumberIconPath, vm => vm.NumberLabel, vm => vm.NumberColor)
         );
 
         var fonts = LayoutConstants.PracticeFontSizes.Get(heightClass);
         var hint = RegularText()
-            .Text<ViewModels.DeclensionPracticeViewModel>(vm => vm.CaseHint)
+            .Text<DeclensionPracticeViewModel>(vm => vm.CaseHint)
             .FontSize(fonts.BadgeHint)
             .FontStyle(Windows.UI.Text.FontStyle.Italic)
             .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))

@@ -695,7 +695,7 @@ public static class PracticePageBuilder
             .Children(
                 // Reveal button - visible when NOT revealed
                 StartNavShadow(BuildRevealButton(revealCommand, fonts))
-                    .BoolToVisibility<Uno.Toolkit.UI.ShadowContainer, TVM>(isRevealedPath, invert: true),
+                    .BoolToVisibility<ShadowContainer, TVM>(isRevealedPath, invert: true),
 
                 // Hard/Easy buttons - visible when revealed
                 new Grid()
@@ -813,29 +813,31 @@ public static class PracticePageBuilder
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Child(fillBorder);
 
-        // Update fill width when track size changes or progress changes
+        // Helper to update fill width based on progress percentage
+        void UpdateFillWidth(double progress, double trackWidth)
+        {
+            if (trackWidth <= 0) return;
+            var fillWidth = Math.Max(progressHeight, trackWidth * (progress / 100.0));
+            fillBorder.Width = fillWidth;
+        }
+
+        // Update fill width when track size changes
         trackBorder.SizeChanged += (s, e) =>
         {
             if (trackBorder.DataContext is double progress)
-            {
-                var fillWidth = Math.Max(progressHeight, e.NewSize.Width * (progress / 100.0));
-                fillBorder.Width = fillWidth;
-            }
+                UpdateFillWidth(progress, e.NewSize.Width);
         };
 
-        // Bind progress value and update width
-        fillBorder.SetBinding(FrameworkElement.DataContextProperty, Bind.Path(dailyProgress));
-        fillBorder.DataContextChanged += (s, e) =>
-        {
-            if (e.NewValue is double progress && trackBorder.ActualWidth > 0)
-            {
-                var fillWidth = Math.Max(progressHeight, trackBorder.ActualWidth * (progress / 100.0));
-                fillBorder.Width = fillWidth;
-            }
-        };
-
-        // Also store progress on track for SizeChanged handler
+        // Bind progress value to DataContext
         trackBorder.SetBinding(FrameworkElement.DataContextProperty, Bind.Path(dailyProgress));
+
+        // Use RegisterPropertyChangedCallback to detect when bound progress changes
+        // This fires reliably when the binding updates, unlike DataContextChanged
+        trackBorder.RegisterPropertyChangedCallback(FrameworkElement.DataContextProperty, (sender, _) =>
+        {
+            if (sender is Border border && border.DataContext is double progress)
+                UpdateFillWidth(progress, border.ActualWidth);
+        });
 
         return new Border()
             // Transparent background - bar blends with page background

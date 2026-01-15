@@ -63,11 +63,13 @@ public class FakeStatisticsRepository : IStatisticsRepository
     public int GetCurrentGoalStreak(PracticeType type) => 0;
     public int GetTotalPracticeDays() => 0;
     public GeneralStatsDto GetGeneralStats() => new();
+    public int GetNounPracticedCount() => 0;
     public PracticeTypeStatsDto GetNounStats() => new();
     public SrsDistributionDto GetNounSrsDistribution() => new();
     public List<ComboStatDto> GetStrongestNounCombos(int count = 5) => [];
     public List<ComboStatDto> GetWeakestNounCombos(int count = 5) => [];
     public PeriodStatsDto GetNounPeriodStats() => new();
+    public int GetVerbPracticedCount() => 0;
     public PracticeTypeStatsDto GetVerbStats() => new();
     public SrsDistributionDto GetVerbSrsDistribution() => new();
     public List<ComboStatDto> GetStrongestVerbCombos(int count = 5) => [];

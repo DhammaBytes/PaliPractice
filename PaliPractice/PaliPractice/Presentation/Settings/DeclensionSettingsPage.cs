@@ -110,7 +110,7 @@ public sealed partial class DeclensionSettingsPage : Page
                     .Text("Practice filters")
                     .FontSize(14)
                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                    .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"))
+                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
                     .Margin(16, 16, 16, 8),
 
                 // Masculine patterns

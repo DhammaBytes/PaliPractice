@@ -2,6 +2,7 @@ using PaliPractice.Models.Inflection;
 using PaliPractice.Models.Words;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Presentation.Settings.ViewModels;
+using PaliPractice.Services.Feedback;
 using PaliPractice.Services.Grammar;
 using PaliPractice.Themes;
 
@@ -47,9 +48,10 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
         IDatabaseService db,
         FlashCardViewModel flashCard,
         INavigator navigator,
+        IStoreReviewService storeReviewService,
         ILogger<ConjugationPracticeViewModel> logger,
         IInflectionService inflectionService)
-        : base(provider, db.UserData, flashCard, navigator, logger)
+        : base(provider, db.UserData, flashCard, navigator, storeReviewService, logger)
     {
         _inflectionService = inflectionService;
         _ = InitializeAsync();

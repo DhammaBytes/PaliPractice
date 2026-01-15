@@ -1,48 +1,74 @@
 namespace PaliPractice.Themes;
 
 /// <summary>
-/// Helper for mapping grammar enums to SVG badge icon paths.
-/// Icons are stored in Assets/Svg/Badges/ with consistent 12x12 viewBox.
+/// Helper for mapping grammar enums to badge icon paths.
+/// Icons are stored as SVGs in Assets/Svg/Badges/ and rasterized to PNG via Uno.Resizetizer.
+/// PNGs are used with BitmapIcon.ShowAsMonochrome for runtime tinting via Foreground brush.
+///
+/// ## Adding new SVG-to-PNG tintable icons
+///
+/// 1. Create SVG with solid shapes (color doesn't matter - only alpha channel is used for tinting)
+/// 2. Place SVG in Assets/Svg/Badges/ (or similar folder under Assets/Svg/)
+/// 3. Add UnoImage entry in .csproj:
+///    <code>
+///    &lt;UnoImage Include="Assets\Svg\Badges\my_icon.svg" BaseSize="24,24" /&gt;
+///    </code>
+/// 4. Reference as .png in code (Resizetizer generates PNGs at multiple scales):
+///    <code>
+///    public static string MyIcon =&gt; $"{BasePath}my_icon.png";
+///    </code>
+/// 5. Use with BitmapIcon for Foreground tinting:
+///    <code>
+///    new BitmapIcon()
+///        .ShowAsMonochrome(true)
+///        .Foreground(brush)
+///        .UriSource(new Uri(BadgeIcons.MyIcon))
+///    </code>
+///
+/// Notes:
+/// - BaseSize determines the base raster size; Resizetizer generates scale variants (100-400%)
+/// - SVG source color is ignored; ShowAsMonochrome uses alpha as mask and applies Foreground
+/// - Only set Height on BitmapIcon (not Width) to preserve aspect ratio
 /// </summary>
 public static class BadgeIcons
 {
     const string BasePath = "ms-appx:///Assets/Svg/Badges/";
 
     // Case icons
-    public static string CaseNominative => $"{BasePath}case_nominative.svg";
-    public static string CaseAccusative => $"{BasePath}case_accusative.svg";
-    public static string CaseInstrumental => $"{BasePath}case_instrumental.svg";
-    public static string CaseDative => $"{BasePath}case_dative.svg";
-    public static string CaseAblative => $"{BasePath}case_ablative.svg";
-    public static string CaseGenitive => $"{BasePath}case_genitive.svg";
-    public static string CaseLocative => $"{BasePath}case_locative.svg";
-    public static string CaseVocative => $"{BasePath}case_vocative.svg";
+    public static string CaseNominative => $"{BasePath}case_nominative.png";
+    public static string CaseAccusative => $"{BasePath}case_accusative.png";
+    public static string CaseInstrumental => $"{BasePath}case_instrumental.png";
+    public static string CaseDative => $"{BasePath}case_dative.png";
+    public static string CaseAblative => $"{BasePath}case_ablative.png";
+    public static string CaseGenitive => $"{BasePath}case_genitive.png";
+    public static string CaseLocative => $"{BasePath}case_locative.png";
+    public static string CaseVocative => $"{BasePath}case_vocative.png";
 
     // Gender icons
-    public static string GenderMasculine => $"{BasePath}gender_male.svg";
-    public static string GenderFeminine => $"{BasePath}gender_female.svg";
-    public static string GenderNeuter => $"{BasePath}gender_neutral.svg";
+    public static string GenderMasculine => $"{BasePath}gender_male.png";
+    public static string GenderFeminine => $"{BasePath}gender_female.png";
+    public static string GenderNeuter => $"{BasePath}gender_neutral.png";
 
     // Number icons (shared by nouns and verbs)
-    public static string NumberSingular => $"{BasePath}number_singular.svg";
-    public static string NumberPlural => $"{BasePath}number_plural.svg";
+    public static string NumberSingular => $"{BasePath}number_singular.png";
+    public static string NumberPlural => $"{BasePath}number_plural.png";
 
     // Person icons (verbs)
-    public static string Person1st => $"{BasePath}person_1st.svg";
-    public static string Person2nd => $"{BasePath}person_2nd.svg";
-    public static string Person3rd => $"{BasePath}person_3rd.svg";
+    public static string Person1st => $"{BasePath}person_1st.png";
+    public static string Person2nd => $"{BasePath}person_2nd.png";
+    public static string Person3rd => $"{BasePath}person_3rd.png";
 
     // Tense icons (verbs)
-    public static string TensePresent => $"{BasePath}tense_present.svg";
-    public static string TenseImperative => $"{BasePath}tense_imperative.svg";
-    public static string TenseOptative => $"{BasePath}tense_optative.svg";
-    public static string TenseFuture => $"{BasePath}tense_future.svg";
+    public static string TensePresent => $"{BasePath}tense_present.png";
+    public static string TenseImperative => $"{BasePath}tense_imperative.png";
+    public static string TenseOptative => $"{BasePath}tense_optative.png";
+    public static string TenseFuture => $"{BasePath}tense_future.png";
 
     // Voice icons (verbs)
-    public static string VoiceReflexive => $"{BasePath}voice_reflexive.svg";
+    public static string VoiceReflexive => $"{BasePath}voice_reflexive.png";
 
     /// <summary>
-    /// Gets the SVG icon path for any grammar enum value.
+    /// Gets the PNG icon path for any grammar enum value.
     /// Returns null if no icon is defined for the value.
     /// </summary>
     public static string? GetIconPath<T>(T value) where T : struct, Enum => value switch
@@ -84,7 +110,7 @@ public static class BadgeIcons
     };
 
     /// <summary>
-    /// Gets the SVG icon path for reflexive voice indicator.
+    /// Gets the PNG icon path for reflexive voice indicator.
     /// Returns null for active voice (no icon needed).
     /// </summary>
     public static string? GetReflexiveIconPath(bool reflexive) =>

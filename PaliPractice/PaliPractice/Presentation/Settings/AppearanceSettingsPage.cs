@@ -30,15 +30,7 @@ public sealed partial class AppearanceSettingsPage : Page
                                 .Spacing(16)
                                 .Children(
                                     // Theme section
-                                    BuildThemeSection(vm),
-
-                                    // Style section
-                                    SettingsSection.Build("Style",
-                                        SettingsRow.BuildToggleWithHint<AppearanceSettingsViewModel>(
-                                            "Glassy style",
-                                            "Apply translucent effects to UI elements",
-                                            v => v.GlassyStyleEnabled)
-                                    )
+                                    BuildThemeSection(vm)
                                 )
                         )
                 )

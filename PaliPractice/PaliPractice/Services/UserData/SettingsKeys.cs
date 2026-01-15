@@ -43,9 +43,6 @@ public static class SettingsKeys
     /// <summary>Theme selection: 0=System, 1=Light, 2=Dark</summary>
     public const string AppearanceTheme = "appearance.theme";
 
-    /// <summary>Glassy style toggle (placeholder for future UI effect)</summary>
-    public const string AppearanceGlassyStyle = "appearance.glassy_style";
-
     // ═══════════════════════════════════════════
     // Default Values (as typed arrays)
     // Use SettingsHelpers.ToCsv() to convert to strings for storage.
@@ -57,7 +54,6 @@ public static class SettingsKeys
 
     // Appearance defaults
     public const int DefaultAppearanceTheme = 0;  // System
-    public const bool DefaultAppearanceGlassyStyle = false;
 
     // Nouns: Beginner cases
     public static readonly Case[] NounsDefaultCases =

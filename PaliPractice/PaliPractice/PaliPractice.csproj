@@ -74,4 +74,29 @@
       </AndroidAsset>
     </ItemGroup>
 
+    <!-- Badge icons: SVG -> PNG via Uno.Resizetizer for BitmapIcon tinting -->
+    <ItemGroup>
+      <UnoImage Include="Assets\Svg\Badges\case_ablative.svg" BaseSize="24,24" />
+      <UnoImage Include="Assets\Svg\Badges\case_accusative.svg" BaseSize="24,24" />
+      <UnoImage Include="Assets\Svg\Badges\case_dative.svg" BaseSize="24,24" />
+      <UnoImage Include="Assets\Svg\Badges\case_genitive.svg" BaseSize="24,24" />
+      <UnoImage Include="Assets\Svg\Badges\case_instrumental.svg" BaseSize="24,24" />
+      <UnoImage Include="Assets\Svg\Badges\case_locative.svg" BaseSize="24,24" />
+      <UnoImage Include="Assets\Svg\Badges\case_nominative.svg" BaseSize="24,24" />
+      <UnoImage Include="Assets\Svg\Badges\case_vocative.svg" BaseSize="24,24" />
+      <UnoImage Include="Assets\Svg\Badges\gender_female.svg" BaseSize="24,24" />
+      <UnoImage Include="Assets\Svg\Badges\gender_male.svg" BaseSize="24,24" />
+      <UnoImage Include="Assets\Svg\Badges\gender_neutral.svg" BaseSize="24,24" />
+      <UnoImage Include="Assets\Svg\Badges\number_plural.svg" BaseSize="24,24" />
+      <UnoImage Include="Assets\Svg\Badges\number_singular.svg" BaseSize="24,24" />
+      <UnoImage Include="Assets\Svg\Badges\person_1st.svg" BaseSize="24,24" />
+      <UnoImage Include="Assets\Svg\Badges\person_2nd.svg" BaseSize="24,24" />
+      <UnoImage Include="Assets\Svg\Badges\person_3rd.svg" BaseSize="24,24" />
+      <UnoImage Include="Assets\Svg\Badges\tense_future.svg" BaseSize="24,24" />
+      <UnoImage Include="Assets\Svg\Badges\tense_imperative.svg" BaseSize="24,24" />
+      <UnoImage Include="Assets\Svg\Badges\tense_optative.svg" BaseSize="24,24" />
+      <UnoImage Include="Assets\Svg\Badges\tense_present.svg" BaseSize="24,24" />
+      <UnoImage Include="Assets\Svg\Badges\voice_reflexive.svg" BaseSize="24,24" />
+    </ItemGroup>
+
 </Project>

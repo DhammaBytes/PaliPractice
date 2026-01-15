@@ -481,12 +481,16 @@ public static class SettingsRow
         var labelRowChildren = new List<UIElement>();
         if (!string.IsNullOrEmpty(iconPath))
         {
-            var icon = new Image()
+            // Use BitmapIcon with ShowAsMonochrome for Foreground tinting
+            // PNG icons are generated from SVGs via Uno.Resizetizer
+            var icon = new BitmapIcon()
+                .ShowAsMonochrome(true)
+                .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                 .Height(16)
-                .Stretch(Stretch.Uniform)
+                .Width(16)
                 .VerticalAlignment(VerticalAlignment.Center)
                 .Margin(0, 0, 8, 0)
-                .Source(new Microsoft.UI.Xaml.Media.Imaging.SvgImageSource(new Uri(iconPath)));
+                .UriSource(new Uri(iconPath));
             labelRowChildren.Add(icon);
         }
         labelRowChildren.Add(

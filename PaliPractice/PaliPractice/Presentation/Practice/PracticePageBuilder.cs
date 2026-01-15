@@ -38,7 +38,7 @@ public record BadgeSet(
     StackPanel Panel,
     SquircleBorder[] Borders,
     TextBlock[] TextBlocks,
-    Image[] Icons
+    BitmapIcon[] Icons
 );
 
 #endregion
@@ -431,10 +431,10 @@ public static class PracticePageBuilder
     #region Badges
 
     /// <summary>
-    /// Builds a grammar badge with SVG icon and text.
-    /// Icon is left-aligned with consistent spacing to text.
+    /// Builds a grammar badge with tintable PNG icon and text.
+    /// Icon uses BitmapIcon with ShowAsMonochrome for Foreground tinting.
     /// </summary>
-    public static (Image icon, TextBlock text, SquircleBorder badge) BuildBadge<TVM>(
+    public static (BitmapIcon icon, TextBlock text, SquircleBorder badge) BuildBadge<TVM>(
         HeightClass heightClass,
         Expression<Func<TVM, string?>> iconPath,
         Expression<Func<TVM, string>> labelPath,
@@ -442,13 +442,15 @@ public static class PracticePageBuilder
     {
         var fonts = LayoutConstants.PracticeFontSizes.Get(heightClass);
 
-        // SVG icon - height matches badge font size, width is automatic based on aspect ratio
-        var icon = new Image()
+        // PNG icon with monochrome tinting - height matches badge font size
+        // Width is unconstrained so icons can have natural aspect ratios and push text right
+        var icon = new BitmapIcon()
+            .ShowAsMonochrome(true)
+            .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"))
             .Height(fonts.Badge)
-            .Stretch(Stretch.Uniform)
             .HorizontalAlignment(HorizontalAlignment.Left)
             .VerticalAlignment(VerticalAlignment.Center)
-            .SourceWithVisibility<TVM>(iconPath);
+            .UriSourceWithVisibility<TVM>(iconPath);
 
         var text = RegularText()
             .FontSize(fonts.Badge)
@@ -475,7 +477,7 @@ public static class PracticePageBuilder
     /// </summary>
     public static BadgeSet CreateBadgeSet(
         HeightClass heightClass,
-        params (Image icon, TextBlock text, SquircleBorder badge)[] badges)
+        params (BitmapIcon icon, TextBlock text, SquircleBorder badge)[] badges)
     {
         var panel = new StackPanel()
             .Orientation(Orientation.Horizontal)
@@ -964,6 +966,6 @@ public class ResponsiveElements
     public TextBlock? DebugTextBlock { get; set; }
     public List<SquircleBorder> BadgeBorders { get; } = [];
     public List<TextBlock> BadgeTextBlocks { get; } = [];
-    public List<Image> BadgeIcons { get; } = [];
+    public List<BitmapIcon> BadgeIcons { get; } = [];
     public List<(FontIcon Icon, TextBlock Text)> ButtonElements { get; } = [];
 }

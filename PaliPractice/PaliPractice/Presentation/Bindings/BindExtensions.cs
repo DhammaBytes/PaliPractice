@@ -197,6 +197,32 @@ public static class BindExtensions
     }
 
     /// <summary>
+    /// Binds BitmapIcon.UriSource to a string path (e.g., "ms-appx:///Assets/Icons/badge.png")
+    /// </summary>
+    public static BitmapIcon UriSource<TDC>(this BitmapIcon icon, Expression<Func<TDC, string?>> path)
+    {
+        var binding = Bind.Path(path);
+        binding.Converter = StringToUriConverter.Instance;
+        icon.SetBinding(BitmapIcon.UriSourceProperty, binding);
+        return icon;
+    }
+
+    /// <summary>
+    /// Binds BitmapIcon.UriSource to a string path and visibility to whether the path is non-null/non-empty.
+    /// Use with ShowAsMonochrome=true for Foreground tinting.
+    /// </summary>
+    public static BitmapIcon UriSourceWithVisibility<TDC>(this BitmapIcon icon, Expression<Func<TDC, string?>> path)
+    {
+        var binding = Bind.Path(path);
+        binding.Converter = StringToUriConverter.Instance;
+        icon.SetBinding(BitmapIcon.UriSourceProperty, binding);
+        var visBinding = Bind.Path(path);
+        visBinding.Converter = StringNullOrEmptyToVisibilityConverter.Instance;
+        icon.SetBinding(UIElement.VisibilityProperty, visBinding);
+        return icon;
+    }
+
+    /// <summary>
     /// Binds ToggleSwitch.IsOn to a bool property path (TwoWay binding)
     /// </summary>
     public static ToggleSwitch IsOn<TDC>(this ToggleSwitch toggle, Expression<Func<TDC, bool>> path)

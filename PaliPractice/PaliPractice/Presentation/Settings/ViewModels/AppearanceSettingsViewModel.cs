@@ -24,9 +24,6 @@ public partial class AppearanceSettingsViewModel : ObservableObject
     {
         // Load theme setting (0=System, 1=Light, 2=Dark)
         ThemeIndex = _userData.GetSetting(SettingsKeys.AppearanceTheme, SettingsKeys.DefaultAppearanceTheme);
-
-        // Load glassy style setting
-        GlassyStyleEnabled = _userData.GetSetting(SettingsKeys.AppearanceGlassyStyle, SettingsKeys.DefaultAppearanceGlassyStyle);
     }
 
     public ICommand GoBackCommand => new AsyncRelayCommand(() => _navigator.NavigateBackAsync(this));
@@ -61,19 +58,6 @@ public partial class AppearanceSettingsViewModel : ObservableObject
                 root.RequestedTheme = ElementTheme.Default;
                 break;
         }
-    }
-
-    #endregion
-
-    #region Glassy style setting
-
-    [ObservableProperty]
-    bool _glassyStyleEnabled;
-
-    partial void OnGlassyStyleEnabledChanged(bool value)
-    {
-        if (_isLoading) return;
-        _userData.SetSetting(SettingsKeys.AppearanceGlassyStyle, value);
     }
 
     #endregion

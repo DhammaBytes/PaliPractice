@@ -113,7 +113,7 @@ public static class SettingsRow
                             .Glyph(iconGlyph)
                             .FontSize(16)
                             .VerticalAlignment(VerticalAlignment.Center)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                             .Margin(0, 0, 12, 0)
                             .Grid(column: 0),
                         RegularText()
@@ -219,7 +219,6 @@ public static class SettingsRow
                     .Text(label)
                     .FontSize(16)
                     .VerticalAlignment(VerticalAlignment.Center)
-                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                     .Grid(column: 1),
                 new FontIcon()
                     .Glyph("\uE76C") // Chevron right
@@ -373,6 +372,48 @@ public static class SettingsRow
     }
 
     /// <summary>
+    /// Builds a settings row with a label, hint, and toggle switch (always enabled).
+    /// </summary>
+    public static Grid BuildToggleWithHint<TDC>(
+        string label,
+        string hint,
+        Expression<Func<TDC, bool>> isOnExpr)
+    {
+        var toggle = new ToggleSwitch()
+            .OnContent("")
+            .OffContent("")
+            .MinWidth(0)
+            .VerticalAlignment(VerticalAlignment.Center)
+            .Grid(column: 1);
+        toggle.IsOn<TDC>(isOnExpr);
+
+        return new Grid()
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .ColumnDefinitions("*,Auto")
+            .Padding(16, 12)
+            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .Children(
+                new StackPanel()
+                    .Spacing(2)
+                    .VerticalAlignment(VerticalAlignment.Center)
+                    .HorizontalAlignment(HorizontalAlignment.Left)
+                    .Grid(column: 0)
+                    .Margin(0, 0, 12, 0)
+                    .Children(
+                        RegularText()
+                            .Text(label)
+                            .FontSize(16),
+                        RegularText()
+                            .Text(hint)
+                            .FontSize(13)
+                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                            .TextWrapping(TextWrapping.Wrap)
+                    ),
+                toggle
+            );
+    }
+
+    /// <summary>
     /// Builds a settings row with a label, hint, and toggle switch.
     /// </summary>
     public static Grid BuildToggleWithHint<TDC>(
@@ -408,7 +449,7 @@ public static class SettingsRow
                             .FontSize(16),
                         RegularText()
                             .Text(hint)
-                            .FontSize(12)
+                            .FontSize(13)
                             .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                             .TextWrapping(TextWrapping.Wrap)
                     ),
@@ -469,7 +510,7 @@ public static class SettingsRow
                 labelRow,
                 RegularText()
                     .Text(hint)
-                    .FontSize(12)
+                    .FontSize(13)
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                     .TextWrapping(TextWrapping.Wrap)
             );
@@ -518,7 +559,7 @@ public static class SettingsRow
                             .FontSize(16),
                         RegularText()
                             .Text(hint)
-                            .FontSize(12)
+                            .FontSize(13)
                             .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                             .TextWrapping(TextWrapping.Wrap)
                     ),
@@ -572,7 +613,7 @@ public static class SettingsRow
                             .Glyph(iconGlyph)
                             .FontSize(16)
                             .VerticalAlignment(VerticalAlignment.Center)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                             .Margin(0, 0, 12, 0)
                             .Grid(column: 0),
                         RegularText()
@@ -586,5 +627,46 @@ public static class SettingsRow
         return new Grid()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Children(button);
+    }
+
+    /// <summary>
+    /// Builds a settings row with a radio button, label, and hint.
+    /// </summary>
+    public static Grid BuildRadioButton<TDC>(
+        string label,
+        string hint,
+        string groupName,
+        Expression<Func<TDC, bool>> isCheckedExpr)
+    {
+        var radioButton = new RadioButton()
+            .GroupName(groupName)
+            .VerticalAlignment(VerticalAlignment.Center)
+            .Grid(column: 1);
+        radioButton.SetBinding(RadioButton.IsCheckedProperty, Bind.TwoWayPath(isCheckedExpr));
+
+        return new Grid()
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .ColumnDefinitions("*,Auto")
+            .Padding(16, 12)
+            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .Children(
+                new StackPanel()
+                    .Spacing(2)
+                    .VerticalAlignment(VerticalAlignment.Center)
+                    .HorizontalAlignment(HorizontalAlignment.Left)
+                    .Grid(column: 0)
+                    .Margin(0, 0, 12, 0)
+                    .Children(
+                        RegularText()
+                            .Text(label)
+                            .FontSize(16),
+                        RegularText()
+                            .Text(hint)
+                            .FontSize(13)
+                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                            .TextWrapping(TextWrapping.Wrap)
+                    ),
+                radioButton
+            );
     }
 }

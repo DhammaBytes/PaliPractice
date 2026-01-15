@@ -74,7 +74,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
                     .Text("Practice Range")
                     .FontSize(14)
                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                    .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"))
+                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
                     .Margin(16, 8, 16, 4),
                 new Border()
                     .HorizontalAlignment(HorizontalAlignment.Stretch)
@@ -87,7 +87,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
     static StackPanel BuildAllWordsOption(LemmaRangeSettingsViewModel vm)
     {
         var subtitleText = RegularText()
-            .FontSize(12)
+            .FontSize(13)
             .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"));
 
         // Bind to TotalLemmaCount with format
@@ -114,7 +114,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
                     .FontSize(16),
                 TextHelpers.RegularText()
                     .Text(subtitle)
-                    .FontSize(12)
+                    .FontSize(13)
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
             );
     }

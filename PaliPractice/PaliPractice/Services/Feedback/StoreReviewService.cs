@@ -1,45 +1,49 @@
-using Windows.Services.Store;
 using Windows.System;
+using PaliPractice.Services.Database;
+using PaliPractice.Services.Feedback.Helpers;
+using PaliPractice.Services.Feedback.Storage;
+
+#if __IOS__ || __ANDROID__
+using Windows.Services.Store;
+#endif
 
 namespace PaliPractice.Services.Feedback;
 
 /// <summary>
-/// Service for store reviews and opening store pages.
+/// Service for store reviews with engagement-based prompting.
 /// </summary>
-public interface IStoreReviewService
-{
-    /// <summary>
-    /// Returns true if the current platform supports opening the store page.
-    /// </summary>
-    bool IsAvailable { get; }
-
-    /// <summary>
-    /// Opens the app's store page in the platform's app store.
-    /// </summary>
-    Task OpenStorePageAsync();
-
-    /// <summary>
-    /// Requests an in-app review dialog (for use after positive user interactions).
-    /// Available on iOS, Android (Google Play), and macOS (Mac App Store).
-    /// </summary>
-    Task RequestInAppReviewAsync();
-}
-
 public sealed class StoreReviewService : IStoreReviewService
 {
+    /// <summary>
+    /// Minimum days between review prompts (125 days ~ 4 months).
+    /// </summary>
+    const int CooldownDays = 125;
+
+    /// <summary>
+    /// Maximum lifetime review prompts to avoid annoying users.
+    /// </summary>
+    const int MaxLifetimePrompts = 3;
+
+    /// <summary>
+    /// Minimum practice items (nouns OR verbs) before prompting.
+    /// </summary>
+    const int MinPracticeItems = 10;
+
     readonly ILogger<StoreReviewService> _logger;
+    readonly IDatabaseService _db;
+    readonly ReviewPromptStorage _storage;
 
-    // App Store IDs - update these when publishing
-    const string AppleAppId = "0000000000"; // TODO: Replace with actual App Store ID
-    const string AndroidPackageId = "org.dhammabytes.palipractice";
-
-    public StoreReviewService(ILogger<StoreReviewService> logger)
+    public StoreReviewService(ILogger<StoreReviewService> logger, IDatabaseService db)
     {
         _logger = logger;
+        _db = db;
+        _storage = new ReviewPromptStorage();
     }
 
-    public bool IsAvailable => CheckAvailability();
+    /// <inheritdoc />
+    public bool IsAvailable => StorePlatformHelper.IsStoreAvailable();
 
+    /// <inheritdoc />
     public async Task OpenStorePageAsync()
     {
         if (!IsAvailable)
@@ -48,7 +52,7 @@ public sealed class StoreReviewService : IStoreReviewService
             return;
         }
 
-        var url = GetStoreUrl();
+        var url = StorePlatformHelper.GetStoreUrl();
         if (string.IsNullOrEmpty(url))
         {
             _logger.LogWarning("No store URL configured for this platform");
@@ -66,17 +70,78 @@ public sealed class StoreReviewService : IStoreReviewService
         }
     }
 
-    public async Task RequestInAppReviewAsync()
+    /// <inheritdoc />
+    public async Task TryPromptForReviewAsync()
     {
-        if (!IsInAppReviewAvailable())
-        {
-            _logger.LogWarning("In-app review not available on this platform");
+        if (!ShouldPromptForReview())
             return;
+
+        await RequestInAppReviewAsync();
+    }
+
+    /// <summary>
+    /// Checks all engagement conditions for showing a review prompt.
+    /// </summary>
+    bool ShouldPromptForReview()
+    {
+        // Check platform support
+        if (!StorePlatformHelper.IsInAppReviewAvailable())
+        {
+            _logger.LogDebug("In-app review not available on this platform");
+            return false;
         }
 
+        // Check lifetime limit
+        if (_storage.PromptCount >= MaxLifetimePrompts)
+        {
+            _logger.LogDebug("Max lifetime prompts ({Max}) reached, count={Count}",
+                MaxLifetimePrompts, _storage.PromptCount);
+            return false;
+        }
+
+        // Check cooldown
+        var daysSinceLastPrompt = _storage.DaysSinceLastPrompt;
+        if (daysSinceLastPrompt < CooldownDays)
+        {
+            _logger.LogDebug("Still on cooldown, {Days} days since last prompt (need {Required})",
+                daysSinceLastPrompt, CooldownDays);
+            return false;
+        }
+
+        // Check minimum practice (either nouns OR verbs, not combined)
+        var nounStats = _db.Statistics.GetNounStats();
+        var verbStats = _db.Statistics.GetVerbStats();
+        var totalNounsPracticed = nounStats.TotalPracticed;
+        var totalVerbsPracticed = verbStats.TotalPracticed;
+
+        var hasEnoughPractice = totalNounsPracticed >= MinPracticeItems ||
+                               totalVerbsPracticed >= MinPracticeItems;
+        if (!hasEnoughPractice)
+        {
+            _logger.LogDebug("Not enough practice, nouns={Nouns} verbs={Verbs} (need {Min} of either)",
+                totalNounsPracticed, totalVerbsPracticed, MinPracticeItems);
+            return false;
+        }
+
+        _logger.LogInformation("Review prompt conditions met: count={Count}/{Max}, daysSince={Days}, nouns={Nouns}, verbs={Verbs}",
+            _storage.PromptCount, MaxLifetimePrompts, daysSinceLastPrompt, totalNounsPracticed, totalVerbsPracticed);
+
+        return true;
+    }
+
+    /// <summary>
+    /// Requests the native in-app review dialog.
+    /// </summary>
+    async Task RequestInAppReviewAsync()
+    {
+#if __IOS__ || __ANDROID__
         try
         {
-            // TODO: not implemented in Uno?
+            _logger.LogInformation("Requesting in-app review (prompt #{Count})", _storage.PromptCount + 1);
+
+            // Record prompt BEFORE calling API (in case of crash/exception)
+            _storage.RecordPrompt();
+
             var result = await StoreContext.GetDefault().RequestRateAndReviewAppAsync();
             _logger.LogInformation("In-app review result: {Status}", result.Status);
         }
@@ -84,78 +149,9 @@ public sealed class StoreReviewService : IStoreReviewService
         {
             _logger.LogError(ex, "Failed to request in-app review");
         }
-    }
-
-    static string? GetStoreUrl()
-    {
-#if __IOS__
-        // iOS App Store
-        return $"itms-apps://itunes.apple.com/app/id{AppleAppId}?action=write-review";
-#elif __ANDROID__
-        // Google Play Store - market:// URL opens Play Store app directly
-        return $"market://details?id={AndroidPackageId}";
-#elif HAS_UNO_SKIA
-        // Desktop platforms
-        if (OperatingSystem.IsMacOS())
-        {
-            // Mac App Store
-            return $"macappstore://itunes.apple.com/app/id{AppleAppId}?action=write-review";
-        }
-        // Linux/Windows - no store support yet
-        return null;
 #else
-        return null;
+        await Task.CompletedTask;
+        _logger.LogWarning("In-app review not implemented for this platform");
 #endif
     }
-
-    static bool CheckAvailability()
-    {
-#if __IOS__
-        return true;
-#elif __ANDROID__
-        return true;
-#elif HAS_UNO_SKIA
-        // On desktop, only available on macOS (for Mac App Store)
-        return OperatingSystem.IsMacOS() && IsMacAppStoreInstall();
-#else
-        return false;
-#endif
-    }
-
-    static bool IsInAppReviewAvailable()
-    {
-#if __IOS__
-        return true;
-#elif __ANDROID__
-        return true;
-#elif HAS_UNO_SKIA
-        return OperatingSystem.IsMacOS() && IsMacAppStoreInstall();
-#else
-        return false;
-#endif
-    }
-
-#if HAS_UNO_SKIA
-    static bool IsMacAppStoreInstall()
-    {
-        try
-        {
-            // Mac App Store installs have a receipt at Contents/_MASReceipt/receipt
-            var bundlePath = AppContext.BaseDirectory;
-
-            // Navigate up from the executable to find Contents folder
-            // Typical path: MyApp.app/Contents/MacOS/MyApp
-            var contentsPath = System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(bundlePath));
-            if (string.IsNullOrEmpty(contentsPath))
-                return false;
-
-            var receiptPath = System.IO.Path.Combine(contentsPath, "_MASReceipt", "receipt");
-            return File.Exists(receiptPath);
-        }
-        catch
-        {
-            return false;
-        }
-    }
-#endif
 }

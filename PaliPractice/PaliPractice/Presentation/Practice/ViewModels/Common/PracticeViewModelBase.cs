@@ -2,6 +2,7 @@ using PaliPractice.Models.Words;
 using PaliPractice.Presentation.Grammar.ViewModels;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Services.Database.Repositories;
+using PaliPractice.Services.Feedback;
 using PaliPractice.Services.UserData;
 
 namespace PaliPractice.Presentation.Practice.ViewModels.Common;
@@ -36,6 +37,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     public event EventHandler? DailyGoalReached;
 
     readonly IPracticeProvider _provider;
+    readonly IStoreReviewService _storeReviewService;
     protected readonly INavigator Navigator;
 
     // Track if we've already shown the daily goal congratulations this session
@@ -84,12 +86,14 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         IUserDataRepository userData,
         FlashCardViewModel flashCard,
         INavigator navigator,
+        IStoreReviewService storeReviewService,
         ILogger logger)
     {
         _provider = provider;
         UserData = userData;
         FlashCard = flashCard;
         Navigator = navigator;
+        _storeReviewService = storeReviewService;
         Logger = logger;
         DailyGoal = new DailyGoalViewModel(userData, CurrentPracticeType);
         ExampleCarousel = new ExampleCarouselViewModel();
@@ -124,6 +128,9 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
             DisplayCurrentCard();
             UpdateNavigationState();
+
+            // Check if we should prompt for a store review (fire-and-forget, don't block UI)
+            _ = TryPromptForReviewAsync();
         }
         catch (OperationCanceledException)
         {
@@ -137,6 +144,19 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         finally
         {
             FlashCard.IsLoading = false;
+        }
+    }
+
+    async Task TryPromptForReviewAsync()
+    {
+        try
+        {
+            await _storeReviewService.TryPromptForReviewAsync();
+        }
+        catch (Exception ex)
+        {
+            // Don't let review prompt errors affect practice
+            Logger.LogWarning(ex, "Failed to check review prompt eligibility");
         }
     }
 

@@ -15,7 +15,7 @@
 
             <!-- Text Colors -->
             <SolidColorBrush x:Key="OnBackgroundBrush" Color="#672000"/>
-            <SolidColorBrush x:Key="OnBackgroundMediumBrush" Color="#9A6B52"/>
+            <SolidColorBrush x:Key="OnBackgroundMediumBrush" Color="#461200" Opacity="0.85"/>
             <SolidColorBrush x:Key="OnSurfaceBrush" Color="#461200"/>
             <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="#7A5040"/>
             <SolidColorBrush x:Key="OnSurfaceInverseBrush" Color="#F7EEE5"/>
@@ -93,6 +93,25 @@
                 <utu:Shadow BlurRadius="12" OffsetY="6" Opacity="0.6" Color="#F0DED1"/>
             </utu:ShadowCollection>
 
+            <!-- Control Accent Colors (ToggleSwitch, CheckBox, RadioButton) -->
+            <SolidColorBrush x:Key="ToggleSwitchFillOn" Color="#C76034"/>
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPointerOver" Color="#D87045"/>
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPressed" Color="#B05028"/>
+
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillChecked" Color="#C76034"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver" Color="#D87045"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPressed" Color="#B05028"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeChecked" Color="#C76034"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPointerOver" Color="#D87045"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPressed" Color="#B05028"/>
+
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillChecked" Color="#C76034"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillCheckedPointerOver" Color="#D87045"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillCheckedPressed" Color="#B05028"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeChecked" Color="#C76034"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeCheckedPointerOver" Color="#D87045"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeCheckedPressed" Color="#B05028"/>
+
         </ResourceDictionary>
 
         <!-- Dark Theme -->
@@ -106,7 +125,7 @@
 
             <!-- Text Colors -->
             <SolidColorBrush x:Key="OnBackgroundBrush" Color="#FFD4B8"/>
-            <SolidColorBrush x:Key="OnBackgroundMediumBrush" Color="#C9A090"/>
+            <SolidColorBrush x:Key="OnBackgroundMediumBrush" Color="#FFE8D8" Opacity="0.8"/>
             <SolidColorBrush x:Key="OnSurfaceBrush" Color="#FFE8D8"/>
             <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="#D4B8A8"/>
             <SolidColorBrush x:Key="OnSurfaceInverseBrush" Color="#2D1C14"/>
@@ -184,6 +203,25 @@
                 <utu:Shadow BlurRadius="12" OffsetY="6" Opacity="0.6" Color="#1A0E08"/>
             </utu:ShadowCollection>
 
+            <!-- Control Accent Colors (ToggleSwitch, CheckBox, RadioButton) -->
+            <SolidColorBrush x:Key="ToggleSwitchFillOn" Color="#FFB080"/>
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPointerOver" Color="#FFC090"/>
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPressed" Color="#E0A070"/>
+
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillChecked" Color="#FFB080"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver" Color="#FFC090"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPressed" Color="#E0A070"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeChecked" Color="#FFB080"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPointerOver" Color="#FFC090"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPressed" Color="#E0A070"/>
+
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillChecked" Color="#FFB080"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillCheckedPointerOver" Color="#FFC090"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillCheckedPressed" Color="#E0A070"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeChecked" Color="#FFB080"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeCheckedPointerOver" Color="#FFC090"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeCheckedPressed" Color="#E0A070"/>
+
         </ResourceDictionary>
 
         <!-- Default/HighContrast fallback (same as Light) -->
@@ -197,7 +235,7 @@
 
             <!-- Text Colors -->
             <SolidColorBrush x:Key="OnBackgroundBrush" Color="#672000"/>
-            <SolidColorBrush x:Key="OnBackgroundMediumBrush" Color="#9A6B52"/>
+            <SolidColorBrush x:Key="OnBackgroundMediumBrush" Color="#461200" Opacity="0.8"/>
             <SolidColorBrush x:Key="OnSurfaceBrush" Color="#461200"/>
             <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="#7A5040"/>
             <SolidColorBrush x:Key="OnSurfaceInverseBrush" Color="#F7EEE5"/>
@@ -274,6 +312,25 @@
             <utu:ShadowCollection x:Key="PillButtonShadow">
                 <utu:Shadow BlurRadius="12" OffsetY="6" Opacity="0.6" Color="#F0DED1"/>
             </utu:ShadowCollection>
+
+            <!-- Control Accent Colors (ToggleSwitch, CheckBox, RadioButton) -->
+            <SolidColorBrush x:Key="ToggleSwitchFillOn" Color="#C76034"/>
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPointerOver" Color="#D87045"/>
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPressed" Color="#B05028"/>
+
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillChecked" Color="#C76034"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver" Color="#D87045"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPressed" Color="#B05028"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeChecked" Color="#C76034"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPointerOver" Color="#D87045"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPressed" Color="#B05028"/>
+
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillChecked" Color="#C76034"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillCheckedPointerOver" Color="#D87045"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillCheckedPressed" Color="#B05028"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeChecked" Color="#C76034"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeCheckedPointerOver" Color="#D87045"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeCheckedPressed" Color="#B05028"/>
 
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>

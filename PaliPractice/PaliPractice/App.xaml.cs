@@ -235,37 +235,61 @@ public partial class App : Application
     }
 
     /// <summary>
-    /// Applies custom accent colors to WinUI controls (ToggleSwitch, CheckBox, RadioButton).
+    /// Applies custom accent colors to WinUI controls.
     /// Must be called after XamlControlsResources is loaded.
     /// </summary>
     void ApplyAccentColorOverrides()
     {
-        // Light theme accent: warm orange-brown (#C76034)
-        // Dark theme accent: light orange (#FFB080)
-        var lightAccent = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 199, 96, 52));
-        var lightAccentHover = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 216, 112, 69));
-        var lightAccentPressed = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 176, 80, 40));
+        // Accent color: warm orange-brown (#C76034)
+        var accent = new SolidColorBrush(Color.FromArgb(255, 199, 96, 52));
+        var accentHover = new SolidColorBrush(Color.FromArgb(255, 216, 112, 69));
+        var accentPressed = new SolidColorBrush(Color.FromArgb(255, 176, 80, 40));
+        var accentColor = Color.FromArgb(255, 199, 96, 52);
+
+        // System accent color (used by many controls)
+        Resources["SystemAccentColor"] = accentColor;
+        Resources["SystemAccentColorLight1"] = Color.FromArgb(255, 216, 112, 69);
+        Resources["SystemAccentColorLight2"] = Color.FromArgb(255, 230, 140, 100);
+        Resources["SystemAccentColorDark1"] = Color.FromArgb(255, 176, 80, 40);
+        Resources["SystemAccentColorDark2"] = Color.FromArgb(255, 150, 60, 30);
 
         // ToggleSwitch
-        Resources["ToggleSwitchFillOn"] = lightAccent;
-        Resources["ToggleSwitchFillOnPointerOver"] = lightAccentHover;
-        Resources["ToggleSwitchFillOnPressed"] = lightAccentPressed;
+        Resources["ToggleSwitchFillOn"] = accent;
+        Resources["ToggleSwitchFillOnPointerOver"] = accentHover;
+        Resources["ToggleSwitchFillOnPressed"] = accentPressed;
 
         // CheckBox
-        Resources["CheckBoxCheckBackgroundFillChecked"] = lightAccent;
-        Resources["CheckBoxCheckBackgroundFillCheckedPointerOver"] = lightAccentHover;
-        Resources["CheckBoxCheckBackgroundFillCheckedPressed"] = lightAccentPressed;
-        Resources["CheckBoxCheckBackgroundStrokeChecked"] = lightAccent;
-        Resources["CheckBoxCheckBackgroundStrokeCheckedPointerOver"] = lightAccentHover;
-        Resources["CheckBoxCheckBackgroundStrokeCheckedPressed"] = lightAccentPressed;
+        Resources["CheckBoxCheckBackgroundFillChecked"] = accent;
+        Resources["CheckBoxCheckBackgroundFillCheckedPointerOver"] = accentHover;
+        Resources["CheckBoxCheckBackgroundFillCheckedPressed"] = accentPressed;
+        Resources["CheckBoxCheckBackgroundStrokeChecked"] = accent;
+        Resources["CheckBoxCheckBackgroundStrokeCheckedPointerOver"] = accentHover;
+        Resources["CheckBoxCheckBackgroundStrokeCheckedPressed"] = accentPressed;
 
-        // RadioButton
-        Resources["RadioButtonOuterEllipseFillChecked"] = lightAccent;
-        Resources["RadioButtonOuterEllipseFillCheckedPointerOver"] = lightAccentHover;
-        Resources["RadioButtonOuterEllipseFillCheckedPressed"] = lightAccentPressed;
-        Resources["RadioButtonOuterEllipseStrokeChecked"] = lightAccent;
-        Resources["RadioButtonOuterEllipseStrokeCheckedPointerOver"] = lightAccentHover;
-        Resources["RadioButtonOuterEllipseStrokeCheckedPressed"] = lightAccentPressed;
+        // RadioButton - outer ellipse
+        Resources["RadioButtonOuterEllipseFillChecked"] = accent;
+        Resources["RadioButtonOuterEllipseFillCheckedPointerOver"] = accentHover;
+        Resources["RadioButtonOuterEllipseFillCheckedPressed"] = accentPressed;
+        Resources["RadioButtonOuterEllipseStrokeChecked"] = accent;
+        Resources["RadioButtonOuterEllipseStrokeCheckedPointerOver"] = accentHover;
+        Resources["RadioButtonOuterEllipseStrokeCheckedPressed"] = accentPressed;
+
+        // ComboBox focus/selection
+        Resources["ComboBoxBackgroundFocused"] = new SolidColorBrush(Color.FromArgb(20, 199, 96, 52));
+        Resources["ComboBoxBorderBrushFocused"] = accent;
+        Resources["ComboBoxDropDownBackgroundPointerOver"] = new SolidColorBrush(Color.FromArgb(30, 199, 96, 52));
+
+        // TextBox/input focus (affects ComboBox text input)
+        Resources["TextControlBorderBrushFocused"] = accent;
+        Resources["TextControlSelectionHighlightColor"] = accentColor;
+
+        // Slider (if used)
+        Resources["SliderTrackValueFill"] = accent;
+        Resources["SliderTrackValueFillPointerOver"] = accentHover;
+        Resources["SliderTrackValueFillPressed"] = accentPressed;
+        Resources["SliderThumbBackground"] = accent;
+        Resources["SliderThumbBackgroundPointerOver"] = accentHover;
+        Resources["SliderThumbBackgroundPressed"] = accentPressed;
     }
 
     static void RegisterRoutes(IViewRegistry views, IRouteRegistry routes)

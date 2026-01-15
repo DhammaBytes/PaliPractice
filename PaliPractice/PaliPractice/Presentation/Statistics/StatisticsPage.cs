@@ -259,7 +259,7 @@ public sealed partial class StatisticsPage : Page
         var total = distribution.Struggling + distribution.Learning + distribution.Strong + distribution.Mastered;
         if (total == 0) return;
 
-        var segments = new List<(int count, Windows.UI.Color color)>();
+        var segments = new List<(int count, Color color)>();
         if (distribution.Struggling > 0) segments.Add((distribution.Struggling, ErrorColor));
         if (distribution.Learning > 0) segments.Add((distribution.Learning, TertiaryColor));
         if (distribution.Strong > 0) segments.Add((distribution.Strong, SuccessColor));
@@ -301,7 +301,7 @@ public sealed partial class StatisticsPage : Page
             weakestPanel.Children.Add(BuildComboRow(combo, ErrorColor));
     }
 
-    static FrameworkElement BuildComboRow(ComboStatDto combo, Windows.UI.Color accentColor)
+    static FrameworkElement BuildComboRow(ComboStatDto combo, Color accentColor)
     {
         // Placeholder entry - just show the dash
         if (combo.IsPlaceholder)
@@ -480,11 +480,11 @@ public sealed partial class StatisticsPage : Page
         return intensity switch
         {
             0 => Application.Current.Resources["SurfaceVariantBrush"] as Brush
-                 ?? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 242, 239, 245)),
-            1 => new SolidColorBrush(Windows.UI.Color.FromArgb(80, 179, 92, 0)),
-            2 => new SolidColorBrush(Windows.UI.Color.FromArgb(140, 179, 92, 0)),
-            3 => new SolidColorBrush(Windows.UI.Color.FromArgb(220, 179, 92, 0)),
-            _ => new SolidColorBrush(Windows.UI.Color.FromArgb(255, 179, 92, 0))
+                 ?? new SolidColorBrush(Color.FromArgb(255, 242, 239, 245)),
+            1 => new SolidColorBrush(Color.FromArgb(80, 179, 92, 0)),
+            2 => new SolidColorBrush(Color.FromArgb(140, 179, 92, 0)),
+            3 => new SolidColorBrush(Color.FromArgb(220, 179, 92, 0)),
+            _ => new SolidColorBrush(Color.FromArgb(255, 179, 92, 0))
         };
     }
 
@@ -494,7 +494,7 @@ public sealed partial class StatisticsPage : Page
         {
             var border = new Border().Width(20).Height(20).CornerRadius(3);
 
-            border.SetBinding(Border.BackgroundProperty, new Binding
+            border.SetBinding(BackgroundProperty, new Binding
             {
                 Path = new PropertyPath("Intensity"),
                 Converter = new IntensityToBrushConverter()
@@ -525,7 +525,7 @@ public sealed partial class StatisticsPage : Page
             );
     }
 
-    static FrameworkElement BuildLegendItem(string label, Windows.UI.Color color, int column)
+    static FrameworkElement BuildLegendItem(string label, Color color, int column)
     {
         return new StackPanel()
             .Grid(column: column)
@@ -541,10 +541,10 @@ public sealed partial class StatisticsPage : Page
 
     // === Colors ===
 
-    static readonly Windows.UI.Color ErrorColor = Windows.UI.Color.FromArgb(255, 179, 38, 30);
-    static readonly Windows.UI.Color SuccessColor = Windows.UI.Color.FromArgb(255, 46, 125, 50);
-    static readonly Windows.UI.Color TertiaryColor = Windows.UI.Color.FromArgb(255, 0, 97, 164);
-    static readonly Windows.UI.Color PrimaryColor = Windows.UI.Color.FromArgb(255, 179, 92, 0);
+    static readonly Color ErrorColor = Color.FromArgb(255, 179, 38, 30);
+    static readonly Color SuccessColor = Color.FromArgb(255, 46, 125, 50);
+    static readonly Color TertiaryColor = Color.FromArgb(255, 0, 97, 164);
+    static readonly Color PrimaryColor = Color.FromArgb(255, 179, 92, 0);
 }
 
 /// <summary>
@@ -559,14 +559,14 @@ public class IntensityToBrushConverter : IValueConverter
             return intensity switch
             {
                 0 => Application.Current.Resources["SurfaceVariantBrush"] as Brush
-                     ?? new SolidColorBrush(Windows.UI.Color.FromArgb(255, 242, 239, 245)),
-                1 => new SolidColorBrush(Windows.UI.Color.FromArgb(80, 179, 92, 0)),
-                2 => new SolidColorBrush(Windows.UI.Color.FromArgb(140, 179, 92, 0)),
-                3 => new SolidColorBrush(Windows.UI.Color.FromArgb(220, 179, 92, 0)),
-                _ => new SolidColorBrush(Windows.UI.Color.FromArgb(255, 179, 92, 0))
+                     ?? new SolidColorBrush(Color.FromArgb(255, 242, 239, 245)),
+                1 => new SolidColorBrush(Color.FromArgb(80, 179, 92, 0)),
+                2 => new SolidColorBrush(Color.FromArgb(140, 179, 92, 0)),
+                3 => new SolidColorBrush(Color.FromArgb(220, 179, 92, 0)),
+                _ => new SolidColorBrush(Color.FromArgb(255, 179, 92, 0))
             };
         }
-        return new SolidColorBrush(Windows.UI.Color.FromArgb(255, 242, 239, 245));
+        return new SolidColorBrush(Color.FromArgb(255, 242, 239, 245));
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, string language)

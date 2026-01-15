@@ -70,7 +70,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
         return new StackPanel()
             .Spacing(4)
             .Children(
-                TextHelpers.RegularText()
+                RegularText()
                     .Text("Practice Range")
                     .FontSize(14)
                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
@@ -97,7 +97,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
         return new StackPanel()
             .Spacing(2)
             .Children(
-                TextHelpers.RegularText()
+                RegularText()
                     .Text("All words")
                     .FontSize(16),
                 subtitleText
@@ -109,10 +109,10 @@ public sealed partial class LemmaRangeSettingsPage : Page
         return new StackPanel()
             .Spacing(2)
             .Children(
-                TextHelpers.RegularText()
+                RegularText()
                     .Text(title)
                     .FontSize(16),
-                TextHelpers.RegularText()
+                RegularText()
                     .Text(subtitle)
                     .FontSize(13)
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
@@ -155,7 +155,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
             .Convert(isCustom => isCustom ? Visibility.Visible : Visibility.Collapsed));
 
         section.Children(
-            TextHelpers.RegularText()
+            RegularText()
                 .Text("Custom Range")
                 .FontSize(14)
                 .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
@@ -172,7 +172,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
                             new Grid()
                                 .ColumnDefinitions("*,Auto")
                                 .Children(
-                                    TextHelpers.RegularText()
+                                    RegularText()
                                         .Text("From (most common)")
                                         .FontSize(16)
                                         .VerticalAlignment(VerticalAlignment.Center)
@@ -182,7 +182,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
                             new Grid()
                                 .ColumnDefinitions("*,Auto")
                                 .Children(
-                                    TextHelpers.RegularText()
+                                    RegularText()
                                         .Text("To (less common)")
                                         .FontSize(16)
                                         .VerticalAlignment(VerticalAlignment.Center)

@@ -9,14 +9,13 @@
             <!-- Background and Surface Colors -->
             <SolidColorBrush x:Key="BackgroundBrush" Color="#F7EEE5"/>
             <SolidColorBrush x:Key="BackgroundVariantBrush" Color="#EED7C6"/>
+            <SolidColorBrush x:Key="NeutralGrayBrush" Color="#E9E9E9"/>
 
             <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF"/>
             <SolidColorBrush x:Key="SurfaceVariantBrush" Color="#FFF5EB"/>
 
             <!-- Text Colors -->
             <SolidColorBrush x:Key="OnBackgroundBrush" Color="#672000"/>
-            <SolidColorBrush x:Key="OnBackgroundMediumBrush" Color="#4D200B"/>
-
             <SolidColorBrush x:Key="OnSurfaceBrush" Color="#461200"/>
             <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="#7A5040"/>
             <SolidColorBrush x:Key="OnSurfaceDisabledBrush" Color="#C4A090"/>
@@ -71,14 +70,13 @@
             <!-- Background and Surface Colors -->
             <SolidColorBrush x:Key="BackgroundBrush" Color="#2D1C14"/>
             <SolidColorBrush x:Key="BackgroundVariantBrush" Color="#4A3525"/>
+            <SolidColorBrush x:Key="NeutralGrayBrush" Color="#5A5A5A"/>
 
             <SolidColorBrush x:Key="SurfaceBrush" Color="#3D2518"/>
             <SolidColorBrush x:Key="SurfaceVariantBrush" Color="#4A3025"/>
 
             <!-- Text Colors -->
             <SolidColorBrush x:Key="OnBackgroundBrush" Color="#FFD4B8"/>
-            <SolidColorBrush x:Key="OnBackgroundMediumBrush" Color="#FFE8D8"/>
-
             <SolidColorBrush x:Key="OnSurfaceBrush" Color="#FFE8D8"/>
             <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="#D4B8A8"/>
             <SolidColorBrush x:Key="OnSurfaceDisabledBrush" Color="#6A5A50"/>

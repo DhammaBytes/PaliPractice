@@ -64,7 +64,7 @@ public sealed partial class AboutPage : Page
                                             .Stroke(ThemeResource.Get<Brush>("NavigationButtonOutlineBrush"))
                                             .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
                                             .RadiusMode(SquircleRadiusMode.ButtonNavigation)
-                                            .Padding(12, 8)
+                                            .Padding(20, 12)
                                             .Command(() => vm.ContactUsCommand)
                                             .Child(new StackPanel()
                                                 .Orientation(Orientation.Horizontal)
@@ -77,6 +77,7 @@ public sealed partial class AboutPage : Page
                                                     RegularText()
                                                         .Text("Contact DhammaBytes")
                                                         .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+                                                        .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
                                                         .VerticalAlignment(VerticalAlignment.Center)
                                                 )))
                                         .HorizontalAlignment(HorizontalAlignment.Center),

@@ -99,7 +99,8 @@ public sealed partial class StatisticsPage : Page
         bar.Height(16);
         bar.HorizontalAlignment(HorizontalAlignment.Stretch);
         bar.CornerRadius(8);
-        bar.Background(ThemeResource.Get<Brush>("BackgroundVariantBrush"));
+        bar.RowDefinitions("*");
+        bar.Background(ThemeResource.Get<Brush>("NeutralGrayBrush"));
     }
 
     FrameworkElement BuildGeneralSection(StatisticsViewModel vm)
@@ -135,16 +136,16 @@ public sealed partial class StatisticsPage : Page
                                     .ColumnDefinitions("*,*")
                                     .Children(
                                         BuildStreakCard("\uE8E1", "Practice Streak",
-                                            tb => tb.Text(() => vm.General.CurrentPracticeStreak, v => $"{v} days"), 0),
-                                        BuildStreakCard("\uE735", "Total Days",
-                                            tb => tb.Text(() => vm.General.TotalPracticeDays, v => $"{v}"), 1)
+                                            tb => tb.Text(() => vm.General.CurrentPracticeStreak, v => $"{v} {(v == 1 ? "day" : "days")}"), 0),
+                                        BuildStreakCard("\uE735", "Total",
+                                            tb => tb.Text(() => vm.General.TotalPracticeDays, v => $"{v} {(v == 1 ? "day" : "days")}"), 1)
                                     ),
                                 // Today's progress
                                 new StackPanel()
                                     .Spacing(8)
                                     .Children(
                                         RegularText().Text("Today").FontSize(13)
-                                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush")),
+                                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush")),
                                         new Grid()
                                             .ColumnDefinitions("*,*")
                                             .Children(
@@ -164,7 +165,7 @@ public sealed partial class StatisticsPage : Page
                                             .ColumnDefinitions("*,Auto")
                                             .Children(
                                                 RegularText().Text("Last 30 days").FontSize(12)
-                                                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush")),
+                                                    .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush")),
                                                 BuildCalendarLegend().Grid(column: 1)
                                             ),
                                         calendarRepeater
@@ -216,7 +217,7 @@ public sealed partial class StatisticsPage : Page
                                     .Spacing(12)
                                     .Children(
                                         RegularText().Text("Mastery Distribution").FontSize(13)
-                                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush")),
+                                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush")),
                                         distributionBar,
                                         BuildDistributionLegend()
                                     ),
@@ -280,6 +281,8 @@ public sealed partial class StatisticsPage : Page
                 .CornerRadius(new CornerRadius(
                     isFirst ? 8 : 0, isLast ? 8 : 0,
                     isLast ? 8 : 0, isFirst ? 8 : 0))
+                .VerticalAlignment(VerticalAlignment.Stretch)
+                .HorizontalAlignment(HorizontalAlignment.Stretch)
                 .Grid(column: i);
 
             container.Children.Add(segment);
@@ -309,7 +312,7 @@ public sealed partial class StatisticsPage : Page
             return RegularText()
                 .Text(combo.DisplayName)
                 .FontSize(11)
-                .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"));
+                .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"));
         }
 
         var progressFill = new Border()
@@ -338,13 +341,13 @@ public sealed partial class StatisticsPage : Page
                         RegularText()
                             .Text(combo.DisplayName)
                             .FontSize(11)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
                             .TextTrimming(TextTrimming.CharacterEllipsis),
                         RegularText()
                             .Grid(column: 1)
                             .Text($"{combo.MasteryPercent}%")
                             .FontSize(11)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
                     ),
                 progressContainer
             );
@@ -375,23 +378,22 @@ public sealed partial class StatisticsPage : Page
         var valueText = RegularText()
             .FontSize(24)
             .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
-            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"));
+            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"));
         bindValue(valueText);
 
         return new StackPanel()
             .Grid(column: column)
-            .HorizontalAlignment(HorizontalAlignment.Center)
+            .HorizontalAlignment(HorizontalAlignment.Left)
             .Spacing(4)
             .Children(
                 new StackPanel()
                     .Orientation(Orientation.Horizontal)
-                    .HorizontalAlignment(HorizontalAlignment.Center)
                     .Spacing(6)
                     .Children(
                         new FontIcon().Glyph(icon).FontSize(16)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
+                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush")),
                         RegularText().Text(label).FontSize(12)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
                     ),
                 valueText
             );
@@ -402,7 +404,7 @@ public sealed partial class StatisticsPage : Page
         var valueText = RegularText()
             .FontSize(20)
             .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"));
+            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"));
         bindValue(valueText);
 
         var checkbox = new CheckBox().IsHitTestVisible(false).MinWidth(0).Padding(0);
@@ -411,12 +413,12 @@ public sealed partial class StatisticsPage : Page
         return new StackPanel()
             .Grid(column: column)
             .Orientation(Orientation.Horizontal)
-            .HorizontalAlignment(HorizontalAlignment.Center)
+            .HorizontalAlignment(HorizontalAlignment.Left)
             .Spacing(8)
             .Children(
                 new StackPanel().Children(
                     RegularText().Text(label).FontSize(12)
-                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush")),
+                        .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush")),
                     valueText
                 ),
                 checkbox
@@ -428,7 +430,7 @@ public sealed partial class StatisticsPage : Page
         var valueText = RegularText()
             .FontSize(20)
             .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"));
+            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"));
         bindValue(valueText);
         return valueText.Grid(column: column).HorizontalAlignment(HorizontalAlignment.Center);
     }
@@ -438,15 +440,15 @@ public sealed partial class StatisticsPage : Page
         var valueText = RegularText()
             .FontSize(20)
             .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"));
+            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"));
         bindValue(valueText);
 
         return new StackPanel()
             .Grid(column: column)
-            .HorizontalAlignment(HorizontalAlignment.Center)
+            .HorizontalAlignment(HorizontalAlignment.Left)
             .Children(
                 RegularText().Text(label).FontSize(12)
-                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush")),
+                    .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush")),
                 valueText
             );
     }
@@ -461,10 +463,10 @@ public sealed partial class StatisticsPage : Page
             .VerticalAlignment(VerticalAlignment.Center)
             .Children(
                 RegularText().Text("Less").FontSize(10)
-                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush")),
+                    .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush")),
                 CreateLegendCell(0), CreateLegendCell(1), CreateLegendCell(2), CreateLegendCell(3),
                 RegularText().Text("More").FontSize(10)
-                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                    .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
             );
     }
 
@@ -479,8 +481,8 @@ public sealed partial class StatisticsPage : Page
     {
         return intensity switch
         {
-            0 => Application.Current.Resources["BackgroundVariantBrush"] as Brush
-                 ?? new SolidColorBrush(Color.FromArgb(255, 242, 239, 245)),
+            0 => Application.Current.Resources["NeutralGrayBrush"] as Brush
+                 ?? new SolidColorBrush(Color.FromArgb(255, 224, 224, 224)),
             1 => new SolidColorBrush(Color.FromArgb(80, 179, 92, 0)),
             2 => new SolidColorBrush(Color.FromArgb(140, 179, 92, 0)),
             3 => new SolidColorBrush(Color.FromArgb(220, 179, 92, 0)),
@@ -535,7 +537,7 @@ public sealed partial class StatisticsPage : Page
             .Children(
                 new Ellipse().Width(8).Height(8).Fill(new SolidColorBrush(color)),
                 RegularText().Text(label).FontSize(10)
-                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                    .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
             );
     }
 
@@ -558,15 +560,15 @@ public class IntensityToBrushConverter : IValueConverter
         {
             return intensity switch
             {
-                0 => Application.Current.Resources["BackgroundVariantBrush"] as Brush
-                     ?? new SolidColorBrush(Color.FromArgb(255, 242, 239, 245)),
+                0 => Application.Current.Resources["NeutralGrayBrush"] as Brush
+                     ?? new SolidColorBrush(Color.FromArgb(255, 224, 224, 224)),
                 1 => new SolidColorBrush(Color.FromArgb(80, 179, 92, 0)),
                 2 => new SolidColorBrush(Color.FromArgb(140, 179, 92, 0)),
                 3 => new SolidColorBrush(Color.FromArgb(220, 179, 92, 0)),
                 _ => new SolidColorBrush(Color.FromArgb(255, 179, 92, 0))
             };
         }
-        return new SolidColorBrush(Color.FromArgb(255, 242, 239, 245));
+        return new SolidColorBrush(Color.FromArgb(255, 224, 224, 224));
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, string language)

@@ -80,7 +80,7 @@ public sealed partial class AppearanceSettingsPage : Page
                 RegularText()
                     .Text(subtitle)
                     .FontSize(13)
-                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                    .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
             );
     }
 }

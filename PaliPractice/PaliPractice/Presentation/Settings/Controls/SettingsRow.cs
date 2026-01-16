@@ -9,91 +9,6 @@ namespace PaliPractice.Presentation.Settings.Controls;
 /// </summary>
 public static class SettingsRow
 {
-    public static Grid BuildToggle<TDC>(string label, Expression<Func<TDC, bool>> isOnExpr)
-    {
-        var toggle = new ToggleSwitch()
-            .OnContent("")
-            .OffContent("")
-            .MinWidth(0)
-            .VerticalAlignment(VerticalAlignment.Center)
-            .Grid(column: 1);
-        toggle.IsOn<TDC>(isOnExpr);
-
-        return new Grid()
-            .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .ColumnDefinitions("*,Auto")
-            .Padding(16, 12)
-            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Children(
-                RegularText()
-                    .Text(label)
-                    .FontSize(16)
-                    .VerticalAlignment(VerticalAlignment.Center)
-                    .Grid(column: 0),
-                toggle
-            );
-    }
-
-    public static Grid BuildToggle<TDC>(
-        string label,
-        Expression<Func<TDC, bool>> isOnExpr,
-        Expression<Func<TDC, bool>> isEnabledExpr)
-    {
-        var toggle = new ToggleSwitch()
-            .OnContent("")
-            .OffContent("")
-            .MinWidth(0)
-            .VerticalAlignment(VerticalAlignment.Center)
-            .Grid(column: 1);
-        toggle.IsOn<TDC>(isOnExpr);
-        toggle.SetBinding(Control.IsEnabledProperty, Bind.Path(isEnabledExpr));
-
-        return new Grid()
-            .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .ColumnDefinitions("*,Auto")
-            .Padding(16, 12)
-            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Children(
-                RegularText()
-                    .Text(label)
-                    .FontSize(16)
-                    .VerticalAlignment(VerticalAlignment.Center)
-                    .Grid(column: 0),
-                toggle
-            );
-    }
-
-    public static Grid BuildNavigation<TDC>(string label, Expression<Func<TDC, ICommand>> commandExpr)
-    {
-        var button = new Button()
-            .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .HorizontalContentAlignment(HorizontalAlignment.Stretch)
-            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Padding(16, 12)
-            .Command(commandExpr)
-            .Content(
-                new Grid()
-                    .ColumnDefinitions("*,Auto")
-                    .Children(
-                        RegularText()
-                            .Text(label)
-                            .FontSize(16)
-                            .VerticalAlignment(VerticalAlignment.Center)
-                            .Grid(column: 0),
-                        new FontIcon()
-                            .Glyph("\uE76C") // Chevron right
-                            .FontSize(14)
-                            .VerticalAlignment(VerticalAlignment.Center)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
-                            .Grid(column: 1)
-                    )
-            );
-
-        return new Grid()
-            .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .Children(button);
-    }
-
     public static Grid BuildNavigation<TDC>(
         string label,
         string iconGlyph,
@@ -113,7 +28,7 @@ public static class SettingsRow
                             .Glyph(iconGlyph)
                             .FontSize(16)
                             .VerticalAlignment(VerticalAlignment.Center)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
                             .Margin(0, 0, 12, 0)
                             .Grid(column: 0),
                         RegularText()
@@ -125,7 +40,7 @@ public static class SettingsRow
                             .Glyph("\uE76C") // Chevron right
                             .FontSize(14)
                             .VerticalAlignment(VerticalAlignment.Center)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
                             .Grid(column: 2)
                     )
             );
@@ -143,7 +58,7 @@ public static class SettingsRow
         var accessoryText = RegularText()
             .FontSize(14)
             .VerticalAlignment(VerticalAlignment.Center)
-            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
             .Margin(0, 0, 8, 0);
         bindAccessoryText(accessoryText);
 
@@ -167,7 +82,7 @@ public static class SettingsRow
                             .Glyph("\uE76C") // Chevron right
                             .FontSize(14)
                             .VerticalAlignment(VerticalAlignment.Center)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
                             .Grid(column: 2)
                     )
             );
@@ -175,58 +90,6 @@ public static class SettingsRow
         return new Grid()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Children(button);
-    }
-
-    public static Grid BuildPlaceholder(string label)
-    {
-        return new Grid()
-            .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .ColumnDefinitions("*,Auto")
-            .Padding(16, 12)
-            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Children(
-                RegularText()
-                    .Text(label)
-                    .FontSize(16)
-                    .VerticalAlignment(VerticalAlignment.Center)
-                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
-                    .Grid(column: 0),
-                new FontIcon()
-                    .Glyph("\uE76C") // Chevron right
-                    .FontSize(14)
-                    .VerticalAlignment(VerticalAlignment.Center)
-                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
-                    .Grid(column: 1)
-            );
-    }
-
-    public static Grid BuildPlaceholder(string label, string iconGlyph)
-    {
-        return new Grid()
-            .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .ColumnDefinitions("Auto,*,Auto")
-            .Padding(16, 12)
-            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Children(
-                new FontIcon()
-                    .Glyph(iconGlyph)
-                    .FontSize(16)
-                    .VerticalAlignment(VerticalAlignment.Center)
-                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
-                    .Margin(0, 0, 12, 0)
-                    .Grid(column: 0),
-                RegularText()
-                    .Text(label)
-                    .FontSize(16)
-                    .VerticalAlignment(VerticalAlignment.Center)
-                    .Grid(column: 1),
-                new FontIcon()
-                    .Glyph("\uE76C") // Chevron right
-                    .FontSize(14)
-                    .VerticalAlignment(VerticalAlignment.Center)
-                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
-                    .Grid(column: 2)
-            );
     }
 
     /// <summary>
@@ -243,77 +106,6 @@ public static class SettingsRow
 
         foreach (var option in options)
             comboBox.Items.Add(option);
-
-        bindSelectedItem(comboBox);
-
-        return new Grid()
-            .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .ColumnDefinitions("*,Auto")
-            .Padding(16, 12)
-            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Children(
-                RegularText()
-                    .Text(label)
-                    .FontSize(16)
-                    .VerticalAlignment(VerticalAlignment.Center)
-                    .Grid(column: 0),
-                comboBox
-            );
-    }
-
-    /// <summary>
-    /// Builds a settings row with a label and dropdown (ComboBox) for int options.
-    /// </summary>
-    public static Grid BuildDropdown(
-        string label,
-        int[] options,
-        Action<ComboBox> bindSelectedItem)
-    {
-        var comboBox = new ComboBox()
-            .VerticalAlignment(VerticalAlignment.Center)
-            .Grid(column: 1);
-
-        foreach (var option in options)
-            comboBox.Items.Add(option);
-
-        bindSelectedItem(comboBox);
-
-        return new Grid()
-            .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .ColumnDefinitions("*,Auto")
-            .Padding(16, 12)
-            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Children(
-                RegularText()
-                    .Text(label)
-                    .FontSize(16)
-                    .VerticalAlignment(VerticalAlignment.Center)
-                    .Grid(column: 0),
-                comboBox
-            );
-    }
-
-    /// <summary>
-    /// Builds a settings row with a label and dropdown (ComboBox) for enum options.
-    /// Each option is a tuple of (enum value, display label).
-    /// </summary>
-    public static Grid BuildDropdown<T>(
-        string label,
-        (T Value, string Label)[] options,
-        Action<ComboBox> bindSelectedItem) where T : struct, Enum
-    {
-        var comboBox = new ComboBox()
-            .VerticalAlignment(VerticalAlignment.Center)
-            .Grid(column: 1);
-
-        foreach (var (value, optionLabel) in options)
-        {
-            comboBox.Items.Add(new ComboBoxItem
-            {
-                Tag = value,
-                Content = optionLabel
-            });
-        }
 
         bindSelectedItem(comboBox);
 
@@ -372,92 +164,6 @@ public static class SettingsRow
     }
 
     /// <summary>
-    /// Builds a settings row with a label, hint, and toggle switch (always enabled).
-    /// </summary>
-    public static Grid BuildToggleWithHint<TDC>(
-        string label,
-        string hint,
-        Expression<Func<TDC, bool>> isOnExpr)
-    {
-        var toggle = new ToggleSwitch()
-            .OnContent("")
-            .OffContent("")
-            .MinWidth(0)
-            .VerticalAlignment(VerticalAlignment.Center)
-            .Grid(column: 1);
-        toggle.IsOn<TDC>(isOnExpr);
-
-        return new Grid()
-            .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .ColumnDefinitions("*,Auto")
-            .Padding(16, 12)
-            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Children(
-                new StackPanel()
-                    .Spacing(2)
-                    .VerticalAlignment(VerticalAlignment.Center)
-                    .HorizontalAlignment(HorizontalAlignment.Left)
-                    .Grid(column: 0)
-                    .Margin(0, 0, 12, 0)
-                    .Children(
-                        RegularText()
-                            .Text(label)
-                            .FontSize(16),
-                        RegularText()
-                            .Text(hint)
-                            .FontSize(13)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
-                            .TextWrapping(TextWrapping.Wrap)
-                    ),
-                toggle
-            );
-    }
-
-    /// <summary>
-    /// Builds a settings row with a label, hint, and toggle switch.
-    /// </summary>
-    public static Grid BuildToggleWithHint<TDC>(
-        string label,
-        string hint,
-        Expression<Func<TDC, bool>> isOnExpr,
-        Expression<Func<TDC, bool>> isEnabledExpr)
-    {
-        var toggle = new ToggleSwitch()
-            .OnContent("")
-            .OffContent("")
-            .MinWidth(0)
-            .VerticalAlignment(VerticalAlignment.Center)
-            .Grid(column: 1);
-        toggle.IsOn<TDC>(isOnExpr);
-        toggle.SetBinding(Control.IsEnabledProperty, Bind.Path(isEnabledExpr));
-
-        return new Grid()
-            .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .ColumnDefinitions("*,Auto")
-            .Padding(16, 12)
-            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Children(
-                new StackPanel()
-                    .Spacing(2)
-                    .VerticalAlignment(VerticalAlignment.Center)
-                    .HorizontalAlignment(HorizontalAlignment.Left)
-                    .Grid(column: 0)
-                    .Margin(0, 0, 12, 0)
-                    .Children(
-                        RegularText()
-                            .Text(label)
-                            .FontSize(16),
-                        RegularText()
-                            .Text(hint)
-                            .FontSize(13)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
-                            .TextWrapping(TextWrapping.Wrap)
-                    ),
-                toggle
-            );
-    }
-
-    /// <summary>
     /// Builds a settings row with an SVG icon, label, hint, and toggle switch.
     /// Icon is aligned with the label text (first row).
     /// </summary>
@@ -485,7 +191,7 @@ public static class SettingsRow
             // PNG icons are generated from SVGs via Uno.Resizetizer
             var icon = new BitmapIcon()
                 .ShowAsMonochrome(true)
-                .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
                 .Height(16)
                 .Width(16)
                 .VerticalAlignment(VerticalAlignment.Center)
@@ -515,7 +221,7 @@ public static class SettingsRow
                 RegularText()
                     .Text(hint)
                     .FontSize(13)
-                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                    .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
                     .TextWrapping(TextWrapping.Wrap)
             );
 
@@ -564,35 +270,11 @@ public static class SettingsRow
                         RegularText()
                             .Text(hint)
                             .FontSize(13)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
                             .TextWrapping(TextWrapping.Wrap)
                     ),
                 comboBox
             );
-    }
-
-    /// <summary>
-    /// Builds a settings row with a label and action button (no chevron).
-    /// The row is tappable and executes the command.
-    /// </summary>
-    public static Grid BuildAction<TDC>(string label, Expression<Func<TDC, ICommand>> commandExpr)
-    {
-        var button = new Button()
-            .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .HorizontalContentAlignment(HorizontalAlignment.Stretch)
-            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Padding(16, 12)
-            .Command(commandExpr)
-            .Content(
-                RegularText()
-                    .Text(label)
-                    .FontSize(16)
-                    .VerticalAlignment(VerticalAlignment.Center)
-            );
-
-        return new Grid()
-            .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .Children(button);
     }
 
     /// <summary>
@@ -617,7 +299,7 @@ public static class SettingsRow
                             .Glyph(iconGlyph)
                             .FontSize(16)
                             .VerticalAlignment(VerticalAlignment.Center)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
                             .Margin(0, 0, 12, 0)
                             .Grid(column: 0),
                         RegularText()
@@ -631,46 +313,5 @@ public static class SettingsRow
         return new Grid()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Children(button);
-    }
-
-    /// <summary>
-    /// Builds a settings row with a radio button, label, and hint.
-    /// </summary>
-    public static Grid BuildRadioButton<TDC>(
-        string label,
-        string hint,
-        string groupName,
-        Expression<Func<TDC, bool>> isCheckedExpr)
-    {
-        var radioButton = new RadioButton()
-            .GroupName(groupName)
-            .VerticalAlignment(VerticalAlignment.Center)
-            .Grid(column: 1);
-        radioButton.SetBinding(RadioButton.IsCheckedProperty, Bind.TwoWayPath(isCheckedExpr));
-
-        return new Grid()
-            .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .ColumnDefinitions("*,Auto")
-            .Padding(16, 12)
-            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Children(
-                new StackPanel()
-                    .Spacing(2)
-                    .VerticalAlignment(VerticalAlignment.Center)
-                    .HorizontalAlignment(HorizontalAlignment.Left)
-                    .Grid(column: 0)
-                    .Margin(0, 0, 12, 0)
-                    .Children(
-                        RegularText()
-                            .Text(label)
-                            .FontSize(16),
-                        RegularText()
-                            .Text(hint)
-                            .FontSize(13)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
-                            .TextWrapping(TextWrapping.Wrap)
-                    ),
-                radioButton
-            );
     }
 }

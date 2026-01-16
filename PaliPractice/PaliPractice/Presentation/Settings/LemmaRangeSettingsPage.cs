@@ -88,7 +88,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
     {
         var subtitleText = RegularText()
             .FontSize(13)
-            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"));
+            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"));
 
         // Bind to TotalLemmaCount with format
         subtitleText.Text(x => x.Binding(() => vm.TotalLemmaCount)
@@ -115,7 +115,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
                 RegularText()
                     .Text(subtitle)
                     .FontSize(13)
-                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                    .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
             );
     }
 

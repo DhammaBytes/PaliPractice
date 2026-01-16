@@ -66,15 +66,15 @@ public sealed partial class SettingsPage : Page
                                             .Visibility(() => vm.IsStoreReviewAvailable)
                                     ),
 
-                                    // Review explanation (only visible on supported platforms)
+                                    // Review explanation (visible until user opens store page)
                                     RegularText()
                                         .Text("If you have a minute, please leave a review for Pāli Practice. Even one sentence is valuable feedback and it helps other Pāli learners discover the app on the store.")
                                         .FontSize(13)
-                                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                                        .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
                                         .TextWrapping(TextWrapping.Wrap)
                                         .Margin(16, -12, 16, 16)
                                         .Visibility(Visibility.Collapsed)
-                                        .Visibility(() => vm.IsStoreReviewAvailable)
+                                        .Visibility(() => vm.ShouldShowReviewExplanation)
                                 )
                         )
                 )

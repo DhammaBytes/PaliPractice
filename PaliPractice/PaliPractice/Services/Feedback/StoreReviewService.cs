@@ -44,6 +44,9 @@ public sealed class StoreReviewService : IStoreReviewService
     public bool IsAvailable => StorePlatformHelper.IsStoreAvailable();
 
     /// <inheritdoc />
+    public bool HasUserOpenedStore => _storage.HasUserOpenedStore;
+
+    /// <inheritdoc />
     public async Task OpenStorePageAsync()
     {
         if (!IsAvailable)
@@ -63,6 +66,11 @@ public sealed class StoreReviewService : IStoreReviewService
         {
             _logger.LogInformation("Opening store page: {Url}", url);
             await Launcher.LaunchUriAsync(new Uri(url));
+
+            // Record that user manually opened store - this disables future automatic prompts
+            _storage.HasUserOpenedStore = true;
+            _storage.PromptCount = MaxLifetimePrompts;
+            _logger.LogInformation("User manually opened store, automatic prompts disabled");
         }
         catch (Exception ex)
         {

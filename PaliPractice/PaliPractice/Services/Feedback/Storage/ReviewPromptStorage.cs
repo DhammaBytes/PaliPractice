@@ -9,6 +9,7 @@ public sealed class ReviewPromptStorage
 {
     const string LastPromptTimestampKey = "ReviewPrompt_LastTimestamp";
     const string PromptCountKey = "ReviewPrompt_Count";
+    const string UserOpenedStoreKey = "ReviewPrompt_UserOpenedStore";
 
     readonly ApplicationDataContainer _settings;
 
@@ -33,6 +34,15 @@ public sealed class ReviewPromptStorage
     {
         get => GetInt(PromptCountKey, 0);
         set => _settings.Values[PromptCountKey] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets whether the user has manually opened the store page.
+    /// </summary>
+    public bool HasUserOpenedStore
+    {
+        get => GetBool(UserOpenedStoreKey, false);
+        set => _settings.Values[UserOpenedStoreKey] = value;
     }
 
     /// <summary>
@@ -82,6 +92,19 @@ public sealed class ReviewPromptStorage
             {
                 int i => i,
                 long l => (int)l,
+                _ => defaultValue
+            };
+        }
+        return defaultValue;
+    }
+
+    bool GetBool(string key, bool defaultValue)
+    {
+        if (_settings.Values.TryGetValue(key, out var value))
+        {
+            return value switch
+            {
+                bool b => b,
                 _ => defaultValue
             };
         }

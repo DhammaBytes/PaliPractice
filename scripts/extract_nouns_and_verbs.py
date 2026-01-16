@@ -66,6 +66,7 @@ from extraction.config import (
 from extraction.grammar import pos_to_gender
 
 from extraction.validate_inflections import InflectionValidator, PluralOnlyMatch
+from configs import DATABASE_VERSION
 
 sys.path.append('../dpd-db')
 
@@ -841,6 +842,9 @@ class NounVerbExtractor:
         nonreflexive_lemma_ids = all_verb_lemma_ids - reflexive_lemma_ids
         for lemma_id in sorted(nonreflexive_lemma_ids):
             cursor.execute("INSERT INTO verbs_nonreflexive (lemma_id) VALUES (?)", (lemma_id,))
+
+        # Set database version for app cache invalidation
+        cursor.execute(f"PRAGMA user_version = {DATABASE_VERSION}")
 
         conn.commit()
         conn.close()

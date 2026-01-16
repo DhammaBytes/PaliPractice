@@ -9,10 +9,12 @@ namespace PaliPractice.Themes;
 ///
 /// 1. Create SVG with solid shapes (color doesn't matter - only alpha channel is used for tinting)
 /// 2. Place SVG in Assets/Svg/Badges/ (or similar folder under Assets/Svg/)
-/// 3. Add UnoImage entry in .csproj:
-///    <code>
-///    &lt;UnoImage Include="Assets\Svg\Badges\my_icon.svg" BaseSize="24,24" /&gt;
-///    </code>
+/// 3. Set build action to UnoImage:
+///    - In Rider: Right-click file → Properties → Build Action: UnoImage
+///    - Or manually in .csproj:
+///      <code>
+///      &lt;UnoImage Include="Assets\Svg\Badges\my_icon.svg" BaseSize="24,24" /&gt;
+///      </code>
 /// 4. Reference as .png in code (Resizetizer generates PNGs at multiple scales):
 ///    <code>
 ///    public static string MyIcon =&gt; $"{BasePath}my_icon.png";

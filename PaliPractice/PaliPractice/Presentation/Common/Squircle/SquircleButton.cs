@@ -12,7 +12,7 @@ namespace PaliPractice.Presentation.Common.Squircle;
 /// <para><b>Usage:</b></para>
 /// <code>
 /// new SquircleButton()
-///     .Fill(ThemeResource.Get&lt;Brush&gt;("PrimaryBrush"))
+///     .Fill(ThemeResource.Get&lt;Brush&gt;("AccentBrush"))
 ///     .Padding(20, 16)
 ///     .Command(() => vm.SomeCommand)
 ///     .Child(new TextBlock().Text("Click me"))

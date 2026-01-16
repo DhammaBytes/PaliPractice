@@ -99,7 +99,7 @@ public sealed partial class StatisticsPage : Page
         bar.Height(16);
         bar.HorizontalAlignment(HorizontalAlignment.Stretch);
         bar.CornerRadius(8);
-        bar.Background(ThemeResource.Get<Brush>("SurfaceVariantBrush"));
+        bar.Background(ThemeResource.Get<Brush>("BackgroundVariantBrush"));
     }
 
     FrameworkElement BuildGeneralSection(StatisticsViewModel vm)
@@ -320,7 +320,7 @@ public sealed partial class StatisticsPage : Page
         var progressContainer = new Grid()
             .Height(6)
             .CornerRadius(3)
-            .Background(ThemeResource.Get<Brush>("SurfaceVariantBrush"))
+            .Background(ThemeResource.Get<Brush>("BackgroundVariantBrush"))
             .Children(progressFill);
 
         progressContainer.SizeChanged += (s, e) =>
@@ -479,7 +479,7 @@ public sealed partial class StatisticsPage : Page
     {
         return intensity switch
         {
-            0 => Application.Current.Resources["SurfaceVariantBrush"] as Brush
+            0 => Application.Current.Resources["BackgroundVariantBrush"] as Brush
                  ?? new SolidColorBrush(Color.FromArgb(255, 242, 239, 245)),
             1 => new SolidColorBrush(Color.FromArgb(80, 179, 92, 0)),
             2 => new SolidColorBrush(Color.FromArgb(140, 179, 92, 0)),
@@ -558,7 +558,7 @@ public class IntensityToBrushConverter : IValueConverter
         {
             return intensity switch
             {
-                0 => Application.Current.Resources["SurfaceVariantBrush"] as Brush
+                0 => Application.Current.Resources["BackgroundVariantBrush"] as Brush
                      ?? new SolidColorBrush(Color.FromArgb(255, 242, 239, 245)),
                 1 => new SolidColorBrush(Color.FromArgb(80, 179, 92, 0)),
                 2 => new SolidColorBrush(Color.FromArgb(140, 179, 92, 0)),

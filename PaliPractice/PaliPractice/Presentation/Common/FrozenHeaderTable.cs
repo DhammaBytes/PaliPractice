@@ -205,7 +205,7 @@ public static class FrozenHeaderTable
                     RegularText()
                         .Text(header)
                         .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                        .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"))
+                        .Foreground(ThemeResource.Get<Brush>("AccentBrush"))
                         .TextAlignment(TextAlignment.Center)
                         .HorizontalAlignment(HorizontalAlignment.Center)
                 );
@@ -238,7 +238,7 @@ public static class FrozenHeaderTable
                     RegularText()
                         .Text(header)
                         .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                        .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"))
+                        .Foreground(ThemeResource.Get<Brush>("AccentBrush"))
                         .HorizontalAlignment(HorizontalAlignment.Right)
                         .VerticalAlignment(VerticalAlignment.Center)
                 );

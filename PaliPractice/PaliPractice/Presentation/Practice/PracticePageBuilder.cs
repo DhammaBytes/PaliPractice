@@ -106,8 +106,7 @@ public static class PracticePageBuilder
         var debugText = RegularText()
             .Text("Size: --")
             .FontSize(fonts.Debug)
-            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
-            .Opacity(0.6);
+            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"));
         elements.DebugTextBlock = debugText;
 
         // Assemble card children
@@ -266,7 +265,8 @@ public static class PracticePageBuilder
                         PaliText()
                             .TextWithin<FlashCardViewModel>(c => c.Root)
                             .FontSize(fonts.PaliRoot)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
+                            .Opacity(0.6)
                     )
                     .Grid(column: 0),
                 (debugText ?? new TextBlock())
@@ -283,11 +283,13 @@ public static class PracticePageBuilder
                         RegularText()
                             .Text("Level: ")
                             .FontSize(fonts.Level)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush")),
+                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
+                            .Opacity(0.6),
                         RegularText()
                             .TextWithin<FlashCardViewModel>(c => c.LevelText)
                             .FontSize(fonts.Level)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
+                            .Opacity(0.6)
                     )
                     .Grid(column: 2)
             );
@@ -386,7 +388,6 @@ public static class PracticePageBuilder
             .Height(LayoutConstants.Sizes.PlaceholderHeight)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .VerticalAlignment(VerticalAlignment.Center)
-            .BorderBrush(ThemeResource.Get<Brush>("OutlineBrush"))
             .BorderThickness(0, 0, 0, LayoutConstants.Sizes.PlaceholderBorderThickness)
             .BoolToVisibility<Border, TVM>(isRevealedPath, invert: true);
 
@@ -443,10 +444,10 @@ public static class PracticePageBuilder
         var fonts = LayoutConstants.PracticeFontSizes.Get(heightClass);
 
         // PNG icon with monochrome tinting - height matches badge font size
-        // Width is unconstrained so icons can have natural aspect ratios and push text right
+        // Width is unconstrained, so icons can have natural aspect ratios and push text right
         var icon = new BitmapIcon()
             .ShowAsMonochrome(true)
-            .Foreground(ThemeResource.Get<Brush>("PrimaryBrush"))
+            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
             .Height(fonts.Badge)
             .HorizontalAlignment(HorizontalAlignment.Left)
             .VerticalAlignment(VerticalAlignment.Center)
@@ -512,7 +513,8 @@ public static class PracticePageBuilder
             .TextWrapping(TextWrapping.Wrap)
             .TextAlignment(TextAlignment.Center)
             .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"));
+            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
+            .Opacity(0.9);
 
         // Shadow reference for measuring single-line height (used to position arrows)
         // This has the same structure as real content but with single-line text
@@ -571,6 +573,7 @@ public static class PracticePageBuilder
                                             .TextAlignment(TextAlignment.Center)
                                             .HorizontalAlignment(HorizontalAlignment.Center)
                                             .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
+                                            .Opacity(0.6)
                                     )
                             )
                     )
@@ -580,8 +583,7 @@ public static class PracticePageBuilder
         var buttonSize = 36.0;
         var prevButton = new Button()
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .BorderBrush(ThemeResource.Get<Brush>("OutlineBrush"))
-            .BorderThickness(new Thickness(1))
+            .BorderThickness(new Thickness(0))
             .Width(buttonSize)
             .Height(buttonSize)
             .Padding(0)
@@ -595,12 +597,11 @@ public static class PracticePageBuilder
             .Content(new FontIcon()
                 .Glyph("\uE76B") // ChevronLeft
                 .FontSize(16)
-                .Foreground(ThemeResource.Get<Brush>("TextPrimaryBrush")));
+                .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush")));
 
         var nextButton = new Button()
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .BorderBrush(ThemeResource.Get<Brush>("OutlineBrush"))
-            .BorderThickness(new Thickness(1))
+            .BorderThickness(new Thickness(0))
             .Width(buttonSize)
             .Height(buttonSize)
             .Padding(0)
@@ -614,7 +615,7 @@ public static class PracticePageBuilder
             .Content(new FontIcon()
                 .Glyph("\uE76C") // ChevronRight
                 .FontSize(16)
-                .Foreground(ThemeResource.Get<Brush>("TextPrimaryBrush")));
+                .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush")));
 
         // Grid layout: arrows at edges, translation centered
         // This aligns arrow edges with card edges above
@@ -647,7 +648,7 @@ public static class PracticePageBuilder
             .TextWrapping(TextWrapping.Wrap)
             .TextAlignment(TextAlignment.Center)
             .HorizontalAlignment(HorizontalAlignment.Center)
-            .Foreground(ThemeResource.Get<Brush>("TextPrimaryBrush"));
+            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"));
 
         // Reference uses Viewbox to shrink font instead of wrapping
         var referenceTextBlock = PaliText()
@@ -655,7 +656,7 @@ public static class PracticePageBuilder
             .FontSize(fonts.SuttaReference)
             .TextWrapping(TextWrapping.NoWrap)
             .TextAlignment(TextAlignment.Center)
-            .Foreground(ThemeResource.Get<Brush>("TextSecondaryBrush"));
+            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"));
 
         var referenceViewbox = new Viewbox()
             .Stretch(Stretch.Uniform)
@@ -687,8 +688,8 @@ public static class PracticePageBuilder
         LayoutConstants.PracticeFontSizes fonts,
         HeightClass heightClass)
     {
-        var (hardIcon, hardText, hardButton) = BuildActionButton<TVM>("Hard", "\uE711", hardCommand, "HardButtonBrush", "HardButtonStrokeBrush", "OnHardButtonBrush", fonts);
-        var (easyIcon, easyText, easyButton) = BuildActionButton<TVM>("Easy", "\uE73E", easyCommand, "EasyButtonBrush", "EasyButtonStrokeBrush", "OnEasyButtonBrush", fonts);
+        var (hardIcon, hardText, hardButton) = BuildActionButton<TVM>("Hard", "\uE711", hardCommand, "HardButtonBrush", "HardButtonOutlineBrush", "OnHardButtonBrush", fonts);
+        var (easyIcon, easyText, easyButton) = BuildActionButton<TVM>("Easy", "\uE73E", easyCommand, "EasyButtonBrush", "EasyButtonOutlineBrush", "OnEasyButtonBrush", fonts);
 
         var contentPadding = LayoutConstants.Gaps.ContentSpacing(heightClass);
         var container = new Grid()
@@ -719,8 +720,8 @@ public static class PracticePageBuilder
     {
         var button = new SquircleButton()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .Fill(ThemeResource.Get<Brush>("StartNavButtonBrush"))
-            .Stroke(ThemeResource.Get<Brush>("StartNavButtonStrokeBrush"))
+            .Fill(ThemeResource.Get<Brush>("NavigationButtonVariantBrush"))
+            .Stroke(ThemeResource.Get<Brush>("NavigationButtonVariantOutlineBrush"))
             .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
             .Padding(LayoutConstants.Gaps.ActionButtonPaddingH, LayoutConstants.Gaps.ActionButtonPaddingV);
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
@@ -734,12 +735,12 @@ public static class PracticePageBuilder
                         .Glyph("\uE7B3") // Eye icon
                         .FontSize(fonts.RevealButton)
                         .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                        .Foreground(ThemeResource.Get<Brush>("TextPrimaryBrush")),
+                        .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush")),
                     RegularText()
                         .Text("Reveal Answer")
                         .FontSize(fonts.RevealButton)
                         .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                        .Foreground(ThemeResource.Get<Brush>("TextPrimaryBrush"))
+                        .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
                 ));
     }
 
@@ -802,14 +803,14 @@ public static class PracticePageBuilder
         var cornerRadius = new CornerRadius(progressHeight / 2);
 
         var fillBorder = new Border()
-            .Background(ThemeResource.Get<Brush>("ProgressFillBrush"))
+            .Background(ThemeResource.Get<Brush>("AccentBrush"))
             .Height(progressHeight)
             .CornerRadius(cornerRadius)
             .HorizontalAlignment(HorizontalAlignment.Left)
             .MinWidth(progressHeight); // Ensure minimum width equals height for proper pill shape
 
         var trackBorder = new Border()
-            .Background(ThemeResource.Get<Brush>("ProgressTrackBrush"))
+            .Background(ThemeResource.Get<Brush>("BackgroundVariantBrush"))
             .Height(progressHeight)
             .CornerRadius(cornerRadius)
             .HorizontalAlignment(HorizontalAlignment.Stretch)
@@ -851,12 +852,12 @@ public static class PracticePageBuilder
                         RegularText()
                             .Text("Daily goal")
                             .FontSize(fonts.DailyGoal)
-                            .Foreground(ThemeResource.Get<Brush>("TextContentBrush"))
+                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                             .Grid(column: 0),
                         RegularText()
                             .Text(dailyGoalText)
                             .FontSize(fonts.DailyGoal)
-                            .Foreground(ThemeResource.Get<Brush>("TextContentBrush"))
+                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
                             .Grid(column: 1)
                     ),
                     trackBorder

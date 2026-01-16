@@ -24,7 +24,7 @@ public static class ShadowHelper
     public static ShadowContainer PillShadow(UIElement content)
     {
         var container = new ShadowContainer { Content = content };
-        container.Shadows = GetShadowResource("PillButtonShadow")!;
+        container.Shadows = GetShadowResource("AppBarNavigationButtonShadow")!;
         return container;
     }
 
@@ -34,7 +34,7 @@ public static class ShadowHelper
     public static ShadowContainer StartNavShadow(UIElement content)
     {
         var container = new ShadowContainer { Content = content };
-        container.Shadows = GetShadowResource("StartNavButtonShadow")!;
+        container.Shadows = GetShadowResource("StartNavigationButtonVariantShadow")!;
         return container;
     }
 
@@ -44,17 +44,17 @@ public static class ShadowHelper
     public static ShadowContainer HardEasyShadow(UIElement content)
     {
         var container = new ShadowContainer { Content = content };
-        container.Shadows = GetShadowResource("SecondaryButtonShadow")!;
+        container.Shadows = GetShadowResource("StartNavigationButtonShadow")!;
         return container;
     }
 
     /// <summary>
     /// Wraps content in a ShadowContainer with a secondary button shadow (Settings, Stats, Help on Start page).
     /// </summary>
-    public static ShadowContainer SecondaryButtonShadow(UIElement content)
+    public static ShadowContainer StartNavigationButtonShadow(UIElement content)
     {
         var container = new ShadowContainer { Content = content };
-        container.Shadows = GetShadowResource("SecondaryButtonShadow")!;
+        container.Shadows = GetShadowResource("StartNavigationButtonShadow")!;
         return container;
     }
 

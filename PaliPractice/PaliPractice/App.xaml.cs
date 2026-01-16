@@ -235,23 +235,18 @@ public partial class App : Application
     }
 
     /// <summary>
-    /// Applies custom accent colors to WinUI controls.
-    /// Must be called after XamlControlsResources is loaded.
+    /// Applies accent colors from theme resources to WinUI controls.
+    /// Reads brushes from ThemeResources.xaml and applies to control-specific resources.
+    /// Must be called after XamlControlsResources and ThemeResources are loaded.
     /// </summary>
     void ApplyAccentColorOverrides()
     {
-        // Accent color: warm orange-brown (#C76034)
-        var accent = new SolidColorBrush(Color.FromArgb(255, 199, 96, 52));
-        var accentHover = new SolidColorBrush(Color.FromArgb(255, 216, 112, 69));
-        var accentPressed = new SolidColorBrush(Color.FromArgb(255, 176, 80, 40));
-        var accentColor = Color.FromArgb(255, 199, 96, 52);
-
-        // System accent color (used by many controls)
-        Resources["SystemAccentColor"] = accentColor;
-        Resources["SystemAccentColorLight1"] = Color.FromArgb(255, 216, 112, 69);
-        Resources["SystemAccentColorLight2"] = Color.FromArgb(255, 230, 140, 100);
-        Resources["SystemAccentColorDark1"] = Color.FromArgb(255, 176, 80, 40);
-        Resources["SystemAccentColorDark2"] = Color.FromArgb(255, 150, 60, 30);
+        // Read accent brushes from theme (defined in ThemeResources.xaml)
+        var accent = Resources["AccentBrush"];
+        var accentHover = Resources["AccentHoverBrush"];
+        var accentPressed = Resources["AccentPressedBrush"];
+        var accentSubtle = Resources["AccentSubtleBrush"];
+        var accentSubtleHover = Resources["AccentSubtleHoverBrush"];
 
         // ToggleSwitch
         Resources["ToggleSwitchFillOn"] = accent;
@@ -266,7 +261,7 @@ public partial class App : Application
         Resources["CheckBoxCheckBackgroundStrokeCheckedPointerOver"] = accentHover;
         Resources["CheckBoxCheckBackgroundStrokeCheckedPressed"] = accentPressed;
 
-        // RadioButton - outer ellipse
+        // RadioButton
         Resources["RadioButtonOuterEllipseFillChecked"] = accent;
         Resources["RadioButtonOuterEllipseFillCheckedPointerOver"] = accentHover;
         Resources["RadioButtonOuterEllipseFillCheckedPressed"] = accentPressed;
@@ -274,16 +269,15 @@ public partial class App : Application
         Resources["RadioButtonOuterEllipseStrokeCheckedPointerOver"] = accentHover;
         Resources["RadioButtonOuterEllipseStrokeCheckedPressed"] = accentPressed;
 
-        // ComboBox focus/selection
-        Resources["ComboBoxBackgroundFocused"] = new SolidColorBrush(Color.FromArgb(20, 199, 96, 52));
+        // ComboBox
+        Resources["ComboBoxBackgroundFocused"] = accentSubtle;
         Resources["ComboBoxBorderBrushFocused"] = accent;
-        Resources["ComboBoxDropDownBackgroundPointerOver"] = new SolidColorBrush(Color.FromArgb(30, 199, 96, 52));
+        Resources["ComboBoxDropDownBackgroundPointerOver"] = accentSubtleHover;
 
-        // TextBox/input focus (affects ComboBox text input)
+        // TextBox/input focus
         Resources["TextControlBorderBrushFocused"] = accent;
-        Resources["TextControlSelectionHighlightColor"] = accentColor;
 
-        // Slider (if used)
+        // Slider
         Resources["SliderTrackValueFill"] = accent;
         Resources["SliderTrackValueFillPointerOver"] = accentHover;
         Resources["SliderTrackValueFillPressed"] = accentPressed;

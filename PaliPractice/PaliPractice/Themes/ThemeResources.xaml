@@ -8,109 +8,61 @@
         <ResourceDictionary x:Key="Light">
             <!-- Background and Surface Colors -->
             <SolidColorBrush x:Key="BackgroundBrush" Color="#F7EEE5"/>
+            <SolidColorBrush x:Key="BackgroundVariantBrush" Color="#EED7C6"/>
+
             <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF"/>
             <SolidColorBrush x:Key="SurfaceVariantBrush" Color="#FFF5EB"/>
-            <SolidColorBrush x:Key="SurfaceInverseBrush" Color="#3D2518"/>
-            <SolidColorBrush x:Key="SurfaceTintBrush" Color="#672000"/>
 
             <!-- Text Colors -->
             <SolidColorBrush x:Key="OnBackgroundBrush" Color="#672000"/>
-            <SolidColorBrush x:Key="OnBackgroundMediumBrush" Color="#461200" Opacity="0.85"/>
+            <SolidColorBrush x:Key="OnBackgroundMediumBrush" Color="#4D200B"/>
+
             <SolidColorBrush x:Key="OnSurfaceBrush" Color="#461200"/>
             <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="#7A5040"/>
-            <SolidColorBrush x:Key="OnSurfaceInverseBrush" Color="#F7EEE5"/>
             <SolidColorBrush x:Key="OnSurfaceDisabledBrush" Color="#C4A090"/>
 
-            <!-- Text Hierarchy -->
-            <SolidColorBrush x:Key="TextPrimaryBrush" Color="#461200"/>
-            <SolidColorBrush x:Key="TextSecondaryBrush" Color="#461200" Opacity="0.7"/>
-            <SolidColorBrush x:Key="TextContentBrush" Color="#4D200B"/>
-            <SolidColorBrush x:Key="TextContentSecondaryBrush" Color="#4D200B" Opacity="0.6"/>
+            <!-- System Accent Colors -->
+            <Color x:Key="SystemAccentColor">#C76034</Color>
+            <Color x:Key="SystemAccentColorLight1">#D87045</Color>
+            <Color x:Key="SystemAccentColorLight2">#E88060</Color>
+            <Color x:Key="SystemAccentColorDark1">#B05028</Color>
+            <Color x:Key="SystemAccentColorDark2">#904020</Color>
 
-            <!-- Primary Colors -->
-            <SolidColorBrush x:Key="PrimaryBrush" Color="#C76034"/>
-            <SolidColorBrush x:Key="PrimaryInverseBrush" Color="#FFD8B5"/>
-            <SolidColorBrush x:Key="PrimaryContainerBrush" Color="#FFDDCC"/>
-            <SolidColorBrush x:Key="OnPrimaryBrush" Color="#FFFFFF"/>
-            <SolidColorBrush x:Key="OnPrimaryContainerBrush" Color="#461200"/>
+            <!-- Accent Brushes -->
+            <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource SystemAccentColorLight1}"/>
+            <SolidColorBrush x:Key="AccentPressedBrush" Color="{StaticResource SystemAccentColorDark1}"/>
+            <SolidColorBrush x:Key="AccentSubtleBrush" Color="{StaticResource SystemAccentColor}" Opacity="0.08"/>
+            <SolidColorBrush x:Key="AccentSubtleHoverBrush" Color="{StaticResource SystemAccentColor}" Opacity="0.12"/>
 
-            <!-- Secondary Colors -->
-            <SolidColorBrush x:Key="SecondaryBrush" Color="#8A5A3A"/>
-            <SolidColorBrush x:Key="SecondaryContainerBrush" Color="#F6CAA2"/>
-            <SolidColorBrush x:Key="OnSecondaryBrush" Color="#FFFFFF"/>
-            <SolidColorBrush x:Key="OnSecondaryContainerBrush" Color="#461200"/>
+            <!-- Button Colors -->
+            <SolidColorBrush x:Key="NavigationButtonBrush" Color="#F8F0E8"/>
+            <SolidColorBrush x:Key="NavigationButtonOutlineBrush" Color="#F0DED1"/>
 
-            <!-- Tertiary / Accent Colors -->
-            <SolidColorBrush x:Key="TertiaryBrush" Color="#1A7ECB"/>
-            <SolidColorBrush x:Key="TertiaryContainerBrush" Color="#CFE4FF"/>
-            <SolidColorBrush x:Key="OnTertiaryBrush" Color="#FFFFFF"/>
-            <SolidColorBrush x:Key="OnTertiaryContainerBrush" Color="#001D36"/>
-            <SolidColorBrush x:Key="AccentBlueBrush" Color="#1A7ECB"/>
+            <SolidColorBrush x:Key="NavigationButtonVariantBrush" Color="#F5D1B0"/>
+            <SolidColorBrush x:Key="NavigationButtonVariantOutlineBrush" Color="#672000" Opacity="0.07"/>
 
-            <!-- Error Colors -->
-            <SolidColorBrush x:Key="ErrorBrush" Color="#B3261E"/>
-            <SolidColorBrush x:Key="ErrorContainerBrush" Color="#F9DEDC"/>
-            <SolidColorBrush x:Key="OnErrorBrush" Color="#FFFFFF"/>
-            <SolidColorBrush x:Key="OnErrorContainerBrush" Color="#410E0B"/>
-
-            <!-- Success Colors -->
-            <SolidColorBrush x:Key="SuccessBrush" Color="#2E7D32"/>
-            <SolidColorBrush x:Key="SuccessContainerBrush" Color="#C8E6C9"/>
-            <SolidColorBrush x:Key="OnSuccessBrush" Color="#FFFFFF"/>
-            <SolidColorBrush x:Key="OnSuccessContainerBrush" Color="#1B5E20"/>
-
-            <!-- Outline Colors -->
-            <SolidColorBrush x:Key="OutlineBrush" Color="#F0DED1"/>
-            <SolidColorBrush x:Key="OutlineVariantBrush" Color="#E5C4B0"/>
-
-            <!-- Button-Specific Colors -->
-            <SolidColorBrush x:Key="SecondaryButtonBrush" Color="#F8F0E8"/>
-            <SolidColorBrush x:Key="StartNavButtonBrush" Color="#F5D1B0"/>
-            <SolidColorBrush x:Key="StartNavButtonStrokeBrush" Color="#672000" Opacity="0.07"/>
-            <SolidColorBrush x:Key="StartNavButtonShadowBrush" Color="#F0DED1"/>
             <SolidColorBrush x:Key="HardButtonBrush" Color="#EA9B81"/>
-            <SolidColorBrush x:Key="HardButtonStrokeBrush" Color="#672000" Opacity="0.1"/>
+            <SolidColorBrush x:Key="HardButtonOutlineBrush" Color="#672000" Opacity="0.1"/>
             <SolidColorBrush x:Key="OnHardButtonBrush" Color="#672000"/>
-            <SolidColorBrush x:Key="EasyButtonBrush" Color="#98C78C"/>
-            <SolidColorBrush x:Key="EasyButtonStrokeBrush" Color="#293F1C" Opacity="0.1"/>
-            <SolidColorBrush x:Key="OnEasyButtonBrush" Color="#293F1C"/>
 
-            <!-- Progress Bar -->
-            <SolidColorBrush x:Key="ProgressFillBrush" Color="#C76034"/>
-            <SolidColorBrush x:Key="ProgressTrackBrush" Color="#EFD1BD"/>
+            <SolidColorBrush x:Key="EasyButtonBrush" Color="#98C78C"/>
+            <SolidColorBrush x:Key="EasyButtonOutlineBrush" Color="#293F1C" Opacity="0.1"/>
+            <SolidColorBrush x:Key="OnEasyButtonBrush" Color="#293F1C"/>
 
             <!-- Shadow Collections -->
             <utu:ShadowCollection x:Key="CardShadow">
                 <utu:Shadow BlurRadius="20" OffsetY="10" Opacity="1" Color="#F0DED1"/>
             </utu:ShadowCollection>
-            <utu:ShadowCollection x:Key="StartNavButtonShadow">
-                <utu:Shadow BlurRadius="20" OffsetY="10" Opacity="1" Color="#F0DED1"/>
-            </utu:ShadowCollection>
-            <utu:ShadowCollection x:Key="SecondaryButtonShadow">
+            <utu:ShadowCollection x:Key="StartNavigationButtonShadow">
                 <utu:Shadow BlurRadius="16" OffsetY="8" Opacity="0.6" Color="#F0DED1"/>
             </utu:ShadowCollection>
-            <utu:ShadowCollection x:Key="PillButtonShadow">
+            <utu:ShadowCollection x:Key="StartNavigationButtonVariantShadow">
+                <utu:Shadow BlurRadius="20" OffsetY="10" Opacity="1" Color="#F0DED1"/>
+            </utu:ShadowCollection>
+            <utu:ShadowCollection x:Key="AppBarNavigationButtonShadow">
                 <utu:Shadow BlurRadius="12" OffsetY="6" Opacity="0.6" Color="#F0DED1"/>
             </utu:ShadowCollection>
-
-            <!-- Control Accent Colors (ToggleSwitch, CheckBox, RadioButton) -->
-            <SolidColorBrush x:Key="ToggleSwitchFillOn" Color="#C76034"/>
-            <SolidColorBrush x:Key="ToggleSwitchFillOnPointerOver" Color="#D87045"/>
-            <SolidColorBrush x:Key="ToggleSwitchFillOnPressed" Color="#B05028"/>
-
-            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillChecked" Color="#C76034"/>
-            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver" Color="#D87045"/>
-            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPressed" Color="#B05028"/>
-            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeChecked" Color="#C76034"/>
-            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPointerOver" Color="#D87045"/>
-            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPressed" Color="#B05028"/>
-
-            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillChecked" Color="#C76034"/>
-            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillCheckedPointerOver" Color="#D87045"/>
-            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillCheckedPressed" Color="#B05028"/>
-            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeChecked" Color="#C76034"/>
-            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeCheckedPointerOver" Color="#D87045"/>
-            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeCheckedPressed" Color="#B05028"/>
 
         </ResourceDictionary>
 
@@ -118,219 +70,61 @@
         <ResourceDictionary x:Key="Dark">
             <!-- Background and Surface Colors -->
             <SolidColorBrush x:Key="BackgroundBrush" Color="#2D1C14"/>
+            <SolidColorBrush x:Key="BackgroundVariantBrush" Color="#4A3525"/>
+
             <SolidColorBrush x:Key="SurfaceBrush" Color="#3D2518"/>
             <SolidColorBrush x:Key="SurfaceVariantBrush" Color="#4A3025"/>
-            <SolidColorBrush x:Key="SurfaceInverseBrush" Color="#F7EEE5"/>
-            <SolidColorBrush x:Key="SurfaceTintBrush" Color="#FFB896"/>
 
             <!-- Text Colors -->
             <SolidColorBrush x:Key="OnBackgroundBrush" Color="#FFD4B8"/>
-            <SolidColorBrush x:Key="OnBackgroundMediumBrush" Color="#FFE8D8" Opacity="0.8"/>
+            <SolidColorBrush x:Key="OnBackgroundMediumBrush" Color="#FFE8D8"/>
+
             <SolidColorBrush x:Key="OnSurfaceBrush" Color="#FFE8D8"/>
             <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="#D4B8A8"/>
-            <SolidColorBrush x:Key="OnSurfaceInverseBrush" Color="#2D1C14"/>
             <SolidColorBrush x:Key="OnSurfaceDisabledBrush" Color="#6A5A50"/>
 
-            <!-- Text Hierarchy -->
-            <SolidColorBrush x:Key="TextPrimaryBrush" Color="#FFE8D8"/>
-            <SolidColorBrush x:Key="TextSecondaryBrush" Color="#FFE8D8" Opacity="0.7"/>
-            <SolidColorBrush x:Key="TextContentBrush" Color="#FFD8C8"/>
-            <SolidColorBrush x:Key="TextContentSecondaryBrush" Color="#FFD8C8" Opacity="0.6"/>
+            <!-- System Accent Colors -->
+            <Color x:Key="SystemAccentColor">#FFB080</Color>
+            <Color x:Key="SystemAccentColorLight1">#FFC090</Color>
+            <Color x:Key="SystemAccentColorLight2">#FFD0A0</Color>
+            <Color x:Key="SystemAccentColorDark1">#E0A070</Color>
+            <Color x:Key="SystemAccentColorDark2">#C09060</Color>
 
-            <!-- Primary Colors -->
-            <SolidColorBrush x:Key="PrimaryBrush" Color="#FFB080"/>
-            <SolidColorBrush x:Key="PrimaryInverseBrush" Color="#6D2F00"/>
-            <SolidColorBrush x:Key="PrimaryContainerBrush" Color="#5A3020"/>
-            <SolidColorBrush x:Key="OnPrimaryBrush" Color="#3A1E00"/>
-            <SolidColorBrush x:Key="OnPrimaryContainerBrush" Color="#FFE7CF"/>
+            <!-- Accent Brushes -->
+            <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource SystemAccentColorLight1}"/>
+            <SolidColorBrush x:Key="AccentPressedBrush" Color="{StaticResource SystemAccentColorDark1}"/>
+            <SolidColorBrush x:Key="AccentSubtleBrush" Color="{StaticResource SystemAccentColor}" Opacity="0.08"/>
+            <SolidColorBrush x:Key="AccentSubtleHoverBrush" Color="{StaticResource SystemAccentColor}" Opacity="0.12"/>
 
-            <!-- Secondary Colors -->
-            <SolidColorBrush x:Key="SecondaryBrush" Color="#E2C39A"/>
-            <SolidColorBrush x:Key="SecondaryContainerBrush" Color="#5A3B14"/>
-            <SolidColorBrush x:Key="OnSecondaryBrush" Color="#3A2010"/>
-            <SolidColorBrush x:Key="OnSecondaryContainerBrush" Color="#FFE2C6"/>
+            <!-- Button Colors -->
+            <SolidColorBrush x:Key="NavigationButtonBrush" Color="#3D2E26"/>
+            <SolidColorBrush x:Key="NavigationButtonOutlineBrush" Color="#5A4538"/>
 
-            <!-- Tertiary / Accent Colors -->
-            <SolidColorBrush x:Key="TertiaryBrush" Color="#9FCAFF"/>
-            <SolidColorBrush x:Key="TertiaryContainerBrush" Color="#00497D"/>
-            <SolidColorBrush x:Key="OnTertiaryBrush" Color="#003258"/>
-            <SolidColorBrush x:Key="OnTertiaryContainerBrush" Color="#D1E4FF"/>
-            <SolidColorBrush x:Key="AccentBlueBrush" Color="#6ABAFF"/>
+            <SolidColorBrush x:Key="NavigationButtonVariantBrush" Color="#5C4838"/>
+            <SolidColorBrush x:Key="NavigationButtonVariantOutlineBrush" Color="#FFB896" Opacity="0.07"/>
 
-            <!-- Error Colors -->
-            <SolidColorBrush x:Key="ErrorBrush" Color="#FFB4AB"/>
-            <SolidColorBrush x:Key="ErrorContainerBrush" Color="#93000A"/>
-            <SolidColorBrush x:Key="OnErrorBrush" Color="#690005"/>
-            <SolidColorBrush x:Key="OnErrorContainerBrush" Color="#FFDAD6"/>
-
-            <!-- Success Colors -->
-            <SolidColorBrush x:Key="SuccessBrush" Color="#81C784"/>
-            <SolidColorBrush x:Key="SuccessContainerBrush" Color="#1B5E20"/>
-            <SolidColorBrush x:Key="OnSuccessBrush" Color="#1B5E20"/>
-            <SolidColorBrush x:Key="OnSuccessContainerBrush" Color="#C8E6C9"/>
-
-            <!-- Outline Colors -->
-            <SolidColorBrush x:Key="OutlineBrush" Color="#5A4538"/>
-            <SolidColorBrush x:Key="OutlineVariantBrush" Color="#4A3528"/>
-
-            <!-- Button-Specific Colors -->
-            <SolidColorBrush x:Key="SecondaryButtonBrush" Color="#3D2E26"/>
-            <SolidColorBrush x:Key="StartNavButtonBrush" Color="#5C4838"/>
-            <SolidColorBrush x:Key="StartNavButtonStrokeBrush" Color="#FFB896" Opacity="0.07"/>
-            <SolidColorBrush x:Key="StartNavButtonShadowBrush" Color="#1A0E08"/>
             <SolidColorBrush x:Key="HardButtonBrush" Color="#8A4030"/>
-            <SolidColorBrush x:Key="HardButtonStrokeBrush" Color="#FFB896" Opacity="0.1"/>
+            <SolidColorBrush x:Key="HardButtonOutlineBrush" Color="#FFB896" Opacity="0.1"/>
             <SolidColorBrush x:Key="OnHardButtonBrush" Color="#FFB896"/>
+
             <SolidColorBrush x:Key="EasyButtonBrush" Color="#3A5A30"/>
-            <SolidColorBrush x:Key="EasyButtonStrokeBrush" Color="#A8D898" Opacity="0.1"/>
+            <SolidColorBrush x:Key="EasyButtonOutlineBrush" Color="#A8D898" Opacity="0.1"/>
             <SolidColorBrush x:Key="OnEasyButtonBrush" Color="#A8D898"/>
 
-            <!-- Progress Bar -->
-            <SolidColorBrush x:Key="ProgressFillBrush" Color="#FFB080"/>
-            <SolidColorBrush x:Key="ProgressTrackBrush" Color="#4A3525"/>
-
             <!-- Shadow Collections -->
             <utu:ShadowCollection x:Key="CardShadow">
                 <utu:Shadow BlurRadius="20" OffsetY="10" Opacity="1" Color="#1A0E08"/>
             </utu:ShadowCollection>
-            <utu:ShadowCollection x:Key="StartNavButtonShadow">
-                <utu:Shadow BlurRadius="20" OffsetY="10" Opacity="1" Color="#1A0E08"/>
-            </utu:ShadowCollection>
-            <utu:ShadowCollection x:Key="SecondaryButtonShadow">
+            <utu:ShadowCollection x:Key="StartNavigationButtonShadow">
                 <utu:Shadow BlurRadius="16" OffsetY="8" Opacity="0.6" Color="#1A0E08"/>
             </utu:ShadowCollection>
-            <utu:ShadowCollection x:Key="PillButtonShadow">
+            <utu:ShadowCollection x:Key="StartNavigationButtonVariantShadow">
+                <utu:Shadow BlurRadius="20" OffsetY="10" Opacity="1" Color="#1A0E08"/>
+            </utu:ShadowCollection>
+            <utu:ShadowCollection x:Key="AppBarNavigationButtonShadow">
                 <utu:Shadow BlurRadius="12" OffsetY="6" Opacity="0.6" Color="#1A0E08"/>
             </utu:ShadowCollection>
-
-            <!-- Control Accent Colors (ToggleSwitch, CheckBox, RadioButton) -->
-            <SolidColorBrush x:Key="ToggleSwitchFillOn" Color="#FFB080"/>
-            <SolidColorBrush x:Key="ToggleSwitchFillOnPointerOver" Color="#FFC090"/>
-            <SolidColorBrush x:Key="ToggleSwitchFillOnPressed" Color="#E0A070"/>
-
-            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillChecked" Color="#FFB080"/>
-            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver" Color="#FFC090"/>
-            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPressed" Color="#E0A070"/>
-            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeChecked" Color="#FFB080"/>
-            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPointerOver" Color="#FFC090"/>
-            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPressed" Color="#E0A070"/>
-
-            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillChecked" Color="#FFB080"/>
-            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillCheckedPointerOver" Color="#FFC090"/>
-            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillCheckedPressed" Color="#E0A070"/>
-            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeChecked" Color="#FFB080"/>
-            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeCheckedPointerOver" Color="#FFC090"/>
-            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeCheckedPressed" Color="#E0A070"/>
-
-        </ResourceDictionary>
-
-        <!-- Default/HighContrast fallback (same as Light) -->
-        <ResourceDictionary x:Key="Default">
-            <!-- Background and Surface Colors -->
-            <SolidColorBrush x:Key="BackgroundBrush" Color="#F7EEE5"/>
-            <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF"/>
-            <SolidColorBrush x:Key="SurfaceVariantBrush" Color="#FFF5EB"/>
-            <SolidColorBrush x:Key="SurfaceInverseBrush" Color="#3D2518"/>
-            <SolidColorBrush x:Key="SurfaceTintBrush" Color="#672000"/>
-
-            <!-- Text Colors -->
-            <SolidColorBrush x:Key="OnBackgroundBrush" Color="#672000"/>
-            <SolidColorBrush x:Key="OnBackgroundMediumBrush" Color="#461200" Opacity="0.8"/>
-            <SolidColorBrush x:Key="OnSurfaceBrush" Color="#461200"/>
-            <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="#7A5040"/>
-            <SolidColorBrush x:Key="OnSurfaceInverseBrush" Color="#F7EEE5"/>
-            <SolidColorBrush x:Key="OnSurfaceDisabledBrush" Color="#C4A090"/>
-
-            <!-- Text Hierarchy -->
-            <SolidColorBrush x:Key="TextPrimaryBrush" Color="#461200"/>
-            <SolidColorBrush x:Key="TextSecondaryBrush" Color="#461200" Opacity="0.7"/>
-            <SolidColorBrush x:Key="TextContentBrush" Color="#4D200B"/>
-            <SolidColorBrush x:Key="TextContentSecondaryBrush" Color="#4D200B" Opacity="0.6"/>
-
-            <!-- Primary Colors -->
-            <SolidColorBrush x:Key="PrimaryBrush" Color="#C76034"/>
-            <SolidColorBrush x:Key="PrimaryInverseBrush" Color="#FFD8B5"/>
-            <SolidColorBrush x:Key="PrimaryContainerBrush" Color="#FFDDCC"/>
-            <SolidColorBrush x:Key="OnPrimaryBrush" Color="#FFFFFF"/>
-            <SolidColorBrush x:Key="OnPrimaryContainerBrush" Color="#461200"/>
-
-            <!-- Secondary Colors -->
-            <SolidColorBrush x:Key="SecondaryBrush" Color="#8A5A3A"/>
-            <SolidColorBrush x:Key="SecondaryContainerBrush" Color="#F6CAA2"/>
-            <SolidColorBrush x:Key="OnSecondaryBrush" Color="#FFFFFF"/>
-            <SolidColorBrush x:Key="OnSecondaryContainerBrush" Color="#461200"/>
-
-            <!-- Tertiary / Accent Colors -->
-            <SolidColorBrush x:Key="TertiaryBrush" Color="#1A7ECB"/>
-            <SolidColorBrush x:Key="TertiaryContainerBrush" Color="#CFE4FF"/>
-            <SolidColorBrush x:Key="OnTertiaryBrush" Color="#FFFFFF"/>
-            <SolidColorBrush x:Key="OnTertiaryContainerBrush" Color="#001D36"/>
-            <SolidColorBrush x:Key="AccentBlueBrush" Color="#1A7ECB"/>
-
-            <!-- Error Colors -->
-            <SolidColorBrush x:Key="ErrorBrush" Color="#B3261E"/>
-            <SolidColorBrush x:Key="ErrorContainerBrush" Color="#F9DEDC"/>
-            <SolidColorBrush x:Key="OnErrorBrush" Color="#FFFFFF"/>
-            <SolidColorBrush x:Key="OnErrorContainerBrush" Color="#410E0B"/>
-
-            <!-- Success Colors -->
-            <SolidColorBrush x:Key="SuccessBrush" Color="#2E7D32"/>
-            <SolidColorBrush x:Key="SuccessContainerBrush" Color="#C8E6C9"/>
-            <SolidColorBrush x:Key="OnSuccessBrush" Color="#FFFFFF"/>
-            <SolidColorBrush x:Key="OnSuccessContainerBrush" Color="#1B5E20"/>
-
-            <!-- Outline Colors -->
-            <SolidColorBrush x:Key="OutlineBrush" Color="#F0DED1"/>
-            <SolidColorBrush x:Key="OutlineVariantBrush" Color="#E5C4B0"/>
-
-            <!-- Button-Specific Colors -->
-            <SolidColorBrush x:Key="SecondaryButtonBrush" Color="#F8F0E8"/>
-            <SolidColorBrush x:Key="StartNavButtonBrush" Color="#F5D1B0"/>
-            <SolidColorBrush x:Key="StartNavButtonStrokeBrush" Color="#672000" Opacity="0.07"/>
-            <SolidColorBrush x:Key="StartNavButtonShadowBrush" Color="#F0DED1"/>
-            <SolidColorBrush x:Key="HardButtonBrush" Color="#EA9B81"/>
-            <SolidColorBrush x:Key="HardButtonStrokeBrush" Color="#672000" Opacity="0.1"/>
-            <SolidColorBrush x:Key="OnHardButtonBrush" Color="#672000"/>
-            <SolidColorBrush x:Key="EasyButtonBrush" Color="#98C78C"/>
-            <SolidColorBrush x:Key="EasyButtonStrokeBrush" Color="#293F1C" Opacity="0.1"/>
-            <SolidColorBrush x:Key="OnEasyButtonBrush" Color="#293F1C"/>
-
-            <!-- Progress Bar -->
-            <SolidColorBrush x:Key="ProgressFillBrush" Color="#C76034"/>
-            <SolidColorBrush x:Key="ProgressTrackBrush" Color="#EFD1BD"/>
-
-            <!-- Shadow Collections -->
-            <utu:ShadowCollection x:Key="CardShadow">
-                <utu:Shadow BlurRadius="20" OffsetY="10" Opacity="1" Color="#F0DED1"/>
-            </utu:ShadowCollection>
-            <utu:ShadowCollection x:Key="StartNavButtonShadow">
-                <utu:Shadow BlurRadius="20" OffsetY="10" Opacity="1" Color="#F0DED1"/>
-            </utu:ShadowCollection>
-            <utu:ShadowCollection x:Key="SecondaryButtonShadow">
-                <utu:Shadow BlurRadius="16" OffsetY="8" Opacity="0.6" Color="#F0DED1"/>
-            </utu:ShadowCollection>
-            <utu:ShadowCollection x:Key="PillButtonShadow">
-                <utu:Shadow BlurRadius="12" OffsetY="6" Opacity="0.6" Color="#F0DED1"/>
-            </utu:ShadowCollection>
-
-            <!-- Control Accent Colors (ToggleSwitch, CheckBox, RadioButton) -->
-            <SolidColorBrush x:Key="ToggleSwitchFillOn" Color="#C76034"/>
-            <SolidColorBrush x:Key="ToggleSwitchFillOnPointerOver" Color="#D87045"/>
-            <SolidColorBrush x:Key="ToggleSwitchFillOnPressed" Color="#B05028"/>
-
-            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillChecked" Color="#C76034"/>
-            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver" Color="#D87045"/>
-            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPressed" Color="#B05028"/>
-            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeChecked" Color="#C76034"/>
-            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPointerOver" Color="#D87045"/>
-            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPressed" Color="#B05028"/>
-
-            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillChecked" Color="#C76034"/>
-            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillCheckedPointerOver" Color="#D87045"/>
-            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillCheckedPressed" Color="#B05028"/>
-            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeChecked" Color="#C76034"/>
-            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeCheckedPointerOver" Color="#D87045"/>
-            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeCheckedPressed" Color="#B05028"/>
 
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>

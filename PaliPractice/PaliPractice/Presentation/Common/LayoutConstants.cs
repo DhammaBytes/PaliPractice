@@ -99,7 +99,7 @@ public static class LayoutConstants
             PaliRoot: 18,
             Level: 16,
             Translation: 18,
-            TranslationPagination: 12,
+            TranslationPagination: 13,
             TranslationDots: 26,
             SuttaExample: 18,
             SuttaReference: 16,
@@ -118,7 +118,7 @@ public static class LayoutConstants
             PaliRoot: 18,
             Level: 16,
             Translation: 18,
-            TranslationPagination: 12,
+            TranslationPagination: 13,
             TranslationDots: 26,
             SuttaExample: 18,
             SuttaReference: 16,
@@ -137,7 +137,7 @@ public static class LayoutConstants
             PaliRoot: 18,
             Level: 16,
             Translation: 18,
-            TranslationPagination: 12,
+            TranslationPagination: 13,
             TranslationDots: 26,
             SuttaExample: 18,
             SuttaReference: 16,
@@ -156,7 +156,7 @@ public static class LayoutConstants
             PaliRoot: 18,
             Level: 16,
             Translation: 18,
-            TranslationPagination: 12,
+            TranslationPagination: 13,
             TranslationDots: 26,
             SuttaExample: 18,
             SuttaReference: 16,
@@ -247,7 +247,7 @@ public static class LayoutConstants
         public static double WordMarginTop => 12;
 
         /// <summary>Margin below the main word.</summary>
-        public static double WordMarginBottom => 6;
+        public static double WordMarginBottom => 12;
 
         // === Answer Section ===
 
@@ -320,7 +320,7 @@ public static class LayoutConstants
         public static double ProgressBarCornerRadius => 8;
 
         /// <summary>Default stroke thickness for squircle buttons with borders.</summary>
-        public static double ButtonStrokeThickness => 2;
+        public static double ButtonStrokeThickness => 1.5;
     }
 
     #endregion

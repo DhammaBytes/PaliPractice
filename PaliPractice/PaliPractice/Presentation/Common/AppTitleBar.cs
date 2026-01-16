@@ -58,27 +58,20 @@ public static class AppTitleBar
         Expression<Func<TDC, ICommand>> goToHistoryCommand)
     {
         var centerButton = new SquircleButton()
-            .Fill(ThemeResource.Get<Brush>("SecondaryButtonBrush"))
-            .Stroke(ThemeResource.Get<Brush>("OutlineBrush"))
+            .Fill(ThemeResource.Get<Brush>("NavigationButtonBrush"))
+            .Stroke(ThemeResource.Get<Brush>("NavigationButtonOutlineBrush"))
             .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
             .RadiusMode(SquircleRadiusMode.Pill) // More pill-like corners
-            .Padding(12, 10); // +2pt vertical padding
+            .Padding(24, 10);
         centerButton.SetBinding(ButtonBase.CommandProperty, Bind.Path(centerClickCommand));
-        centerButton.Child(new StackPanel()
-            .Orientation(Orientation.Horizontal)
-            .Spacing(6)
-            .Children(
-                new FontIcon()
-                    .Glyph("\uE8A7") // List/table icon
-                    .FontSize(16)
-                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
-                RegularText()
-                    .Text("All Forms")
-                    .FontSize(16)
-                    .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
-                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
-                    .VerticalAlignment(VerticalAlignment.Center)
-            ));
+        centerButton.Child(
+            RegularText()
+                .Text("All Forms")
+                .FontSize(16)
+                .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
+                .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+                .VerticalAlignment(VerticalAlignment.Center)
+        );
 
         return BuildCoreWithCenterElement(
             PillShadow(centerButton),
@@ -151,8 +144,8 @@ public static class AppTitleBar
     static SquircleButton CreateBackButton<TDC>(Expression<Func<TDC, ICommand>> commandPath)
     {
         var button = new SquircleButton()
-            .Fill(ThemeResource.Get<Brush>("SecondaryButtonBrush"))
-            .Stroke(ThemeResource.Get<Brush>("OutlineBrush"))
+            .Fill(ThemeResource.Get<Brush>("NavigationButtonBrush"))
+            .Stroke(ThemeResource.Get<Brush>("NavigationButtonOutlineBrush"))
             .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
             .RadiusMode(SquircleRadiusMode.Pill) // More pill-like corners
             .Padding(12, 10) // +2pt vertical padding
@@ -181,8 +174,8 @@ public static class AppTitleBar
     static SquircleButton CreateHistoryButton<TDC>(Expression<Func<TDC, ICommand>> commandPath)
     {
         var button = new SquircleButton()
-            .Fill(ThemeResource.Get<Brush>("SecondaryButtonBrush"))
-            .Stroke(ThemeResource.Get<Brush>("OutlineBrush"))
+            .Fill(ThemeResource.Get<Brush>("NavigationButtonBrush"))
+            .Stroke(ThemeResource.Get<Brush>("NavigationButtonOutlineBrush"))
             .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
             .RadiusMode(SquircleRadiusMode.Pill) // More pill-like corners
             .Padding(12, 10) // +2pt vertical padding

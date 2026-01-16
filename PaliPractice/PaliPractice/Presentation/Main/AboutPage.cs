@@ -60,8 +60,8 @@ public sealed partial class AboutPage : Page
                                     // Contact button
                                     PillShadow(
                                         new SquircleButton()
-                                            .Fill(ThemeResource.Get<Brush>("SecondaryButtonBrush"))
-                                            .Stroke(ThemeResource.Get<Brush>("OutlineBrush"))
+                                            .Fill(ThemeResource.Get<Brush>("NavigationButtonBrush"))
+                                            .Stroke(ThemeResource.Get<Brush>("NavigationButtonOutlineBrush"))
                                             .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
                                             .RadiusMode(SquircleRadiusMode.ButtonNavigation)
                                             .Padding(12, 8)

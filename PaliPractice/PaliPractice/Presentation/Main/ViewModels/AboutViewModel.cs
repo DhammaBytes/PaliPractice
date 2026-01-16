@@ -67,13 +67,11 @@ Word and grammar data sourced from the [Digital Pāli Dictionary](https://dpdict
 
     public static string IconTitle => "App Icon";
     public static string IconDescription => """
-The icon shows the quail from **SN 47:6**, *the Sakuṇagghi Sutta* ("The Hawk"), hiding behind rocks in its ancestral territory – a newly plowed field with clumps of earth all turned up:
+The icon shows the quail from [SN 47:6, the Sakuṇagghi Sutta](https://www.dhammatalks.org/suttas/SN/SN47_6.html) ("The Hawk"), hiding behind rocks in its ancestral territory – a newly plowed field with clumps of earth all turned up:
 
 *"Wander, monks, in what is your proper range, your own ancestral territory. In one who wanders in what is his proper range, his own ancestral territory, Māra gains no opening, Māra gains no foothold. And what, for a monk, is his proper range, his own ancestral territory? The four establishings of mindfulness."*
 
-You can [read the full sutta here](https://www.dhammatalks.org/suttas/SN/SN47_6.html)
-
-Icon illustration and app design by Irina Mir ([@irmirx](https://www.instagram.com/irmirx))
+Icon illustration & app design by [Irina Mir](https://www.instagram.com/irmirx)
 """;
 
     public static string LicenseTitle => "App License";

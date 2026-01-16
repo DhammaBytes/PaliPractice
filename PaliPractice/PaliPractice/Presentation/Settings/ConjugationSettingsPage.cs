@@ -86,7 +86,7 @@ public sealed partial class ConjugationSettingsPage : Page
                                     TextHelpers.RegularText()
                                         .Text("Aorist (past narrative tense) is not included: its forms vary a lot across verbs and often need verb-by-verb learning. A dedicated aorist trainer may be added later.")
                                         .FontSize(13)
-                                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                                        .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
                                         .TextWrapping(TextWrapping.Wrap)
                                         .Margin(16, 4, 16, 16)
                                 )

@@ -447,7 +447,7 @@ public static class PracticePageBuilder
         // Width is unconstrained, so icons can have natural aspect ratios and push text right
         var icon = new BitmapIcon()
             .ShowAsMonochrome(true)
-            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
             .Height(fonts.Badge)
             .HorizontalAlignment(HorizontalAlignment.Left)
             .VerticalAlignment(VerticalAlignment.Center)
@@ -457,7 +457,7 @@ public static class PracticePageBuilder
             .FontSize(fonts.Badge)
             .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
             .VerticalAlignment(VerticalAlignment.Center)
-            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
             .Text<TVM>(labelPath);
 
         var badge = new SquircleBorder()
@@ -852,12 +852,12 @@ public static class PracticePageBuilder
                         RegularText()
                             .Text("Daily goal")
                             .FontSize(fonts.DailyGoal)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
                             .Grid(column: 0),
                         RegularText()
                             .Text(dailyGoalText)
                             .FontSize(fonts.DailyGoal)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundMediumBrush"))
+                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
                             .Grid(column: 1)
                     ),
                     trackBorder

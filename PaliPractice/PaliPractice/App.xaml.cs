@@ -10,6 +10,7 @@ using PaliPractice.Services.Feedback.Providers;
 using PaliPractice.Services.Grammar;
 using PaliPractice.Services.Practice;
 using PaliPractice.Services.UserData;
+using PaliPractice.Themes;
 using Uno.Toolkit.UI;
 using AboutPage = PaliPractice.Presentation.Main.AboutPage;
 using AppearanceSettingsPage = PaliPractice.Presentation.Settings.AppearanceSettingsPage;
@@ -73,7 +74,7 @@ public partial class App : Application
             new ToolkitResources()));
 
         // Override control accent colors (must be after XamlControlsResources)
-        ApplyAccentColorOverrides();
+        ControlStyling.ApplyAccentColorOverrides(Resources);
         var builder = this.CreateBuilder(args)
             // Add navigation support for toolkit controls such as TabBar and NavigationView
             .UseToolkitNavigation()
@@ -232,58 +233,6 @@ public partial class App : Application
             <= 863 => 720,
             _ => 800
         };
-    }
-
-    /// <summary>
-    /// Applies accent colors from theme resources to WinUI controls.
-    /// Reads brushes from ThemeResources.xaml and applies to control-specific resources.
-    /// Must be called after XamlControlsResources and ThemeResources are loaded.
-    /// </summary>
-    void ApplyAccentColorOverrides()
-    {
-        // Read accent brushes from theme (defined in ThemeResources.xaml)
-        var accent = Resources["AccentBrush"];
-        var accentHover = Resources["AccentHoverBrush"];
-        var accentPressed = Resources["AccentPressedBrush"];
-        var accentSubtle = Resources["AccentSubtleBrush"];
-        var accentSubtleHover = Resources["AccentSubtleHoverBrush"];
-
-        // ToggleSwitch
-        Resources["ToggleSwitchFillOn"] = accent;
-        Resources["ToggleSwitchFillOnPointerOver"] = accentHover;
-        Resources["ToggleSwitchFillOnPressed"] = accentPressed;
-
-        // CheckBox
-        Resources["CheckBoxCheckBackgroundFillChecked"] = accent;
-        Resources["CheckBoxCheckBackgroundFillCheckedPointerOver"] = accentHover;
-        Resources["CheckBoxCheckBackgroundFillCheckedPressed"] = accentPressed;
-        Resources["CheckBoxCheckBackgroundStrokeChecked"] = accent;
-        Resources["CheckBoxCheckBackgroundStrokeCheckedPointerOver"] = accentHover;
-        Resources["CheckBoxCheckBackgroundStrokeCheckedPressed"] = accentPressed;
-
-        // RadioButton
-        Resources["RadioButtonOuterEllipseFillChecked"] = accent;
-        Resources["RadioButtonOuterEllipseFillCheckedPointerOver"] = accentHover;
-        Resources["RadioButtonOuterEllipseFillCheckedPressed"] = accentPressed;
-        Resources["RadioButtonOuterEllipseStrokeChecked"] = accent;
-        Resources["RadioButtonOuterEllipseStrokeCheckedPointerOver"] = accentHover;
-        Resources["RadioButtonOuterEllipseStrokeCheckedPressed"] = accentPressed;
-
-        // ComboBox
-        Resources["ComboBoxBackgroundFocused"] = accentSubtle;
-        Resources["ComboBoxBorderBrushFocused"] = accent;
-        Resources["ComboBoxDropDownBackgroundPointerOver"] = accentSubtleHover;
-
-        // TextBox/input focus
-        Resources["TextControlBorderBrushFocused"] = accent;
-
-        // Slider
-        Resources["SliderTrackValueFill"] = accent;
-        Resources["SliderTrackValueFillPointerOver"] = accentHover;
-        Resources["SliderTrackValueFillPressed"] = accentPressed;
-        Resources["SliderThumbBackground"] = accent;
-        Resources["SliderThumbBackgroundPointerOver"] = accentHover;
-        Resources["SliderThumbBackgroundPressed"] = accentPressed;
     }
 
     static void RegisterRoutes(IViewRegistry views, IRouteRegistry routes)

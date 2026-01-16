@@ -5,66 +5,102 @@ namespace PaliPractice.Presentation.Common;
 /// <summary>
 /// Helper methods for adding colored drop shadows using Uno Toolkit's ShadowContainer.
 /// Shadow colors are defined in ThemeResources.xaml and support light/dark themes.
+/// Shadows automatically update when the app theme changes.
 /// </summary>
 public static class ShadowHelper
 {
     /// <summary>
-    /// Gets a ShadowCollection from the application's theme resources.
+    /// Gets a ShadowCollection from the current theme's resources.
+    /// Uses the proper theme lookup to get the correct shadow for light/dark mode.
     /// </summary>
-    static ShadowCollection? GetShadowResource(string resourceKey)
+    static ShadowCollection? GetShadowResource(string resourceKey, FrameworkElement element)
     {
-        if (Application.Current.Resources.TryGetValue(resourceKey, out var resource) && resource is ShadowCollection collection)
+        // Use the element's resolved theme to get the correct resource
+        // This properly handles ThemeDictionaries with Light/Dark variants
+        if (element.Resources.TryGetValue(resourceKey, out var localResource) && localResource is ShadowCollection localCollection)
+            return localCollection;
+
+        // Fall back to application resources with theme awareness
+        if (Application.Current.Resources.ThemeDictionaries.TryGetValue(
+                element.ActualTheme == ElementTheme.Dark ? "Dark" : "Light",
+                out var themeDict) &&
+            themeDict is ResourceDictionary dict &&
+            dict.TryGetValue(resourceKey, out var resource) &&
+            resource is ShadowCollection collection)
+        {
             return collection;
+        }
+
+        // Final fallback: direct lookup (for non-themed resources)
+        if (Application.Current.Resources.TryGetValue(resourceKey, out var fallback) && fallback is ShadowCollection fallbackCollection)
+            return fallbackCollection;
+
         return null;
+    }
+
+    /// <summary>
+    /// Creates a theme-aware ShadowContainer that updates shadows when the theme changes.
+    /// </summary>
+    static ShadowContainer CreateThemeAwareShadowContainer(UIElement content, string shadowResourceKey)
+    {
+        var container = new ShadowContainer { Content = content };
+
+        // Apply initial shadow once loaded (so we can access ActualTheme)
+        container.Loaded += OnLoaded;
+
+        // Update shadow when theme changes
+        container.ActualThemeChanged += OnThemeChanged;
+
+        return container;
+
+        void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is ShadowContainer sc)
+            {
+                var shadow = GetShadowResource(shadowResourceKey, sc);
+                if (shadow != null)
+                    sc.Shadows = shadow;
+            }
+        }
+
+        void OnThemeChanged(FrameworkElement sender, object args)
+        {
+            if (sender is ShadowContainer sc)
+            {
+                var shadow = GetShadowResource(shadowResourceKey, sc);
+                if (shadow != null)
+                    sc.Shadows = shadow;
+            }
+        }
     }
 
     /// <summary>
     /// Wraps content in a ShadowContainer with a pill button shadow (app bar buttons: Back, History, All Forms).
     /// </summary>
     public static ShadowContainer PillShadow(UIElement content)
-    {
-        var container = new ShadowContainer { Content = content };
-        container.Shadows = GetShadowResource("AppBarNavigationButtonShadow")!;
-        return container;
-    }
+        => CreateThemeAwareShadowContainer(content, "AppBarNavigationButtonShadow");
 
     /// <summary>
     /// Wraps content in a ShadowContainer with a start navigation button shadow (Nouns & Cases, Verbs & Tenses).
     /// </summary>
     public static ShadowContainer StartNavShadow(UIElement content)
-    {
-        var container = new ShadowContainer { Content = content };
-        container.Shadows = GetShadowResource("StartNavigationButtonVariantShadow")!;
-        return container;
-    }
+        => CreateThemeAwareShadowContainer(content, "StartNavigationButtonVariantShadow");
 
     /// <summary>
     /// Wraps content in a ShadowContainer with a Hard/Easy button shadow.
     /// </summary>
     public static ShadowContainer HardEasyShadow(UIElement content)
-    {
-        var container = new ShadowContainer { Content = content };
-        container.Shadows = GetShadowResource("StartNavigationButtonShadow")!;
-        return container;
-    }
+        => CreateThemeAwareShadowContainer(content, "StartNavigationButtonShadow");
 
     /// <summary>
     /// Wraps content in a ShadowContainer with a secondary button shadow (Settings, Stats, Help on Start page).
     /// </summary>
     public static ShadowContainer StartNavigationButtonShadow(UIElement content)
-    {
-        var container = new ShadowContainer { Content = content };
-        container.Shadows = GetShadowResource("StartNavigationButtonShadow")!;
-        return container;
-    }
+        => CreateThemeAwareShadowContainer(content, "StartNavigationButtonShadow");
 
     /// <summary>
     /// Wraps content in a ShadowContainer with a card shadow (practice card, translation box).
     /// </summary>
     public static ShadowContainer CardShadow(UIElement content)
-    {
-        var container = new ShadowContainer { Content = content };
-        container.Shadows = GetShadowResource("CardShadow")!;
-        return container;
-    }
+        => CreateThemeAwareShadowContainer(content, "CardShadow");
 }

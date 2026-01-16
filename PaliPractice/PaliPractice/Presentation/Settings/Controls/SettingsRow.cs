@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Microsoft.UI.Xaml.Markup;
 using PaliPractice.Presentation.Bindings;
 using static PaliPractice.Presentation.Common.TextHelpers;
 
@@ -9,15 +10,81 @@ namespace PaliPractice.Presentation.Settings.Controls;
 /// </summary>
 public static class SettingsRow
 {
+    /// <summary>
+    /// Creates a chromeless button template that only uses the Background property,
+    /// without any default WinUI button chrome that can cause theme flashing.
+    /// Uses semi-transparent black overlay for hover/pressed states (works in both themes).
+    /// </summary>
+    static ControlTemplate CreateChromelessButtonTemplate()
+    {
+        const string xaml = """
+            <ControlTemplate
+                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                TargetType="Button">
+                <Grid x:Name="RootGrid" Background="{TemplateBinding Background}">
+                    <VisualStateManager.VisualStateGroups>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal">
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="HoverOverlay"
+                                                     Storyboard.TargetProperty="Opacity"
+                                                     To="0" Duration="0:0:0.1"/>
+                                </Storyboard>
+                            </VisualState>
+                            <VisualState x:Name="PointerOver">
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="HoverOverlay"
+                                                     Storyboard.TargetProperty="Opacity"
+                                                     To="0.04" Duration="0:0:0.1"/>
+                                </Storyboard>
+                            </VisualState>
+                            <VisualState x:Name="Pressed">
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="HoverOverlay"
+                                                     Storyboard.TargetProperty="Opacity"
+                                                     To="0.08" Duration="0:0:0.05"/>
+                                </Storyboard>
+                            </VisualState>
+                            <VisualState x:Name="Disabled">
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="RootGrid"
+                                                     Storyboard.TargetProperty="Opacity"
+                                                     To="0.4" Duration="0:0:0"/>
+                                </Storyboard>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateManager.VisualStateGroups>
+                    <Border x:Name="HoverOverlay" Background="Black" Opacity="0"/>
+                    <ContentPresenter
+                        Content="{TemplateBinding Content}"
+                        Padding="{TemplateBinding Padding}"
+                        HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                        VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                </Grid>
+            </ControlTemplate>
+            """;
+        return (ControlTemplate)XamlReader.Load(xaml);
+    }
+
+    static readonly ControlTemplate ChromelessButtonTemplate = CreateChromelessButtonTemplate();
+
+    /// <summary>
+    /// Creates a button with no default chrome - background comes entirely from our ThemeResource.
+    /// This prevents flashing when loading in dark mode.
+    /// </summary>
+    static Button CreateChromelessButton() => new Button()
+        .Template(ChromelessButtonTemplate)
+        .HorizontalAlignment(HorizontalAlignment.Stretch)
+        .HorizontalContentAlignment(HorizontalAlignment.Stretch)
+        .Background(ThemeResource.Get<Brush>("SurfaceBrush"));
+
     public static Grid BuildNavigation<TDC>(
         string label,
         string iconGlyph,
         Expression<Func<TDC, ICommand>> commandExpr)
     {
-        var button = new Button()
-            .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .HorizontalContentAlignment(HorizontalAlignment.Stretch)
-            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+        var button = CreateChromelessButton()
             .Padding(16, 12)
             .Command(commandExpr)
             .Content(
@@ -62,10 +129,7 @@ public static class SettingsRow
             .Margin(0, 0, 8, 0);
         bindAccessoryText(accessoryText);
 
-        var button = new Button()
-            .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .HorizontalContentAlignment(HorizontalAlignment.Stretch)
-            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+        var button = CreateChromelessButton()
             .Padding(16, 12)
             .Command(commandExpr)
             .Content(
@@ -285,10 +349,7 @@ public static class SettingsRow
         string iconGlyph,
         Expression<Func<TDC, ICommand>> commandExpr)
     {
-        var button = new Button()
-            .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .HorizontalContentAlignment(HorizontalAlignment.Stretch)
-            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+        var button = CreateChromelessButton()
             .Padding(16, 12)
             .Command(commandExpr)
             .Content(

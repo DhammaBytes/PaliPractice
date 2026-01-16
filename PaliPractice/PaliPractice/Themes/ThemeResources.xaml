@@ -49,6 +49,14 @@
             <SolidColorBrush x:Key="EasyButtonOutlineBrush" Color="#293F1C" Opacity="0.1"/>
             <SolidColorBrush x:Key="OnEasyButtonBrush" Color="#293F1C"/>
 
+            <!-- Badge Colors -->
+            <SolidColorBrush x:Key="BadgePinkBrush" Color="#FFDBCF"/>
+            <SolidColorBrush x:Key="BadgeGreenBrush" Color="#E0EDCF"/>
+            <SolidColorBrush x:Key="BadgeBlueBrush" Color="#CFE5F5"/>
+            <SolidColorBrush x:Key="BadgeYellowBrush" Color="#FFE7C9"/>
+            <SolidColorBrush x:Key="BadgePurpleBrush" Color="#E3D3EA"/>
+            <SolidColorBrush x:Key="BadgeGrayBrush" Color="#E5E1DC"/>
+
             <!-- Shadow Collections -->
             <utu:ShadowCollection x:Key="CardShadow">
                 <utu:Shadow BlurRadius="20" OffsetY="10" Opacity="1" Color="#F0DED1"/>
@@ -109,6 +117,14 @@
             <SolidColorBrush x:Key="EasyButtonBrush" Color="#3A5A30"/>
             <SolidColorBrush x:Key="EasyButtonOutlineBrush" Color="#A8D898" Opacity="0.1"/>
             <SolidColorBrush x:Key="OnEasyButtonBrush" Color="#A8D898"/>
+
+            <!-- Badge Colors -->
+            <SolidColorBrush x:Key="BadgePinkBrush" Color="#503838"/>
+            <SolidColorBrush x:Key="BadgeGreenBrush" Color="#384538"/>
+            <SolidColorBrush x:Key="BadgeBlueBrush" Color="#384550"/>
+            <SolidColorBrush x:Key="BadgeYellowBrush" Color="#504538"/>
+            <SolidColorBrush x:Key="BadgePurpleBrush" Color="#453850"/>
+            <SolidColorBrush x:Key="BadgeGrayBrush" Color="#454040"/>
 
             <!-- Shadow Collections -->
             <utu:ShadowCollection x:Key="CardShadow">

@@ -25,6 +25,13 @@ public partial class SettingsViewModel : ObservableObject
     /// </summary>
     public bool IsStoreReviewAvailable => _storeReviewService.IsAvailable;
 
+    /// <summary>
+    /// Returns true if the review explanation footer should be shown.
+    /// Hidden after user has manually opened the store page.
+    /// </summary>
+    public bool ShouldShowReviewExplanation =>
+        _storeReviewService.IsAvailable && !_storeReviewService.HasUserOpenedStore;
+
     public ICommand GoBackCommand => new AsyncRelayCommand(() => _navigator.NavigateBackAsync(this));
     public ICommand GoToAppearanceCommand => new AsyncRelayCommand(GoToAppearance);
     public ICommand GoToConjugationSettingsCommand => new AsyncRelayCommand(GoToConjugationSettings);

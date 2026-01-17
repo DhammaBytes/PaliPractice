@@ -109,17 +109,28 @@ public static class AppTitleBar
 
     /// <summary>
     /// Core builder: uses layered Grid to truly center title regardless of button widths.
+    /// Title is centered in the space between buttons with 8pt minimum spacing from each button.
     /// </summary>
     static Grid BuildCore(string title, UIElement leftButton, UIElement? rightButton)
     {
-        // Title layer: spans full width, centered
-        var titleLayer = RegularText()
-            .Text(title)
-            .FontSize(19)
-            .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
-            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
-            .HorizontalAlignment(HorizontalAlignment.Center)
-            .VerticalAlignment(VerticalAlignment.Center);
+        // Title layer: centered within symmetric margins
+        // Always use same margin on both sides to keep title truly centered
+        var titleMargin = NavButtonMinWidth + 8;
+        var titleLayer = new Grid()
+            .Margin(titleMargin, 0, titleMargin, 0)
+            .Children(
+                new Viewbox()
+                    .StretchDirection(StretchDirection.DownOnly) // Only shrink, never grow
+                    .HorizontalAlignment(HorizontalAlignment.Center)
+                    .VerticalAlignment(VerticalAlignment.Center)
+                    .Child(
+                        RegularText()
+                            .Text(title)
+                            .FontSize(21) // 2pt larger than navigation buttons
+                            .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
+                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+                    )
+            );
 
         // Buttons layer: left and right edges
         var buttonsLayer = new Grid()

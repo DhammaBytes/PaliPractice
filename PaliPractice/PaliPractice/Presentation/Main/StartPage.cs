@@ -1,5 +1,6 @@
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Main.ViewModels;
+using PaliPractice.Themes;
 using static PaliPractice.Presentation.Common.TextHelpers;
 using static PaliPractice.Presentation.Common.ShadowHelper;
 
@@ -43,17 +44,17 @@ public sealed partial class StartPage : Page
                                             // Declension Practice Button
                                             // Command must be set at call site for source generator to see the binding
                                             StartNavShadow(
-                                                BuildPracticeButton("\uE8D4", "Nouns & Cases", "Declension Practice")
+                                                BuildPracticeButton(MenuIcons.Nouns, "Nouns & Cases", "Declension Practice")
                                                     .Command(() => vm.GoToDeclensionCommand)),
 
                                             // Conjugation Practice Button
                                             StartNavShadow(
-                                                BuildPracticeButton("\uE8F4", "Verbs & Tenses", "Conjugation Practice")
+                                                BuildPracticeButton(MenuIcons.Verbs, "Verbs & Tenses", "Conjugation Practice")
                                                     .Command(() => vm.GoToConjugationCommand)),
 
                                             // Settings Button
                                             StartNavigationButtonShadow(
-                                                BuildSecondaryButton("\uE713", "Settings")
+                                                BuildSecondaryButton(MenuIcons.Settings, "Settings", iconHeight: 28)
                                                     .Command(() => vm.GoToSettingsCommand)),
 
                                             // Stats and Help row (side by side)
@@ -62,13 +63,13 @@ public sealed partial class StartPage : Page
                                                 .Children(
                                                     // Stats Button
                                                     StartNavigationButtonShadow(
-                                                        BuildSecondaryButton("\uE9D9", "Stats", centerContent: true)
+                                                        BuildSecondaryButton(MenuIcons.Stats, "Stats", iconHeight: 24, centerContent: true)
                                                             .Command(() => vm.GoToStatisticsCommand))
                                                         .Grid(column: 0),
 
                                                     // Help Button
                                                     StartNavigationButtonShadow(
-                                                        BuildSecondaryButton("\uE897", "Help", centerContent: true)
+                                                        BuildSecondaryButton(MenuIcons.Help, "Help", iconHeight: 25, centerContent: true)
                                                             .Command(() => vm.GoToHelpCommand))
                                                         .Grid(column: 2)
                                                 )
@@ -84,7 +85,7 @@ public sealed partial class StartPage : Page
     /// Uses NavigationButtonVariantBrush fill. Shadow is applied at call site via StartNavShadow wrapper.
     /// Note: Command must be set at call site for source generator to see the binding.
     /// </summary>
-    static SquircleButton BuildPracticeButton(string glyph, string title, string subtitle)
+    static SquircleButton BuildPracticeButton(string iconPath, string title, string subtitle)
     {
         return new SquircleButton()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
@@ -96,14 +97,15 @@ public sealed partial class StartPage : Page
             .Padding(20, 16)
             .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)
-                .Spacing(12)
+                .Spacing(20) // 20pt between icon and text
                 .Children(
-                    new FontIcon()
-                        .Glyph(glyph)
-                        .FontSize(24)
+                    new BitmapIcon()
+                        .UriSource(new Uri(iconPath))
+                        .ShowAsMonochrome(true)
+                        .Height(30) // 25% larger than 24
                         .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush")),
                     new StackPanel()
-                        .Spacing(1) // Tighter spacing between title and subtitle (40% smaller)
+                        .Spacing(0)
                         .Children(
                             RegularText()
                                 .Text(title)
@@ -116,6 +118,7 @@ public sealed partial class StartPage : Page
                                 .Opacity(0.6)
                                 .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
                                 .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
+                                .Margin(0, -4, 0, 0) // 4pt tighter spacing
                         )
                 ));
     }
@@ -125,7 +128,7 @@ public sealed partial class StartPage : Page
     /// Uses BackgroundBrush fill with OutlineBrush stroke. Shadow is applied at call site via StartNavigationButtonShadow wrapper.
     /// Note: Command must be set at call site for source generator to see the binding.
     /// </summary>
-    static SquircleButton BuildSecondaryButton(string glyph, string label, bool centerContent = false)
+    static SquircleButton BuildSecondaryButton(string iconPath, string label, double iconHeight = 28, bool centerContent = false)
     {
         return new SquircleButton()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
@@ -134,14 +137,15 @@ public sealed partial class StartPage : Page
             .Fill(ThemeResource.Get<Brush>("NavigationButtonBrush"))
             .Stroke(ThemeResource.Get<Brush>("NavigationButtonOutlineBrush"))
             .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
-            .Padding(centerContent ? 16 : 20, 16)
+            .Padding(centerContent ? 14 : 20, 16) // 14pt for short buttons, 20pt for long
             .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)
-                .Spacing(centerContent ? 6 : 12) // Tighter spacing for centered buttons
+                .Spacing(centerContent ? 10 : 20) // 10pt for short buttons, 20pt for long
                 .Children(
-                    new FontIcon()
-                        .Glyph(glyph)
-                        .FontSize(24)
+                    new BitmapIcon()
+                        .UriSource(new Uri(iconPath))
+                        .ShowAsMonochrome(true)
+                        .Height(iconHeight)
                         .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
                     RegularText()
                         .Text(label)

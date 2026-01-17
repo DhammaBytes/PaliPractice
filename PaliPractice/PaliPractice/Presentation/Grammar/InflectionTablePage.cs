@@ -46,19 +46,23 @@ public sealed partial class InflectionTablePage : Page
                             _titleTextBlock!, vm => vm.GoBackCommand)
                         .Grid(row: 0),
 
-                    // Row 1: Centered content container (header info + table)
-                    new Grid()
-                        .HorizontalAlignment(HorizontalAlignment.Center)
-                        .MaxWidth(800) // Max width for readability on large screens
-                        .RowDefinitions("Auto,*")
-                        .Children(
-                            // Row 0: Header info panel (left-aligned within centered container)
-                            BuildHeaderInfo()
-                                .Grid(row: 0),
+                    // Row 1: Full-width surface background with centered content
+                    new Border()
+                        .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+                        .Child(
+                            new Grid()
+                                .HorizontalAlignment(HorizontalAlignment.Center)
+                                .MaxWidth(800) // Max width for readability on large screens
+                                .RowDefinitions("Auto,*")
+                                .Children(
+                                    // Row 0: Header info panel (left-aligned within centered container)
+                                    BuildHeaderInfo()
+                                        .Grid(row: 0),
 
-                            // Row 1: Table container (populated in DataContextChanged)
-                            _tableContainer
-                                .Grid(row: 1)
+                                    // Row 1: Table container (populated in DataContextChanged)
+                                    _tableContainer
+                                        .Grid(row: 1)
+                                )
                         )
                         .Grid(row: 1)
                 )
@@ -129,9 +133,9 @@ public sealed partial class InflectionTablePage : Page
     Border BuildHeaderInfo()
     {
         return new Border()
-            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
             .Padding(16, 12)
-            .Margin(0, 0, 0, 1)
+            .BorderBrush(ThemeResource.Get<Brush>("NeutralGrayBrush"))
+            .BorderThickness(0, 0, 0, 1)
             .Child(new StackPanel()
                 .Spacing(8)
                 .Children(

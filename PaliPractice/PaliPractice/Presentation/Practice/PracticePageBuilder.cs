@@ -550,16 +550,19 @@ public static class PracticePageBuilder
                                 // Used to measure height for arrow positioning
                                 singleLineReference,
 
-                                // Placeholder "…" - centered decoration, doesn't affect layout
-                                // Uses Visibility since it overlays in Grid (translation determines size)
-                                RegularText()
-                                    .Text("…")
-                                    .FontSize(fonts.TranslationDots)
-                                    .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
+                                // Placeholder dots - centered decoration, doesn't affect layout
+                                // Uses drawn Ellipses instead of text "…" for true vertical centering
+                                new StackPanel()
+                                    .Orientation(Orientation.Horizontal)
                                     .HorizontalAlignment(HorizontalAlignment.Center)
                                     .VerticalAlignment(VerticalAlignment.Center)
-                                    .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
-                                    .VisibilityWithin<TextBlock, ExampleCarouselViewModel>(c => c.IsRevealed, invert: true),
+                                    .Spacing(6)
+                                    .VisibilityWithin<StackPanel, ExampleCarouselViewModel>(c => c.IsRevealed, invert: true)
+                                    .Children(
+                                        new Ellipse().Width(6).Height(6).Fill(ThemeResource.Get<Brush>("OnSurfaceVariantBrush")),
+                                        new Ellipse().Width(6).Height(6).Fill(ThemeResource.Get<Brush>("OnSurfaceVariantBrush")),
+                                        new Ellipse().Width(6).Height(6).Fill(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
+                                    ),
 
                                 // Translation content - always participates in layout (uses Opacity)
                                 new StackPanel()
@@ -600,6 +603,7 @@ public static class PracticePageBuilder
                 .UriSource(new Uri(PracticeIcons.ChevronLeft))
                 .ShowAsMonochrome(true)
                 .Height(13) // Figma @1x: 8x13
+                .Margin(-2, 0, 0, 0) // Shift left 2pt for optical alignment
                 .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush")));
 
         var nextButton = new Button()
@@ -619,6 +623,7 @@ public static class PracticePageBuilder
                 .UriSource(new Uri(PracticeIcons.ChevronRight))
                 .ShowAsMonochrome(true)
                 .Height(13) // Figma @1x: 8x13
+                .Margin(2, 0, 0, 0) // Shift right 2pt for optical alignment
                 .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush")));
 
         // Grid layout: arrows at edges, translation centered
@@ -692,8 +697,8 @@ public static class PracticePageBuilder
         LayoutConstants.PracticeFontSizes fonts,
         HeightClass heightClass)
     {
-        var (hardIcon, hardText, hardButton) = BuildActionButton<TVM>("Hard", PracticeIcons.Hard, 13, hardCommand, "HardButtonBrush", "HardButtonOutlineBrush", "OnHardButtonBrush", fonts);
-        var (easyIcon, easyText, easyButton) = BuildActionButton<TVM>("Easy", PracticeIcons.Easy, 12, easyCommand, "EasyButtonBrush", "EasyButtonOutlineBrush", "OnEasyButtonBrush", fonts);
+        var (hardIcon, hardText, hardButton) = BuildActionButton<TVM>("Hard", PracticeIcons.Hard, 14, hardCommand, "HardButtonBrush", "HardButtonOutlineBrush", "OnHardButtonBrush", fonts);
+        var (easyIcon, easyText, easyButton) = BuildActionButton<TVM>("Easy", PracticeIcons.Easy, 13, easyCommand, "EasyButtonBrush", "EasyButtonOutlineBrush", "OnEasyButtonBrush", fonts);
 
         var contentPadding = LayoutConstants.Gaps.ContentSpacing(heightClass);
         var container = new Grid()
@@ -733,7 +738,7 @@ public static class PracticePageBuilder
             .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)
                 .HorizontalAlignment(HorizontalAlignment.Center)
-                .Spacing(LayoutConstants.Gaps.ButtonIconTextSpacing)
+                .Spacing(9) // ButtonIconTextSpacing + 1
                 .Children(
                     new BitmapIcon()
                         .UriSource(new Uri(PracticeIcons.Reveal))
@@ -780,7 +785,7 @@ public static class PracticePageBuilder
         button.Child(new StackPanel()
             .Orientation(Orientation.Horizontal)
             .HorizontalAlignment(HorizontalAlignment.Center)
-            .Spacing(LayoutConstants.Gaps.ButtonIconTextSpacing)
+            .Spacing(10) // ButtonIconTextSpacing + 2
             .Children(iconElement, textElement));
 
         return (iconElement, textElement, button);

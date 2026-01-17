@@ -232,13 +232,13 @@ public static class LayoutConstants
         public static double BadgeIconTextSpacing => 6;
 
         /// <summary>Padding inside the badge border.</summary>
-        public static Thickness BadgePadding => new(6, 3, 6, 3);
+        public static Thickness BadgePadding => new(10, 4, 11, 4);
 
         /// <summary>Spacing between badges in the badge row.</summary>
         public static double BadgeRowSpacing(HeightClass h) => h switch
         {
-            HeightClass.Tall or HeightClass.Medium => 8,
-            _ => 6
+            HeightClass.Tall or HeightClass.Medium => 7,
+            _ => 5
         };
 
         // === Word Section ===
@@ -287,7 +287,7 @@ public static class LayoutConstants
         // === Daily Goal ===
 
         /// <summary>Spacing between daily goal text and progress bar.</summary>
-        public static double DailyGoalSpacing => 6;
+        public static double DailyGoalSpacing => 4;
 
         /// <summary>Top margin above daily goal bar (spacing from nav buttons).</summary>
         public static double NavToDailyGoalMargin(HeightClass h) => h switch

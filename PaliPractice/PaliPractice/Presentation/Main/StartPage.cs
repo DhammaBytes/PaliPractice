@@ -25,6 +25,7 @@ public sealed partial class StartPage : Page
                             new StackPanel()
                                 .VerticalAlignment(VerticalAlignment.Center)
                                 .HorizontalAlignment(HorizontalAlignment.Center)
+                                .Margin(0, 0, 0, 48) // Shift center up by 24pt
                                 .Spacing(32)
                                 .MaxWidth(400)
                                 .Children(
@@ -54,7 +55,7 @@ public sealed partial class StartPage : Page
 
                                             // Settings Button
                                             StartNavigationButtonShadow(
-                                                BuildSecondaryButton(MenuIcons.Settings, "Settings", iconHeight: 28)
+                                                BuildSecondaryButton(MenuIcons.Settings, "Settings", iconHeight: 30)
                                                     .Command(() => vm.GoToSettingsCommand)),
 
                                             // Stats and Help row (side by side)
@@ -63,13 +64,13 @@ public sealed partial class StartPage : Page
                                                 .Children(
                                                     // Stats Button
                                                     StartNavigationButtonShadow(
-                                                        BuildSecondaryButton(MenuIcons.Stats, "Stats", iconHeight: 24, centerContent: true)
+                                                        BuildSecondaryButton(MenuIcons.Stats, "Stats", iconHeight: 27, centerContent: true, iconVerticalOffset: -2)
                                                             .Command(() => vm.GoToStatisticsCommand))
                                                         .Grid(column: 0),
 
                                                     // Help Button
                                                     StartNavigationButtonShadow(
-                                                        BuildSecondaryButton(MenuIcons.Help, "Help", iconHeight: 25, centerContent: true)
+                                                        BuildSecondaryButton(MenuIcons.Help, "Help", iconHeight: 27, centerContent: true)
                                                             .Command(() => vm.GoToHelpCommand))
                                                         .Grid(column: 2)
                                                 )
@@ -94,7 +95,7 @@ public sealed partial class StartPage : Page
             .Fill(ThemeResource.Get<Brush>("NavigationButtonVariantBrush"))
             .Stroke(ThemeResource.Get<Brush>("NavigationButtonVariantOutlineBrush"))
             .StrokeThickness(3) // Thicker to compensate for 10% opacity stroke
-            .Padding(20, 16)
+            .Padding(20, 20) // 4pt extra vertical padding
             .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)
                 .Spacing(20) // 20pt between icon and text
@@ -128,7 +129,7 @@ public sealed partial class StartPage : Page
     /// Uses BackgroundBrush fill with OutlineBrush stroke. Shadow is applied at call site via StartNavigationButtonShadow wrapper.
     /// Note: Command must be set at call site for source generator to see the binding.
     /// </summary>
-    static SquircleButton BuildSecondaryButton(string iconPath, string label, double iconHeight = 28, bool centerContent = false)
+    static SquircleButton BuildSecondaryButton(string iconPath, string label, double iconHeight = 28, bool centerContent = false, double iconVerticalOffset = 0)
     {
         return new SquircleButton()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
@@ -140,12 +141,13 @@ public sealed partial class StartPage : Page
             .Padding(centerContent ? 14 : 20, 16) // 14pt for short buttons, 20pt for long
             .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)
-                .Spacing(centerContent ? 10 : 20) // 10pt for short buttons, 20pt for long
+                .Spacing(centerContent ? 8 : 20) // 8pt for short buttons, 20pt for long
                 .Children(
                     new BitmapIcon()
                         .UriSource(new Uri(iconPath))
                         .ShowAsMonochrome(true)
                         .Height(iconHeight)
+                        .Margin(0, iconVerticalOffset, 0, -iconVerticalOffset)
                         .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
                     RegularText()
                         .Text(label)

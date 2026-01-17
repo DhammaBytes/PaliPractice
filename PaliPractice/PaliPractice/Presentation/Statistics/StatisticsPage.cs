@@ -52,22 +52,22 @@ public sealed partial class StatisticsPage : Page
                                     BuildGeneralSection(vm),
 
                                     // === Nouns Section ===
-                                    BuildPracticeTypeSection("Nouns", "\uE8F1", vm, isNouns: true),
+                                    BuildPracticeTypeSection("Nouns", vm, isNouns: true),
 
                                     // === Verbs Section ===
-                                    BuildPracticeTypeSection("Verbs", "\uE943", vm, isNouns: false)
+                                    BuildPracticeTypeSection("Verbs", vm, isNouns: false)
                                 )
                         )
                 )
             )
         );
 
-        Loaded += OnLoaded;
+        DataContextChanged += OnDataContextChanged;
     }
 
-    void OnLoaded(object sender, RoutedEventArgs e)
+    void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs e)
     {
-        if (DataContext is not StatisticsViewModel vm) return;
+        if (e.NewValue is not StatisticsViewModel vm) return;
 
         // Subscribe to property changes to update dynamic content when data loads
         vm.PropertyChanged += OnViewModelPropertyChanged;
@@ -120,7 +120,7 @@ public sealed partial class StatisticsPage : Page
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Spacing(16)
             .Children(
-                BuildSectionHeader("Overview", "\uE9D9"),
+                BuildSectionHeader("Overview"),
                 new SquircleBorder()
                     .HorizontalAlignment(HorizontalAlignment.Stretch)
                     .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
@@ -175,7 +175,7 @@ public sealed partial class StatisticsPage : Page
             );
     }
 
-    FrameworkElement BuildPracticeTypeSection(string title, string icon, StatisticsViewModel vm, bool isNouns)
+    FrameworkElement BuildPracticeTypeSection(string title, StatisticsViewModel vm, bool isNouns)
     {
         var distributionBar = isNouns ? _nounDistributionBar : _verbDistributionBar;
         var strongestPanel = isNouns ? _nounStrongestPanel : _verbStrongestPanel;
@@ -185,7 +185,7 @@ public sealed partial class StatisticsPage : Page
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Spacing(16)
             .Children(
-                BuildSectionHeader(title, icon),
+                BuildSectionHeader(title),
                 new SquircleBorder()
                     .HorizontalAlignment(HorizontalAlignment.Stretch)
                     .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
@@ -239,7 +239,7 @@ public sealed partial class StatisticsPage : Page
                                             .Grid(column: 1)
                                             .Spacing(8)
                                             .Children(
-                                                RegularText().Text("Needs Work").FontSize(13)
+                                                RegularText().Text("Need Work").FontSize(13)
                                                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
                                                     .Foreground(new SolidColorBrush(ErrorColor)),
                                                 weakestPanel
@@ -306,71 +306,35 @@ public sealed partial class StatisticsPage : Page
 
     static FrameworkElement BuildComboRow(ComboStatDto combo, Color accentColor)
     {
-        // Placeholder entry - just show the dash
+        var bullet = RegularText().Text("•").FontSize(11);
+        var text = RegularText().Text(combo.DisplayName).FontSize(11).TextTrimming(TextTrimming.CharacterEllipsis);
+
         if (combo.IsPlaceholder)
         {
-            return RegularText()
-                .Text(combo.DisplayName)
-                .FontSize(11)
-                .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"));
+            bullet.Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"));
+            text.Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"));
+        }
+        else
+        {
+            bullet.Foreground(new SolidColorBrush(accentColor));
+            text.Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"));
         }
 
-        var progressFill = new Border()
-            .HorizontalAlignment(HorizontalAlignment.Left)
-            .Background(new SolidColorBrush(accentColor))
-            .CornerRadius(3);
-
-        var progressContainer = new Grid()
-            .Height(6)
-            .CornerRadius(3)
-            .Background(ThemeResource.Get<Brush>("BackgroundVariantBrush"))
-            .Children(progressFill);
-
-        progressContainer.SizeChanged += (s, e) =>
-        {
-            if (s is Grid g && g.ActualWidth > 0)
-                progressFill.Width = g.ActualWidth * combo.MasteryPercent / 100.0;
-        };
-
         return new StackPanel()
-            .Spacing(2)
-            .Children(
-                new Grid()
-                    .ColumnDefinitions("*,Auto")
-                    .Children(
-                        RegularText()
-                            .Text(combo.DisplayName)
-                            .FontSize(11)
-                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
-                            .TextTrimming(TextTrimming.CharacterEllipsis),
-                        RegularText()
-                            .Grid(column: 1)
-                            .Text($"{combo.MasteryPercent}%")
-                            .FontSize(11)
-                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
-                    ),
-                progressContainer
-            );
+            .Orientation(Orientation.Horizontal)
+            .Spacing(6)
+            .Children(bullet, text);
     }
 
     // === UI Builders ===
 
-    static FrameworkElement BuildSectionHeader(string title, string icon)
+    static FrameworkElement BuildSectionHeader(string title)
     {
-        return new StackPanel()
-            .Orientation(Orientation.Horizontal)
-            .Spacing(8)
-            .Children(
-                new FontIcon()
-                    .Glyph(icon)
-                    .FontSize(20)
-                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
-                RegularText()
-                    .Text(title)
-                    .FontSize(18)
-                    .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                    .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
-            );
+        return RegularText()
+            .Text(title)
+            .FontSize(18)
+            .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"));
     }
 
     static FrameworkElement BuildStreakCard(string icon, string label, Action<TextBlock> bindValue, int column)

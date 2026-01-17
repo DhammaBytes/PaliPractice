@@ -229,13 +229,15 @@ public class StatisticsRepository : IStatisticsRepository
 
     public PracticeTypeStatsDto GetNounStats()
     {
+        var (strongest, weakest) = GetNonOverlappingCombos(GetNounComboStats(), 5);
+
         return new PracticeTypeStatsDto
         {
             TotalPracticed = _connection.Table<NounsFormMastery>().Count(),
             DueForReview = CountDueNounForms(),
             Distribution = GetNounSrsDistribution(),
-            StrongestCombos = GetStrongestNounCombos(5),
-            WeakestCombos = GetWeakestNounCombos(5),
+            StrongestCombos = strongest,
+            WeakestCombos = weakest,
             PeriodStats = GetNounPeriodStats()
         };
     }
@@ -303,6 +305,31 @@ public class StatisticsRepository : IStatisticsRepository
         return list;
     }
 
+    /// <summary>
+    /// Returns non-overlapping strongest and weakest combo lists.
+    /// Strongest gets priority, weakest picks from remaining items.
+    /// </summary>
+    static (List<ComboStatDto> Strongest, List<ComboStatDto> Weakest) GetNonOverlappingCombos(
+        List<ComboStatDto> allCombos, int count)
+    {
+        var qualified = allCombos
+            .Where(c => c.FormCount >= MinFormsPerCombo)
+            .OrderByDescending(c => c.AverageMastery)
+            .ToList();
+
+        // Take top N for strongest
+        var strongest = qualified.Take(count).ToList();
+
+        // From remaining, take lowest N for weakest
+        var remaining = qualified.Skip(count).ToList();
+        var weakest = remaining
+            .OrderBy(c => c.AverageMastery)
+            .Take(count)
+            .ToList();
+
+        return (PadToCount(strongest, count), PadToCount(weakest, count));
+    }
+
     List<ComboStatDto> GetNounComboStats()
     {
         var forms = _connection.Table<NounsFormMastery>().ToList();
@@ -348,13 +375,15 @@ public class StatisticsRepository : IStatisticsRepository
 
     public PracticeTypeStatsDto GetVerbStats()
     {
+        var (strongest, weakest) = GetNonOverlappingCombos(GetVerbComboStats(), 5);
+
         return new PracticeTypeStatsDto
         {
             TotalPracticed = _connection.Table<VerbsFormMastery>().Count(),
             DueForReview = CountDueVerbForms(),
             Distribution = GetVerbSrsDistribution(),
-            StrongestCombos = GetStrongestVerbCombos(5),
-            WeakestCombos = GetWeakestVerbCombos(5),
+            StrongestCombos = strongest,
+            WeakestCombos = weakest,
             PeriodStats = GetVerbPeriodStats()
         };
     }

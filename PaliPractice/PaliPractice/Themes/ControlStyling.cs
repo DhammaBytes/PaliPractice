@@ -7,6 +7,8 @@ namespace PaliPractice.Themes;
 /// </summary>
 public static class ControlStyling
 {
+    // https://platform.uno/docs/articles/external/uno.themes/doc/lightweight-styling.html#resource-keys
+    
     /// <summary>
     /// Applies accent colors from theme resources to WinUI controls.
     /// </summary>

@@ -26,7 +26,7 @@ public static class OptionPresentation
 
     const BadgeColor NumberBadge = BadgeColor.Pink; // Shared between declension/conjugation
 
-    const BadgeColor VoiceReflexiveBadge = BadgeColor.Gray; // Rare reflexive voice (Active has no badge)
+    const BadgeColor VoiceBadge = BadgeColor.Gray; // Rare reflexive voice (Active has no badge)
 
     /// <summary>
     /// Gets the theme brush for a badge color (e.g., "BadgePinkBrush").
@@ -38,68 +38,14 @@ public static class OptionPresentation
 
     static Color GetColor(BadgeColor badge) => GetBrush(badge).Color;
 
-    public static Color GetChipColor<T>(T value) where T : struct, Enum => value switch
-    {
-        // Number - shared color between declension and conjugation
-        Number.Singular => GetColor(NumberBadge),
-        Number.Plural => GetColor(NumberBadge),
-
-        // Conjugation badges
-        Person.First => GetColor(PersonBadge),
-        Person.Second => GetColor(PersonBadge),
-        Person.Third => GetColor(PersonBadge),
-
-        Tense.Present => GetColor(TenseBadge),
-        Tense.Imperative => GetColor(TenseBadge),
-        Tense.Optative => GetColor(TenseBadge),
-        Tense.Future => GetColor(TenseBadge),
-
-        Voice.Reflexive => GetColor(VoiceReflexiveBadge), // Active voice has no badge
-
-        // Declension badges
-        Gender.Masculine => GetColor(GenderBadge),
-        Gender.Neuter => GetColor(GenderBadge),
-        Gender.Feminine => GetColor(GenderBadge),
-
-        Case.Nominative => GetColor(CaseBadge),
-        Case.Accusative => GetColor(CaseBadge),
-        Case.Instrumental => GetColor(CaseBadge),
-        Case.Dative => GetColor(CaseBadge),
-        Case.Ablative => GetColor(CaseBadge),
-        Case.Genitive => GetColor(CaseBadge),
-        Case.Locative => GetColor(CaseBadge),
-        Case.Vocative => GetColor(CaseBadge),
-
-        _ => GetColor(BadgeColor.Gray) // Fallback
-    };
-
-    /// <summary>
-    /// Gets the chip color for reflexive indicator.
-    /// </summary>
-    public static Color GetReflexiveChipColor() => GetColor(VoiceReflexiveBadge);
-
-    /// <summary>
-    /// Gets the theme brush for reflexive indicator.
-    /// </summary>
-    public static SolidColorBrush GetReflexiveChipBrush() => GetBrush(VoiceReflexiveBadge);
-
-    /// <summary>
-    /// Gets the badge color assignment for an enum value.
-    /// </summary>
-    static BadgeColor GetBadgeColor<T>(T value) where T : struct, Enum => value switch
+    public static Color GetChipColor<T>(T value) where T : struct, Enum => GetColor(value switch
     {
         Number => NumberBadge,
         Person => PersonBadge,
         Tense => TenseBadge,
-        Voice.Reflexive => VoiceReflexiveBadge,
+        Voice => VoiceBadge,
         Gender => GenderBadge,
         Case => CaseBadge,
-        _ => BadgeColor.Gray
-    };
-
-    /// <summary>
-    /// Gets the theme brush for the given enum value.
-    /// </summary>
-    public static SolidColorBrush GetChipBrush<T>(T value) where T : struct, Enum =>
-        GetBrush(GetBadgeColor(value));
+        _ => VoiceBadge
+    });
 }

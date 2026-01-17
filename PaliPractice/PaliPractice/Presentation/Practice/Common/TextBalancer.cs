@@ -1,8 +1,6 @@
 using Microsoft.UI.Text;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 
-namespace PaliPractice.Presentation.Common;
+namespace PaliPractice.Presentation.Practice.Common;
 
 /// <summary>
 /// Balances text across multiple lines to avoid orphan words.

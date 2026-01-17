@@ -3,7 +3,7 @@ using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 using PaliPractice.Themes;
 
-namespace PaliPractice.Presentation.Common;
+namespace PaliPractice.Presentation.Common.Text;
 
 /// <summary>
 /// Helper for creating rich content from Markdown syntax.

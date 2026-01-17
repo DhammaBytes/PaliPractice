@@ -1,5 +1,6 @@
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
+using PaliPractice.Presentation.Common.Text;
 using PaliPractice.Presentation.Settings.Controls;
 using PaliPractice.Presentation.Settings.ViewModels;
 using PaliPractice.Services.UserData;

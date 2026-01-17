@@ -1,6 +1,6 @@
 using PaliPractice.Themes;
 
-namespace PaliPractice.Presentation.Common;
+namespace PaliPractice.Presentation.Common.Text;
 
 /// <summary>
 /// Factory methods for creating TextBlocks with predefined fonts.

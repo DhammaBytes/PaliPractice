@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
-using static PaliPractice.Presentation.Common.TextHelpers;
+using static PaliPractice.Presentation.Common.Text.TextHelpers;
 using static PaliPractice.Presentation.Common.ShadowHelper;
 
 namespace PaliPractice.Presentation.Common;

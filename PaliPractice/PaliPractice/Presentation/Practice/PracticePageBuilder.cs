@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Themes;
-using static PaliPractice.Presentation.Common.TextHelpers;
+using static PaliPractice.Presentation.Common.Text.TextHelpers;
 using static PaliPractice.Presentation.Common.ShadowHelper;
 using ExampleCarouselViewModel = PaliPractice.Presentation.Practice.ViewModels.Common.ExampleCarouselViewModel;
 using PracticeIcons = PaliPractice.Themes.PracticeIcons;

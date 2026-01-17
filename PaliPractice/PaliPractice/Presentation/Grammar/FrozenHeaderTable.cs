@@ -1,7 +1,7 @@
 using PaliPractice.Presentation.Grammar.ViewModels;
-using static PaliPractice.Presentation.Common.TextHelpers;
+using static PaliPractice.Presentation.Common.Text.TextHelpers;
 
-namespace PaliPractice.Presentation.Common;
+namespace PaliPractice.Presentation.Grammar;
 
 /// <summary>
 /// Result of building a frozen header table.

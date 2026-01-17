@@ -19,7 +19,7 @@ public static class LayoutConstants
 {
     #region Width/Height Constraints
 
-    public static double ContentMaxWidth => 450;
+    public static int ContentMaxWidth => 450;
 
     // Translation block width as percentage of card width
     public static double TranslationWidthRatio => 0.76;

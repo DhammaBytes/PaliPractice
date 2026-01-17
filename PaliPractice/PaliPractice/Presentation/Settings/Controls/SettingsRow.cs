@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.UI.Xaml.Markup;
 using PaliPractice.Presentation.Bindings;
-using static PaliPractice.Presentation.Common.TextHelpers;
+using static PaliPractice.Presentation.Common.Text.TextHelpers;
 
 namespace PaliPractice.Presentation.Settings.Controls;
 

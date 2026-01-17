@@ -3,7 +3,7 @@ using PaliPractice.Presentation.Statistics.ViewModels;
 using PaliPractice.Services.UserData.Entities;
 using PaliPractice.Services.UserData.Statistics;
 using Microsoft.UI.Xaml.Media;
-using static PaliPractice.Presentation.Common.TextHelpers;
+using static PaliPractice.Presentation.Common.Text.TextHelpers;
 
 namespace PaliPractice.Presentation.Statistics;
 

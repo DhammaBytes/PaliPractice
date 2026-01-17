@@ -1,7 +1,7 @@
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Main.ViewModels;
-using static PaliPractice.Presentation.Common.RichTextHelper;
-using static PaliPractice.Presentation.Common.TextHelpers;
+using static PaliPractice.Presentation.Common.Text.RichTextHelper;
+using static PaliPractice.Presentation.Common.Text.TextHelpers;
 
 namespace PaliPractice.Presentation.Main;
 

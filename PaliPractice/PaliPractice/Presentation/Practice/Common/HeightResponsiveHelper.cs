@@ -1,4 +1,6 @@
-namespace PaliPractice.Presentation.Common;
+using PaliPractice.Presentation.Common;
+
+namespace PaliPractice.Presentation.Practice.Common;
 
 /// <summary>
 /// Helper for height-responsive layouts. Uses window height directly

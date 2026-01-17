@@ -1,5 +1,5 @@
-using Windows.Graphics;
-using Windows.Graphics.Display;
+using PaliPractice.Platforms.Desktop;
+using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Main.ViewModels;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Presentation.Practice.ViewModels;
@@ -159,7 +159,7 @@ public partial class App : Application
 
         if (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() || OperatingSystem.IsLinux())
         {
-            ResizeWindowForDesktop(MainWindow);
+            DesktopWindowHelper.ConfigureDesktopWindow(MainWindow);
         }
 
 #if DEBUG
@@ -186,53 +186,6 @@ public partial class App : Application
         // Use SystemThemeHelper from Uno.Toolkit as recommended by docs
         // savedTheme: 1 = Light, 2 = Dark
         SystemThemeHelper.SetRootTheme(root.XamlRoot, darkMode: savedTheme == 2);
-    }
-
-    static void ResizeWindowForDesktop(Window window)
-    {
-        var displayInfo = DisplayInformation.GetForCurrentView();
-        var scale = displayInfo.RawPixelsPerViewPixel;
-        
-        var rawWidth = (int)displayInfo.ScreenWidthInRawPixels;
-        var rawHeight = (int)displayInfo.ScreenHeightInRawPixels;
-
-        // Uno/macOS may report Portrait orientation for landscape displays, swapping dimensions
-        var screenWidthPx = Math.Max(rawWidth, rawHeight);
-        var screenHeightPx = Math.Min(rawWidth, rawHeight);
-        var screenHeightLogical = (int)(screenHeightPx / scale);
-
-        const int windowWidthLogical = 600;
-        var windowHeightLogical = CalculateWindowHeight(screenHeightLogical);
-
-        var windowWidthPx = (int)(windowWidthLogical * scale);
-        var windowHeightPx = (int)(windowHeightLogical * scale);
-
-        window.AppWindow.Resize(new SizeInt32 { Width = windowWidthPx, Height = windowHeightPx });
-
-        // Horizontally centered, vertically at top for small screens
-        var x = (screenWidthPx - windowWidthPx) / 2;
-        var y = screenHeightLogical < 864 ? 0 : (screenHeightPx - windowHeightPx) / 2;
-        window.AppWindow.Move(new PointInt32 { X = x, Y = y });
-    }
-
-    /// <summary>
-    /// Calculates optimal window height based on available screen height.
-    /// Accounts for OS UI (title bar ~32px, taskbar/dock ~40-60px).
-    /// </summary>
-    static int CalculateWindowHeight(int screenHeight)
-    {
-        // Screen height breakpoints and corresponding window heights:
-        // - Tiny laptops (720p): 640px leaves ~80px for title bar + taskbar
-        // - Small screens (768p): 680px leaves ~88px for OS UI
-        // - Medium screens (800-863p): 720px
-        // - Standard+ (864p+): 800px is the ideal app height
-        return screenHeight switch
-        {
-            <= 720 => 640,
-            <= 768 => 680,
-            <= 863 => 720,
-            _ => 800
-        };
     }
 
     static void RegisterRoutes(IViewRegistry views, IRouteRegistry routes)

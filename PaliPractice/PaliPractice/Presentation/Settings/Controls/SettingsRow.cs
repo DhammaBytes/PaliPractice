@@ -15,6 +15,12 @@ public static class SettingsRow
     /// without any default WinUI button chrome that can cause theme flashing.
     /// Uses semi-transparent black overlay for hover/pressed states (works in both themes).
     /// </summary>
+    /// <remarks>
+    /// Uses VisualState.Setters instead of Storyboard animations because
+    /// DoubleAnimation on Opacity doesn't interpolate correctly on iOS Skia,
+    /// causing the overlay to appear at full opacity (black) instead of 4-8%.
+    /// Setters provide immediate visual feedback which works on all platforms.
+    /// </remarks>
     static ControlTemplate CreateChromelessButtonTemplate()
     {
         const string xaml = """
@@ -26,32 +32,24 @@ public static class SettingsRow
                     <VisualStateManager.VisualStateGroups>
                         <VisualStateGroup x:Name="CommonStates">
                             <VisualState x:Name="Normal">
-                                <Storyboard>
-                                    <DoubleAnimation Storyboard.TargetName="HoverOverlay"
-                                                     Storyboard.TargetProperty="Opacity"
-                                                     To="0" Duration="0:0:0.1"/>
-                                </Storyboard>
+                                <VisualState.Setters>
+                                    <Setter Target="HoverOverlay.Opacity" Value="0"/>
+                                </VisualState.Setters>
                             </VisualState>
                             <VisualState x:Name="PointerOver">
-                                <Storyboard>
-                                    <DoubleAnimation Storyboard.TargetName="HoverOverlay"
-                                                     Storyboard.TargetProperty="Opacity"
-                                                     To="0.04" Duration="0:0:0.1"/>
-                                </Storyboard>
+                                <VisualState.Setters>
+                                    <Setter Target="HoverOverlay.Opacity" Value="0.04"/>
+                                </VisualState.Setters>
                             </VisualState>
                             <VisualState x:Name="Pressed">
-                                <Storyboard>
-                                    <DoubleAnimation Storyboard.TargetName="HoverOverlay"
-                                                     Storyboard.TargetProperty="Opacity"
-                                                     To="0.08" Duration="0:0:0.05"/>
-                                </Storyboard>
+                                <VisualState.Setters>
+                                    <Setter Target="HoverOverlay.Opacity" Value="0.08"/>
+                                </VisualState.Setters>
                             </VisualState>
                             <VisualState x:Name="Disabled">
-                                <Storyboard>
-                                    <DoubleAnimation Storyboard.TargetName="RootGrid"
-                                                     Storyboard.TargetProperty="Opacity"
-                                                     To="0.4" Duration="0:0:0"/>
-                                </Storyboard>
+                                <VisualState.Setters>
+                                    <Setter Target="RootGrid.Opacity" Value="0.4"/>
+                                </VisualState.Setters>
                             </VisualState>
                         </VisualStateGroup>
                     </VisualStateManager.VisualStateGroups>

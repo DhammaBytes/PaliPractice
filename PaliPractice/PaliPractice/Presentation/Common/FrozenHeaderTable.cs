@@ -77,7 +77,7 @@ public static class FrozenHeaderTable
         var cornerCell = new Border()
             .Width(rowHeaderWidth)
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .BorderBrush(ThemeResource.Get<Brush>("SystemControlForegroundBaseMediumLowBrush"))
+            .BorderBrush(ThemeResource.Get<Brush>("NeutralGrayBrush"))
             .BorderThickness(0, 0, 1, 1);
 
         // Body area: overlay cloned row headers on top of scrollable content
@@ -199,7 +199,7 @@ public static class FrozenHeaderTable
             var cell = new Border()
                 .Width(CellWidth)
                 .Padding(8, 6)
-                .BorderBrush(ThemeResource.Get<Brush>("SystemControlForegroundBaseMediumLowBrush"))
+                .BorderBrush(ThemeResource.Get<Brush>("NeutralGrayBrush"))
                 .BorderThickness(0, 0, 1, 1)
                 .Child(
                     RegularText()
@@ -232,7 +232,7 @@ public static class FrozenHeaderTable
             // Visible cell: has background, border, and content
             border
                 .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-                .BorderBrush(ThemeResource.Get<Brush>("SystemControlForegroundBaseMediumLowBrush"))
+                .BorderBrush(ThemeResource.Get<Brush>("NeutralGrayBrush"))
                 .BorderThickness(0, 0, 1, 1)
                 .Child(
                     RegularText()
@@ -274,10 +274,10 @@ public static class FrozenHeaderTable
                 });
             }
 
-            // Gray out non-attested forms (even more faded than normal variant)
+            // Gray out non-attested forms (neutral gray rather than disabled look)
             if (!form.InCorpus)
             {
-                textBlock.Foreground(ThemeResource.Get<Brush>("OnSurfaceDisabledBrush"));
+                textBlock.Foreground(ThemeResource.Get<Brush>("NeutralGrayBrush"));
             }
 
             panel.Children.Add(textBlock);
@@ -296,9 +296,9 @@ public static class FrozenHeaderTable
             .MinHeight(CellMinHeight)
             .Width(CellWidth)
             .Padding(8, 4)
-            .BorderBrush(ThemeResource.Get<Brush>("SystemControlForegroundBaseLowBrush"))
+            .BorderBrush(ThemeResource.Get<Brush>("NeutralGrayBrush"))
             .BorderThickness(0, 0, 1, 1)
-            .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
+            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
             .Child(panel);
     }
 

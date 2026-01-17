@@ -74,29 +74,58 @@
       </AndroidAsset>
     </ItemGroup>
 
-    <!-- Badge icons: SVG -> PNG via Uno.Resizetizer for BitmapIcon tinting -->
+    <!-- Internal documentation - excluded from build output -->
     <ItemGroup>
-      <UnoImage Include="Assets\Svg\Badges\case_ablative.svg" BaseSize="24,24" />
-      <UnoImage Include="Assets\Svg\Badges\case_accusative.svg" BaseSize="24,24" />
-      <UnoImage Include="Assets\Svg\Badges\case_dative.svg" BaseSize="24,24" />
-      <UnoImage Include="Assets\Svg\Badges\case_genitive.svg" BaseSize="24,24" />
-      <UnoImage Include="Assets\Svg\Badges\case_instrumental.svg" BaseSize="24,24" />
-      <UnoImage Include="Assets\Svg\Badges\case_locative.svg" BaseSize="24,24" />
-      <UnoImage Include="Assets\Svg\Badges\case_nominative.svg" BaseSize="24,24" />
-      <UnoImage Include="Assets\Svg\Badges\case_vocative.svg" BaseSize="24,24" />
-      <UnoImage Include="Assets\Svg\Badges\gender_female.svg" BaseSize="24,24" />
-      <UnoImage Include="Assets\Svg\Badges\gender_male.svg" BaseSize="24,24" />
-      <UnoImage Include="Assets\Svg\Badges\gender_neutral.svg" BaseSize="24,24" />
-      <UnoImage Include="Assets\Svg\Badges\number_plural.svg" BaseSize="24,24" />
-      <UnoImage Include="Assets\Svg\Badges\number_singular.svg" BaseSize="24,24" />
-      <UnoImage Include="Assets\Svg\Badges\person_1st.svg" BaseSize="24,24" />
-      <UnoImage Include="Assets\Svg\Badges\person_2nd.svg" BaseSize="24,24" />
-      <UnoImage Include="Assets\Svg\Badges\person_3rd.svg" BaseSize="24,24" />
-      <UnoImage Include="Assets\Svg\Badges\tense_future.svg" BaseSize="24,24" />
-      <UnoImage Include="Assets\Svg\Badges\tense_imperative.svg" BaseSize="24,24" />
-      <UnoImage Include="Assets\Svg\Badges\tense_optative.svg" BaseSize="24,24" />
-      <UnoImage Include="Assets\Svg\Badges\tense_present.svg" BaseSize="24,24" />
-      <UnoImage Include="Assets\Svg\Badges\voice_reflexive.svg" BaseSize="24,24" />
+      <None Include="Assets\SharedAssets.md" />
+      <None Include="Assets\SVG_ICONS.md" />
+      <Content Remove="Assets\SVG_ICONS.md" />
+      <Content Remove="Assets\SharedAssets.md" />
+    </ItemGroup>
+
+    <!-- Badge icons: SVG -> PNG via Uno.Resizetizer for BitmapIcon tinting -->
+    <!-- BaseSize = viewBox / 3 for ~18px base, close to 16px display height -->
+    <ItemGroup>
+      <UnoImage Include="Assets\Svg\Badges\case_ablative.svg" BaseSize="19,18" />
+      <UnoImage Include="Assets\Svg\Badges\case_accusative.svg" BaseSize="19,19" />
+      <UnoImage Include="Assets\Svg\Badges\case_dative.svg" BaseSize="18,19" />
+      <UnoImage Include="Assets\Svg\Badges\case_genitive.svg" BaseSize="18,18" />
+      <UnoImage Include="Assets\Svg\Badges\case_instrumental.svg" BaseSize="18,19" />
+      <UnoImage Include="Assets\Svg\Badges\case_locative.svg" BaseSize="18,19" />
+      <UnoImage Include="Assets\Svg\Badges\case_nominative.svg" BaseSize="18,18" />
+      <UnoImage Include="Assets\Svg\Badges\case_vocative.svg" BaseSize="18,19" />
+      <UnoImage Include="Assets\Svg\Badges\gender_female.svg" BaseSize="18,20" />
+      <UnoImage Include="Assets\Svg\Badges\gender_male.svg" BaseSize="18,18" />
+      <UnoImage Include="Assets\Svg\Badges\gender_neutral.svg" BaseSize="18,18" />
+      <UnoImage Include="Assets\Svg\Badges\number_plural.svg" BaseSize="24,18" />
+      <UnoImage Include="Assets\Svg\Badges\number_singular.svg" BaseSize="18,18" />
+      <UnoImage Include="Assets\Svg\Badges\person_1st.svg" BaseSize="18,18" />
+      <UnoImage Include="Assets\Svg\Badges\person_2nd.svg" BaseSize="18,18" />
+      <UnoImage Include="Assets\Svg\Badges\person_3rd.svg" BaseSize="18,18" />
+      <UnoImage Include="Assets\Svg\Badges\tense_future.svg" BaseSize="18,18" />
+      <UnoImage Include="Assets\Svg\Badges\tense_imperative.svg" BaseSize="19,18" />
+      <UnoImage Include="Assets\Svg\Badges\tense_optative.svg" BaseSize="18,18" />
+      <UnoImage Include="Assets\Svg\Badges\tense_present.svg" BaseSize="18,18" />
+      <UnoImage Include="Assets\Svg\Badges\voice_reflexive.svg" BaseSize="20,18" />
+    </ItemGroup>
+
+    <!-- Menu icons: SVG -> PNG for start page buttons -->
+    <!-- BaseSize = viewBox / 2 to avoid downscale jaggies at 24-30px display -->
+    <ItemGroup>
+      <UnoImage Include="Assets\Svg\Menu\nouns.svg" BaseSize="35,35" />
+      <UnoImage Include="Assets\Svg\Menu\verbs.svg" BaseSize="35,35" />
+      <UnoImage Include="Assets\Svg\Menu\settings.svg" BaseSize="35,35" />
+      <UnoImage Include="Assets\Svg\Menu\stats.svg" BaseSize="35,35" />
+      <UnoImage Include="Assets\Svg\Menu\help.svg" BaseSize="35,35" />
+    </ItemGroup>
+
+    <!-- Practice icons: SVG -> PNG for practice page buttons -->
+    <!-- BaseSize = viewBox / 4 to avoid downscale jaggies at 12-16px display -->
+    <ItemGroup>
+      <UnoImage Include="Assets\Svg\Practice\reveal.svg" BaseSize="23,15" />
+      <UnoImage Include="Assets\Svg\Practice\easy.svg" BaseSize="21,15" />
+      <UnoImage Include="Assets\Svg\Practice\hard.svg" BaseSize="15,15" />
+      <UnoImage Include="Assets\Svg\Practice\chevron_left.svg" BaseSize="15,15" />
+      <UnoImage Include="Assets\Svg\Practice\chevron_right.svg" BaseSize="15,15" />
     </ItemGroup>
 
 </Project>

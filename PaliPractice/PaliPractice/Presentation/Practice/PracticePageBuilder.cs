@@ -5,6 +5,7 @@ using PaliPractice.Themes;
 using static PaliPractice.Presentation.Common.TextHelpers;
 using static PaliPractice.Presentation.Common.ShadowHelper;
 using ExampleCarouselViewModel = PaliPractice.Presentation.Practice.ViewModels.Common.ExampleCarouselViewModel;
+using PracticeIcons = PaliPractice.Themes.PracticeIcons;
 
 namespace PaliPractice.Presentation.Practice;
 
@@ -595,9 +596,10 @@ public static class PracticePageBuilder
             .CommandWithin<Button, ExampleCarouselViewModel>(c => c.PreviousCommand)
             .VisibilityWithin<Button, ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
             .OpacityWithin<Button, ExampleCarouselViewModel>(c => c.IsRevealed)
-            .Content(new FontIcon()
-                .Glyph("\uE76B") // ChevronLeft
-                .FontSize(16)
+            .Content(new BitmapIcon()
+                .UriSource(new Uri(PracticeIcons.ChevronLeft))
+                .ShowAsMonochrome(true)
+                .Height(13) // Figma @1x: 8x13
                 .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush")));
 
         var nextButton = new Button()
@@ -613,9 +615,10 @@ public static class PracticePageBuilder
             .CommandWithin<Button, ExampleCarouselViewModel>(c => c.NextCommand)
             .VisibilityWithin<Button, ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
             .OpacityWithin<Button, ExampleCarouselViewModel>(c => c.IsRevealed)
-            .Content(new FontIcon()
-                .Glyph("\uE76C") // ChevronRight
-                .FontSize(16)
+            .Content(new BitmapIcon()
+                .UriSource(new Uri(PracticeIcons.ChevronRight))
+                .ShowAsMonochrome(true)
+                .Height(13) // Figma @1x: 8x13
                 .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush")));
 
         // Grid layout: arrows at edges, translation centered
@@ -681,7 +684,7 @@ public static class PracticePageBuilder
     /// <summary>
     /// Builds navigation with reveal button that swaps to Easy/Hard after reveal.
     /// </summary>
-    static (List<(FontIcon, TextBlock)> buttonElements, Grid container) BuildNavigation<TVM>(
+    static (List<(BitmapIcon, TextBlock)> buttonElements, Grid container) BuildNavigation<TVM>(
         Expression<Func<TVM, ICommand>> revealCommand,
         Expression<Func<TVM, ICommand>> hardCommand,
         Expression<Func<TVM, ICommand>> easyCommand,
@@ -689,8 +692,8 @@ public static class PracticePageBuilder
         LayoutConstants.PracticeFontSizes fonts,
         HeightClass heightClass)
     {
-        var (hardIcon, hardText, hardButton) = BuildActionButton<TVM>("Hard", "\uE711", hardCommand, "HardButtonBrush", "HardButtonOutlineBrush", "OnHardButtonBrush", fonts);
-        var (easyIcon, easyText, easyButton) = BuildActionButton<TVM>("Easy", "\uE73E", easyCommand, "EasyButtonBrush", "EasyButtonOutlineBrush", "OnEasyButtonBrush", fonts);
+        var (hardIcon, hardText, hardButton) = BuildActionButton<TVM>("Hard", PracticeIcons.Hard, 13, hardCommand, "HardButtonBrush", "HardButtonOutlineBrush", "OnHardButtonBrush", fonts);
+        var (easyIcon, easyText, easyButton) = BuildActionButton<TVM>("Easy", PracticeIcons.Easy, 12, easyCommand, "EasyButtonBrush", "EasyButtonOutlineBrush", "OnEasyButtonBrush", fonts);
 
         var contentPadding = LayoutConstants.Gaps.ContentSpacing(heightClass);
         var container = new Grid()
@@ -712,7 +715,7 @@ public static class PracticePageBuilder
                     )
             );
 
-        return (new List<(FontIcon, TextBlock)> { (hardIcon, hardText), (easyIcon, easyText) }, container);
+        return (new List<(BitmapIcon, TextBlock)> { (hardIcon, hardText), (easyIcon, easyText) }, container);
     }
 
     static SquircleButton BuildRevealButton<TVM>(
@@ -732,10 +735,10 @@ public static class PracticePageBuilder
                 .HorizontalAlignment(HorizontalAlignment.Center)
                 .Spacing(LayoutConstants.Gaps.ButtonIconTextSpacing)
                 .Children(
-                    new FontIcon()
-                        .Glyph("\uE7B3") // Eye icon
-                        .FontSize(fonts.RevealButton)
-                        .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+                    new BitmapIcon()
+                        .UriSource(new Uri(PracticeIcons.Reveal))
+                        .ShowAsMonochrome(true)
+                        .Height(16) // Figma @1x: 24x16
                         .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush")),
                     RegularText()
                         .Text("Reveal Answer")
@@ -745,19 +748,20 @@ public static class PracticePageBuilder
                 ));
     }
 
-    static (FontIcon icon, TextBlock text, SquircleButton button) BuildActionButton<TVM>(
+    static (BitmapIcon icon, TextBlock text, SquircleButton button) BuildActionButton<TVM>(
         string label,
-        string glyph,
+        string iconPath,
+        double iconHeight,
         Expression<Func<TVM, ICommand>> commandPath,
         string fillBrushKey,
         string strokeBrushKey,
         string textBrushKey,
         LayoutConstants.PracticeFontSizes fonts)
     {
-        var iconElement = new FontIcon()
-            .Glyph(glyph)
-            .FontSize(fonts.Button)
-            .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+        var iconElement = new BitmapIcon()
+            .UriSource(new Uri(iconPath))
+            .ShowAsMonochrome(true)
+            .Height(iconHeight)
             .Foreground(ThemeResource.Get<Brush>(textBrushKey));
 
         var textElement = RegularText()
@@ -929,10 +933,9 @@ public static class PracticePageBuilder
 
         elements.SuttaReferenceTextBlock?.FontSize = fonts.SuttaReference;
 
-        // Buttons
+        // Buttons (icon height is fixed at 18, only text scales)
         foreach (var (icon, text) in elements.ButtonElements)
         {
-            icon.FontSize = fonts.Button;
             text.FontSize = fonts.Button;
         }
 
@@ -969,5 +972,5 @@ public class ResponsiveElements
     public List<SquircleBorder> BadgeBorders { get; } = [];
     public List<TextBlock> BadgeTextBlocks { get; } = [];
     public List<BitmapIcon> BadgeIcons { get; } = [];
-    public List<(FontIcon Icon, TextBlock Text)> ButtonElements { get; } = [];
+    public List<(BitmapIcon Icon, TextBlock Text)> ButtonElements { get; } = [];
 }

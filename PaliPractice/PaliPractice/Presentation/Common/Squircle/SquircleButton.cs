@@ -156,6 +156,10 @@ public class SquircleButton : Button
     /// </remarks>
     static ControlTemplate CreateControlTemplate()
     {
+        // Note: Using VisualState.Setters instead of Storyboard animations.
+        // DoubleAnimation on Opacity doesn't interpolate correctly on iOS Skia,
+        // causing the overlay to appear at full opacity (black) instead of 8-12%.
+        // Setters provide immediate visual feedback which works on all platforms.
         const string xaml = """
             <ControlTemplate
                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -165,35 +169,25 @@ public class SquircleButton : Button
                     <VisualStateManager.VisualStateGroups>
                         <VisualStateGroup x:Name="CommonStates">
                             <VisualState x:Name="Normal">
-                                <Storyboard>
-                                    <DoubleAnimation Storyboard.TargetName="PART_Hover"
-                                                     Storyboard.TargetProperty="Opacity"
-                                                     To="0" Duration="0:0:0.15"/>
-                                    <DoubleAnimation Storyboard.TargetName="PART_Pressed"
-                                                     Storyboard.TargetProperty="Opacity"
-                                                     To="0" Duration="0:0:0.15"/>
-                                </Storyboard>
+                                <VisualState.Setters>
+                                    <Setter Target="PART_Hover.Opacity" Value="0"/>
+                                    <Setter Target="PART_Pressed.Opacity" Value="0"/>
+                                </VisualState.Setters>
                             </VisualState>
                             <VisualState x:Name="PointerOver">
-                                <Storyboard>
-                                    <DoubleAnimation Storyboard.TargetName="PART_Hover"
-                                                     Storyboard.TargetProperty="Opacity"
-                                                     To="0.08" Duration="0:0:0.15"/>
-                                </Storyboard>
+                                <VisualState.Setters>
+                                    <Setter Target="PART_Hover.Opacity" Value="0.08"/>
+                                </VisualState.Setters>
                             </VisualState>
                             <VisualState x:Name="Pressed">
-                                <Storyboard>
-                                    <DoubleAnimation Storyboard.TargetName="PART_Pressed"
-                                                     Storyboard.TargetProperty="Opacity"
-                                                     To="0.12" Duration="0:0:0.05"/>
-                                </Storyboard>
+                                <VisualState.Setters>
+                                    <Setter Target="PART_Pressed.Opacity" Value="0.12"/>
+                                </VisualState.Setters>
                             </VisualState>
                             <VisualState x:Name="Disabled">
-                                <Storyboard>
-                                    <DoubleAnimation Storyboard.TargetName="RootGrid"
-                                                     Storyboard.TargetProperty="Opacity"
-                                                     To="0.4" Duration="0:0:0"/>
-                                </Storyboard>
+                                <VisualState.Setters>
+                                    <Setter Target="RootGrid.Opacity" Value="0.4"/>
+                                </VisualState.Setters>
                             </VisualState>
                         </VisualStateGroup>
                     </VisualStateManager.VisualStateGroups>

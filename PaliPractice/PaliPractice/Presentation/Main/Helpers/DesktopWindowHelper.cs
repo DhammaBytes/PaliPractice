@@ -3,7 +3,7 @@ using Windows.Graphics.Display;
 using Microsoft.UI.Windowing;
 using PaliPractice.Presentation.Common;
 
-namespace PaliPractice.Platforms.Desktop;
+namespace PaliPractice.Presentation.Main.Helpers;
 
 /// <summary>
 /// Helper for configuring desktop window size and constraints.

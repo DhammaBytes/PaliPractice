@@ -21,6 +21,22 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     [ObservableProperty] bool _canRateCard;
     [ObservableProperty] string _alternativeForms = string.Empty;
+    [ObservableProperty] bool _useAbbreviatedLabels;
+
+    /// <summary>
+    /// Returns the practice type for this ViewModel. Used for badge width calculations.
+    /// </summary>
+    public abstract PracticeType PracticeTypePublic { get; }
+
+    /// <summary>
+    /// Called when UseAbbreviatedLabels changes. Override in derived classes to refresh badge labels.
+    /// </summary>
+    partial void OnUseAbbreviatedLabelsChanged(bool value) => OnAbbreviationModeChanged();
+
+    /// <summary>
+    /// Override in derived classes to refresh badge labels when abbreviation mode changes.
+    /// </summary>
+    protected virtual void OnAbbreviationModeChanged() { }
 
     public FlashCardViewModel FlashCard { get; }
     public DailyGoalViewModel DailyGoal { get; }

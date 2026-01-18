@@ -1,5 +1,6 @@
 using PaliPractice.Models.Inflection;
 using PaliPractice.Models.Words;
+using PaliPractice.Presentation.Practice.Common;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Presentation.Settings.ViewModels;
 using PaliPractice.Services.Feedback;
@@ -21,6 +22,7 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
     Voice _currentVoice;
 
     protected override PracticeType CurrentPracticeType => PracticeType.Conjugation;
+    public override PracticeType PracticeTypePublic => PracticeType.Conjugation;
 
     // Badge display properties for Person
     [ObservableProperty] string _personLabel = string.Empty;
@@ -90,7 +92,7 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
 
     void UpdateBadges(Conjugation c)
     {
-        // Person badge
+        // Person badge (always full - already short: 1st, 2nd, 3rd)
         PersonLabel = c.Person switch
         {
             Person.First => "1st",
@@ -101,26 +103,34 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
         PersonColor = OptionPresentation.GetChipColor(c.Person);
         PersonIconPath = BadgeIcons.GetIconPath(c.Person);
 
-        // Number badge
-        NumberLabel = c.Number switch
-        {
-            Number.Singular => "Singular",
-            Number.Plural => "Plural",
-            _ => c.Number.ToString()
-        };
+        // Number badge (abbreviatable)
+        NumberLabel = UseAbbreviatedLabels
+            ? BadgeLabelMaps.GetAbbreviated(c.Number)
+            : BadgeLabelMaps.GetFull(c.Number);
         NumberColor = OptionPresentation.GetChipColor(c.Number);
         NumberIconPath = BadgeIcons.GetIconPath(c.Number);
 
-        // Tense badge
+        // Tense badge (always full - never abbreviated)
         TenseLabel = c.Tense.ToString();
         TenseColor = OptionPresentation.GetChipColor(c.Tense);
         TenseIconPath = BadgeIcons.GetIconPath(c.Tense);
 
-        // Voice badge (only visible for reflexive)
+        // Voice badge (abbreviatable, only visible for reflexive)
         IsReflexive = c.Voice == Voice.Reflexive;
-        VoiceLabel = "Reflexive";
+        VoiceLabel = UseAbbreviatedLabels
+            ? BadgeLabelMaps.GetAbbreviated(Voice.Reflexive)
+            : BadgeLabelMaps.GetFull(Voice.Reflexive);
         VoiceColor = OptionPresentation.GetChipColor(Voice.Reflexive);
         VoiceIconPath = BadgeIcons.GetIconPath(Voice.Reflexive);
+    }
+
+    /// <summary>
+    /// Called when UseAbbreviatedLabels changes. Refreshes badge labels.
+    /// </summary>
+    protected override void OnAbbreviationModeChanged()
+    {
+        if (_currentConjugation != null)
+            UpdateBadges(_currentConjugation);
     }
 
     protected override string GetAlternativeForms()

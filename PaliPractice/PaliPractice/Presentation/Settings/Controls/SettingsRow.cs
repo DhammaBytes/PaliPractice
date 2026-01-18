@@ -187,6 +187,46 @@ public static class SettingsRow
     }
 
     /// <summary>
+    /// Builds a settings row with an icon, label, and dropdown (ComboBox).
+    /// </summary>
+    public static Grid BuildDropdownWithIcon(
+        string label,
+        string iconGlyph,
+        string[] options,
+        Action<ComboBox> bindSelectedItem)
+    {
+        var comboBox = new ComboBox()
+            .VerticalAlignment(VerticalAlignment.Center)
+            .Grid(column: 2);
+
+        foreach (var option in options)
+            comboBox.Items.Add(option);
+
+        bindSelectedItem(comboBox);
+
+        return new Grid()
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .ColumnDefinitions("Auto,*,Auto")
+            .Padding(16, 12)
+            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .Children(
+                new FontIcon()
+                    .Glyph(iconGlyph)
+                    .FontSize(16)
+                    .VerticalAlignment(VerticalAlignment.Center)
+                    .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
+                    .Margin(0, 0, 12, 0)
+                    .Grid(column: 0),
+                RegularText()
+                    .Text(label)
+                    .FontSize(16)
+                    .VerticalAlignment(VerticalAlignment.Center)
+                    .Grid(column: 1),
+                comboBox
+            );
+    }
+
+    /// <summary>
     /// Builds a settings row with a label and NumberBox for numeric input.
     /// </summary>
     public static Grid BuildNumberBox(
@@ -283,7 +323,7 @@ public static class SettingsRow
                 RegularText()
                     .Text(hint)
                     .FontSize(13)
-                    .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
+                    .Foreground(ThemeResource.Get<Brush>("OnSurfaceSecondaryBrush"))
                     .TextWrapping(TextWrapping.Wrap)
             );
 
@@ -332,7 +372,7 @@ public static class SettingsRow
                         RegularText()
                             .Text(hint)
                             .FontSize(13)
-                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
+                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceSecondaryBrush"))
                             .TextWrapping(TextWrapping.Wrap)
                     ),
                 comboBox

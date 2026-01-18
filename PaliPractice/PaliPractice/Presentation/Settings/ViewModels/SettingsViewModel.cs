@@ -1,5 +1,8 @@
 using PaliPractice.Presentation.Main.ViewModels;
+using PaliPractice.Services.Database.Repositories;
 using PaliPractice.Services.Feedback;
+using PaliPractice.Services.UserData;
+using Uno.Toolkit.UI;
 
 namespace PaliPractice.Presentation.Settings.ViewModels;
 
@@ -9,16 +12,62 @@ public partial class SettingsViewModel : ObservableObject
     readonly INavigator _navigator;
     readonly IFeedbackService _feedbackService;
     readonly IStoreReviewService _storeReviewService;
+    readonly IUserDataRepository _userData;
+    bool _isLoading = true;
+
+    public static readonly string[] ThemeOptions = ["System", "Light", "Dark"];
 
     public SettingsViewModel(
         INavigator navigator,
         IFeedbackService feedbackService,
-        IStoreReviewService storeReviewService)
+        IStoreReviewService storeReviewService,
+        IDatabaseService db)
     {
         _navigator = navigator;
         _feedbackService = feedbackService;
         _storeReviewService = storeReviewService;
+        _userData = db.UserData;
+
+        LoadSettings();
+        _isLoading = false;
     }
+
+    void LoadSettings()
+    {
+        ThemeIndex = _userData.GetSetting(SettingsKeys.AppearanceTheme, SettingsKeys.DefaultAppearanceTheme);
+    }
+
+    #region Theme settings
+
+    /// <summary>
+    /// Theme selection index: 0=System, 1=Light, 2=Dark
+    /// </summary>
+    [ObservableProperty]
+    int _themeIndex;
+
+    partial void OnThemeIndexChanged(int value)
+    {
+        if (_isLoading) return;
+
+        _userData.SetSetting(SettingsKeys.AppearanceTheme, value);
+
+        if (App.MainWindow?.Content is not FrameworkElement root) return;
+
+        switch (value)
+        {
+            case 1: // Light
+                SystemThemeHelper.SetRootTheme(root.XamlRoot, darkMode: false);
+                break;
+            case 2: // Dark
+                SystemThemeHelper.SetRootTheme(root.XamlRoot, darkMode: true);
+                break;
+            default: // System - reset to default
+                root.RequestedTheme = ElementTheme.Default;
+                break;
+        }
+    }
+
+    #endregion
 
     /// <summary>
     /// Returns true if the store review feature is available on this platform.
@@ -33,17 +82,11 @@ public partial class SettingsViewModel : ObservableObject
         _storeReviewService.IsAvailable && !_storeReviewService.HasUserOpenedStore;
 
     public ICommand GoBackCommand => new AsyncRelayCommand(() => _navigator.NavigateBackAsync(this));
-    public ICommand GoToAppearanceCommand => new AsyncRelayCommand(GoToAppearance);
     public ICommand GoToConjugationSettingsCommand => new AsyncRelayCommand(GoToConjugationSettings);
     public ICommand GoToDeclensionSettingsCommand => new AsyncRelayCommand(GoToDeclensionSettings);
     public ICommand GoToAboutCommand => new AsyncRelayCommand(GoToAbout);
     public ICommand ContactUsCommand => new AsyncRelayCommand(ContactUsAsync);
     public ICommand RateAppCommand => new AsyncRelayCommand(RateAppAsync);
-
-    async Task GoToAppearance()
-    {
-        await _navigator.NavigateViewModelAsync<AppearanceSettingsViewModel>(this);
-    }
 
     async Task GoToAbout()
     {

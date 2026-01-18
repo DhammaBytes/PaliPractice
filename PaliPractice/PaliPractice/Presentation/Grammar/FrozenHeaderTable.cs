@@ -274,7 +274,7 @@ public static class FrozenHeaderTable
                 });
             }
 
-            // Gray out non-attested forms (neutral gray rather than disabled look)
+            // Gray out non-attested forms
             if (!form.InCorpus)
             {
                 textBlock.Foreground(ThemeResource.Get<Brush>("NeutralGrayBrush"));

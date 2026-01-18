@@ -1,3 +1,4 @@
+using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Settings.Controls;
 using PaliPractice.Presentation.Settings.ViewModels;
@@ -30,10 +31,13 @@ public sealed partial class SettingsPage : Page
                                 .Children(
                                     // General section
                                     SettingsSection.Build("General",
-                                        SettingsRow.BuildNavigation<SettingsViewModel>(
-                                            "Appearance",
+                                        SettingsRow.BuildDropdownWithIcon(
+                                            "Theme",
                                             "\uE790", // ColorSolid
-                                            v => v.GoToAppearanceCommand)
+                                            SettingsViewModel.ThemeOptions,
+                                            cb => cb.SetBinding(
+                                                ComboBox.SelectedIndexProperty,
+                                                Bind.TwoWayPath<SettingsViewModel, int>(v => v.ThemeIndex)))
                                     ),
 
                                     // Practice settings sections

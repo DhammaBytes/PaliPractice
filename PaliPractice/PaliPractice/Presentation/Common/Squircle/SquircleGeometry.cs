@@ -42,20 +42,23 @@ public static class SquircleGeometry
     //   40px @ 3x = ~13px in points
     //   30px @ 3x = ~10px in points
     //
+    // But squircles need slightly larger radius because of their soft curve start
+    // So we increase the radius by 1px for each mode
+    //
     // ┌─────────────────────────────────────────────────────────────────────────┐
     // │ Mode             │ Radius │ Use for                                     │
     // │──────────────────┼────────┼─────────────────────────────────────────────│
-    // │ CardLarge        │ 13px   │ Practice card, stats cards, about cards     │
-    // │ CardSmall        │ 13px   │ Translation background                      │
-    // │ ButtonLarge      │ 13px   │ Start page buttons                          │
-    // │ ButtonMedium     │ 10px   │ Reveal, Easy, Hard buttons                  │
+    // │ CardLarge        │ 14px   │ Practice card, stats cards, about cards     │
+    // │ CardSmall        │ 14px   │ Translation background                      │
+    // │ ButtonLarge      │ 14px   │ Start page buttons                          │
+    // │ ButtonMedium     │ 11px   │ Reveal, Easy, Hard buttons                  │
     // │ ButtonNavigation │ 40%    │ App bar buttons, contact button             │
     // │ Pill             │ 44%    │ Badges, progress bars                       │
     // └─────────────────────────────────────────────────────────────────────────┘
     // ═══════════════════════════════════════════════════════════════════════════
 
-    const double RadiusLarge = 13.0;   // 40px @ 3x
-    const double RadiusMedium = 10.0;  // 30px @ 3x
+    const double RadiusLarge = 14.0;
+    const double RadiusMedium = 11.0;
 
     #endregion
 
@@ -228,12 +231,10 @@ public static class SquircleGeometry
 
         var radius = mode switch
         {
-            // Fixed values (13px - from Figma 40px @ 3x)
+            // Fixed pixel corner
             SquircleRadiusMode.CardLarge => RadiusLarge,
             SquircleRadiusMode.CardSmall => RadiusLarge,
             SquircleRadiusMode.ButtonLarge => RadiusLarge,
-
-            // Fixed values (10px - from Figma 30px @ 3x)
             SquircleRadiusMode.ButtonMedium => RadiusMedium,
 
             // Percentage of smaller dimension
@@ -254,33 +255,21 @@ public static class SquircleGeometry
 /// </summary>
 public enum SquircleRadiusMode
 {
-    // ─────────────────────────────────────────────────────────────────────────
-    // CARDS (fixed 13px - Figma 40px @ 3x)
-    // ─────────────────────────────────────────────────────────────────────────
-
     /// <summary>Practice card, stats cards, about cards.</summary>
     CardLarge,
 
     /// <summary>Translation background (narrower/shorter card).</summary>
     CardSmall,
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // BUTTONS (fixed values)
-    // ─────────────────────────────────────────────────────────────────────────
-
-    /// <summary>Start page buttons (13px - Figma 40px @ 3x).</summary>
+    /// <summary>Start page buttons</summary>
     ButtonLarge,
 
-    /// <summary>Reveal, Easy, Hard buttons (10px - Figma 30px @ 3x).</summary>
+    /// <summary>Reveal, Easy, Hard buttons</summary>
     ButtonMedium,
 
-    /// <summary>App bar buttons, contact button (40% of height).</summary>
+    /// <summary>Percent-based app bar rounded buttons, contact button</summary>
     ButtonNavigation,
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // PILL (percentage-based)
-    // ─────────────────────────────────────────────────────────────────────────
-
-    /// <summary>Badges, progress bars (44% of height).</summary>
+    /// <summary>Percent-based badges, progress bars (44% of height).</summary>
     Pill
 }

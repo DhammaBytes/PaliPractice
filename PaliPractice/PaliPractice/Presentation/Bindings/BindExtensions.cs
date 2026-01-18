@@ -39,15 +39,6 @@ public static class BindExtensions
     }
 
     /// <summary>
-    /// Binds ProgressBar.Value to a double property path
-    /// </summary>
-    public static ProgressBar Value<TDC>(this ProgressBar progressBar, Expression<Func<TDC, double>> path)
-    {
-        progressBar.SetBinding(ProgressBar.ValueProperty, Bind.Path(path));
-        return progressBar;
-    }
-
-    /// <summary>
     /// Binds ButtonBase.Command to an ICommand property path
     /// </summary>
     public static T Command<T, TDC>(this T button, Expression<Func<TDC, ICommand>> path)
@@ -55,15 +46,6 @@ public static class BindExtensions
     {
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(path));
         return button;
-    }
-
-    /// <summary>
-    /// Binds ProgressRing.IsActive to a bool property path
-    /// </summary>
-    public static ProgressRing IsActive<TDC>(this ProgressRing progressRing, Expression<Func<TDC, bool>> path)
-    {
-        progressRing.SetBinding(ProgressRing.IsActiveProperty, Bind.Path(path));
-        return progressRing;
     }
 
     /// <summary>
@@ -101,34 +83,6 @@ public static class BindExtensions
     }
 
     /// <summary>
-    /// Binds Control.Background to a Brush property path
-    /// </summary>
-    public static T Background<T, TDC>(this T control, Expression<Func<TDC, Brush>> path)
-        where T : Control
-    {
-        control.SetBinding(Control.BackgroundProperty, Bind.Path(path));
-        return control;
-    }
-
-    /// <summary>
-    /// Binds Border.Background to a Brush property path
-    /// </summary>
-    public static Border Background<TDC>(this Border border, Expression<Func<TDC, Brush>> path)
-    {
-        border.SetBinding(Border.BackgroundProperty, Bind.Path(path));
-        return border;
-    }
-
-    /// <summary>
-    /// Binds SquircleBorder.Fill to a Brush property path
-    /// </summary>
-    public static SquircleBorder Fill<TDC>(this SquircleBorder border, Expression<Func<TDC, Brush>> path)
-    {
-        border.SetBinding(SquircleBorder.FillProperty, Bind.Path(path));
-        return border;
-    }
-
-    /// <summary>
     /// Binds SquircleBorder.Fill to a Color property path, converting to SolidColorBrush
     /// </summary>
     public static SquircleBorder FillColor<TDC>(this SquircleBorder border, Expression<Func<TDC, Color>> path)
@@ -140,71 +94,19 @@ public static class BindExtensions
     }
 
 
-    /// <summary>
-    /// Binds FormattedTextBehavior.HtmlText to a string property path.
-    /// Parses &lt;b&gt;...&lt;/b&gt; tags and creates bold Runs.
-    /// </summary>
-    public static TextBlock HtmlText<TDC>(this TextBlock textBlock, Expression<Func<TDC, string>> path)
+    extension(FontIcon icon)
     {
-        textBlock.SetBinding(FormattedTextBehavior.HtmlTextProperty, Bind.Path(path));
-        return textBlock;
-    }
-
-    /// <summary>
-    /// Binds FontIcon.Glyph to a string property path
-    /// </summary>
-    public static FontIcon Glyph<TDC>(this FontIcon icon, Expression<Func<TDC, string?>> path)
-    {
-        icon.SetBinding(FontIcon.GlyphProperty, Bind.Path(path));
-        return icon;
-    }
-
-    /// <summary>
-    /// Binds FontIcon visibility to whether the glyph string is non-null/non-empty
-    /// </summary>
-    public static FontIcon GlyphWithVisibility<TDC>(this FontIcon icon, Expression<Func<TDC, string?>> path)
-    {
-        icon.SetBinding(FontIcon.GlyphProperty, Bind.Path(path));
-        var visBinding = Bind.Path(path);
-        visBinding.Converter = StringNullOrEmptyToVisibilityConverter.Instance;
-        icon.SetBinding(UIElement.VisibilityProperty, visBinding);
-        return icon;
-    }
-
-    /// <summary>
-    /// Binds Image.Source to a string path (e.g., "ms-appx:///Assets/Svg/icon.svg")
-    /// </summary>
-    public static Image Source<TDC>(this Image image, Expression<Func<TDC, string?>> path)
-    {
-        var binding = Bind.Path(path);
-        binding.Converter = StringToImageSourceConverter.Instance;
-        image.SetBinding(Image.SourceProperty, binding);
-        return image;
-    }
-
-    /// <summary>
-    /// Binds Image.Source to a string path and visibility to whether the path is non-null/non-empty
-    /// </summary>
-    public static Image SourceWithVisibility<TDC>(this Image image, Expression<Func<TDC, string?>> path)
-    {
-        var binding = Bind.Path(path);
-        binding.Converter = StringToImageSourceConverter.Instance;
-        image.SetBinding(Image.SourceProperty, binding);
-        var visBinding = Bind.Path(path);
-        visBinding.Converter = StringNullOrEmptyToVisibilityConverter.Instance;
-        image.SetBinding(UIElement.VisibilityProperty, visBinding);
-        return image;
-    }
-
-    /// <summary>
-    /// Binds BitmapIcon.UriSource to a string path (e.g., "ms-appx:///Assets/Icons/badge.png")
-    /// </summary>
-    public static BitmapIcon UriSource<TDC>(this BitmapIcon icon, Expression<Func<TDC, string?>> path)
-    {
-        var binding = Bind.Path(path);
-        binding.Converter = StringToUriConverter.Instance;
-        icon.SetBinding(BitmapIcon.UriSourceProperty, binding);
-        return icon;
+        /// <summary>
+        /// Binds FontIcon visibility to whether the glyph string is non-null/non-empty
+        /// </summary>
+        public FontIcon GlyphWithVisibility<TDC>(Expression<Func<TDC, string?>> path)
+        {
+            icon.SetBinding(FontIcon.GlyphProperty, Bind.Path(path));
+            var visBinding = Bind.Path(path);
+            visBinding.Converter = StringNullOrEmptyToVisibilityConverter.Instance;
+            icon.SetBinding(UIElement.VisibilityProperty, visBinding);
+            return icon;
+        }
     }
 
     /// <summary>
@@ -225,38 +127,9 @@ public static class BindExtensions
     /// <summary>
     /// Binds ToggleSwitch.IsOn to a bool property path (TwoWay binding)
     /// </summary>
-    public static ToggleSwitch IsOn<TDC>(this ToggleSwitch toggle, Expression<Func<TDC, bool>> path)
+    public static void IsOn<TDC>(this ToggleSwitch toggle, Expression<Func<TDC, bool>> path)
     {
         toggle.SetBinding(ToggleSwitch.IsOnProperty, Bind.TwoWayPath(path));
-        return toggle;
-    }
-
-    /// <summary>
-    /// Binds Control.IsEnabled to a bool property path
-    /// </summary>
-    public static T IsEnabled<T, TDC>(this T control, Expression<Func<TDC, bool>> path)
-        where T : Control
-    {
-        control.SetBinding(Control.IsEnabledProperty, Bind.Path(path));
-        return control;
-    }
-
-    /// <summary>
-    /// Binds UIElement.Visibility to a bool property path (true = Visible, false = Collapsed)
-    /// </summary>
-    public static T Visibility<T, TDC>(this T element, Expression<Func<TDC, bool>> path)
-        where T : UIElement
-    {
-        return element.BoolToVisibility<T, TDC>(path);
-    }
-
-    /// <summary>
-    /// Binds CheckBox.IsChecked to a bool property path (TwoWay binding)
-    /// </summary>
-    public static CheckBox IsChecked<TDC>(this CheckBox checkBox, Expression<Func<TDC, bool>> path)
-    {
-        checkBox.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath(path));
-        return checkBox;
     }
 }
 
@@ -284,15 +157,6 @@ public static class BindWithin
     {
         textBlock.SetBinding(FormattedTextBehavior.HtmlTextProperty, BindExtensions.Relative(path));
         return textBlock;
-    }
-
-    /// <summary>
-    /// Binds ProgressBar.Value to a property within the current DataContext scope
-    /// </summary>
-    public static ProgressBar ValueWithin<TScope>(this ProgressBar progressBar, Expression<Func<TScope, double>> path)
-    {
-        progressBar.SetBinding(ProgressBar.ValueProperty, BindExtensions.Relative(path));
-        return progressBar;
     }
 
     /// <summary>
@@ -326,38 +190,30 @@ public static class BindWithin
         return button;
     }
 
-    /// <summary>
-    /// Binds UIElement.Opacity to a bool property within the current DataContext scope.
-    /// true → 1.0 (visible), false → 0.0 (invisible but keeps layout space)
-    /// </summary>
-    public static T OpacityWithin<T, TScope>(this T element, Expression<Func<TScope, bool>> path)
-        where T : UIElement
+    extension<T>(T element) where T : UIElement
     {
-        var binding = BindExtensions.Relative(path);
-        binding.Converter = BoolToOpacityConverter.Instance;
-        element.SetBinding(UIElement.OpacityProperty, binding);
-        return element;
-    }
+        /// <summary>
+        /// Binds UIElement.Opacity to a bool property within the current DataContext scope.
+        /// true → 1.0 (visible), false → 0.0 (invisible but keeps layout space)
+        /// </summary>
+        public T OpacityWithin<TScope>(Expression<Func<TScope, bool>> path)
+        {
+            var binding = BindExtensions.Relative(path);
+            binding.Converter = BoolToOpacityConverter.Instance;
+            element.SetBinding(UIElement.OpacityProperty, binding);
+            return element;
+        }
 
-    /// <summary>
-    /// Binds UIElement.Opacity to a bool property path.
-    /// true → 1.0 (visible), false → 0.0 (invisible but keeps layout space)
-    /// </summary>
-    public static T BoolToOpacity<T, TDC>(this T element, Expression<Func<TDC, bool>> path)
-        where T : UIElement
-    {
-        var binding = Bind.Path(path);
-        binding.Converter = BoolToOpacityConverter.Instance;
-        element.SetBinding(UIElement.OpacityProperty, binding);
-        return element;
-    }
-
-    /// <summary>
-    /// Binds TextBlock.FontSize to a double property within the current DataContext scope
-    /// </summary>
-    public static TextBlock FontSizeWithin<TScope>(this TextBlock textBlock, Expression<Func<TScope, double>> path)
-    {
-        textBlock.SetBinding(TextBlock.FontSizeProperty, BindExtensions.Relative(path));
-        return textBlock;
+        /// <summary>
+        /// Binds UIElement.Opacity to a bool property path.
+        /// true → 1.0 (visible), false → 0.0 (invisible but keeps layout space)
+        /// </summary>
+        public T BoolToOpacity<TDC>(Expression<Func<TDC, bool>> path)
+        {
+            var binding = Bind.Path(path);
+            binding.Converter = BoolToOpacityConverter.Instance;
+            element.SetBinding(UIElement.OpacityProperty, binding);
+            return element;
+        }
     }
 }

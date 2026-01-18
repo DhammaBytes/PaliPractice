@@ -43,11 +43,11 @@ public sealed partial class SettingsPage : Page
                                     // Practice settings sections
                                     SettingsSection.Build("Practice",
                                         SettingsRow.BuildNavigation<SettingsViewModel>(
-                                            "Declensions",
+                                            "Noun declensions",
                                             "\uE8AB", // Shuffle
                                             v => v.GoToDeclensionSettingsCommand),
                                         SettingsRow.BuildNavigation<SettingsViewModel>(
-                                            "Conjugations",
+                                            "Verb conjugations",
                                             "\uE823", // Clock
                                             v => v.GoToConjugationSettingsCommand)
                                     ),

@@ -476,10 +476,14 @@ public class StatisticsRepositoryTests
 
     /// <summary>
     /// Gets the date key for N days ago in YYYYMMDD integer format.
+    /// Uses the same "logical day" boundary as TodayKey (5am local time).
     /// </summary>
     static int DaysAgo(int days)
     {
-        return DailyProgress.ToDateKey(DateTime.Now.AddDays(-days));
+        // Start from the logical "today" and subtract days to avoid
+        // conflicts when tests run between midnight and 5am
+        var logicalToday = DailyProgress.FromDateKey(DailyProgress.TodayKey);
+        return DailyProgress.ToDateKey(logicalToday.AddDays(-days));
     }
 
     void InsertProgress(int dateKey, int declensions, int conjugations)

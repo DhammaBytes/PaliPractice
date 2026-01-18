@@ -63,8 +63,8 @@ public sealed partial class ConjugationSettingsPage : Page
                                     // Practice filters section
                                     BuildPracticeFiltersSection(vm),
 
-                                    // Tense section
-                                    SettingsSection.Build("Tense",
+                                    // Tenses section
+                                    SettingsSection.Build("Tenses",
                                         SettingsRow.BuildToggleWithIconAndHint<ConjugationSettingsViewModel>(
                                             BadgeIcons.GetIconPath(Tense.Present),
                                             "Present", "present/habitual actions, general truths",

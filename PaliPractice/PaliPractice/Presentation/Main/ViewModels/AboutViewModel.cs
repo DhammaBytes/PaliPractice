@@ -35,35 +35,8 @@ Maintained by [DhammaBytes](https://dhammabytes.org) contributors. We welcome fe
 
 Word and grammar data sourced from the [Digital Pāli Dictionary](https://dpdict.net) project.
 
-{GetPlatformAvailability()}
+This app is also available on [other platforms](https://www.dhammabytes.org/pali-practice/).
 """;
-
-    static string GetPlatformAvailability()
-    {
-        var current = GetCurrentPlatform();
-
-        // Desktop lists mobile first, mobile lists desktop first
-        var isDesktop = current is "Windows" or "Linux" or "Mac";
-        var allPlatforms = isDesktop
-            ? new[] { "Android", "iPhone", "Windows", "Linux", "Mac" }
-            : new[] { "Windows", "Linux", "Mac", "Android", "iPhone" };
-
-        var others = allPlatforms.Where(p => p != current).ToList();
-        var last = others[^1];
-        var rest = others.Take(others.Count - 1);
-
-        return $"This app is also available on {string.Join(", ", rest)}, and {last}.";
-    }
-
-    static string GetCurrentPlatform()
-    {
-        if (OperatingSystem.IsAndroid()) return "Android";
-        if (OperatingSystem.IsIOS()) return "iPhone";
-        if (OperatingSystem.IsWindows()) return "Windows";
-        if (OperatingSystem.IsMacOS()) return "Mac";
-        if (OperatingSystem.IsLinux()) return "Linux";
-        return "Desktop"; // Fallback, won't match any platform in list
-    }
 
     public static string IconTitle => "App Icon";
     public static string IconDescription => """

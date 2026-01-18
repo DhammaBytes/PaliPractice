@@ -403,7 +403,7 @@ public static class PracticePageBuilder
             .Height(LayoutConstants.Sizes.PlaceholderHeight)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .VerticalAlignment(VerticalAlignment.Center)
-            .BorderBrush(ThemeResource.Get<Brush>("OnSurfaceDisabledBrush"))
+            .BorderBrush(ThemeResource.Get<Brush>("OnSurfaceSecondaryBrush"))
             .BorderThickness(0, 0, 0, LayoutConstants.Sizes.PlaceholderBorderThickness)
             .BoolToVisibility<Border, TVM>(isRevealedPath, invert: true);
 

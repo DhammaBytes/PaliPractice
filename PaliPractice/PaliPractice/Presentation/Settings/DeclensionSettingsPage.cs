@@ -59,8 +59,8 @@ public sealed partial class DeclensionSettingsPage : Page
                                     // Practice filters section
                                     BuildPracticeFiltersSection(vm),
 
-                                    // Case section
-                                    SettingsSection.Build("Case",
+                                    // Cases section
+                                    SettingsSection.Build("Cases",
                                         SettingsRow.BuildToggleWithIconAndHint<DeclensionSettingsViewModel>(
                                             BadgeIcons.GetIconPath(Case.Nominative),
                                             "Nominative", "who? what? (subject)",

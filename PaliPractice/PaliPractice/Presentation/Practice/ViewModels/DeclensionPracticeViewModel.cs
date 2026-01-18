@@ -1,5 +1,6 @@
 using PaliPractice.Models.Inflection;
 using PaliPractice.Models.Words;
+using PaliPractice.Presentation.Practice.Common;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Presentation.Settings.ViewModels;
 using PaliPractice.Services.Feedback;
@@ -20,6 +21,7 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
     Number _currentNumber;
 
     protected override PracticeType CurrentPracticeType => PracticeType.Declension;
+    public override PracticeType PracticeTypePublic => PracticeType.Declension;
 
     // Badge display properties for Gender
     [ObservableProperty] string _genderLabel = string.Empty;
@@ -82,28 +84,21 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
 
     void UpdateBadges(Declension d)
     {
-        // Gender badge
-        GenderLabel = d.Gender switch
-        {
-            Gender.Masculine => "Masculine",
-            Gender.Neuter => "Neuter",
-            Gender.Feminine => "Feminine",
-            _ => d.Gender.ToString()
-        };
+        // Gender badge (abbreviatable)
+        GenderLabel = UseAbbreviatedLabels
+            ? BadgeLabelMaps.GetAbbreviated(d.Gender)
+            : BadgeLabelMaps.GetFull(d.Gender);
         GenderColor = OptionPresentation.GetChipColor(d.Gender);
         GenderIconPath = BadgeIcons.GetIconPath(d.Gender);
 
-        // Number badge
-        NumberLabel = d.Number switch
-        {
-            Number.Singular => "Singular",
-            Number.Plural => "Plural",
-            _ => d.Number.ToString()
-        };
+        // Number badge (abbreviatable)
+        NumberLabel = UseAbbreviatedLabels
+            ? BadgeLabelMaps.GetAbbreviated(d.Number)
+            : BadgeLabelMaps.GetFull(d.Number);
         NumberColor = OptionPresentation.GetChipColor(d.Number);
         NumberIconPath = BadgeIcons.GetIconPath(d.Number);
 
-        // Case badge
+        // Case badge (always full - never abbreviated)
         CaseLabel = d.Case.ToString();
         CaseColor = OptionPresentation.GetChipColor(d.Case);
         CaseIconPath = BadgeIcons.GetIconPath(d.Case);
@@ -119,6 +114,15 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
             Case.Vocative => "O, …! (direct address)",
             _ => string.Empty
         };
+    }
+
+    /// <summary>
+    /// Called when UseAbbreviatedLabels changes. Refreshes badge labels.
+    /// </summary>
+    protected override void OnAbbreviationModeChanged()
+    {
+        if (_currentDeclension != null)
+            UpdateBadges(_currentDeclension);
     }
 
     protected override string GetAlternativeForms()

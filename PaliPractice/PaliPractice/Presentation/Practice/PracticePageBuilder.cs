@@ -1,6 +1,9 @@
 using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
+using PaliPractice.Presentation.Practice.Common;
+using PaliPractice.Presentation.Practice.ViewModels;
+using PaliPractice.Presentation.Practice.ViewModels.Common;
 using PaliPractice.Themes;
 using static PaliPractice.Presentation.Common.Text.TextHelpers;
 using static PaliPractice.Presentation.Common.ShadowHelper;
@@ -154,6 +157,17 @@ public static class PracticePageBuilder
             if (translationText.DataContext is ExampleCarouselViewModel carousel)
             {
                 carousel.UpdateAvailableWidth(textWidth, fonts.Translation, translationText.FontFamily);
+            }
+
+            // Check if badges need abbreviation based on available width
+            var cardPadSides = LayoutConstants.Gaps.CardPadding(heightClass);
+            var availableBadgeWidth = e.NewSize.Width - (2 * cardPadSides);
+
+            if (cardBorder.DataContext is PracticeViewModelBase vm)
+            {
+                var hasVoice = vm is ConjugationPracticeViewModel { IsReflexive: true };
+                vm.UseAbbreviatedLabels = BadgeWidthMeasurer.ShouldAbbreviate(
+                    availableBadgeWidth, vm.PracticeTypePublic, hasVoice, heightClass);
             }
         };
 

@@ -54,8 +54,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
     static StackPanel BuildRangeSection(LemmaRangeSettingsViewModel vm)
     {
         var radioButtons = new RadioButtons()
-            .MaxColumns(1)
-            .Margin(0, 8, 0, 0);
+            .MaxColumns(1);
 
         // Add radio button options: 0=Top100, 1=Top300, 2=Top500, 3=All, 4=Custom
         radioButtons.Items.Add(BuildRadioOption("Top 100", "Most common words"));
@@ -79,7 +78,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
                 new Border()
                     .HorizontalAlignment(HorizontalAlignment.Stretch)
                     .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-                    .Padding(16, 8)
+                    .Padding(16, 0, 16, 12)
                     .Child(radioButtons)
             );
     }

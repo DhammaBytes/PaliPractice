@@ -100,7 +100,8 @@ public sealed partial class ConjugationSettingsPage : Page
     static StackPanel BuildPracticeFiltersSection(ConjugationSettingsViewModel vm)
     {
         return new StackPanel()
-            .Spacing(4)
+            .Spacing(1)
+            .Margin(0, 0, 0, 16)
             .Children(
                 // Section header
                 TextHelpers.RegularText()
@@ -108,30 +109,34 @@ public sealed partial class ConjugationSettingsPage : Page
                     .FontSize(14)
                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
-                    .Margin(16, 16, 16, 8),
+                    .Margin(16, 16, 16, 4),
 
-                // Endings checkboxes row
-                BuildEndingsCheckboxRow(),
-
-                // Person checkboxes row
-                BuildPersonCheckboxRow(),
-
-                // Number dropdown
-                SettingsRow.BuildDropdown(
-                    "Number",
-                    SettingsHelpers.NumberOptions,
-                    cb => cb.SetBinding(
-                        ComboBox.SelectedIndexProperty,
-                        Bind.TwoWayPath<ConjugationSettingsViewModel, int>(v => v.NumberIndex))),
-
-                // Voice dropdown
-                SettingsRow.BuildDropdownWithHint(
-                    "Voice",
-                    "Active (parassapada) is common, while Reflexive (attanopada) mostly appears in poetic verses",
-                    ConjugationSettingsViewModel.VoiceOptions,
-                    cb => cb.SetBinding(
-                        ComboBox.SelectedIndexProperty,
-                        Bind.TwoWayPath<ConjugationSettingsViewModel, int>(v => v.VoiceIndex)))
+                // Items container with 1px separator lines
+                new Border()
+                    .HorizontalAlignment(HorizontalAlignment.Stretch)
+                    .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+                    .Child(
+                        new StackPanel()
+                            .Spacing(1)
+                            .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
+                            .Children(
+                                BuildEndingsCheckboxRow(),
+                                BuildPersonCheckboxRow(),
+                                SettingsRow.BuildDropdown(
+                                    "Number",
+                                    SettingsHelpers.NumberOptions,
+                                    cb => cb.SetBinding(
+                                        ComboBox.SelectedIndexProperty,
+                                        Bind.TwoWayPath<ConjugationSettingsViewModel, int>(v => v.NumberIndex))),
+                                SettingsRow.BuildDropdownWithHint(
+                                    "Voice",
+                                    "Active (parassapada) is common, while Reflexive (attanopada) mostly appears in poetic verses",
+                                    ConjugationSettingsViewModel.VoiceOptions,
+                                    cb => cb.SetBinding(
+                                        ComboBox.SelectedIndexProperty,
+                                        Bind.TwoWayPath<ConjugationSettingsViewModel, int>(v => v.VoiceIndex)))
+                            )
+                    )
             );
     }
 

@@ -31,7 +31,7 @@ public sealed partial class InflectionTablePage : Page
             .TextWrapping(TextWrapping.Wrap);
         _hintTextBlock = RegularText()
             .FontSize(12)
-            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
+            .Foreground(ThemeResource.Get<Brush>("OnSurfaceSecondaryBrush"))
             .Visibility(Visibility.Collapsed); // Hidden by default, shown if table has non-corpus forms
 
         this.DataContext<InflectionTableViewModel>((page, vm) => page

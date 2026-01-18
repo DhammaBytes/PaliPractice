@@ -110,7 +110,7 @@ public static class PracticePageBuilder
         var debugText = RegularText()
             .Text("Size: --")
             .FontSize(fonts.Debug)
-            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"));
+            .Foreground(ThemeResource.Get<Brush>("OnSurfaceSecondaryBrush"));
         elements.DebugTextBlock = debugText;
 
         // Assemble card children

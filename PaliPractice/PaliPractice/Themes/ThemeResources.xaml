@@ -18,7 +18,7 @@
             <SolidColorBrush x:Key="OnBackgroundBrush" Color="#672000"/>
             <SolidColorBrush x:Key="OnSurfaceBrush" Color="#461200"/>
             <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="#7A5040"/>
-            <SolidColorBrush x:Key="OnSurfaceDisabledBrush" Color="#C4A090"/>
+            <SolidColorBrush x:Key="OnSurfaceSecondaryBrush" Color="#666666"/>
 
             <!-- System Accent Colors -->
             <Color x:Key="SystemAccentColor">#C76034</Color>
@@ -87,7 +87,7 @@
             <SolidColorBrush x:Key="OnBackgroundBrush" Color="#FFD4B8"/>
             <SolidColorBrush x:Key="OnSurfaceBrush" Color="#FFE8D8"/>
             <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="#D4B8A8"/>
-            <SolidColorBrush x:Key="OnSurfaceDisabledBrush" Color="#6A5A50"/>
+            <SolidColorBrush x:Key="OnSurfaceSecondaryBrush" Color="#A89890"/>
 
             <!-- System Accent Colors -->
             <Color x:Key="SystemAccentColor">#FFB080</Color>

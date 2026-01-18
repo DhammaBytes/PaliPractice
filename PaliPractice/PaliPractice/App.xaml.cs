@@ -13,8 +13,6 @@ using PaliPractice.Services.UserData;
 using PaliPractice.Themes;
 using Uno.Toolkit.UI;
 using AboutPage = PaliPractice.Presentation.Main.AboutPage;
-using AppearanceSettingsPage = PaliPractice.Presentation.Settings.AppearanceSettingsPage;
-using AppearanceSettingsViewModel = PaliPractice.Presentation.Settings.ViewModels.AppearanceSettingsViewModel;
 using ConjugationPracticePage = PaliPractice.Presentation.Practice.ConjugationPracticePage;
 using ConjugationPracticeViewModel = PaliPractice.Presentation.Practice.ViewModels.ConjugationPracticeViewModel;
 using ConjugationSettingsPage = PaliPractice.Presentation.Settings.ConjugationSettingsPage;
@@ -145,7 +143,6 @@ public partial class App : Application
                     services.AddTransient<DeclensionPracticeViewModel>();
                     services.AddTransient<ConjugationPracticeViewModel>();
                     services.AddTransient<SettingsViewModel>();
-                    services.AddTransient<AppearanceSettingsViewModel>();
                     services.AddTransient<ConjugationSettingsViewModel>();
                     services.AddTransient<DeclensionSettingsViewModel>();
                     services.AddTransient<LemmaRangeSettingsViewModel>();
@@ -199,7 +196,6 @@ public partial class App : Application
             new ViewMap<HelpPage, HelpViewModel>(),
             new ViewMap<AboutPage, AboutViewModel>(),
             new ViewMap<SettingsPage, SettingsViewModel>(),
-            new ViewMap<AppearanceSettingsPage, AppearanceSettingsViewModel>(),
             new ViewMap<StatisticsPage, StatisticsViewModel>(),
             new ViewMap<ConjugationSettingsPage, ConjugationSettingsViewModel>(),
             new ViewMap<DeclensionSettingsPage, DeclensionSettingsViewModel>(),
@@ -218,7 +214,6 @@ public partial class App : Application
                     new RouteMap("Help", View: views.FindByViewModel<HelpViewModel>()),
                     new RouteMap("About", View: views.FindByViewModel<AboutViewModel>()),
                     new RouteMap("Settings", View: views.FindByViewModel<SettingsViewModel>()),
-                    new RouteMap("Appearance", View: views.FindByViewModel<AppearanceSettingsViewModel>()),
                     new RouteMap("Statistics", View: views.FindByViewModel<StatisticsViewModel>()),
                     new RouteMap("ConjugationSettings", View: views.FindByViewModel<ConjugationSettingsViewModel>()),
                     new RouteMap("DeclensionSettings", View: views.FindByViewModel<DeclensionSettingsViewModel>()),

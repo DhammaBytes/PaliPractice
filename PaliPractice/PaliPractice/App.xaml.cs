@@ -75,6 +75,10 @@ public partial class App : Application
 
         // Override control accent colors (must be after XamlControlsResources)
         ControlStyling.ApplyAccentColorOverrides(Resources);
+
+        // Preload all icons to eliminate loading jitter on first use
+        IconCache.Preload();
+
         var builder = this.CreateBuilder(args)
             // Add navigation support for toolkit controls such as TabBar and NavigationView
             .UseToolkitNavigation()

@@ -33,6 +33,7 @@
             <SolidColorBrush x:Key="AccentPressedBrush" Color="{StaticResource SystemAccentColorDark1}"/>
             <SolidColorBrush x:Key="AccentSubtleBrush" Color="{StaticResource SystemAccentColor}" Opacity="0.08"/>
             <SolidColorBrush x:Key="AccentSubtleHoverBrush" Color="{StaticResource SystemAccentColor}" Opacity="0.12"/>
+            <SolidColorBrush x:Key="AccentBlueBrush" Color="#1A7ECB"/>
 
             <!-- Button Colors -->
             <SolidColorBrush x:Key="NavigationButtonBrush" Color="#F8F0E8"/>
@@ -102,6 +103,7 @@
             <SolidColorBrush x:Key="AccentPressedBrush" Color="{StaticResource SystemAccentColorDark1}"/>
             <SolidColorBrush x:Key="AccentSubtleBrush" Color="{StaticResource SystemAccentColor}" Opacity="0.08"/>
             <SolidColorBrush x:Key="AccentSubtleHoverBrush" Color="{StaticResource SystemAccentColor}" Opacity="0.12"/>
+            <SolidColorBrush x:Key="AccentBlueBrush" Color="#6BAFE0"/>
 
             <!-- Button Colors -->
             <SolidColorBrush x:Key="NavigationButtonBrush" Color="#3D2E26"/>

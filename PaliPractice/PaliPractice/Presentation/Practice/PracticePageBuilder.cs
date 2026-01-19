@@ -188,7 +188,7 @@ public static class PracticePageBuilder
         var bgColor = bgBrush?.Color ?? Colors.White;
 
         var fadeOverlay = new Border()
-            .Height(16)
+            .Height(24)
             .VerticalAlignment(VerticalAlignment.Bottom)
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .IsHitTestVisible(false)
@@ -403,7 +403,7 @@ public static class PracticePageBuilder
             .Height(LayoutConstants.Sizes.PlaceholderHeight)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .VerticalAlignment(VerticalAlignment.Center)
-            .BorderBrush(ThemeResource.Get<Brush>("OnSurfaceSecondaryBrush"))
+            .BorderBrush(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
             .BorderThickness(0, 0, 0, LayoutConstants.Sizes.PlaceholderBorderThickness)
             .BoolToVisibility<Border, TVM>(isRevealedPath, invert: true);
 
@@ -598,47 +598,80 @@ public static class PracticePageBuilder
                     )
             );
 
-        // Arrow buttons - circular white buttons with arrows (using regular Button for true circles)
-        var buttonSize = 36.0;
-        var prevButton = new Button()
+        // Arrow buttons - 36px visible circle with 50px hit area for easier tapping
+        // Using Border as hit area wrapper to avoid Button's hover/press visual states
+        var visualSize = 36.0;
+        var hitSize = 50.0;
+
+        var prevVisual = new Border()
+            .Width(visualSize)
+            .Height(visualSize)
+            .CornerRadius(new CornerRadius(visualSize / 2))
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .BorderThickness(new Thickness(0))
-            .Width(buttonSize)
-            .Height(buttonSize)
-            .Padding(0)
-            .CornerRadius(new CornerRadius(buttonSize / 2)) // Perfect circle
+            .HorizontalAlignment(HorizontalAlignment.Left)
+            .VerticalAlignment(VerticalAlignment.Top)
+            .Child(
+                new BitmapIcon()
+                    .UriSource(new Uri(PracticeIcons.ChevronLeft))
+                    .ShowAsMonochrome(true)
+                    .Height(13)
+                    .Margin(-2, 0, 0, 0)
+                    .HorizontalAlignment(HorizontalAlignment.Center)
+                    .VerticalAlignment(VerticalAlignment.Center)
+                    .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
+            );
+
+        var prevButton = new Border()
+            .Width(hitSize)
+            .Height(hitSize)
+            .Background(new SolidColorBrush(Colors.Transparent))
             .VerticalAlignment(VerticalAlignment.Top)
             .HorizontalAlignment(HorizontalAlignment.Left)
             .Scope(carouselPath)
-            .CommandWithin<Button, ExampleCarouselViewModel>(c => c.PreviousCommand)
-            .VisibilityWithin<Button, ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
-            .OpacityWithin<Button, ExampleCarouselViewModel>(c => c.IsRevealed)
-            .Content(new BitmapIcon()
-                .UriSource(new Uri(PracticeIcons.ChevronLeft))
-                .ShowAsMonochrome(true)
-                .Height(13) // Figma @1x: 8x13
-                .Margin(-2, 0, 0, 0) // Shift left 2pt for optical alignment
-                .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush")));
+            .VisibilityWithin<Border, ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
+            .OpacityWithin<Border, ExampleCarouselViewModel>(c => c.IsRevealed)
+            .Child(prevVisual);
 
-        var nextButton = new Button()
+        prevButton.Tapped += (s, e) =>
+        {
+            if (s is FrameworkElement { DataContext: ExampleCarouselViewModel vm })
+                vm.PreviousCommand.Execute(null);
+        };
+
+        var nextVisual = new Border()
+            .Width(visualSize)
+            .Height(visualSize)
+            .CornerRadius(new CornerRadius(visualSize / 2))
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .BorderThickness(new Thickness(0))
-            .Width(buttonSize)
-            .Height(buttonSize)
-            .Padding(0)
-            .CornerRadius(new CornerRadius(buttonSize / 2)) // Perfect circle
+            .HorizontalAlignment(HorizontalAlignment.Right)
+            .VerticalAlignment(VerticalAlignment.Top)
+            .Child(
+                new BitmapIcon()
+                    .UriSource(new Uri(PracticeIcons.ChevronRight))
+                    .ShowAsMonochrome(true)
+                    .Height(13)
+                    .Margin(2, 0, 0, 0)
+                    .HorizontalAlignment(HorizontalAlignment.Center)
+                    .VerticalAlignment(VerticalAlignment.Center)
+                    .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
+            );
+
+        var nextButton = new Border()
+            .Width(hitSize)
+            .Height(hitSize)
+            .Background(new SolidColorBrush(Colors.Transparent))
             .VerticalAlignment(VerticalAlignment.Top)
             .HorizontalAlignment(HorizontalAlignment.Right)
             .Scope(carouselPath)
-            .CommandWithin<Button, ExampleCarouselViewModel>(c => c.NextCommand)
-            .VisibilityWithin<Button, ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
-            .OpacityWithin<Button, ExampleCarouselViewModel>(c => c.IsRevealed)
-            .Content(new BitmapIcon()
-                .UriSource(new Uri(PracticeIcons.ChevronRight))
-                .ShowAsMonochrome(true)
-                .Height(13) // Figma @1x: 8x13
-                .Margin(2, 0, 0, 0) // Shift right 2pt for optical alignment
-                .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush")));
+            .VisibilityWithin<Border, ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
+            .OpacityWithin<Border, ExampleCarouselViewModel>(c => c.IsRevealed)
+            .Child(nextVisual);
+
+        nextButton.Tapped += (s, e) =>
+        {
+            if (s is FrameworkElement { DataContext: ExampleCarouselViewModel vm })
+                vm.NextCommand.Execute(null);
+        };
 
         // Grid layout: arrows at edges, translation centered
         // This aligns arrow edges with card edges above

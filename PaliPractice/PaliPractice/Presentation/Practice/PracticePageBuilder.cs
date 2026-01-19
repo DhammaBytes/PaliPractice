@@ -42,8 +42,7 @@ public record BadgeSet(
     StackPanel Panel,
     SquircleBorder[] Borders,
     TextBlock[] TextBlocks,
-    BitmapIcon[] Icons,
-    Border[] Placeholders
+    BufferedBitmapIcon[] Icons
 );
 
 #endregion
@@ -75,7 +74,6 @@ public static class PracticePageBuilder
         elements.BadgeBorders.AddRange(badges.Borders);
         elements.BadgeTextBlocks.AddRange(badges.TextBlocks);
         elements.BadgeIcons.AddRange(badges.Icons);
-        elements.BadgePlaceholders.AddRange(badges.Placeholders);
 
         // Build answer section (Viewbox shrinks long words automatically)
         var (answerViewbox, secondaryViewbox, placeholder, answerContainer) = BuildAnswerSection(
@@ -147,12 +145,16 @@ public static class PracticePageBuilder
         // Set up dynamic widths based on card size
         cardBorder.SizeChanged += (_, e) =>
         {
-            var translationWidth = e.NewSize.Width * LayoutConstants.TranslationWidthRatio;
+            // Translation width must fit between arrow buttons (50px each) even when they're hidden,
+            // so the width stays fixed regardless of arrow visibility
+            const double arrowHitboxWidth = 50.0;
+            var availableWidthForTranslation = e.NewSize.Width - (2 * arrowHitboxWidth);
+            var translationWidth = availableWidthForTranslation * LayoutConstants.TranslationWidthRatio;
             var textWidth = translationWidth - (LayoutConstants.Gaps.TranslationPaddingH * 2);
 
             elements.AnswerPlaceholder?.Width = e.NewSize.Width * LayoutConstants.AnswerPlaceholderWidthRatio;
 
-            translationBorder.Width = translationWidth;
+            // Translation border stretches to fill Star column (space between arrows)
             exampleContainer.MaxWidth = translationWidth;
 
             // Update text balancing width in the carousel ViewModel
@@ -451,10 +453,9 @@ public static class PracticePageBuilder
 
     /// <summary>
     /// Builds a grammar badge with tintable PNG icon and text.
-    /// Icon uses BitmapIcon with ShowAsMonochrome for Foreground tinting.
-    /// Icon is wrapped in a fixed-width placeholder to prevent layout jerk during async loading.
+    /// Uses BufferedBitmapIcon for seamless icon transitions without blinking.
     /// </summary>
-    public static (BitmapIcon icon, Border placeholder, TextBlock text, SquircleBorder badge) BuildBadge<TVM>(
+    public static (BufferedBitmapIcon icon, TextBlock text, SquircleBorder badge) BuildBadge<TVM>(
         HeightClass heightClass,
         Expression<Func<TVM, string?>> iconPath,
         Expression<Func<TVM, string>> labelPath,
@@ -462,20 +463,15 @@ public static class PracticePageBuilder
     {
         var fonts = LayoutConstants.PracticeFontSizes.Get(heightClass);
 
-        // PNG icon with monochrome tinting - height matches badge font size
-        var icon = new BitmapIcon()
-            .ShowAsMonochrome(true)
-            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
-            .Height(fonts.Badge)
-            .HorizontalAlignment(HorizontalAlignment.Left)
-            .VerticalAlignment(VerticalAlignment.Center)
-            .UriSourceWithVisibility<TVM>(iconPath);
-
-        // Fixed-width placeholder prevents layout shift during async icon loading
-        // All badge icons are square (1:1 aspect ratio), so width = height
-        var placeholder = new Border()
-            .Width(fonts.Badge)
-            .Child(icon);
+        // Double-buffered icon prevents blinking during card transitions
+        var icon = new BufferedBitmapIcon
+        {
+            IconHeight = fonts.Badge,
+            IconForeground = Application.Current.Resources["OnSurfaceBrush"] as Brush,
+            Width = fonts.Badge,  // Fixed width (all icons are square)
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        icon.SetBinding(BufferedBitmapIcon.SourceProperty, Bind.Path(iconPath));
 
         var text = RegularText()
             .FontSize(fonts.Badge)
@@ -492,9 +488,9 @@ public static class PracticePageBuilder
                 .Spacing(LayoutConstants.Gaps.BadgeIconTextSpacing)
                 .Padding(LayoutConstants.Gaps.BadgePadding)
                 .VerticalAlignment(VerticalAlignment.Center)
-                .Children(placeholder, text));
+                .Children(icon, text));
 
-        return (icon, placeholder, text, badge);
+        return (icon, text, badge);
     }
 
     /// <summary>
@@ -502,7 +498,7 @@ public static class PracticePageBuilder
     /// </summary>
     public static BadgeSet CreateBadgeSet(
         HeightClass heightClass,
-        params (BitmapIcon icon, Border placeholder, TextBlock text, SquircleBorder badge)[] badges)
+        params (BufferedBitmapIcon icon, TextBlock text, SquircleBorder badge)[] badges)
     {
         var panel = new StackPanel()
             .Orientation(Orientation.Horizontal)
@@ -514,8 +510,7 @@ public static class PracticePageBuilder
             panel,
             badges.Select(b => b.badge).ToArray(),
             badges.Select(b => b.text).ToArray(),
-            badges.Select(b => b.icon).ToArray(),
-            badges.Select(b => b.placeholder).ToArray()
+            badges.Select(b => b.icon).ToArray()
         );
     }
 
@@ -682,14 +677,14 @@ public static class PracticePageBuilder
                 vm.NextCommand.Execute(null);
         };
 
-        // Grid layout: arrows at edges, translation centered
-        // This aligns arrow edges with card edges above
+        // Grid layout: arrows at edges, translation fills space between
+        // Fixed 50px columns reserve arrow space even when arrows are hidden
         var container = new Grid()
-            .ColumnDefinitions("Auto,*,Auto")
+            .ColumnDefinitions("50,*,50")
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Children(
                 prevButton.Grid(column: 0),
-                CardShadow(translationBorder).Grid(column: 1).HorizontalAlignment(HorizontalAlignment.Center),
+                CardShadow(translationBorder).Grid(column: 1).HorizontalAlignment(HorizontalAlignment.Stretch),
                 nextButton.Grid(column: 2)
             );
 
@@ -981,11 +976,10 @@ public static class PracticePageBuilder
             textBlock.FontSize = fonts.Badge;
 
         foreach (var icon in elements.BadgeIcons)
-            icon.Height = fonts.Badge;
-
-        // Badge placeholders (all icons are square, width = height)
-        foreach (var placeholder in elements.BadgePlaceholders)
-            placeholder.Width = fonts.Badge;
+        {
+            icon.IconHeight = fonts.Badge;
+            icon.Width = fonts.Badge;  // All icons are square
+        }
 
         // Badge hint
         elements.BadgeHintTextBlock?.FontSize = fonts.BadgeHint;
@@ -1036,7 +1030,6 @@ public class ResponsiveElements
     public TextBlock? DebugTextBlock { get; set; }
     public List<SquircleBorder> BadgeBorders { get; } = [];
     public List<TextBlock> BadgeTextBlocks { get; } = [];
-    public List<BitmapIcon> BadgeIcons { get; } = [];
-    public List<Border> BadgePlaceholders { get; } = [];
+    public List<BufferedBitmapIcon> BadgeIcons { get; } = [];
     public List<(BitmapIcon Icon, TextBlock Text)> ButtonElements { get; } = [];
 }

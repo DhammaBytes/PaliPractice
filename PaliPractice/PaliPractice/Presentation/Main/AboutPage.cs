@@ -62,7 +62,7 @@ public sealed partial class AboutPage : Page
                                         new SquircleButton()
                                             .Fill(ThemeResource.Get<Brush>("NavigationButtonBrush"))
                                             .Stroke(ThemeResource.Get<Brush>("NavigationButtonOutlineBrush"))
-                                            .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
+                                            .StrokeThickness(LayoutConstants.Sizes.NavButtonStrokeThickness)
                                             .RadiusMode(SquircleRadiusMode.ButtonNavigation)
                                             .Padding(20, 12)
                                             .Command(() => vm.ContactUsCommand)

@@ -79,18 +79,22 @@ public static class SquircleGeometry
     /// <param name="radius">Corner radius.</param>
     /// <param name="corners">Which corners to round (default: all).</param>
     /// <param name="ignoreLimit">If true, don't limit radius to MaxSideRatio.</param>
+    /// <param name="offsetX">X offset for the shape origin (default: 0).</param>
+    /// <param name="offsetY">Y offset for the shape origin (default: 0).</param>
     /// <returns>A PathGeometry with the squircle shape.</returns>
     public static PathGeometry Create(
         double width,
         double height,
         double radius,
         SquircleCorners corners = SquircleCorners.All,
-        bool ignoreLimit = false)
+        bool ignoreLimit = false,
+        double offsetX = 0,
+        double offsetY = 0)
     {
         float limit = (float)(Math.Min(width, height) * MaxSideRatio);
         float limitedRadius = ignoreLimit ? (float)radius : Math.Min((float)radius, limit);
 
-        var rect = new Rect(0, 0, width, height);
+        var rect = new Rect(offsetX, offsetY, width, height);
 
         // Check if curves would overlap on each edge
         bool topBottomOverlap = 2 * CurveExtent * limitedRadius > width;

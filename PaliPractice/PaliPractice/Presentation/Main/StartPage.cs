@@ -94,7 +94,7 @@ public sealed partial class StartPage : Page
             .RadiusMode(SquircleRadiusMode.ButtonLarge)
             .Fill(ThemeResource.Get<Brush>("NavigationButtonVariantBrush"))
             .Stroke(ThemeResource.Get<Brush>("NavigationButtonVariantOutlineBrush"))
-            .StrokeThickness(3) // Thicker to compensate for 10% opacity stroke
+            .StrokeThickness(LayoutConstants.Sizes.StartPagePrimaryStrokeThickness)
             .Padding(20, 20) // 4pt extra vertical padding
             .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)
@@ -137,7 +137,7 @@ public sealed partial class StartPage : Page
             .RadiusMode(SquircleRadiusMode.ButtonLarge)
             .Fill(ThemeResource.Get<Brush>("NavigationButtonBrush"))
             .Stroke(ThemeResource.Get<Brush>("NavigationButtonOutlineBrush"))
-            .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
+            .StrokeThickness(LayoutConstants.Sizes.StartPageSecondaryStrokeThickness)
             .Padding(centerContent ? 14 : 20, 16) // 14pt for short buttons, 20pt for long
             .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)

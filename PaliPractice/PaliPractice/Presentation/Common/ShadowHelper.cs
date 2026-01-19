@@ -77,30 +77,18 @@ public static class ShadowHelper
     /// <summary>
     /// Wraps content in a ShadowContainer with a pill button shadow (app bar buttons: Back, History, All Forms).
     /// </summary>
-    public static ShadowContainer PillShadow(UIElement content)
-        => CreateThemeAwareShadowContainer(content, "AppBarNavigationButtonShadow");
-
-    /// <summary>
-    /// Wraps content in a ShadowContainer with a start navigation button shadow (Nouns & Cases, Verbs & Tenses).
-    /// </summary>
-    public static ShadowContainer StartNavShadow(UIElement content)
-        => CreateThemeAwareShadowContainer(content, "StartNavigationButtonVariantShadow");
-
-    /// <summary>
-    /// Wraps content in a ShadowContainer with a Hard/Easy button shadow.
-    /// </summary>
-    public static ShadowContainer HardEasyShadow(UIElement content)
-        => CreateThemeAwareShadowContainer(content, "StartNavigationButtonShadow");
-
-    /// <summary>
-    /// Wraps content in a ShadowContainer with a secondary button shadow (Settings, Stats, Help on Start page).
-    /// </summary>
-    public static ShadowContainer StartNavigationButtonShadow(UIElement content)
-        => CreateThemeAwareShadowContainer(content, "StartNavigationButtonShadow");
-
-    /// <summary>
-    /// Wraps content in a ShadowContainer with a card shadow (practice card, translation box).
-    /// </summary>
+    public static ShadowContainer NavigationButtonShadow(UIElement content)
+        => CreateThemeAwareShadowContainer(content, "NavigationButtonShadow");
+    
+    public static ShadowContainer StartPrimaryButtonShadow(UIElement content)
+        => CreateThemeAwareShadowContainer(content, "StartPrimaryButtonShadow");
+    
+    public static ShadowContainer StartSecondaryButtonShadow(UIElement content)
+        => CreateThemeAwareShadowContainer(content, "StartSecondaryButtonShadow");
+    
+    public static ShadowContainer ButtonShadow(UIElement content)
+        => CreateThemeAwareShadowContainer(content, "ButtonShadow");
+    
     public static ShadowContainer CardShadow(UIElement content)
         => CreateThemeAwareShadowContainer(content, "CardShadow");
 }

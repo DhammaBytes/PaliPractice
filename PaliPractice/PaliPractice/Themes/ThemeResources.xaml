@@ -60,16 +60,23 @@
 
             <!-- Shadow Collections -->
             <utu:ShadowCollection x:Key="CardShadow">
-                <utu:Shadow BlurRadius="20" OffsetY="10" Opacity="1" Color="#F0DED1"/>
+                <utu:Shadow BlurRadius="4" OffsetY="2" Opacity="0.4" Color="#F0DED1"/>
             </utu:ShadowCollection>
-            <utu:ShadowCollection x:Key="StartNavigationButtonShadow">
-                <utu:Shadow BlurRadius="16" OffsetY="8" Opacity="0.6" Color="#F0DED1"/>
+
+            <utu:ShadowCollection x:Key="StartPrimaryButtonShadow">
+                <utu:Shadow BlurRadius="6" OffsetY="3" Opacity="0.6" Color="#F0DED1"/>
             </utu:ShadowCollection>
-            <utu:ShadowCollection x:Key="StartNavigationButtonVariantShadow">
-                <utu:Shadow BlurRadius="20" OffsetY="10" Opacity="1" Color="#F0DED1"/>
+
+            <utu:ShadowCollection x:Key="StartSecondaryButtonShadow">
+                <utu:Shadow BlurRadius="4" OffsetY="2" Opacity="0.4" Color="#F0DED1"/>
             </utu:ShadowCollection>
-            <utu:ShadowCollection x:Key="AppBarNavigationButtonShadow">
-                <utu:Shadow BlurRadius="12" OffsetY="6" Opacity="0.6" Color="#F0DED1"/>
+
+            <utu:ShadowCollection x:Key="NavigationButtonShadow">
+                <utu:Shadow BlurRadius="4" OffsetY="4" Opacity="0.2" Color="#F0DED1"/>
+            </utu:ShadowCollection>
+
+            <utu:ShadowCollection x:Key="ButtonShadow">
+                <utu:Shadow BlurRadius="6" OffsetY="3" Opacity="0.6" Color="#F0DED1"/>
             </utu:ShadowCollection>
 
         </ResourceDictionary>
@@ -130,16 +137,19 @@
 
             <!-- Shadow Collections -->
             <utu:ShadowCollection x:Key="CardShadow">
-                <utu:Shadow BlurRadius="20" OffsetY="10" Opacity="1" Color="#1A0E08"/>
+                <utu:Shadow BlurRadius="16" OffsetY="8" Opacity="1" Color="#1A0E08"/>
             </utu:ShadowCollection>
-            <utu:ShadowCollection x:Key="StartNavigationButtonShadow">
-                <utu:Shadow BlurRadius="16" OffsetY="8" Opacity="0.6" Color="#1A0E08"/>
+            <utu:ShadowCollection x:Key="StartPrimaryButtonShadow">
+                <utu:Shadow BlurRadius="16" OffsetY="8" Opacity="1" Color="#1A0E08"/>
             </utu:ShadowCollection>
-            <utu:ShadowCollection x:Key="StartNavigationButtonVariantShadow">
-                <utu:Shadow BlurRadius="20" OffsetY="10" Opacity="1" Color="#1A0E08"/>
+            <utu:ShadowCollection x:Key="StartSecondaryButtonShadow">
+                <utu:Shadow BlurRadius="16" OffsetY="8" Opacity="1" Color="#1A0E08"/>
             </utu:ShadowCollection>
-            <utu:ShadowCollection x:Key="AppBarNavigationButtonShadow">
-                <utu:Shadow BlurRadius="12" OffsetY="6" Opacity="0.6" Color="#1A0E08"/>
+            <utu:ShadowCollection x:Key="NavigationButtonShadow">
+                <utu:Shadow BlurRadius="16" OffsetY="8" Opacity="1" Color="#1A0E08"/>
+            </utu:ShadowCollection>
+            <utu:ShadowCollection x:Key="ButtonShadow">
+                <utu:Shadow BlurRadius="16" OffsetY="8" Opacity="1" Color="#1A0E08"/>
             </utu:ShadowCollection>
 
         </ResourceDictionary>

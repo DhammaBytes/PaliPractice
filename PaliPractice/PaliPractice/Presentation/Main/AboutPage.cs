@@ -58,11 +58,11 @@ public sealed partial class AboutPage : Page
                                     CardShadow(BuildRichSection(null, AboutViewModel.Description)),
 
                                     // Contact button
-                                    PillShadow(
+                                    NavigationButtonShadow(
                                         new SquircleButton()
                                             .Fill(ThemeResource.Get<Brush>("NavigationButtonBrush"))
                                             .Stroke(ThemeResource.Get<Brush>("NavigationButtonOutlineBrush"))
-                                            .StrokeThickness(LayoutConstants.Sizes.NavButtonStrokeThickness)
+                                            .StrokeThickness(LayoutConstants.Sizes.NavigationButtonStrokeThickness)
                                             .RadiusMode(SquircleRadiusMode.ButtonNavigation)
                                             .Padding(20, 12)
                                             .Command(() => vm.ContactUsCommand)

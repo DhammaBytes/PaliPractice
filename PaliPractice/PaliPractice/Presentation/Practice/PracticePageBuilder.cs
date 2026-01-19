@@ -756,7 +756,7 @@ public static class PracticePageBuilder
             .Padding(contentPadding, 0, contentPadding, 0) // No top/bottom padding (gaps handled by adjacent elements)
             .Children(
                 // Reveal button - visible when NOT revealed
-                StartNavShadow(BuildRevealButton(revealCommand, fonts))
+                StartPrimaryButtonShadow(BuildRevealButton(revealCommand, fonts))
                     .BoolToVisibility<ShadowContainer, TVM>(isRevealedPath, invert: true),
 
                 // Hard/Easy buttons - visible when revealed
@@ -765,8 +765,8 @@ public static class PracticePageBuilder
                     .ColumnSpacing(contentPadding)
                     .BoolToVisibility<Grid, TVM>(isRevealedPath)
                     .Children(
-                        HardEasyShadow(hardButton).Grid(column: 0),
-                        HardEasyShadow(easyButton).Grid(column: 1)
+                        ButtonShadow(hardButton).Grid(column: 0),
+                        ButtonShadow(easyButton).Grid(column: 1)
                     )
             );
 

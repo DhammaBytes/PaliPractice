@@ -61,7 +61,7 @@ public static class AppTitleBar
         var centerButton = new SquircleButton()
             .Fill(ThemeResource.Get<Brush>("NavigationButtonBrush"))
             .Stroke(ThemeResource.Get<Brush>("NavigationButtonOutlineBrush"))
-            .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
+            .StrokeThickness(LayoutConstants.Sizes.NavButtonStrokeThickness)
             .RadiusMode(SquircleRadiusMode.Pill) // More pill-like corners
             .Padding(24, 10);
         centerButton.SetBinding(ButtonBase.CommandProperty, Bind.Path(centerClickCommand));
@@ -158,7 +158,7 @@ public static class AppTitleBar
         var button = new SquircleButton()
             .Fill(ThemeResource.Get<Brush>("NavigationButtonBrush"))
             .Stroke(ThemeResource.Get<Brush>("NavigationButtonOutlineBrush"))
-            .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
+            .StrokeThickness(LayoutConstants.Sizes.NavButtonStrokeThickness)
             .RadiusMode(SquircleRadiusMode.Pill)
             .Padding(12, 10)
             .MinWidth(NavButtonMinWidth);
@@ -189,7 +189,7 @@ public static class AppTitleBar
         var button = new SquircleButton()
             .Fill(ThemeResource.Get<Brush>("NavigationButtonBrush"))
             .Stroke(ThemeResource.Get<Brush>("NavigationButtonOutlineBrush"))
-            .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
+            .StrokeThickness(LayoutConstants.Sizes.NavButtonStrokeThickness)
             .RadiusMode(SquircleRadiusMode.Pill)
             .Padding(12, 10)
             .MinWidth(NavButtonMinWidth);

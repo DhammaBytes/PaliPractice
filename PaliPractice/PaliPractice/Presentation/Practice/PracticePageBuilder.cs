@@ -407,7 +407,7 @@ public static class PracticePageBuilder
             .HorizontalAlignment(HorizontalAlignment.Center)
             .VerticalAlignment(VerticalAlignment.Center)
             .BorderBrush(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
-            .BorderThickness(0, 0, 0, LayoutConstants.Sizes.PlaceholderBorderThickness)
+            .BorderThickness(0, 0, 0, LayoutConstants.Sizes.AnswerLineThickness)
             .BoolToVisibility<Border, TVM>(isRevealedPath, invert: true);
 
         var answerContainer = new Grid()
@@ -781,7 +781,7 @@ public static class PracticePageBuilder
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Fill(ThemeResource.Get<Brush>("NavigationButtonVariantBrush"))
             .Stroke(ThemeResource.Get<Brush>("NavigationButtonVariantOutlineBrush"))
-            .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
+            .StrokeThickness(LayoutConstants.Sizes.PracticeButtonStrokeThickness)
             .Padding(LayoutConstants.Gaps.ActionButtonPaddingH, LayoutConstants.Gaps.ActionButtonPaddingV);
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
         return button
@@ -829,7 +829,7 @@ public static class PracticePageBuilder
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Fill(ThemeResource.Get<Brush>(fillBrushKey))
             .Stroke(ThemeResource.Get<Brush>(strokeBrushKey))
-            .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
+            .StrokeThickness(LayoutConstants.Sizes.PracticeButtonStrokeThickness)
             .Padding(LayoutConstants.Gaps.ActionButtonPaddingH, LayoutConstants.Gaps.ActionButtonPaddingV);
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
         button.Child(new StackPanel()

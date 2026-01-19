@@ -258,17 +258,17 @@ public class SquircleBorder : ContentControl
 
         if (_borderPath != null && Stroke != null)
         {
-            // For border, create slightly inset geometry to account for stroke thickness
+            // For border, create inset geometry for inner stroke effect:
+            // Path is shrunk by StrokeThickness and offset by StrokeThickness/2,
+            // so when stroke draws centered, its outer edge aligns with fill's outer edge
             var inset = StrokeThickness / 2;
             var borderGeometry = SquircleGeometry.Create(
                 Math.Max(0, width - StrokeThickness),
                 Math.Max(0, height - StrokeThickness),
                 Math.Max(0, radius - inset),
-                Corners);
-
-            // Translate to center the border stroke
-            var transform = new TranslateTransform { X = inset, Y = inset };
-            borderGeometry.Transform = transform;
+                Corners,
+                offsetX: inset,
+                offsetY: inset);
             _borderPath.Data = borderGeometry;
         }
         else if (_borderPath != null)

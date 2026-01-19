@@ -312,31 +312,34 @@ public class SquircleButton : Button
         if (width <= 0 || height <= 0)
             return;
 
+        // Set explicit size on all paths to anchor them to control bounds
+        if (_backgroundPath != null)
+        {
+            _backgroundPath.Width = width;
+            _backgroundPath.Height = height;
+        }
+        if (_hoverPath != null)
+        {
+            _hoverPath.Width = width;
+            _hoverPath.Height = height;
+        }
+        if (_pressedPath != null)
+        {
+            _pressedPath.Width = width;
+            _pressedPath.Height = height;
+        }
+        if (_borderPath != null)
+        {
+            _borderPath.Width = width;
+            _borderPath.Height = height;
+        }
+
         // Explicit Radius takes precedence over RadiusMode calculation
         var radius = Radius ?? SquircleGeometry.CalculateRadius(width, height, RadiusMode);
 
-        // When we have a stroke, inset all shapes to fit within the stroke
-        var hasStroke = Stroke != null && StrokeThickness > 0;
-        var inset = hasStroke ? StrokeThickness / 2 : 0;
+        // Fill and overlays always use full-size geometry
+        var fillGeometry = SquircleGeometry.Create(width, height, radius);
 
-        // Background and overlays should be inset to fit inside the border stroke
-        var fillWidth = Math.Max(0, width - StrokeThickness);
-        var fillHeight = Math.Max(0, height - StrokeThickness);
-        var fillRadius = Math.Max(0, radius - inset);
-
-        // Generate the fill geometry (used for background, hover, pressed)
-        PathGeometry fillGeometry;
-        if (hasStroke)
-        {
-            fillGeometry = SquircleGeometry.Create(fillWidth, fillHeight, fillRadius);
-            fillGeometry.Transform = new TranslateTransform { X = inset, Y = inset };
-        }
-        else
-        {
-            fillGeometry = SquircleGeometry.Create(width, height, radius);
-        }
-
-        // Apply fill geometry to background and overlay paths
         if (_backgroundPath != null)
             _backgroundPath.Data = fillGeometry;
 
@@ -346,11 +349,20 @@ public class SquircleButton : Button
         if (_pressedPath != null)
             _pressedPath.Data = fillGeometry;
 
-        // Border uses the same inset geometry for the stroke
+        // Border uses inset path for inner stroke effect:
+        // Path is shrunk by StrokeThickness and offset by StrokeThickness/2,
+        // so when stroke draws centered, its outer edge aligns with fill's outer edge
+        var hasStroke = Stroke != null && StrokeThickness > 0;
         if (_borderPath != null && hasStroke)
         {
-            // Border stroke is centered on the path, so use same geometry as fill
-            _borderPath.Data = fillGeometry;
+            var inset = StrokeThickness / 2;
+            var borderGeometry = SquircleGeometry.Create(
+                Math.Max(0, width - StrokeThickness),
+                Math.Max(0, height - StrokeThickness),
+                Math.Max(0, radius - inset),
+                offsetX: inset,
+                offsetY: inset);
+            _borderPath.Data = borderGeometry;
         }
         else if (_borderPath != null)
         {

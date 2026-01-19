@@ -311,16 +311,22 @@ public static class LayoutConstants
         public static double PlaceholderHeight => 2;
 
         /// <summary>Border thickness for the answer placeholder underline.</summary>
-        public static double PlaceholderBorderThickness => 2;
+        public static double AnswerLineThickness => 2;
 
         /// <summary>Height of the daily goal progress bar.</summary>
         public static double ProgressBarHeight => 8;
 
-        /// <summary>Corner radius for the daily goal progress bar.</summary>
-        public static double ProgressBarCornerRadius => 8;
+        /// <summary>Stroke thickness for navigation buttons (app bar, about contact).</summary>
+        public static double NavButtonStrokeThickness => 1.75;
 
-        /// <summary>Default stroke thickness for squircle buttons with borders.</summary>
-        public static double ButtonStrokeThickness => 1.5;
+        /// <summary>Stroke thickness for practice action buttons (reveal, hard, easy).</summary>
+        public static double PracticeButtonStrokeThickness => 1.75;
+
+        /// <summary>Stroke thickness for start page primary buttons - thicker due to 10% opacity stroke.</summary>
+        public static double StartPagePrimaryStrokeThickness => 1.75;
+        
+        /// <summary>Stroke thickness for start page secondary buttons (Settings, Stats, Help).</summary>
+        public static double StartPageSecondaryStrokeThickness => 1.75;
     }
 
     #endregion

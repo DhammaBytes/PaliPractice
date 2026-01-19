@@ -72,12 +72,14 @@ public static class BindExtensions
     /// <summary>
     /// Binds UIElement.Visibility to a string property path.
     /// Empty/null strings are hidden, non-empty strings are visible.
+    /// Use invert=true to reverse (show when empty, hide when non-empty).
     /// </summary>
-    public static T StringToVisibility<T, TDC>(this T element, Expression<Func<TDC, string>> path)
+    public static T StringToVisibility<T, TDC>(this T element, Expression<Func<TDC, string>> path, bool invert = false)
         where T : UIElement
     {
         var binding = Bind.Path(path);
         binding.Converter = StringNullOrEmptyToVisibilityConverter.Instance;
+        binding.ConverterParameter = invert;
         element.SetBinding(UIElement.VisibilityProperty, binding);
         return element;
     }

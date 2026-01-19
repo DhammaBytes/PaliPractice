@@ -13,7 +13,10 @@ public sealed class StringNullOrEmptyToVisibilityConverter : IValueConverter
 
     public object Convert(object value, Type targetType, object parameter, string language)
     {
-        return string.IsNullOrEmpty(value as string) ? Visibility.Collapsed : Visibility.Visible;
+        var isEmpty = string.IsNullOrEmpty(value as string);
+        var invert = parameter is true;
+
+        return (isEmpty ^ invert) ? Visibility.Collapsed : Visibility.Visible;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, string language)

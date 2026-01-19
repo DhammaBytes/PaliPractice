@@ -274,10 +274,11 @@ public static class PracticePageBuilder
         return new Grid()
             .ColumnDefinitions("Auto,*,Auto")
             .Children(
-                // Left: √Root in gray text
+                // Left: √Root in gray text (1px up to align with Level due to font difference)
                 new StackPanel()
                     .Orientation(Orientation.Horizontal)
                     .VerticalAlignment(VerticalAlignment.Center)
+                    .Margin(0, -1, 0, 0)
                     .Scope(cardPath)
                     .Children(
                         PaliText()
@@ -394,12 +395,18 @@ public static class PracticePageBuilder
                     .Text("X")
             );
 
+        // Invisible spacer that appears when there's only one answer line (no alternatives).
+        // Since the StackPanel is centered, this pushes the answer up by half the spacer height.
+        var singleLineSpacer = new Border()
+            .Height(8) // 8px spacer → 4px upward shift when centered
+            .StringToVisibility<Border, TVM>(alternativeFormsPath, invert: true);
+
         var answerContent = new StackPanel()
             .Spacing(LayoutConstants.Gaps.AnswerLineSpacing)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .VerticalAlignment(VerticalAlignment.Center)
             .BoolToVisibility<StackPanel, TVM>(isRevealedPath)
-            .Children(answerViewbox, alternativesViewbox);
+            .Children(answerViewbox, alternativesViewbox, singleLineSpacer);
 
         // Placeholder uses relative width via binding or we track width changes
         var answerPlaceholder = new Border()

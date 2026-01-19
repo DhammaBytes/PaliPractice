@@ -137,19 +137,23 @@
 
             <!-- Shadow Collections -->
             <utu:ShadowCollection x:Key="CardShadow">
-                <utu:Shadow BlurRadius="16" OffsetY="8" Opacity="1" Color="#1A0E08"/>
+                <utu:Shadow BlurRadius="4" OffsetY="2" Opacity="0.5" Color="#1A0E08"/>
             </utu:ShadowCollection>
+
             <utu:ShadowCollection x:Key="StartPrimaryButtonShadow">
-                <utu:Shadow BlurRadius="16" OffsetY="8" Opacity="1" Color="#1A0E08"/>
+                <utu:Shadow BlurRadius="6" OffsetY="3" Opacity="0.7" Color="#1A0E08"/>
             </utu:ShadowCollection>
+
             <utu:ShadowCollection x:Key="StartSecondaryButtonShadow">
-                <utu:Shadow BlurRadius="16" OffsetY="8" Opacity="1" Color="#1A0E08"/>
+                <utu:Shadow BlurRadius="4" OffsetY="2" Opacity="0.5" Color="#1A0E08"/>
             </utu:ShadowCollection>
+
             <utu:ShadowCollection x:Key="NavigationButtonShadow">
-                <utu:Shadow BlurRadius="16" OffsetY="8" Opacity="1" Color="#1A0E08"/>
+                <utu:Shadow BlurRadius="4" OffsetY="4" Opacity="0.3" Color="#1A0E08"/>
             </utu:ShadowCollection>
+
             <utu:ShadowCollection x:Key="ButtonShadow">
-                <utu:Shadow BlurRadius="16" OffsetY="8" Opacity="1" Color="#1A0E08"/>
+                <utu:Shadow BlurRadius="6" OffsetY="3" Opacity="0.7" Color="#1A0E08"/>
             </utu:ShadowCollection>
 
         </ResourceDictionary>

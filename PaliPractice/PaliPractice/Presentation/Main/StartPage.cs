@@ -44,17 +44,17 @@ public sealed partial class StartPage : Page
                                         .Children(
                                             // Declension Practice Button
                                             // Command must be set at call site for source generator to see the binding
-                                            StartNavShadow(
+                                            StartPrimaryButtonShadow(
                                                 BuildPracticeButton(MenuIcons.Nouns, "Nouns & Cases", "Declension Practice")
                                                     .Command(() => vm.GoToDeclensionCommand)),
 
                                             // Conjugation Practice Button
-                                            StartNavShadow(
+                                            StartPrimaryButtonShadow(
                                                 BuildPracticeButton(MenuIcons.Verbs, "Verbs & Tenses", "Conjugation Practice")
                                                     .Command(() => vm.GoToConjugationCommand)),
 
                                             // Settings Button
-                                            StartNavigationButtonShadow(
+                                            StartSecondaryButtonShadow(
                                                 BuildSecondaryButton(MenuIcons.Settings, "Settings", iconHeight: 30)
                                                     .Command(() => vm.GoToSettingsCommand)),
 
@@ -63,13 +63,13 @@ public sealed partial class StartPage : Page
                                                 .ColumnDefinitions("*,16,*")
                                                 .Children(
                                                     // Stats Button
-                                                    StartNavigationButtonShadow(
+                                                    StartSecondaryButtonShadow(
                                                         BuildSecondaryButton(MenuIcons.Stats, "Stats", iconHeight: 27, centerContent: true, iconVerticalOffset: -2)
                                                             .Command(() => vm.GoToStatisticsCommand))
                                                         .Grid(column: 0),
 
                                                     // Help Button
-                                                    StartNavigationButtonShadow(
+                                                    StartSecondaryButtonShadow(
                                                         BuildSecondaryButton(MenuIcons.Help, "Help", iconHeight: 27, centerContent: true)
                                                             .Command(() => vm.GoToHelpCommand))
                                                         .Grid(column: 2)
@@ -94,7 +94,7 @@ public sealed partial class StartPage : Page
             .RadiusMode(SquircleRadiusMode.ButtonLarge)
             .Fill(ThemeResource.Get<Brush>("NavigationButtonVariantBrush"))
             .Stroke(ThemeResource.Get<Brush>("NavigationButtonVariantOutlineBrush"))
-            .StrokeThickness(LayoutConstants.Sizes.StartPagePrimaryStrokeThickness)
+            .StrokeThickness(LayoutConstants.Sizes.StartPageStrokeThickness)
             .Padding(20, 20) // 4pt extra vertical padding
             .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)
@@ -137,7 +137,7 @@ public sealed partial class StartPage : Page
             .RadiusMode(SquircleRadiusMode.ButtonLarge)
             .Fill(ThemeResource.Get<Brush>("NavigationButtonBrush"))
             .Stroke(ThemeResource.Get<Brush>("NavigationButtonOutlineBrush"))
-            .StrokeThickness(LayoutConstants.Sizes.StartPageSecondaryStrokeThickness)
+            .StrokeThickness(LayoutConstants.Sizes.StartPageStrokeThickness)
             .Padding(centerContent ? 14 : 20, 16) // 14pt for short buttons, 20pt for long
             .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)

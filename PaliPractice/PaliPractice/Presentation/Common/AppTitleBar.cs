@@ -61,7 +61,7 @@ public static class AppTitleBar
         var centerButton = new SquircleButton()
             .Fill(ThemeResource.Get<Brush>("NavigationButtonBrush"))
             .Stroke(ThemeResource.Get<Brush>("NavigationButtonOutlineBrush"))
-            .StrokeThickness(LayoutConstants.Sizes.NavButtonStrokeThickness)
+            .StrokeThickness(LayoutConstants.Sizes.NavigationButtonStrokeThickness)
             .RadiusMode(SquircleRadiusMode.Pill) // More pill-like corners
             .Padding(24, 10);
         centerButton.SetBinding(ButtonBase.CommandProperty, Bind.Path(centerClickCommand));
@@ -75,7 +75,7 @@ public static class AppTitleBar
         );
 
         return BuildCoreWithCenterElement(
-            PillShadow(centerButton),
+            NavigationButtonShadow(centerButton),
             CreateBackButton(goBackCommand),
             CreateHistoryButton(goToHistoryCommand));
     }
@@ -95,11 +95,11 @@ public static class AppTitleBar
         var buttonsLayer = new Grid()
             .ColumnDefinitions("Auto,*,Auto")
             .Children(
-                PillShadow(leftButton).Grid(column: 0)
+                NavigationButtonShadow(leftButton).Grid(column: 0)
             );
 
         if (rightButton is not null)
-            buttonsLayer.Children(PillShadow(rightButton).Grid(column: 2));
+            buttonsLayer.Children(NavigationButtonShadow(rightButton).Grid(column: 2));
 
         // Stack layers: center behind, buttons on top
         // Transparent background - bar blends with page background
@@ -137,11 +137,11 @@ public static class AppTitleBar
         var buttonsLayer = new Grid()
             .ColumnDefinitions("Auto,*,Auto")
             .Children(
-                PillShadow(leftButton).Grid(column: 0)
+                NavigationButtonShadow(leftButton).Grid(column: 0)
             );
 
         if (rightButton is not null)
-            buttonsLayer.Children(PillShadow(rightButton).Grid(column: 2));
+            buttonsLayer.Children(NavigationButtonShadow(rightButton).Grid(column: 2));
 
         // Stack layers: title behind, buttons on top
         // Transparent background - bar blends with page background
@@ -158,7 +158,7 @@ public static class AppTitleBar
         var button = new SquircleButton()
             .Fill(ThemeResource.Get<Brush>("NavigationButtonBrush"))
             .Stroke(ThemeResource.Get<Brush>("NavigationButtonOutlineBrush"))
-            .StrokeThickness(LayoutConstants.Sizes.NavButtonStrokeThickness)
+            .StrokeThickness(LayoutConstants.Sizes.NavigationButtonStrokeThickness)
             .RadiusMode(SquircleRadiusMode.Pill)
             .Padding(12, 10)
             .MinWidth(NavButtonMinWidth);
@@ -189,7 +189,7 @@ public static class AppTitleBar
         var button = new SquircleButton()
             .Fill(ThemeResource.Get<Brush>("NavigationButtonBrush"))
             .Stroke(ThemeResource.Get<Brush>("NavigationButtonOutlineBrush"))
-            .StrokeThickness(LayoutConstants.Sizes.NavButtonStrokeThickness)
+            .StrokeThickness(LayoutConstants.Sizes.NavigationButtonStrokeThickness)
             .RadiusMode(SquircleRadiusMode.Pill)
             .Padding(12, 10)
             .MinWidth(NavButtonMinWidth);

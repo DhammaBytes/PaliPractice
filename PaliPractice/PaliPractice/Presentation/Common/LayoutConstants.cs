@@ -317,16 +317,13 @@ public static class LayoutConstants
         public static double ProgressBarHeight => 8;
 
         /// <summary>Stroke thickness for navigation buttons (app bar, about contact).</summary>
-        public static double NavButtonStrokeThickness => 1.75;
+        public static double NavigationButtonStrokeThickness => 1.75;
 
         /// <summary>Stroke thickness for practice action buttons (reveal, hard, easy).</summary>
         public static double PracticeButtonStrokeThickness => 1.75;
 
-        /// <summary>Stroke thickness for start page primary buttons - thicker due to 10% opacity stroke.</summary>
-        public static double StartPagePrimaryStrokeThickness => 1.75;
-        
-        /// <summary>Stroke thickness for start page secondary buttons (Settings, Stats, Help).</summary>
-        public static double StartPageSecondaryStrokeThickness => 1.75;
+        /// <summary>Stroke thickness for start page buttons.</summary>
+        public static double StartPageStrokeThickness => 1.75;
     }
 
     #endregion

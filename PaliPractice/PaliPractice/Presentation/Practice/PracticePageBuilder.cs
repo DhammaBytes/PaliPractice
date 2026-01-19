@@ -42,7 +42,8 @@ public record BadgeSet(
     StackPanel Panel,
     SquircleBorder[] Borders,
     TextBlock[] TextBlocks,
-    BitmapIcon[] Icons
+    BitmapIcon[] Icons,
+    Border[] Placeholders
 );
 
 #endregion
@@ -74,6 +75,7 @@ public static class PracticePageBuilder
         elements.BadgeBorders.AddRange(badges.Borders);
         elements.BadgeTextBlocks.AddRange(badges.TextBlocks);
         elements.BadgeIcons.AddRange(badges.Icons);
+        elements.BadgePlaceholders.AddRange(badges.Placeholders);
 
         // Build answer section (Viewbox shrinks long words automatically)
         var (answerViewbox, secondaryViewbox, placeholder, answerContainer) = BuildAnswerSection(
@@ -450,8 +452,9 @@ public static class PracticePageBuilder
     /// <summary>
     /// Builds a grammar badge with tintable PNG icon and text.
     /// Icon uses BitmapIcon with ShowAsMonochrome for Foreground tinting.
+    /// Icon is wrapped in a fixed-width placeholder to prevent layout jerk during async loading.
     /// </summary>
-    public static (BitmapIcon icon, TextBlock text, SquircleBorder badge) BuildBadge<TVM>(
+    public static (BitmapIcon icon, Border placeholder, TextBlock text, SquircleBorder badge) BuildBadge<TVM>(
         HeightClass heightClass,
         Expression<Func<TVM, string?>> iconPath,
         Expression<Func<TVM, string>> labelPath,
@@ -460,7 +463,6 @@ public static class PracticePageBuilder
         var fonts = LayoutConstants.PracticeFontSizes.Get(heightClass);
 
         // PNG icon with monochrome tinting - height matches badge font size
-        // Width is unconstrained, so icons can have natural aspect ratios and push text right
         var icon = new BitmapIcon()
             .ShowAsMonochrome(true)
             .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
@@ -468,6 +470,12 @@ public static class PracticePageBuilder
             .HorizontalAlignment(HorizontalAlignment.Left)
             .VerticalAlignment(VerticalAlignment.Center)
             .UriSourceWithVisibility<TVM>(iconPath);
+
+        // Fixed-width placeholder prevents layout shift during async icon loading
+        // All badge icons are square (1:1 aspect ratio), so width = height
+        var placeholder = new Border()
+            .Width(fonts.Badge)
+            .Child(icon);
 
         var text = RegularText()
             .FontSize(fonts.Badge)
@@ -484,9 +492,9 @@ public static class PracticePageBuilder
                 .Spacing(LayoutConstants.Gaps.BadgeIconTextSpacing)
                 .Padding(LayoutConstants.Gaps.BadgePadding)
                 .VerticalAlignment(VerticalAlignment.Center)
-                .Children(icon, text));
+                .Children(placeholder, text));
 
-        return (icon, text, badge);
+        return (icon, placeholder, text, badge);
     }
 
     /// <summary>
@@ -494,7 +502,7 @@ public static class PracticePageBuilder
     /// </summary>
     public static BadgeSet CreateBadgeSet(
         HeightClass heightClass,
-        params (BitmapIcon icon, TextBlock text, SquircleBorder badge)[] badges)
+        params (BitmapIcon icon, Border placeholder, TextBlock text, SquircleBorder badge)[] badges)
     {
         var panel = new StackPanel()
             .Orientation(Orientation.Horizontal)
@@ -506,7 +514,8 @@ public static class PracticePageBuilder
             panel,
             badges.Select(b => b.badge).ToArray(),
             badges.Select(b => b.text).ToArray(),
-            badges.Select(b => b.icon).ToArray()
+            badges.Select(b => b.icon).ToArray(),
+            badges.Select(b => b.placeholder).ToArray()
         );
     }
 
@@ -974,6 +983,10 @@ public static class PracticePageBuilder
         foreach (var icon in elements.BadgeIcons)
             icon.Height = fonts.Badge;
 
+        // Badge placeholders (all icons are square, width = height)
+        foreach (var placeholder in elements.BadgePlaceholders)
+            placeholder.Width = fonts.Badge;
+
         // Badge hint
         elements.BadgeHintTextBlock?.FontSize = fonts.BadgeHint;
 
@@ -1024,5 +1037,6 @@ public class ResponsiveElements
     public List<SquircleBorder> BadgeBorders { get; } = [];
     public List<TextBlock> BadgeTextBlocks { get; } = [];
     public List<BitmapIcon> BadgeIcons { get; } = [];
+    public List<Border> BadgePlaceholders { get; } = [];
     public List<(BitmapIcon Icon, TextBlock Text)> ButtonElements { get; } = [];
 }

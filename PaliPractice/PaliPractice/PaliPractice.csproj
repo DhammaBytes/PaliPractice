@@ -85,27 +85,33 @@
     <!-- Badge icons: SVG -> PNG via Uno.Resizetizer for BitmapIcon tinting -->
     <!-- BaseSize = viewBox / 3 for ~18px base, close to 16px display height -->
     <ItemGroup>
-      <UnoImage Include="Assets\Svg\Badges\case_ablative.svg" BaseSize="19,18" />
+      <!-- Case: 56x56 → 19x19 -->
+      <UnoImage Include="Assets\Svg\Badges\case_ablative.svg" BaseSize="19,19" />
       <UnoImage Include="Assets\Svg\Badges\case_accusative.svg" BaseSize="19,19" />
-      <UnoImage Include="Assets\Svg\Badges\case_dative.svg" BaseSize="18,19" />
-      <UnoImage Include="Assets\Svg\Badges\case_genitive.svg" BaseSize="18,18" />
-      <UnoImage Include="Assets\Svg\Badges\case_instrumental.svg" BaseSize="18,19" />
-      <UnoImage Include="Assets\Svg\Badges\case_locative.svg" BaseSize="18,19" />
-      <UnoImage Include="Assets\Svg\Badges\case_nominative.svg" BaseSize="18,18" />
-      <UnoImage Include="Assets\Svg\Badges\case_vocative.svg" BaseSize="18,19" />
-      <UnoImage Include="Assets\Svg\Badges\gender_female.svg" BaseSize="18,20" />
+      <UnoImage Include="Assets\Svg\Badges\case_dative.svg" BaseSize="19,19" />
+      <UnoImage Include="Assets\Svg\Badges\case_genitive.svg" BaseSize="19,19" />
+      <UnoImage Include="Assets\Svg\Badges\case_instrumental.svg" BaseSize="19,19" />
+      <UnoImage Include="Assets\Svg\Badges\case_locative.svg" BaseSize="19,19" />
+      <UnoImage Include="Assets\Svg\Badges\case_nominative.svg" BaseSize="19,19" />
+      <UnoImage Include="Assets\Svg\Badges\case_vocative.svg" BaseSize="19,19" />
+      <!-- Gender: 54x54 → 18x18 -->
+      <UnoImage Include="Assets\Svg\Badges\gender_female.svg" BaseSize="18,18" />
       <UnoImage Include="Assets\Svg\Badges\gender_male.svg" BaseSize="18,18" />
       <UnoImage Include="Assets\Svg\Badges\gender_neutral.svg" BaseSize="18,18" />
-      <UnoImage Include="Assets\Svg\Badges\number_plural.svg" BaseSize="24,18" />
-      <UnoImage Include="Assets\Svg\Badges\number_singular.svg" BaseSize="18,18" />
+      <!-- Number: 56x56 → 19x19 -->
+      <UnoImage Include="Assets\Svg\Badges\number_plural.svg" BaseSize="19,19" />
+      <UnoImage Include="Assets\Svg\Badges\number_singular.svg" BaseSize="19,19" />
+      <!-- Person: 54x54 → 18x18 -->
       <UnoImage Include="Assets\Svg\Badges\person_1st.svg" BaseSize="18,18" />
       <UnoImage Include="Assets\Svg\Badges\person_2nd.svg" BaseSize="18,18" />
       <UnoImage Include="Assets\Svg\Badges\person_3rd.svg" BaseSize="18,18" />
+      <!-- Tense: 54x54 → 18x18 -->
       <UnoImage Include="Assets\Svg\Badges\tense_future.svg" BaseSize="18,18" />
-      <UnoImage Include="Assets\Svg\Badges\tense_imperative.svg" BaseSize="19,18" />
+      <UnoImage Include="Assets\Svg\Badges\tense_imperative.svg" BaseSize="18,18" />
       <UnoImage Include="Assets\Svg\Badges\tense_optative.svg" BaseSize="18,18" />
       <UnoImage Include="Assets\Svg\Badges\tense_present.svg" BaseSize="18,18" />
-      <UnoImage Include="Assets\Svg\Badges\voice_reflexive.svg" BaseSize="20,18" />
+      <!-- Voice: 60x60 → 20x20 -->
+      <UnoImage Include="Assets\Svg\Badges\voice_reflexive.svg" BaseSize="20,20" />
     </ItemGroup>
 
     <!-- Menu icons: SVG -> PNG for start page buttons -->

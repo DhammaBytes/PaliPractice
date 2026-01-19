@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using PaliPractice.Presentation.Bindings;
+using PaliPractice.Themes;
 using static PaliPractice.Presentation.Common.Text.TextHelpers;
 using static PaliPractice.Presentation.Common.ShadowHelper;
 
@@ -158,18 +159,19 @@ public static class AppTitleBar
             .Fill(ThemeResource.Get<Brush>("NavigationButtonBrush"))
             .Stroke(ThemeResource.Get<Brush>("NavigationButtonOutlineBrush"))
             .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
-            .RadiusMode(SquircleRadiusMode.Pill) // More pill-like corners
-            .Padding(12, 10) // +2pt vertical padding
-            .MinWidth(NavButtonMinWidth); // Match History button width
+            .RadiusMode(SquircleRadiusMode.Pill)
+            .Padding(12, 10)
+            .MinWidth(NavButtonMinWidth);
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
         button.Child(new StackPanel()
             .Orientation(Orientation.Horizontal)
-            .HorizontalAlignment(HorizontalAlignment.Center) // Center content in button
+            .HorizontalAlignment(HorizontalAlignment.Center)
             .Spacing(6)
             .Children(
-                new FontIcon()
-                    .Glyph("\uE72B") // Back arrow
-                    .FontSize(16)
+                new BitmapIcon()
+                    .UriSource(new Uri(NavigationIcons.ArrowBack))
+                    .ShowAsMonochrome(true)
+                    .Height(16)
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
                 RegularText()
                     .Text("Back")
@@ -188,18 +190,19 @@ public static class AppTitleBar
             .Fill(ThemeResource.Get<Brush>("NavigationButtonBrush"))
             .Stroke(ThemeResource.Get<Brush>("NavigationButtonOutlineBrush"))
             .StrokeThickness(LayoutConstants.Sizes.ButtonStrokeThickness)
-            .RadiusMode(SquircleRadiusMode.Pill) // More pill-like corners
-            .Padding(12, 10) // +2pt vertical padding
-            .MinWidth(NavButtonMinWidth); // Match Back button width
+            .RadiusMode(SquircleRadiusMode.Pill)
+            .Padding(12, 10)
+            .MinWidth(NavButtonMinWidth);
         button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
         button.Child(new StackPanel()
             .Orientation(Orientation.Horizontal)
-            .HorizontalAlignment(HorizontalAlignment.Center) // Center content in button
+            .HorizontalAlignment(HorizontalAlignment.Center)
             .Spacing(6)
             .Children(
-                new FontIcon()
-                    .Glyph("\uE81C") // History/Clock icon
-                    .FontSize(16)
+                new BitmapIcon()
+                    .UriSource(new Uri(NavigationIcons.History))
+                    .ShowAsMonochrome(true)
+                    .Height(16)
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
                 RegularText()
                     .Text("History")

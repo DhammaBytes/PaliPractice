@@ -134,4 +134,11 @@
       <UnoImage Include="Assets\Svg\Practice\chevron_right.svg" BaseSize="15,15" />
     </ItemGroup>
 
+    <!-- Navigation icons: SVG -> PNG for app bar buttons -->
+    <!-- BaseSize ≈ viewBox / 2.7-3 for 16px display height -->
+    <ItemGroup>
+      <UnoImage Include="Assets\Svg\Navigation\arrow_back.svg" BaseSize="16,16" />
+      <UnoImage Include="Assets\Svg\Navigation\history.svg" BaseSize="18,16" />
+    </ItemGroup>
+
 </Project>

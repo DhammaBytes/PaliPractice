@@ -13,15 +13,16 @@ public sealed partial class HistoryPage : Page
             .NavigationCacheMode(NavigationCacheMode.Disabled) // Don't cache - different data each time
             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
             .Content(new Grid()
-                .SafeArea(SafeArea.InsetMask.VisibleBounds)
+                .SafeArea(SafeArea.InsetMask.Top) // Only top safe area - content extends to physical bottom
                 .RowDefinitions("Auto,*")
                 .Children(
                     // Row 0: Title bar
                     AppTitleBar.Build<HistoryViewModel>("History", v => v.GoBackCommand),
 
-                    // Row 1: Content
+                    // Row 1: Content - edge-to-edge within max width
                     new ListView()
                         .MaxWidth(LayoutConstants.ContentMaxWidth)
+                        .HorizontalAlignment(HorizontalAlignment.Stretch)
                         .Grid(row: 1)
                         .ItemsSource(() => vm.Records)
                         .ItemTemplate<IPracticeHistory>(record =>

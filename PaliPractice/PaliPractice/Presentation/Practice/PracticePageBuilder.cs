@@ -145,17 +145,16 @@ public static class PracticePageBuilder
         // Set up dynamic widths based on card size
         cardBorder.SizeChanged += (_, e) =>
         {
-            // Translation width must fit between arrow buttons (50px each) even when they're hidden,
-            // so the width stays fixed regardless of arrow visibility
+            // Translation width is card width minus arrow button space (50px each side)
             const double arrowHitboxWidth = 50.0;
             var availableWidthForTranslation = e.NewSize.Width - (2 * arrowHitboxWidth);
-            var translationWidth = availableWidthForTranslation * LayoutConstants.TranslationWidthRatio;
-            var textWidth = translationWidth - (LayoutConstants.Gaps.TranslationPaddingH * 2);
+            var textWidth = availableWidthForTranslation - (LayoutConstants.Gaps.TranslationPaddingH * 2);
 
             elements.AnswerPlaceholder?.Width = e.NewSize.Width * LayoutConstants.AnswerPlaceholderWidthRatio;
 
             // Translation border stretches to fill Star column (space between arrows)
-            exampleContainer.MaxWidth = translationWidth;
+            // Example container should match translation width (card width minus arrow space)
+            exampleContainer.MaxWidth = availableWidthForTranslation;
 
             // Update text balancing width in the carousel ViewModel
             if (translationText.DataContext is ExampleCarouselViewModel carousel)

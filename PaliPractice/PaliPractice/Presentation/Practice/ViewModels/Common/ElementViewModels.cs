@@ -91,11 +91,22 @@ public partial class FlashCardViewModel : ObservableObject
     public void Reveal()
     {
         Answer = _inflectedForm;
-        AnswerEnding = _inflectedEnding;
-        // Stem is the form minus the ending
-        AnswerStem = _inflectedEnding.Length > 0 && _inflectedForm.EndsWith(_inflectedEnding)
-            ? _inflectedForm[..^_inflectedEnding.Length]
-            : _inflectedForm;
+
+        // For irregular forms (ending == full form), don't highlight - show as plain stem
+        if (_inflectedEnding == _inflectedForm)
+        {
+            AnswerStem = _inflectedForm;
+            AnswerEnding = string.Empty;
+        }
+        else
+        {
+            AnswerEnding = _inflectedEnding;
+            // Stem is the form minus the ending
+            AnswerStem = _inflectedEnding.Length > 0 && _inflectedForm.EndsWith(_inflectedEnding)
+                ? _inflectedForm[..^_inflectedEnding.Length]
+                : _inflectedForm;
+        }
+
         IsRevealed = true;
     }
 

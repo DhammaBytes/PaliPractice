@@ -28,9 +28,18 @@ public static class SquircleGeometry
 {
     /// <summary>
     /// Maximum ratio of corner radius to the smaller dimension.
-    /// Prevents corners from overlapping.
+    /// The squircle curve extends 1.52866 * radius from each corner, so two corners
+    /// on the same edge need: 2 * 1.52866 * radius <= edgeLength, i.e. radius <= 0.327 * edge.
+    /// We use 0.5 here as the visual limit (creates stadium/pill shape) and handle
+    /// curve overlap by omitting the straight edge segment when curves meet.
     /// </summary>
-    public const float MaxSideRatio = 0.47f;
+    public const float MaxSideRatio = 0.50f;
+
+    /// <summary>
+    /// The curve extends this far along each edge from the corner.
+    /// Two adjacent corners' curves meet when: 2 * CurveExtent * radius >= edgeLength
+    /// </summary>
+    const float CurveExtent = 1.52866483f;
 
     #region Radius Constants
 
@@ -83,6 +92,14 @@ public static class SquircleGeometry
 
         var rect = new Rect(0, 0, width, height);
 
+        // Check if curves would overlap on each edge
+        bool topBottomOverlap = 2 * CurveExtent * limitedRadius > width;
+        bool leftRightOverlap = 2 * CurveExtent * limitedRadius > height;
+
+        // When curves overlap, they should meet at edge midpoint instead of extending past
+        float horizMidpoint = topBottomOverlap ? (float)(width / 2 / limitedRadius) : CurveExtent;
+        float vertMidpoint = leftRightOverlap ? (float)(height / 2 / limitedRadius) : CurveExtent;
+
         Point TopLeft(float x, float y) => new(rect.Left + x * limitedRadius, rect.Top + y * limitedRadius);
         Point TopRight(float x, float y) => new(rect.Right - x * limitedRadius, rect.Top + y * limitedRadius);
         Point BottomRight(float x, float y) => new(rect.Right - x * limitedRadius, rect.Bottom - y * limitedRadius);
@@ -90,10 +107,10 @@ public static class SquircleGeometry
 
         var figure = new PathFigure { IsClosed = true };
 
-        // Start point
+        // Start point (on top edge, uses horizMidpoint)
         if (corners.HasFlag(SquircleCorners.TopLeft))
         {
-            figure.StartPoint = TopLeft(1.52866483f, 0.00000000f);
+            figure.StartPoint = TopLeft(horizMidpoint, 0.00000000f);
         }
         else
         {
@@ -103,8 +120,12 @@ public static class SquircleGeometry
         // Top right corner
         if (corners.HasFlag(SquircleCorners.TopRight))
         {
-            var p1 = TopRight(1.52866471f, 0.00000000f);
-            figure.Segments.Add(new LineSegment { Point = p1 });
+            // Line on top edge (skip if overlap) - uses horizMidpoint
+            if (!topBottomOverlap)
+            {
+                var p1 = TopRight(horizMidpoint, 0.00000000f);
+                figure.Segments.Add(new LineSegment { Point = p1 });
+            }
 
             var p2 = TopRight(1.08849323f, 0.00000000f);
             var p3 = TopRight(0.86840689f, 0.00000000f);
@@ -119,9 +140,10 @@ public static class SquircleGeometry
             var p8 = TopRight(0.07491176f, 0.63149399f);
             figure.Segments.Add(new BezierSegment { Point1 = p6, Point2 = p7, Point3 = p8 });
 
+            // End on right edge - uses vertMidpoint
             var p9 = TopRight(0.00000000f, 0.86840701f);
             var p10 = TopRight(0.00000000f, 1.08849299f);
-            var p11 = TopRight(0.00000000f, 1.52866483f);
+            var p11 = TopRight(0.00000000f, vertMidpoint);
             figure.Segments.Add(new BezierSegment { Point1 = p9, Point2 = p10, Point3 = p11 });
         }
         else
@@ -132,8 +154,12 @@ public static class SquircleGeometry
         // Bottom right corner
         if (corners.HasFlag(SquircleCorners.BottomRight))
         {
-            var p12 = BottomRight(0.00000000f, 1.52866471f);
-            figure.Segments.Add(new LineSegment { Point = p12 });
+            // Line on right edge (skip if overlap) - uses vertMidpoint
+            if (!leftRightOverlap)
+            {
+                var p12 = BottomRight(0.00000000f, vertMidpoint);
+                figure.Segments.Add(new LineSegment { Point = p12 });
+            }
 
             var p13 = BottomRight(0.00000000f, 1.08849323f);
             var p14 = BottomRight(0.00000000f, 0.86840689f);
@@ -148,9 +174,10 @@ public static class SquircleGeometry
             var p19 = BottomRight(0.63149399f, 0.07491111f);
             figure.Segments.Add(new BezierSegment { Point1 = p17, Point2 = p18, Point3 = p19 });
 
+            // End on bottom edge - uses horizMidpoint
             var p20 = BottomRight(0.86840689f, 0.00000000f);
             var p21 = BottomRight(1.08849323f, 0.00000000f);
-            var p22 = BottomRight(1.52866471f, 0.00000000f);
+            var p22 = BottomRight(horizMidpoint, 0.00000000f);
             figure.Segments.Add(new BezierSegment { Point1 = p20, Point2 = p21, Point3 = p22 });
         }
         else
@@ -161,8 +188,12 @@ public static class SquircleGeometry
         // Bottom left corner
         if (corners.HasFlag(SquircleCorners.BottomLeft))
         {
-            var p23 = BottomLeft(1.52866483f, 0.00000000f);
-            figure.Segments.Add(new LineSegment { Point = p23 });
+            // Line on bottom edge (skip if overlap) - uses horizMidpoint
+            if (!topBottomOverlap)
+            {
+                var p23 = BottomLeft(horizMidpoint, 0.00000000f);
+                figure.Segments.Add(new LineSegment { Point = p23 });
+            }
 
             var p24 = BottomLeft(1.08849299f, 0.00000000f);
             var p25 = BottomLeft(0.86840701f, 0.00000000f);
@@ -177,9 +208,10 @@ public static class SquircleGeometry
             var p30 = BottomLeft(0.07491100f, 0.63149399f);
             figure.Segments.Add(new BezierSegment { Point1 = p28, Point2 = p29, Point3 = p30 });
 
+            // End on left edge - uses vertMidpoint
             var p31 = BottomLeft(0.00000000f, 0.86840689f);
             var p32 = BottomLeft(0.00000000f, 1.08849323f);
-            var p33 = BottomLeft(0.00000000f, 1.52866471f);
+            var p33 = BottomLeft(0.00000000f, vertMidpoint);
             figure.Segments.Add(new BezierSegment { Point1 = p31, Point2 = p32, Point3 = p33 });
         }
         else
@@ -190,8 +222,12 @@ public static class SquircleGeometry
         // Top left corner
         if (corners.HasFlag(SquircleCorners.TopLeft))
         {
-            var p34 = TopLeft(0.00000000f, 1.52866483f);
-            figure.Segments.Add(new LineSegment { Point = p34 });
+            // Line on left edge (skip if overlap) - uses vertMidpoint
+            if (!leftRightOverlap)
+            {
+                var p34 = TopLeft(0.00000000f, vertMidpoint);
+                figure.Segments.Add(new LineSegment { Point = p34 });
+            }
 
             var p35 = TopLeft(0.00000000f, 1.08849299f);
             var p36 = TopLeft(0.00000000f, 0.86840701f);
@@ -206,9 +242,10 @@ public static class SquircleGeometry
             var p41 = TopLeft(0.63149399f, 0.07491100f);
             figure.Segments.Add(new BezierSegment { Point1 = p39, Point2 = p40, Point3 = p41 });
 
+            // End on top edge - uses horizMidpoint
             var p42 = TopLeft(0.86840701f, 0.00000000f);
             var p43 = TopLeft(1.08849299f, 0.00000000f);
-            var p44 = TopLeft(1.52866483f, 0.00000000f);
+            var p44 = TopLeft(horizMidpoint, 0.00000000f);
             figure.Segments.Add(new BezierSegment { Point1 = p42, Point2 = p43, Point3 = p44 });
         }
         else

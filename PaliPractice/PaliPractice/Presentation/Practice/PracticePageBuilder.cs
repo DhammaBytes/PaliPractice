@@ -644,7 +644,7 @@ public static class PracticePageBuilder
 
         prevButton.Tapped += (s, e) =>
         {
-            if (s is FrameworkElement { DataContext: ExampleCarouselViewModel vm })
+            if (s is FrameworkElement { DataContext: ExampleCarouselViewModel { IsRevealed: true } vm })
                 vm.PreviousCommand.Execute(null);
         };
 
@@ -672,6 +672,7 @@ public static class PracticePageBuilder
             .Background(new SolidColorBrush(Colors.Transparent))
             .VerticalAlignment(VerticalAlignment.Top)
             .HorizontalAlignment(HorizontalAlignment.Right)
+            .Opacity(0) // Start hidden to prevent blink on load
             .Scope(carouselPath)
             .VisibilityWithin<Border, ExampleCarouselViewModel>(c => c.HasMultipleTranslations)
             .OpacityWithin<Border, ExampleCarouselViewModel>(c => c.IsRevealed)
@@ -679,7 +680,7 @@ public static class PracticePageBuilder
 
         nextButton.Tapped += (s, e) =>
         {
-            if (s is FrameworkElement { DataContext: ExampleCarouselViewModel vm })
+            if (s is FrameworkElement { DataContext: ExampleCarouselViewModel { IsRevealed: true } vm })
                 vm.NextCommand.Execute(null);
         };
 

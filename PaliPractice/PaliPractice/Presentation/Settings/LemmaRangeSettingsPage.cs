@@ -17,7 +17,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
         LemmaRangeSettingsPageMarkup.DataContext<LemmaRangeSettingsViewModel>(this, (page, vm) => page
             .NavigationCacheMode<LemmaRangeSettingsPage>(NavigationCacheMode.Disabled)
             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
-            .Content(new Grid()
+            .Content(PageFadeIn.Wrap(page, new Grid()
                 .SafeArea(SafeArea.InsetMask.VisibleBounds)
                 .RowDefinitions("Auto,*")
                 .Children(
@@ -41,7 +41,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
                                     BuildCustomRangeSection(vm)
                                 )
                         )
-                )
+                ))
             )
         );
     }

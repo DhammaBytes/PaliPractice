@@ -21,7 +21,7 @@ public sealed partial class DeclensionPracticePage : Page
         DeclensionPracticePageMarkup.DataContext<DeclensionPracticeViewModel>(this, (page, _) => page
             .NavigationCacheMode<DeclensionPracticePage>(NavigationCacheMode.Required)
             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
-            .Content(BuildPageLayout(elements, heightClass))
+            .Content(PageFadeIn.Wrap(page, BuildPageLayout(elements, heightClass)))
         );
 
         HeightResponsiveHelper.AttachResponsiveHandler(

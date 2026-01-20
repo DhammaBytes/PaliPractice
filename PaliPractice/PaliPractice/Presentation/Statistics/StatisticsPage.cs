@@ -29,37 +29,38 @@ public sealed partial class StatisticsPage : Page
         this.DataContext<StatisticsViewModel>((page, vm) => page
             .NavigationCacheMode(NavigationCacheMode.Disabled)
             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
-            .Content(new Grid()
-                .SafeArea(SafeArea.InsetMask.VisibleBounds)
-                .RowDefinitions("Auto,*")
-                .Children(
-                    // Row 0: Title bar
-                    AppTitleBar.Build<StatisticsViewModel>("Statistics", v => v.GoBackCommand),
+            .Content(PageFadeIn.Wrap(page,
+                new Grid()
+                    .SafeArea(SafeArea.InsetMask.VisibleBounds)
+                    .RowDefinitions("Auto,*")
+                    .Children(
+                        // Row 0: Title bar
+                        AppTitleBar.Build<StatisticsViewModel>("Statistics", v => v.GoBackCommand),
 
-                    // Row 1: Content
-                    new ScrollViewer()
-                        .Grid(row: 1)
-                        .VerticalScrollBarVisibility(ScrollBarVisibility.Auto)
-                        .HorizontalContentAlignment(HorizontalAlignment.Center)
-                        .Content(
-                            new StackPanel()
-                                .HorizontalAlignment(HorizontalAlignment.Stretch)
-                                .MaxWidth(LayoutConstants.ContentMaxWidth)
-                                .Padding(16)
-                                .Spacing(24)
-                                .Children(
-                                    // === General Section ===
-                                    BuildGeneralSection(vm),
+                        // Row 1: Content
+                        new ScrollViewer()
+                            .Grid(row: 1)
+                            .VerticalScrollBarVisibility(ScrollBarVisibility.Auto)
+                            .HorizontalContentAlignment(HorizontalAlignment.Center)
+                            .Content(
+                                new StackPanel()
+                                    .HorizontalAlignment(HorizontalAlignment.Stretch)
+                                    .MaxWidth(LayoutConstants.ContentMaxWidth)
+                                    .Padding(16)
+                                    .Spacing(24)
+                                    .Children(
+                                        // === General Section ===
+                                        BuildGeneralSection(vm),
 
-                                    // === Nouns Section ===
-                                    BuildPracticeTypeSection("Nouns", vm, isNouns: true),
+                                        // === Nouns Section ===
+                                        BuildPracticeTypeSection("Nouns", vm, isNouns: true),
 
-                                    // === Verbs Section ===
-                                    BuildPracticeTypeSection("Verbs", vm, isNouns: false)
-                                )
-                        )
-                )
-            )
+                                        // === Verbs Section ===
+                                        BuildPracticeTypeSection("Verbs", vm, isNouns: false)
+                                    )
+                            )
+                    )
+            ))
         );
 
         DataContextChanged += OnDataContextChanged;
@@ -139,23 +140,6 @@ public sealed partial class StatisticsPage : Page
                                             tb => tb.Text(() => vm.General.CurrentPracticeStreak, v => $"{v} {(v == 1 ? "day" : "days")}"), 0),
                                         BuildStreakCard("\uE735", "Total",
                                             tb => tb.Text(() => vm.General.TotalPracticeDays, v => $"{v} {(v == 1 ? "day" : "days")}"), 1)
-                                    ),
-                                // Today's progress
-                                new StackPanel()
-                                    .Spacing(8)
-                                    .Children(
-                                        RegularText().Text("Today").FontSize(13)
-                                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush")),
-                                        new Grid()
-                                            .ColumnDefinitions("*,*")
-                                            .Children(
-                                                BuildTodayItem("Nouns",
-                                                    tb => tb.Text(() => vm.General.TodayDeclensions, v => $"{v}"),
-                                                    cb => cb.IsChecked(() => vm.General.NounGoalMet), 0),
-                                                BuildTodayItem("Verbs",
-                                                    tb => tb.Text(() => vm.General.TodayConjugations, v => $"{v}"),
-                                                    cb => cb.IsChecked(() => vm.General.VerbGoalMet), 1)
-                                            )
                                     ),
                                 // Calendar heatmap
                                 new StackPanel()
@@ -360,32 +344,6 @@ public sealed partial class StatisticsPage : Page
                             .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
                     ),
                 valueText
-            );
-    }
-
-    static FrameworkElement BuildTodayItem(string label, Action<TextBlock> bindValue, Action<CheckBox> bindGoalMet, int column)
-    {
-        var valueText = RegularText()
-            .FontSize(20)
-            .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"));
-        bindValue(valueText);
-
-        var checkbox = new CheckBox().IsHitTestVisible(false).MinWidth(0).Padding(0);
-        bindGoalMet(checkbox);
-
-        return new StackPanel()
-            .Grid(column: column)
-            .Orientation(Orientation.Horizontal)
-            .HorizontalAlignment(HorizontalAlignment.Left)
-            .Spacing(8)
-            .Children(
-                new StackPanel().Children(
-                    RegularText().Text(label).FontSize(12)
-                        .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush")),
-                    valueText
-                ),
-                checkbox
             );
     }
 

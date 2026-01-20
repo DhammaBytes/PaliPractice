@@ -13,72 +13,73 @@ public sealed partial class StartPage : Page
         this.DataContext<StartViewModel>((page, vm) => page
             .NavigationCacheMode(NavigationCacheMode.Required)
             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
-            .Content(new Grid()
-                .SafeArea(SafeArea.InsetMask.VisibleBounds)
-                .RowDefinitions("Auto,*")
-                .Children(
-                    // Main content area
-                    new Grid()
-                        .Grid(row: 1)
-                        .Margin(20)
-                        .Children(
-                            new StackPanel()
-                                .VerticalAlignment(VerticalAlignment.Center)
-                                .HorizontalAlignment(HorizontalAlignment.Center)
-                                .Margin(0, 0, 0, 48) // Shift center up by 24pt
-                                .Spacing(32)
-                                .MaxWidth(400)
-                                .Children(
-                                    // App title (no icon, larger font)
-                                    PaliText()
-                                        .Text("Pāli Practice")
-                                        .FontSize(48)
-                                        .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
-                                        .HorizontalAlignment(HorizontalAlignment.Center)
-                                        .TextAlignment(TextAlignment.Center)
-                                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
+            .Content(PageFadeIn.Wrap(page,
+                new Grid()
+                    .SafeArea(SafeArea.InsetMask.VisibleBounds)
+                    .RowDefinitions("Auto,*")
+                    .Children(
+                        // Main content area
+                        new Grid()
+                            .Grid(row: 1)
+                            .Margin(20)
+                            .Children(
+                                new StackPanel()
+                                    .VerticalAlignment(VerticalAlignment.Center)
+                                    .HorizontalAlignment(HorizontalAlignment.Center)
+                                    .Margin(0, 0, 0, 48) // Shift center up by 24pt
+                                    .Spacing(32)
+                                    .MaxWidth(400)
+                                    .Children(
+                                        // App title (no icon, larger font)
+                                        PaliText()
+                                            .Text("Pāli Practice")
+                                            .FontSize(48)
+                                            .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
+                                            .HorizontalAlignment(HorizontalAlignment.Center)
+                                            .TextAlignment(TextAlignment.Center)
+                                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
 
-                                    // Practice buttons
-                                    new StackPanel()
-                                        .Spacing(16)
-                                        .Children(
-                                            // Declension Practice Button
-                                            // Command must be set at call site for source generator to see the binding
-                                            StartPrimaryButtonShadow(
-                                                BuildPracticeButton(MenuIcons.Nouns, "Nouns & Cases", "Declension Practice")
-                                                    .Command(() => vm.GoToDeclensionCommand)),
+                                        // Practice buttons
+                                        new StackPanel()
+                                            .Spacing(16)
+                                            .Children(
+                                                // Declension Practice Button
+                                                // Command must be set at call site for source generator to see the binding
+                                                StartPrimaryButtonShadow(
+                                                    BuildPracticeButton(MenuIcons.Nouns, "Nouns & Cases", "Declension Practice")
+                                                        .Command(() => vm.GoToDeclensionCommand)),
 
-                                            // Conjugation Practice Button
-                                            StartPrimaryButtonShadow(
-                                                BuildPracticeButton(MenuIcons.Verbs, "Verbs & Tenses", "Conjugation Practice")
-                                                    .Command(() => vm.GoToConjugationCommand)),
+                                                // Conjugation Practice Button
+                                                StartPrimaryButtonShadow(
+                                                    BuildPracticeButton(MenuIcons.Verbs, "Verbs & Tenses", "Conjugation Practice")
+                                                        .Command(() => vm.GoToConjugationCommand)),
 
-                                            // Settings Button
-                                            StartSecondaryButtonShadow(
-                                                BuildSecondaryButton(MenuIcons.Settings, "Settings", iconHeight: 30)
-                                                    .Command(() => vm.GoToSettingsCommand)),
+                                                // Settings Button
+                                                StartSecondaryButtonShadow(
+                                                    BuildSecondaryButton(MenuIcons.Settings, "Settings", iconHeight: 30)
+                                                        .Command(() => vm.GoToSettingsCommand)),
 
-                                            // Stats and Help row (side by side)
-                                            new Grid()
-                                                .ColumnDefinitions("*,16,*")
-                                                .Children(
-                                                    // Stats Button
-                                                    StartSecondaryButtonShadow(
-                                                        BuildSecondaryButton(MenuIcons.Stats, "Stats", iconHeight: 27, centerContent: true, iconVerticalOffset: -2)
-                                                            .Command(() => vm.GoToStatisticsCommand))
-                                                        .Grid(column: 0),
+                                                // Stats and Help row (side by side)
+                                                new Grid()
+                                                    .ColumnDefinitions("*,16,*")
+                                                    .Children(
+                                                        // Stats Button
+                                                        StartSecondaryButtonShadow(
+                                                            BuildSecondaryButton(MenuIcons.Stats, "Stats", iconHeight: 27, centerContent: true, iconVerticalOffset: -2)
+                                                                .Command(() => vm.GoToStatisticsCommand))
+                                                            .Grid(column: 0),
 
-                                                    // Help Button
-                                                    StartSecondaryButtonShadow(
-                                                        BuildSecondaryButton(MenuIcons.Help, "Help", iconHeight: 27, centerContent: true)
-                                                            .Command(() => vm.GoToHelpCommand))
-                                                        .Grid(column: 2)
-                                                )
-                                )
-                        )
-                )
-            )
-        ));
+                                                        // Help Button
+                                                        StartSecondaryButtonShadow(
+                                                            BuildSecondaryButton(MenuIcons.Help, "Help", iconHeight: 27, centerContent: true)
+                                                                .Command(() => vm.GoToHelpCommand))
+                                                            .Grid(column: 2)
+                                                    )
+                                            )
+                                    )
+                            )
+                    )
+            )));
     }
 
     /// <summary>

@@ -46,7 +46,6 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
     </PropertyGroup>
 
-
     <ItemGroup>
       <PackageReference Include="Markdig" />
       <PackageReference Include="sqlite-net-pcl" />
@@ -65,6 +64,7 @@
       <BundleResource Include="Data\pali.db">
         <Link>Data/pali.db</Link>
       </BundleResource>
+      <BundleResource Include="Platforms\iOS\LaunchScreen.storyboard" />
     </ItemGroup>
 
     <!-- Android: Asset -->

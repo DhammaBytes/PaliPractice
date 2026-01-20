@@ -45,13 +45,13 @@ This app is focused on memorizing, so it does not replace textbooks or courses. 
     public static string FaqMultipleForms => """
 **Why do some answers show multiple forms?**
 
-Certain cases and tenses in Pāli have more than one valid ending. The app displays all correct forms for the given grammatical context.
+Certain cases and tenses in Pāli have more than one valid ending. The app displays all used forms for the given grammatical context (and skips potentially valid forms that are not found in the Pāli corpus).
 """;
 
     public static string FaqExamples => """
 **Why do sutta examples use different forms?**
 
-Example sentences come from the [Digital Pāli Dictionary](https://digitalpalidictionary.github.io/), which provides 1–2 examples per word meaning rather than per inflected form. These examples illustrate how the word is used in context, not necessarily the specific form being practiced.
+Example sentences come from the [Digital Pāli Dictionary](https://dpdict.net), which provides 1–2 examples per word meaning rather than per inflected form. These examples illustrate how the word is used in context, not necessarily the specific form being practiced.
 """;
 
     public static string FaqMissingWords => """

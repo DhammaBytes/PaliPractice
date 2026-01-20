@@ -9,6 +9,15 @@ namespace PaliPractice.Presentation.Practice.ViewModels;
 /// </summary>
 public record HistoryNavigationData(PracticeType PracticeType);
 
+/// <summary>
+/// A section of history records grouped by date.
+/// </summary>
+public class HistorySection
+{
+    public required string Header { get; init; }
+    public required List<IPracticeHistory> Records { get; init; }
+}
+
 [Bindable]
 public class HistoryViewModel : ObservableObject
 {
@@ -20,12 +29,14 @@ public class HistoryViewModel : ObservableObject
         CurrentPracticeType = data.PracticeType;
 
         // Load history from database and resolve form text from FormId
-        var history = db.UserData.GetRecentHistory(data.PracticeType, limit: 50);
+        var history = db.UserData.GetRecentHistory(data.PracticeType, limit: 1000);
         foreach (var record in history)
         {
             record.FormText = inflection.ResolveFormText(record.FormId, data.PracticeType) ?? "?";
         }
-        Records = new ObservableCollection<IPracticeHistory>(history);
+
+        // Group records by date
+        Sections = GroupByDate(history);
     }
 
     PracticeType CurrentPracticeType { get; }
@@ -34,9 +45,51 @@ public class HistoryViewModel : ObservableObject
         ? "Declension History"
         : "Conjugation History";
 
-    public ObservableCollection<IPracticeHistory> Records { get; }
+    public List<HistorySection> Sections { get; }
 
-    public bool HasHistory => Records.Count > 0;
+    public bool HasHistory => Sections.Count > 0;
 
     public ICommand GoBackCommand => new AsyncRelayCommand(() => _navigator.NavigateBackAsync(this));
+
+    /// <summary>
+    /// Groups history records by logical date (Today, Yesterday, or specific date).
+    /// </summary>
+    static List<HistorySection> GroupByDate(IEnumerable<IPracticeHistory> records)
+    {
+        var now = DateTime.Now;
+        // Use logical day (5am boundary) like DailyProgress
+        var todayLogical = now.Hour < 5 ? now.Date.AddDays(-1) : now.Date;
+        var yesterdayLogical = todayLogical.AddDays(-1);
+
+        var grouped = records
+            .GroupBy(r =>
+            {
+                var localTime = r.PracticedUtc.ToLocalTime();
+                var logicalDate = localTime.Hour < 5 ? localTime.Date.AddDays(-1) : localTime.Date;
+                return logicalDate;
+            })
+            .OrderByDescending(g => g.Key)
+            .Select(g => new HistorySection
+            {
+                Header = FormatDateHeader(g.Key, todayLogical, yesterdayLogical),
+                Records = g.ToList()
+            })
+            .ToList();
+
+        return grouped;
+    }
+
+    /// <summary>
+    /// Formats a date as "Today", "Yesterday", or "5 Jan" style.
+    /// </summary>
+    static string FormatDateHeader(DateTime date, DateTime today, DateTime yesterday)
+    {
+        if (date == today)
+            return "Today";
+        if (date == yesterday)
+            return "Yesterday";
+
+        // Format as "5 Jan" (day + abbreviated month)
+        return date.ToString("d MMM");
+    }
 }

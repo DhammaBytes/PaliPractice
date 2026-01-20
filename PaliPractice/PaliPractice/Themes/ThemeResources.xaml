@@ -33,7 +33,15 @@
             <SolidColorBrush x:Key="AccentPressedBrush" Color="{StaticResource SystemAccentColorDark1}"/>
             <SolidColorBrush x:Key="AccentSubtleBrush" Color="{StaticResource SystemAccentColor}" Opacity="0.08"/>
             <SolidColorBrush x:Key="AccentSubtleHoverBrush" Color="{StaticResource SystemAccentColor}" Opacity="0.12"/>
+
             <SolidColorBrush x:Key="AccentBlueBrush" Color="#1A7ECB"/>
+            <SolidColorBrush x:Key="AccentRedBrush" Color="#E83D2D"/>
+            <SolidColorBrush x:Key="AccentOrangeBrush" Color="#FC9F5A"/>
+            <SolidColorBrush x:Key="AccentGreenBrush" Color="#78B868"/>
+
+            <!-- Calendar Intensity (0=empty uses BackgroundBrush, 1-2 progress toward 3=AccentBrush) -->
+            <SolidColorBrush x:Key="CalendarIntensity1Brush" Color="#F0C4A0"/>
+            <SolidColorBrush x:Key="CalendarIntensity2Brush" Color="#DF9366"/>
 
             <!-- Button Colors -->
             <SolidColorBrush x:Key="NavigationButtonBrush" Color="#F8F0E8"/>
@@ -111,6 +119,13 @@
             <SolidColorBrush x:Key="AccentSubtleBrush" Color="{StaticResource SystemAccentColor}" Opacity="0.08"/>
             <SolidColorBrush x:Key="AccentSubtleHoverBrush" Color="{StaticResource SystemAccentColor}" Opacity="0.12"/>
             <SolidColorBrush x:Key="AccentBlueBrush" Color="#6BAFE0"/>
+            <SolidColorBrush x:Key="AccentRedBrush" Color="#F06050"/>
+            <SolidColorBrush x:Key="AccentOrangeBrush" Color="#FFB070"/>
+            <SolidColorBrush x:Key="AccentGreenBrush" Color="#90D080"/>
+
+            <!-- Calendar Intensity (0=empty uses BackgroundBrush, 1-2 progress toward 3=AccentBrush) -->
+            <SolidColorBrush x:Key="CalendarIntensity1Brush" Color="#5A4535"/>
+            <SolidColorBrush x:Key="CalendarIntensity2Brush" Color="#8A6550"/>
 
             <!-- Button Colors -->
             <SolidColorBrush x:Key="NavigationButtonBrush" Color="#3D2E26"/>

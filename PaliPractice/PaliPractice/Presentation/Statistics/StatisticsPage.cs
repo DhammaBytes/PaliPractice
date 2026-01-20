@@ -216,7 +216,7 @@ public sealed partial class StatisticsPage : Page
                                             .Children(
                                                 RegularText().Text("Strongest").FontSize(13)
                                                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                                                    .Foreground(new SolidColorBrush(SuccessColor)),
+                                                    .Foreground(StrongBrush),
                                                 strongestPanel
                                             ),
                                         new StackPanel()
@@ -225,7 +225,7 @@ public sealed partial class StatisticsPage : Page
                                             .Children(
                                                 RegularText().Text("Need Work").FontSize(13)
                                                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
-                                                    .Foreground(new SolidColorBrush(ErrorColor)),
+                                                    .Foreground(StrugglingBrush),
                                                 weakestPanel
                                             )
                                     )
@@ -236,7 +236,7 @@ public sealed partial class StatisticsPage : Page
 
     // === Distribution Bar ===
 
-    static void PopulateDistributionBar(Grid container, SrsDistributionDto distribution)
+    void PopulateDistributionBar(Grid container, SrsDistributionDto distribution)
     {
         container.Children.Clear();
         container.ColumnDefinitions.Clear();
@@ -244,11 +244,11 @@ public sealed partial class StatisticsPage : Page
         var total = distribution.Struggling + distribution.Learning + distribution.Strong + distribution.Mastered;
         if (total == 0) return;
 
-        var segments = new List<(int count, Color color)>();
-        if (distribution.Struggling > 0) segments.Add((distribution.Struggling, ErrorColor));
-        if (distribution.Learning > 0) segments.Add((distribution.Learning, TertiaryColor));
-        if (distribution.Strong > 0) segments.Add((distribution.Strong, SuccessColor));
-        if (distribution.Mastered > 0) segments.Add((distribution.Mastered, PrimaryColor));
+        var segments = new List<(int count, Brush brush)>();
+        if (distribution.Struggling > 0) segments.Add((distribution.Struggling, StrugglingBrush));
+        if (distribution.Learning > 0) segments.Add((distribution.Learning, LearningBrush));
+        if (distribution.Strong > 0) segments.Add((distribution.Strong, StrongBrush));
+        if (distribution.Mastered > 0) segments.Add((distribution.Mastered, MasteredBrush));
 
         for (int i = 0; i < segments.Count; i++)
         {
@@ -261,7 +261,7 @@ public sealed partial class StatisticsPage : Page
             var isLast = i == segments.Count - 1;
 
             var segment = new Border()
-                .Background(new SolidColorBrush(segments[i].color))
+                .Background(segments[i].brush)
                 .CornerRadius(new CornerRadius(
                     isFirst ? 8 : 0, isLast ? 8 : 0,
                     isLast ? 8 : 0, isFirst ? 8 : 0))
@@ -275,20 +275,20 @@ public sealed partial class StatisticsPage : Page
 
     // === Combo Lists ===
 
-    static void PopulateCombos(StackPanel strongestPanel, StackPanel weakestPanel, PracticeTypeStatsDto stats)
+    void PopulateCombos(StackPanel strongestPanel, StackPanel weakestPanel, PracticeTypeStatsDto stats)
     {
         strongestPanel.Children.Clear();
         weakestPanel.Children.Clear();
 
         // Lists are already padded to 5 entries by repository
         foreach (var combo in stats.StrongestCombos)
-            strongestPanel.Children.Add(BuildComboRow(combo, SuccessColor));
+            strongestPanel.Children.Add(BuildComboRow(combo, StrongBrush));
 
         foreach (var combo in stats.WeakestCombos)
-            weakestPanel.Children.Add(BuildComboRow(combo, ErrorColor));
+            weakestPanel.Children.Add(BuildComboRow(combo, StrugglingBrush));
     }
 
-    static FrameworkElement BuildComboRow(ComboStatDto combo, Color accentColor)
+    static FrameworkElement BuildComboRow(ComboStatDto combo, Brush accentBrush)
     {
         var bullet = RegularText().Text("•").FontSize(11);
         var text = RegularText().Text(combo.DisplayName).FontSize(11).TextTrimming(TextTrimming.CharacterEllipsis);
@@ -300,7 +300,7 @@ public sealed partial class StatisticsPage : Page
         }
         else
         {
-            bullet.Foreground(new SolidColorBrush(accentColor));
+            bullet.Foreground(accentBrush);
             text.Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"));
         }
 
@@ -403,12 +403,10 @@ public sealed partial class StatisticsPage : Page
     {
         return intensity switch
         {
-            0 => Application.Current.Resources["NeutralGrayBrush"] as Brush
-                 ?? new SolidColorBrush(Color.FromArgb(255, 224, 224, 224)),
-            1 => new SolidColorBrush(Color.FromArgb(80, 179, 92, 0)),
-            2 => new SolidColorBrush(Color.FromArgb(140, 179, 92, 0)),
-            3 => new SolidColorBrush(Color.FromArgb(220, 179, 92, 0)),
-            _ => new SolidColorBrush(Color.FromArgb(255, 179, 92, 0))
+            0 => (Brush)Application.Current.Resources["BackgroundBrush"],
+            1 => (Brush)Application.Current.Resources["CalendarIntensity1Brush"],
+            2 => (Brush)Application.Current.Resources["CalendarIntensity2Brush"],
+            _ => (Brush)Application.Current.Resources["AccentBrush"]
         };
     }
 
@@ -437,19 +435,19 @@ public sealed partial class StatisticsPage : Page
         });
     }
 
-    static FrameworkElement BuildDistributionLegend()
+    FrameworkElement BuildDistributionLegend()
     {
         return new Grid()
             .ColumnDefinitions("*,*,*,*")
             .Children(
-                BuildLegendItem("Struggling", ErrorColor, 0),
-                BuildLegendItem("Learning", TertiaryColor, 1),
-                BuildLegendItem("Strong", SuccessColor, 2),
-                BuildLegendItem("Mastered", PrimaryColor, 3)
+                BuildLegendItem("Struggling", StrugglingBrush, 0),
+                BuildLegendItem("Learning", LearningBrush, 1),
+                BuildLegendItem("Strong", StrongBrush, 2),
+                BuildLegendItem("Mastered", MasteredBrush, 3)
             );
     }
 
-    static FrameworkElement BuildLegendItem(string label, Color color, int column)
+    static FrameworkElement BuildLegendItem(string label, Brush brush, int column)
     {
         return new StackPanel()
             .Grid(column: column)
@@ -457,18 +455,18 @@ public sealed partial class StatisticsPage : Page
             .HorizontalAlignment(HorizontalAlignment.Center)
             .Spacing(4)
             .Children(
-                new Ellipse().Width(8).Height(8).Fill(new SolidColorBrush(color)),
+                new Ellipse().Width(8).Height(8).Fill(brush),
                 RegularText().Text(label).FontSize(10)
                     .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
             );
     }
 
-    // === Colors ===
+    // === Color Helpers ===
 
-    static readonly Color ErrorColor = Color.FromArgb(255, 179, 38, 30);
-    static readonly Color SuccessColor = Color.FromArgb(255, 46, 125, 50);
-    static readonly Color TertiaryColor = Color.FromArgb(255, 0, 97, 164);
-    static readonly Color PrimaryColor = Color.FromArgb(255, 179, 92, 0);
+    static Brush StrugglingBrush => (Brush)Application.Current.Resources["AccentRedBrush"];
+    static Brush LearningBrush => (Brush)Application.Current.Resources["AccentOrangeBrush"];
+    static Brush StrongBrush => (Brush)Application.Current.Resources["AccentGreenBrush"];
+    static Brush MasteredBrush => (Brush)Application.Current.Resources["AccentBlueBrush"];
 }
 
 /// <summary>
@@ -482,15 +480,13 @@ public class IntensityToBrushConverter : IValueConverter
         {
             return intensity switch
             {
-                0 => Application.Current.Resources["NeutralGrayBrush"] as Brush
-                     ?? new SolidColorBrush(Color.FromArgb(255, 224, 224, 224)),
-                1 => new SolidColorBrush(Color.FromArgb(80, 179, 92, 0)),
-                2 => new SolidColorBrush(Color.FromArgb(140, 179, 92, 0)),
-                3 => new SolidColorBrush(Color.FromArgb(220, 179, 92, 0)),
-                _ => new SolidColorBrush(Color.FromArgb(255, 179, 92, 0))
+                0 => (Brush)Application.Current.Resources["BackgroundBrush"],
+                1 => (Brush)Application.Current.Resources["CalendarIntensity1Brush"],
+                2 => (Brush)Application.Current.Resources["CalendarIntensity2Brush"],
+                _ => (Brush)Application.Current.Resources["AccentBrush"]
             };
         }
-        return new SolidColorBrush(Color.FromArgb(255, 224, 224, 224));
+        return (Brush)Application.Current.Resources["BackgroundBrush"];
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, string language)

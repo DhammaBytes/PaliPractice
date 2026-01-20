@@ -5,6 +5,47 @@ using PaliPractice.Services.Grammar;
 namespace PaliPractice.Presentation.Grammar.ViewModels;
 
 /// <summary>
+/// UI display abbreviations for inflection table headers.
+/// </summary>
+static class UiAbbreviations
+{
+    public static readonly Dictionary<Case, string> Cases = new()
+    {
+        [Case.Nominative] = "Nom",
+        [Case.Accusative] = "Acc",
+        [Case.Instrumental] = "Instr",
+        [Case.Dative] = "Dat",
+        [Case.Ablative] = "Abl",
+        [Case.Genitive] = "Gen",
+        [Case.Locative] = "Loc",
+        [Case.Vocative] = "Voc"
+    };
+
+    public static readonly Dictionary<Gender, string> Genders = new()
+    {
+        [Gender.Masculine] = "Masc",
+        [Gender.Feminine] = "Fem",
+        [Gender.Neuter] = "Neut"
+    };
+
+    public static readonly Dictionary<Number, string> Numbers = new()
+    {
+        [Number.Singular] = "Sing",
+        [Number.Plural] = "Plur"
+    };
+
+    public static readonly Dictionary<Tense, string> Tenses = new()
+    {
+        [Tense.Present] = "Pr",
+        [Tense.Imperative] = "Imp",
+        [Tense.Optative] = "Opt",
+        [Tense.Future] = "Fut"
+    };
+
+    public const string Reflexive = "Refl";
+}
+
+/// <summary>
 /// Navigation data for inflection table page.
 /// DataViewMap requires reference types for navigation data.
 /// </summary>
@@ -135,9 +176,9 @@ public partial class InflectionTableViewModel : ObservableObject
         IsIrregular = noun.Irregular;
         IsVariantPattern = noun.IsVariant;
 
-        var genderLabel = Declension.GenderAbbreviations.GetValueOrDefault(noun.Gender, "");
-        var sgLabel = Declension.NumberAbbreviations[Number.Singular];
-        var plLabel = Declension.NumberAbbreviations[Number.Plural];
+        var genderLabel = UiAbbreviations.Genders.GetValueOrDefault(noun.Gender, "");
+        var sgLabel = UiAbbreviations.Numbers[Number.Singular];
+        var plLabel = UiAbbreviations.Numbers[Number.Plural];
 
         // Column headers based on gender and plural-only status
         var columns = new List<string>();
@@ -149,7 +190,7 @@ public partial class InflectionTableViewModel : ObservableObject
         // Row headers: 8 grammatical cases
         var cases = new[] { Case.Nominative, Case.Accusative, Case.Instrumental, Case.Dative,
                            Case.Ablative, Case.Genitive, Case.Locative, Case.Vocative };
-        RowHeaders = cases.Select(c => Declension.CaseAbbreviations[c]).ToList();
+        RowHeaders = cases.Select(c => UiAbbreviations.Cases[c]).ToList();
 
         // Generate cells for each case × number
 
@@ -189,9 +230,9 @@ public partial class InflectionTableViewModel : ObservableObject
         var testReflexive = inflectionService.GenerateVerbForms(verb, Person.Third, Number.Singular, Tense.Present, reflexive: true);
         var hasReflexive = testReflexive.Forms.Count > 0;
 
-        var sgLabel = Conjugation.NumberAbbreviations[Number.Singular];
-        var plLabel = Conjugation.NumberAbbreviations[Number.Plural];
-        var reflxLabel = Conjugation.ReflexiveAbbrev;
+        var sgLabel = UiAbbreviations.Numbers[Number.Singular];
+        var plLabel = UiAbbreviations.Numbers[Number.Plural];
+        var reflxLabel = UiAbbreviations.Reflexive;
 
         // Column headers
         var columns = new List<string> { sgLabel, plLabel };
@@ -211,7 +252,7 @@ public partial class InflectionTableViewModel : ObservableObject
         {
             foreach (var person in persons)
             {
-                var tenseAbbrev = Conjugation.TenseAbbreviations[tense];
+                var tenseAbbrev = UiAbbreviations.Tenses[tense];
                 var personAbbrev = Conjugation.PersonAbbreviations[person];
                 rowHeadersList.Add($"{tenseAbbrev} {personAbbrev}");
             }

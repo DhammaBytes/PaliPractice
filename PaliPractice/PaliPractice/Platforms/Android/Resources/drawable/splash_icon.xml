@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Wrapper to add padding around the icon for Android 12+ splash safe zone -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/splash_icon_inner"
+    android:insetTop="25%"
+    android:insetBottom="25%"
+    android:insetLeft="25%"
+    android:insetRight="25%" />

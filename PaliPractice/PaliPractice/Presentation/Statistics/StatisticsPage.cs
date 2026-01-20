@@ -119,7 +119,7 @@ public sealed partial class StatisticsPage : Page
 
         return new StackPanel()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .Spacing(16)
+            .Spacing(8)
             .Children(
                 BuildSectionHeader("Overview"),
                 new SquircleBorder()
@@ -167,7 +167,7 @@ public sealed partial class StatisticsPage : Page
 
         return new StackPanel()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .Spacing(16)
+            .Spacing(8)
             .Children(
                 BuildSectionHeader(title),
                 new SquircleBorder()

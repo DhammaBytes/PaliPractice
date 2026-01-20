@@ -207,6 +207,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         }
 
         LogQueueSummary(queue, type);
+        LogDetailedQueueTable(queue, type);
         return queue;
     }
 
@@ -911,6 +912,178 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
             System.Diagnostics.Debug.WriteLine($"[Queue] Level distribution: {string.Join(", ", levelDist)}");
 #endif
     }
+
+    /// <summary>
+    /// Logs a detailed table of the built queue with all settings and form details.
+    /// DEBUG ONLY - performs expensive DB lookups for each item.
+    /// </summary>
+    void LogDetailedQueueTable(List<PracticeItem> queue, PracticeType type)
+    {
+#if DEBUG
+        if (queue.Count == 0)
+        {
+            System.Diagnostics.Debug.WriteLine("[Queue] Empty queue - nothing to display");
+            return;
+        }
+
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine();
+        sb.AppendLine("╔══════════════════════════════════════════════════════════════════════════════════════════════╗");
+        sb.AppendLine($"║  PRACTICE QUEUE DEBUG - {type}".PadRight(94) + "║");
+        sb.AppendLine("╠══════════════════════════════════════════════════════════════════════════════════════════════╣");
+
+        // Log settings based on type
+        if (type == PracticeType.Declension)
+            LogDeclensionSettings(sb);
+        else
+            LogConjugationSettings(sb);
+
+        sb.AppendLine("╠══════════════════════════════════════════════════════════════════════════════════════════════╣");
+        sb.AppendLine("║  QUEUE ITEMS                                                                                 ║");
+        sb.AppendLine("╠════╦════════════╦════════════════╦════════════════════════════╦════════╦═══════════════════╣");
+        sb.AppendLine("║ #  ║  Form ID   ║     Lemma      ║        Combination         ║ Source ║      Level        ║");
+        sb.AppendLine("╠════╬════════════╬════════════════╬════════════════════════════╬════════╬═══════════════════╣");
+
+        // Pre-fetch all lemma data for efficiency
+        var lemmaCache = new Dictionary<int, string>();
+        foreach (var item in queue)
+        {
+            if (!lemmaCache.ContainsKey(item.LemmaId))
+            {
+                var lemmaStr = GetLemmaStringDebug(item.LemmaId, type);
+                lemmaCache[item.LemmaId] = lemmaStr;
+            }
+        }
+
+        // Build table rows
+        for (int i = 0; i < queue.Count; i++)
+        {
+            var item = queue[i];
+            var lemma = lemmaCache.GetValueOrDefault(item.LemmaId, "???");
+            var combo = GetReadableCombination(item.FormId, type);
+            var source = item.Source == PracticeItemSource.NewForm ? "NEW" : "REV";
+            var level = item.Source == PracticeItemSource.NewForm
+                ? "—"
+                : $"L{item.MasteryLevel}";
+
+            // Truncate/pad columns for alignment
+            var posStr = (i + 1).ToString().PadLeft(2);
+            var formIdStr = item.FormId.ToString().PadRight(10);
+            var lemmaStr = TruncateOrPad(lemma, 14);
+            var comboStr = TruncateOrPad(combo, 26);
+            var sourceStr = source.PadRight(6);
+            var levelStr = TruncateOrPad(level, 17);
+
+            sb.AppendLine($"║ {posStr} ║ {formIdStr} ║ {lemmaStr} ║ {comboStr} ║ {sourceStr} ║ {levelStr} ║");
+        }
+
+        sb.AppendLine("╚════╩════════════╩════════════════╩════════════════════════════╩════════╩═══════════════════╝");
+
+        // Summary statistics
+        var newCount = queue.Count(q => q.Source == PracticeItemSource.NewForm);
+        var reviewCount = queue.Count - newCount;
+        var uniqueLemmas = queue.Select(q => q.LemmaId).Distinct().Count();
+
+        sb.AppendLine();
+        sb.AppendLine($"Summary: {queue.Count} items ({newCount} new, {reviewCount} review), {uniqueLemmas} unique lemmas");
+
+        if (reviewCount > 0)
+        {
+            var levelGroups = queue
+                .Where(q => q.Source != PracticeItemSource.NewForm)
+                .GroupBy(q => q.MasteryLevel)
+                .OrderBy(g => g.Key)
+                .Select(g => $"L{g.Key}:{g.Count()}");
+            sb.AppendLine($"Level distribution: {string.Join(", ", levelGroups)}");
+        }
+
+        System.Diagnostics.Debug.WriteLine(sb.ToString());
+#endif
+    }
+
+#if DEBUG
+    void LogDeclensionSettings(System.Text.StringBuilder sb)
+    {
+        var enabledCases = _userData.GetEnumListOrResetDefault(SettingsKeys.NounsCases, SettingsKeys.NounsDefaultCases);
+        var enabledNumbers = _userData.GetEnumListOrResetDefault(SettingsKeys.NounsNumbers, SettingsKeys.DefaultNumbers);
+        var totalNouns = _nouns.GetCount();
+        var (minRank, maxRank) = _userData.GetLemmaRangeOrResetDefault(PracticeType.Declension, totalNouns);
+        var mascEnabled = _userData.GetEnumSetOrResetDefault(SettingsKeys.NounsMascPatterns, SettingsKeys.NounsDefaultMascPatterns);
+        var neutEnabled = _userData.GetEnumSetOrResetDefault(SettingsKeys.NounsNeutPatterns, SettingsKeys.NounsDefaultNeutPatterns);
+        var femEnabled = _userData.GetEnumSetOrResetDefault(SettingsKeys.NounsFemPatterns, SettingsKeys.NounsDefaultFemPatterns);
+
+        sb.AppendLine("║  SETTINGS                                                                                    ║");
+        sb.AppendLine($"║    Rank range: {minRank} - {maxRank}".PadRight(94) + "║");
+        sb.AppendLine($"║    Cases: {string.Join(", ", enabledCases.Select(c => Declension.CaseAbbreviations.GetValueOrDefault(c, c.ToString())))}".PadRight(94) + "║");
+        sb.AppendLine($"║    Numbers: {string.Join(", ", enabledNumbers.Select(n => Declension.NumberAbbreviations.GetValueOrDefault(n, n.ToString())))}".PadRight(94) + "║");
+        sb.AppendLine($"║    Masc patterns: {string.Join(", ", mascEnabled)}".PadRight(94) + "║");
+        sb.AppendLine($"║    Fem patterns: {string.Join(", ", femEnabled)}".PadRight(94) + "║");
+        sb.AppendLine($"║    Neut patterns: {string.Join(", ", neutEnabled)}".PadRight(94) + "║");
+    }
+
+    void LogConjugationSettings(System.Text.StringBuilder sb)
+    {
+        var enabledTenses = _userData.GetEnumListOrResetDefault(SettingsKeys.VerbsTenses, SettingsKeys.VerbsDefaultTenses);
+        var enabledPersons = _userData.GetEnumListOrResetDefault(SettingsKeys.VerbsPersons, SettingsKeys.VerbsDefaultPersons);
+        var enabledNumbers = _userData.GetEnumListOrResetDefault(SettingsKeys.VerbsNumbers, SettingsKeys.DefaultNumbers);
+        var enabledVoices = _userData.GetEnumListOrResetDefault(SettingsKeys.VerbsVoices, SettingsKeys.VerbsDefaultVoices);
+        var enabledPatterns = _userData.GetEnumSetOrResetDefault(SettingsKeys.VerbsPatterns, SettingsKeys.VerbsDefaultPatterns);
+        var totalVerbs = _verbs.GetCount();
+        var (minRank, maxRank) = _userData.GetLemmaRangeOrResetDefault(PracticeType.Conjugation, totalVerbs);
+
+        sb.AppendLine("║  SETTINGS                                                                                    ║");
+        sb.AppendLine($"║    Rank range: {minRank} - {maxRank}".PadRight(94) + "║");
+        sb.AppendLine($"║    Tenses: {string.Join(", ", enabledTenses.Select(t => Conjugation.TenseAbbreviations.GetValueOrDefault(t, t.ToString())))}".PadRight(94) + "║");
+        sb.AppendLine($"║    Persons: {string.Join(", ", enabledPersons.Select(p => Conjugation.PersonAbbreviations.GetValueOrDefault(p, p.ToString())))}".PadRight(94) + "║");
+        sb.AppendLine($"║    Numbers: {string.Join(", ", enabledNumbers.Select(n => Conjugation.NumberAbbreviations.GetValueOrDefault(n, n.ToString())))}".PadRight(94) + "║");
+        sb.AppendLine($"║    Voices: {string.Join(", ", enabledVoices)}".PadRight(94) + "║");
+        sb.AppendLine($"║    Patterns: {string.Join(", ", enabledPatterns)}".PadRight(94) + "║");
+    }
+
+    string GetLemmaStringDebug(int lemmaId, PracticeType type)
+    {
+        if (type == PracticeType.Declension)
+        {
+            var lemma = _nouns.GetLemma(lemmaId);
+            return lemma != null ? ((Noun)lemma.Primary).Lemma : "???";
+        }
+        else
+        {
+            var lemma = _verbs.GetLemma(lemmaId);
+            return lemma != null ? ((Verb)lemma.Primary).Lemma : "???";
+        }
+    }
+
+    static string GetReadableCombination(long formId, PracticeType type)
+    {
+        if (type == PracticeType.Declension)
+        {
+            var (_, @case, gender, number, _) = Declension.ParseId(formId);
+            var caseStr = Declension.CaseAbbreviations.GetValueOrDefault(@case, @case.ToString());
+            var genderStr = Declension.GenderAbbreviations.GetValueOrDefault(gender, gender.ToString());
+            var numberStr = Declension.NumberAbbreviations.GetValueOrDefault(number, number.ToString());
+            return $"{caseStr} {genderStr} {numberStr}";
+        }
+        else
+        {
+            var (_, tense, person, number, voice, _) = Conjugation.ParseId(formId);
+            var tenseStr = Conjugation.TenseAbbreviations.GetValueOrDefault(tense, tense.ToString());
+            var personStr = Conjugation.PersonAbbreviations.GetValueOrDefault(person, person.ToString());
+            var numberStr = Conjugation.NumberAbbreviations.GetValueOrDefault(number, number.ToString());
+            var result = $"{tenseStr} {personStr} {numberStr}";
+            if (voice == Voice.Reflexive)
+                result += " reflx";
+            return result;
+        }
+    }
+
+    static string TruncateOrPad(string s, int width)
+    {
+        if (s.Length > width)
+            return s[..(width - 1)] + "…";
+        return s.PadRight(width);
+    }
+#endif
 
     #endregion
 }

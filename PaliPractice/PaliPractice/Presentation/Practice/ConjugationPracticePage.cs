@@ -20,7 +20,7 @@ public sealed partial class ConjugationPracticePage : Page
         ConjugationPracticePageMarkup.DataContext<ConjugationPracticeViewModel>(this, (page, _) => page
             .NavigationCacheMode<ConjugationPracticePage>(NavigationCacheMode.Required)
             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
-            .Content(BuildPageLayout(elements, heightClass))
+            .Content(PageFadeIn.Wrap(page, BuildPageLayout(elements, heightClass)))
         );
 
         HeightResponsiveHelper.AttachResponsiveHandler(

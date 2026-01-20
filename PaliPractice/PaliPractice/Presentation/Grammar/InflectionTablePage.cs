@@ -37,36 +37,37 @@ public sealed partial class InflectionTablePage : Page
         this.DataContext<InflectionTableViewModel>((page, vm) => page
             .NavigationCacheMode<InflectionTablePage>(NavigationCacheMode.Disabled)
             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
-            .Content(new Grid()
-                .SafeArea(SafeArea.InsetMask.VisibleBounds)
-                .RowDefinitions("Auto,*")
-                .Children(
-                    // Row 0: Title bar with back button (full width)
-                    AppTitleBar.BuildWithCenterElement<InflectionTableViewModel>(
-                            _titleTextBlock!, vm => vm.GoBackCommand)
-                        .Grid(row: 0),
+            .Content(PageFadeIn.Wrap(page,
+                new Grid()
+                    .SafeArea(SafeArea.InsetMask.VisibleBounds)
+                    .RowDefinitions("Auto,*")
+                    .Children(
+                        // Row 0: Title bar with back button (full width)
+                        AppTitleBar.BuildWithCenterElement<InflectionTableViewModel>(
+                                _titleTextBlock!, vm => vm.GoBackCommand)
+                            .Grid(row: 0),
 
-                    // Row 1: Full-width surface background with centered content
-                    new Border()
-                        .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-                        .Child(
-                            new Grid()
-                                .HorizontalAlignment(HorizontalAlignment.Center)
-                                .MaxWidth(800) // Max width for readability on large screens
-                                .RowDefinitions("Auto,*")
-                                .Children(
-                                    // Row 0: Header info panel (left-aligned within centered container)
-                                    BuildHeaderInfo()
-                                        .Grid(row: 0),
+                        // Row 1: Full-width surface background with centered content
+                        new Border()
+                            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+                            .Child(
+                                new Grid()
+                                    .HorizontalAlignment(HorizontalAlignment.Center)
+                                    .MaxWidth(800) // Max width for readability on large screens
+                                    .RowDefinitions("Auto,*")
+                                    .Children(
+                                        // Row 0: Header info panel (left-aligned within centered container)
+                                        BuildHeaderInfo()
+                                            .Grid(row: 0),
 
-                                    // Row 1: Table container (populated in DataContextChanged)
-                                    _tableContainer
-                                        .Grid(row: 1)
-                                )
-                        )
-                        .Grid(row: 1)
-                )
-            )
+                                        // Row 1: Table container (populated in DataContextChanged)
+                                        _tableContainer
+                                            .Grid(row: 1)
+                                    )
+                            )
+                            .Grid(row: 1)
+                    )
+            ))
         );
 
         // Use DataContextChanged instead of Loaded to ensure ViewModel is ready

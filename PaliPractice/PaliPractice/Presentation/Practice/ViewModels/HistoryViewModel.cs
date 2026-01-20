@@ -36,5 +36,7 @@ public class HistoryViewModel : ObservableObject
 
     public ObservableCollection<IPracticeHistory> Records { get; }
 
+    public bool HasHistory => Records.Count > 0;
+
     public ICommand GoBackCommand => new AsyncRelayCommand(() => _navigator.NavigateBackAsync(this));
 }

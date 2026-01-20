@@ -1,3 +1,4 @@
+using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Practice.ViewModels;
 using PaliPractice.Services.UserData.Entities;
@@ -12,57 +13,70 @@ public sealed partial class HistoryPage : Page
         this.DataContext<HistoryViewModel>((page, vm) => page
             .NavigationCacheMode(NavigationCacheMode.Disabled) // Don't cache - different data each time
             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
-            .Content(new Grid()
-                .SafeArea(SafeArea.InsetMask.Top) // Only top safe area - content extends to physical bottom
-                .RowDefinitions("Auto,*")
-                .Children(
-                    // Row 0: Title bar
-                    AppTitleBar.Build<HistoryViewModel>("History", v => v.GoBackCommand),
+            .Content(PageFadeIn.Wrap(page,
+                new Grid()
+                    .SafeArea(SafeArea.InsetMask.Top) // Only top safe area - content extends to physical bottom
+                    .RowDefinitions("Auto,*")
+                    .Children(
+                        // Row 0: Title bar
+                        AppTitleBar.Build<HistoryViewModel>("History", v => v.GoBackCommand),
 
-                    // Row 1: Content - edge-to-edge within max width
-                    new ListView()
-                        .MaxWidth(LayoutConstants.ContentMaxWidth)
-                        .HorizontalAlignment(HorizontalAlignment.Stretch)
-                        .Grid(row: 1)
-                        .ItemsSource(() => vm.Records)
-                        .ItemTemplate<IPracticeHistory>(record =>
-                            new Grid()
-                                .HorizontalAlignment(HorizontalAlignment.Stretch)
-                                .ColumnDefinitions("*,Auto,60")
-                                .Padding(16, 12)
-                                .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-                                .Children(
-                                    // Column 0: Form text (Pāli word)
-                                    PaliText()
-                                        .Text(() => record.FormText)
-                                        .FontSize(16)
-                                        .VerticalAlignment(VerticalAlignment.Center)
-                                        .Grid(column: 0),
+                        // Row 1: Content - edge-to-edge within max width
+                        new ListView()
+                            .MaxWidth(LayoutConstants.ContentMaxWidth)
+                            .HorizontalAlignment(HorizontalAlignment.Stretch)
+                            .SelectionMode(ListViewSelectionMode.None)
+                            .BoolToVisibility<ListView, HistoryViewModel>(v => v.HasHistory)
+                            .Grid(row: 1)
+                            .ItemsSource(() => vm.Records)
+                            .ItemTemplate<IPracticeHistory>(record =>
+                                new Grid()
+                                    .HorizontalAlignment(HorizontalAlignment.Stretch)
+                                    .ColumnDefinitions("*,Auto,60")
+                                    .Padding(16, 12)
+                                    .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+                                    .Children(
+                                        // Column 0: Form text (Pāli word)
+                                        PaliText()
+                                            .Text(() => record.FormText)
+                                            .FontSize(16)
+                                            .VerticalAlignment(VerticalAlignment.Center)
+                                            .Grid(column: 0),
 
-                                    // Column 1: Arrow icon (up/down based on progress)
-                                    new FontIcon()
-                                        .Glyph(() => record.IsImproved, improved => improved ? "\uE74A" : "\uE74B") // Up or Down arrow
-                                        .FontSize(16)
-                                        .Margin(12, 0)
-                                        .VerticalAlignment(VerticalAlignment.Center)
-                                        .Foreground(() => record.IsImproved, improved =>
-                                            improved
-                                                ? (Brush)Application.Current.Resources["SystemFillColorSuccessBrush"]
-                                                : (Brush)Application.Current.Resources["SystemFillColorCriticalBrush"])
-                                        .Grid(column: 1),
+                                        // Column 1: Arrow icon (up/down based on progress)
+                                        new FontIcon()
+                                            .Glyph(() => record.IsImproved, improved => improved ? "\uE74A" : "\uE74B") // Up or Down arrow
+                                            .FontSize(16)
+                                            .Margin(12, 0)
+                                            .VerticalAlignment(VerticalAlignment.Center)
+                                            .Foreground(() => record.IsImproved, improved =>
+                                                improved
+                                                    ? (Brush)Application.Current.Resources["SystemFillColorSuccessBrush"]
+                                                    : (Brush)Application.Current.Resources["SystemFillColorCriticalBrush"])
+                                            .Grid(column: 1),
 
-                                    // Column 2: Progress bar (0-100 scale)
-                                    new ProgressBar()
-                                        .Width(60)
-                                        .Minimum(0)
-                                        .Maximum(100)
-                                        .Value(() => record.NewLevelPercent)
-                                        .VerticalAlignment(VerticalAlignment.Center)
-                                        .Grid(column: 2)
-                                )
-                        )
-                )
-            )
+                                        // Column 2: Progress bar (0-100 scale)
+                                        new ProgressBar()
+                                            .Width(60)
+                                            .Minimum(0)
+                                            .Maximum(100)
+                                            .Value(() => record.NewLevelPercent)
+                                            .VerticalAlignment(VerticalAlignment.Center)
+                                            .Grid(column: 2)
+                                    )
+                            ),
+
+                        // Empty state - shown when no history
+                        RegularText()
+                            .Text("No practice history yet")
+                            .FontSize(16)
+                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
+                            .HorizontalAlignment(HorizontalAlignment.Center)
+                            .VerticalAlignment(VerticalAlignment.Center)
+                            .BoolToVisibility<TextBlock, HistoryViewModel>(v => v.HasHistory, invert: true)
+                            .Grid(row: 1)
+                    )
+            ))
         );
     }
 }

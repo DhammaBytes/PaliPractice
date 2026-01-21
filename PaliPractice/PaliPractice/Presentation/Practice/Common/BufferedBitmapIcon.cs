@@ -1,6 +1,6 @@
 using Microsoft.UI.Dispatching;
 
-namespace PaliPractice.Presentation.Common;
+namespace PaliPractice.Presentation.Practice.Common;
 
 /// <summary>
 /// A double-buffered BitmapIcon that prevents visual blinking during icon transitions.

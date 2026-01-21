@@ -175,6 +175,10 @@ public partial class App : Application
     {
         if (Host is null || MainWindow?.Content is not FrameworkElement root) return;
 
+        // Re-apply control styling when theme changes (brushes from ThemeDictionaries update,
+        // but control-specific resources need to be re-read)
+        root.ActualThemeChanged += (_, _) => ControlStyling.ApplyAccentColorOverrides(Resources);
+
         var db = Host.Services.GetRequiredService<IDatabaseService>();
         var savedTheme = db.UserData.GetSetting(SettingsKeys.AppearanceTheme, SettingsKeys.DefaultAppearanceTheme);
 

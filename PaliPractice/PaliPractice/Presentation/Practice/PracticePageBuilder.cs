@@ -186,26 +186,8 @@ public static class PracticePageBuilder
             .VerticalAlignment(VerticalAlignment.Top)
             .Content(exampleContainer);
 
-        // Fade overlay to hint at scrollable content (gradient from transparent to background)
-        var bgBrush = Application.Current.Resources["BackgroundBrush"] as SolidColorBrush;
-        var bgColor = bgBrush?.Color ?? Colors.White;
-
-        var fadeOverlay = new Border()
-            .Height(24)
-            .VerticalAlignment(VerticalAlignment.Bottom)
-            .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .IsHitTestVisible(false)
-            .Opacity(0) // Start hidden
-            .Background(new LinearGradientBrush
-            {
-                StartPoint = new Windows.Foundation.Point(0.5, 0),
-                EndPoint = new Windows.Foundation.Point(0.5, 1),
-                GradientStops =
-                {
-                    new GradientStop { Color = Colors.Transparent, Offset = 0 },
-                    new GradientStop { Color = bgColor, Offset = 1 }
-                }
-            });
+        // Fade overlay to hint at scrollable content (theme-aware gradient)
+        var fadeOverlay = new FadeOverlay();
 
         // Detect overflow and show/hide fade overlay
         exampleScrollViewer.SizeChanged += (_, _) => UpdateFadeOverlay();
@@ -413,7 +395,7 @@ public static class PracticePageBuilder
             .Height(LayoutConstants.Sizes.PlaceholderHeight)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .VerticalAlignment(VerticalAlignment.Center)
-            .BorderBrush(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
+            .BorderBrush(ThemeResource.Get<Brush>("BackgroundVariantBrush"))
             .BorderThickness(0, 0, 0, LayoutConstants.Sizes.AnswerLineThickness)
             .BoolToVisibility<Border, TVM>(isRevealedPath, invert: true);
 
@@ -583,9 +565,9 @@ public static class PracticePageBuilder
                                     .Spacing(6)
                                     .VisibilityWithin<StackPanel, ExampleCarouselViewModel>(c => c.IsRevealed, invert: true)
                                     .Children(
-                                        new Ellipse().Width(6).Height(6).Fill(ThemeResource.Get<Brush>("OnSurfaceVariantBrush")),
-                                        new Ellipse().Width(6).Height(6).Fill(ThemeResource.Get<Brush>("OnSurfaceVariantBrush")),
-                                        new Ellipse().Width(6).Height(6).Fill(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
+                                        new Ellipse().Width(6).Height(6).Fill(ThemeResource.Get<Brush>("BackgroundVariantBrush")),
+                                        new Ellipse().Width(6).Height(6).Fill(ThemeResource.Get<Brush>("BackgroundVariantBrush")),
+                                        new Ellipse().Width(6).Height(6).Fill(ThemeResource.Get<Brush>("BackgroundVariantBrush"))
                                     ),
 
                                 // Translation content - always participates in layout (uses Opacity)

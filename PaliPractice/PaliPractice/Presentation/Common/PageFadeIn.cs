@@ -18,6 +18,7 @@ public static class PageFadeIn
     const int FadeDurationMs = 100;
     const int AnimationSteps = 5;
     const int BindingSettleDelayMs = 50;
+    const int MaxWaitMs = 2000; // Failsafe: show content after 2 seconds no matter what
 
     /// <summary>
     /// Wraps content in a container that fades in on forward navigation only.
@@ -44,7 +45,7 @@ public static class PageFadeIn
     {
         readonly Page _page;
         readonly Grid _container;
-        CancellationTokenSource? _cts;
+        readonly CancellationTokenSource _cts = new();
         bool _hasAnimated;
         bool _isBackNav;
         bool _isLoaded;
@@ -62,13 +63,39 @@ public static class PageFadeIn
             _page.Unloaded += OnPageUnloaded;
             _page.DataContextChanged += OnDataContextChanged;
             _container.Loaded += OnContainerLoaded;
+
+            // Check if DataContext is already set (race condition fix)
+            if (_page.DataContext != null)
+                _hasDataContext = true;
+
+            // Failsafe: guarantee content becomes visible after max wait time
+            _ = FailsafeTimeoutAsync();
+        }
+
+        async Task FailsafeTimeoutAsync()
+        {
+            try
+            {
+                await Task.Delay(MaxWaitMs, _cts.Token);
+                ShowImmediately();
+            }
+            catch (OperationCanceledException)
+            {
+                // Normal: fade completed or page unloaded before timeout
+            }
+        }
+
+        void ShowImmediately()
+        {
+            if (_hasAnimated) return;
+            _hasAnimated = true;
+            _container.Opacity = 1;
         }
 
         void Detach()
         {
-            _cts?.Cancel();
-            _cts?.Dispose();
-            _cts = null;
+            _cts.Cancel();
+            _cts.Dispose();
 
             _page.Loaded -= OnPageLoaded;
             _page.Unloaded -= OnPageUnloaded;
@@ -96,10 +123,7 @@ public static class PageFadeIn
 
             _isBackNav = e.NavigationMode == NavigationMode.Back;
             if (_isBackNav)
-            {
-                _container.Opacity = 1;
-                _hasAnimated = true;
-            }
+                ShowImmediately();
         }
 
         async void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs e)
@@ -123,7 +147,6 @@ public static class PageFadeIn
                 return;
 
             _hasAnimated = true;
-            _cts = new CancellationTokenSource();
 
             try
             {

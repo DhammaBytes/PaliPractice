@@ -405,7 +405,8 @@ public static class PracticePageBuilder
             .Height(LayoutConstants.Sizes.PlaceholderHeight)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .VerticalAlignment(VerticalAlignment.Center)
-            .BorderBrush(ThemeResource.Get<Brush>("BackgroundVariantBrush"))
+            .BorderBrush(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
+            .Opacity(0.75)
             .BorderThickness(0, 0, 0, LayoutConstants.Sizes.AnswerLineThickness)
             .BoolToVisibility<Border, TVM>(isRevealedPath, invert: true);
 
@@ -573,11 +574,12 @@ public static class PracticePageBuilder
                                     .HorizontalAlignment(HorizontalAlignment.Center)
                                     .VerticalAlignment(VerticalAlignment.Center)
                                     .Spacing(6)
+                                    .Opacity(0.75)
                                     .VisibilityWithin<StackPanel, ExampleCarouselViewModel>(c => c.IsRevealed, invert: true)
                                     .Children(
-                                        new Ellipse().Width(6).Height(6).Fill(ThemeResource.Get<Brush>("BackgroundVariantBrush")),
-                                        new Ellipse().Width(6).Height(6).Fill(ThemeResource.Get<Brush>("BackgroundVariantBrush")),
-                                        new Ellipse().Width(6).Height(6).Fill(ThemeResource.Get<Brush>("BackgroundVariantBrush"))
+                                        new Ellipse().Width(6).Height(6).Fill(ThemeResource.Get<Brush>("OnSurfaceVariantBrush")),
+                                        new Ellipse().Width(6).Height(6).Fill(ThemeResource.Get<Brush>("OnSurfaceVariantBrush")),
+                                        new Ellipse().Width(6).Height(6).Fill(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
                                     ),
 
                                 // Translation content - always participates in layout (uses Opacity)
@@ -783,7 +785,15 @@ public static class PracticePageBuilder
             .Stroke(ThemeResource.Get<Brush>("NavigationButtonVariantOutlineBrush"))
             .StrokeThickness(LayoutConstants.Sizes.PracticeButtonStrokeThickness)
             .Padding(LayoutConstants.Gaps.ActionButtonPaddingH, LayoutConstants.Gaps.ActionButtonPaddingV);
-        button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
+
+        // Defer command binding until Loaded to avoid ResourceResolver scope crash
+        // (Uno Platform race condition when CanExecute triggers visual state change before button is in tree)
+        button.Loaded += (s, _) =>
+        {
+            if (s is SquircleButton btn && btn.Command is null)
+                btn.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
+        };
+
         return button
             .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)
@@ -831,7 +841,15 @@ public static class PracticePageBuilder
             .Stroke(ThemeResource.Get<Brush>(strokeBrushKey))
             .StrokeThickness(LayoutConstants.Sizes.PracticeButtonStrokeThickness)
             .Padding(LayoutConstants.Gaps.ActionButtonPaddingH, LayoutConstants.Gaps.ActionButtonPaddingV);
-        button.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
+
+        // Defer command binding until Loaded to avoid ResourceResolver scope crash
+        // (Uno Platform race condition when CanExecute triggers visual state change before button is in tree)
+        button.Loaded += (s, _) =>
+        {
+            if (s is SquircleButton btn && btn.Command is null)
+                btn.SetBinding(ButtonBase.CommandProperty, Bind.Path(commandPath));
+        };
+
         button.Child(new StackPanel()
             .Orientation(Orientation.Horizontal)
             .HorizontalAlignment(HorizontalAlignment.Center)

@@ -18,6 +18,9 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 {
     protected readonly ILogger Logger;
     protected readonly IUserDataRepository UserData;
+#if DEBUG
+    protected ILemma? ScreenshotLemma;
+#endif
 
     [ObservableProperty] bool _canRateCard;
     [ObservableProperty] string _alternativeForms = string.Empty;
@@ -241,7 +244,11 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     async Task NavigateToInflectionTable()
     {
+#if DEBUG
+        var lemma = ScreenshotLemma ?? _provider.GetCurrentLemma();
+#else
         var lemma = _provider.GetCurrentLemma();
+#endif
         if (lemma == null) return;
 
         await Navigator.NavigateViewModelAsync<InflectionTableViewModel>(

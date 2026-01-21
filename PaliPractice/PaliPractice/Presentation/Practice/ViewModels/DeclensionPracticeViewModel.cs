@@ -13,6 +13,7 @@ namespace PaliPractice.Presentation.Practice.ViewModels;
 public partial class DeclensionPracticeViewModel : PracticeViewModelBase
 {
     readonly IInflectionService _inflectionService;
+    readonly IDatabaseService _db;
     Declension? _currentDeclension;
 
     // Current grammatical parameters from the SRS queue
@@ -50,7 +51,14 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
         : base(provider, db.UserData, flashCard, navigator, storeReviewService, logger)
     {
         _inflectionService = inflectionService;
-        _ = InitializeAsync();
+        _db = db;
+
+#if DEBUG
+        if (ScreenshotMode.IsEnabled)
+            _ = InitializeForScreenshotAsync();
+        else
+#endif
+            _ = InitializeAsync();
     }
 
     public override ICommand GoToSettingsCommand =>
@@ -173,4 +181,64 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
             .Where(f => !string.IsNullOrEmpty(f))
             .ToList();
     }
+
+#if DEBUG
+    #region Screenshot Mode
+
+    /// <summary>
+    /// Initialize with predetermined content for App Store screenshots.
+    /// Loads "dhamma" (LemmaId: 10005) with Ablative Masculine Singular → "dhammato".
+    /// </summary>
+    async Task InitializeForScreenshotAsync()
+    {
+        try
+        {
+            FlashCard.IsLoading = true;
+
+            // Load the specific lemma for screenshots
+            var lemma = _db.Nouns.GetLemma(ScreenshotMode.DhammaLemmaId);
+            if (lemma == null)
+            {
+                Logger.LogError("Screenshot mode: Failed to load dhamma lemma");
+                await InitializeAsync(); // Fallback to normal initialization
+                return;
+            }
+
+            _db.Nouns.EnsureDetails(lemma);
+            ScreenshotLemma = lemma;
+
+            // Set the predetermined grammatical parameters
+            _currentCase = Case.Ablative;
+            _currentGender = Gender.Masculine;
+            _currentNumber = Number.Singular;
+
+            // Display the word
+            var noun = (Noun)lemma.Primary;
+            FlashCard.DisplayWord(noun, 1, 1, masteryLevel: 5, noun.Details?.Root);
+
+            // Generate the declension
+            _currentDeclension = _inflectionService.GenerateNounForms(noun, _currentCase, _currentNumber);
+            UpdateBadges(_currentDeclension!);
+
+            // Set the answer
+            FlashCard.SetAnswer(GetInflectedForm(), GetInflectedEnding());
+            AlternativeForms = GetAlternativeForms();
+
+            // Initialize example carousel
+            ExampleCarousel.Initialize(lemma.Words);
+            ExampleCarousel.SetFormsToAvoid(GetAllInflectedForms());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Screenshot mode initialization failed");
+            await InitializeAsync(); // Fallback to normal initialization
+        }
+        finally
+        {
+            FlashCard.IsLoading = false;
+        }
+    }
+
+    #endregion
+#endif
 }

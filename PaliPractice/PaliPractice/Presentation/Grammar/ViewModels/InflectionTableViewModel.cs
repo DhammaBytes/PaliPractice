@@ -73,10 +73,18 @@ public partial class InflectionTableViewModel : ObservableObject
     public InflectionTableViewModel(
         INavigator navigator,
         IInflectionService inflectionService,
+        IDatabaseService db,
         InflectionTableNavigationData data)
     {
         _navigator = navigator;
-        Lemma = data.Lemma;
+
+#if DEBUG
+        if (ScreenshotMode.IsEnabled)
+            Lemma = GetScreenshotLemma(data.PracticeType, db) ?? data.Lemma;
+        else
+#endif
+            Lemma = data.Lemma;
+
         PracticeType = data.PracticeType;
         IsNoun = data.PracticeType == PracticeType.Declension;
 
@@ -346,4 +354,32 @@ public partial class InflectionTableViewModel : ObservableObject
         }
         return new TableCell(formDisplays);
     }
+
+#if DEBUG
+    #region Screenshot Mode
+
+    /// <summary>
+    /// Gets the screenshot lemma based on practice type.
+    /// Declension → dhamma (10005), Conjugation → bhavati (70008).
+    /// </summary>
+    static ILemma? GetScreenshotLemma(PracticeType practiceType, IDatabaseService db)
+    {
+        if (practiceType == PracticeType.Declension)
+        {
+            var lemma = db.Nouns.GetLemma(ScreenshotMode.DhammaLemmaId);
+            if (lemma != null)
+                db.Nouns.EnsureDetails(lemma);
+            return lemma;
+        }
+        else
+        {
+            var lemma = db.Verbs.GetLemma(ScreenshotMode.BhavatiLemmaId);
+            if (lemma != null)
+                db.Verbs.EnsureDetails(lemma);
+            return lemma;
+        }
+    }
+
+    #endregion
+#endif
 }

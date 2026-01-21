@@ -76,8 +76,8 @@ public partial class ConjugationSettingsViewModel : ObservableObject
     {
         if (_isLoading) return;
 
-        // Save daily goal
-        _userData.SetSetting(SettingsKeys.VerbsDailyGoal, DailyGoal);
+        // Save daily goal (convert double to int, handling NaN)
+        _userData.SetSetting(SettingsKeys.VerbsDailyGoal, SettingsHelpers.ValidateDailyGoalDouble(DailyGoal));
 
         // Save persons
         var persons = new List<Person>();
@@ -203,20 +203,25 @@ public partial class ConjugationSettingsViewModel : ObservableObject
 
     #region Daily goal settings
 
+    /// <summary>
+    /// Daily goal bound to NumberBox.Value (double).
+    /// Uses double to handle NaN from cleared/invalid NumberBox input.
+    /// </summary>
     [ObservableProperty]
-    int _dailyGoal = SettingsKeys.DefaultDailyGoal;
-    partial void OnDailyGoalChanged(int value) => SaveSettings();
+    double _dailyGoal = SettingsKeys.DefaultDailyGoal;
+    partial void OnDailyGoalChanged(double value) => SaveSettings();
 
     /// <summary>
     /// Validates and corrects the daily goal when the field loses focus.
+    /// Handles NaN from cleared NumberBox and clamps to valid range.
     /// </summary>
     [RelayCommand]
     void ValidateDailyGoal()
     {
         if (_isLoading) return;
 
-        var validated = SettingsHelpers.ValidateDailyGoal(DailyGoal);
-        if (validated != DailyGoal)
+        var validated = SettingsHelpers.ValidateDailyGoalDouble(DailyGoal);
+        if (Math.Abs(validated - DailyGoal) > 0.5 || double.IsNaN(DailyGoal))
         {
             _isLoading = true;
             DailyGoal = validated;

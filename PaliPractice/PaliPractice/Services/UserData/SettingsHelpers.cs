@@ -24,6 +24,18 @@ public static class SettingsHelpers
         => Math.Clamp(goal, DailyGoalMin, DailyGoalMax);
 
     /// <summary>
+    /// Validates a daily goal value from NumberBox (double).
+    /// Handles NaN from cleared/invalid input by returning default value.
+    /// Returns clamped int for storage.
+    /// </summary>
+    public static int ValidateDailyGoalDouble(double goal)
+    {
+        if (double.IsNaN(goal) || double.IsInfinity(goal))
+            return SettingsKeys.DefaultDailyGoal;
+        return Math.Clamp((int)goal, DailyGoalMin, DailyGoalMax);
+    }
+
+    /// <summary>
     /// Validates and clamps a range (min/max pair) to allowed bounds.
     /// Ensures min is less than max.
     /// </summary>

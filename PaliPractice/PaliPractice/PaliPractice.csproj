@@ -74,6 +74,23 @@
       </AndroidAsset>
     </ItemGroup>
 
+    <!-- Android: Custom launcher icons (mipmap resources) -->
+    <ItemGroup Condition="$(TargetFramework.Contains('-android'))">
+      <AndroidResource Include="Platforms\Android\Resources\mipmap-mdpi\*.webp" />
+      <AndroidResource Include="Platforms\Android\Resources\mipmap-hdpi\*.webp" />
+      <AndroidResource Include="Platforms\Android\Resources\mipmap-xhdpi\*.webp" />
+      <AndroidResource Include="Platforms\Android\Resources\mipmap-xxhdpi\*.webp" />
+      <AndroidResource Include="Platforms\Android\Resources\mipmap-xxxhdpi\*.webp" />
+      <AndroidResource Include="Platforms\Android\Resources\mipmap-anydpi-v26\*.xml" />
+      <AndroidResource Include="Platforms\Android\Resources\values\icon_background.xml" />
+    </ItemGroup>
+
+    <!-- Exclude Resizetizer icon generation for Android (use custom mipmap icons) -->
+    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+        <UnoIcon Remove="@(UnoIcon)" />
+        <UnoIcon Remove="Assets\Icons\icon.svg" />
+    </ItemGroup>
+
     <!-- Internal documentation - excluded from build output -->
     <ItemGroup>
       <None Include="Assets\SharedAssets.md" />

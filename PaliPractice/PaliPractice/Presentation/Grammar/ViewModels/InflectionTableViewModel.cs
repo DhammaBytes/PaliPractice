@@ -11,38 +11,38 @@ static class UiAbbreviations
 {
     public static readonly Dictionary<Case, string> Cases = new()
     {
-        [Case.Nominative] = "Nom",
-        [Case.Accusative] = "Acc",
-        [Case.Instrumental] = "Instr",
-        [Case.Dative] = "Dat",
-        [Case.Ablative] = "Abl",
-        [Case.Genitive] = "Gen",
-        [Case.Locative] = "Loc",
-        [Case.Vocative] = "Voc"
+        [Case.Nominative] = "nom",
+        [Case.Accusative] = "acc",
+        [Case.Instrumental] = "instr",
+        [Case.Dative] = "dat",
+        [Case.Ablative] = "abl",
+        [Case.Genitive] = "gen",
+        [Case.Locative] = "loc",
+        [Case.Vocative] = "voc"
     };
 
     public static readonly Dictionary<Gender, string> Genders = new()
     {
-        [Gender.Masculine] = "Masc",
-        [Gender.Feminine] = "Fem",
-        [Gender.Neuter] = "Neut"
+        [Gender.Masculine] = "masc",
+        [Gender.Feminine] = "fem",
+        [Gender.Neuter] = "neut"
     };
 
     public static readonly Dictionary<Number, string> Numbers = new()
     {
-        [Number.Singular] = "Sing",
-        [Number.Plural] = "Plur"
+        [Number.Singular] = "sing",
+        [Number.Plural] = "plur"
     };
 
     public static readonly Dictionary<Tense, string> Tenses = new()
     {
-        [Tense.Present] = "Pr",
-        [Tense.Imperative] = "Imp",
-        [Tense.Optative] = "Opt",
-        [Tense.Future] = "Fut"
+        [Tense.Present] = "pr",
+        [Tense.Imperative] = "imp",
+        [Tense.Optative] = "opt",
+        [Tense.Future] = "fut"
     };
 
-    public const string Reflexive = "Refl";
+    public const string Reflexive = "refl";
 }
 
 /// <summary>

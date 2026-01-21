@@ -161,7 +161,7 @@ public partial class App : Application
         }
 
 #if DEBUG
-        MainWindow.UseStudio();
+        // MainWindow.UseStudio();
 #endif
         // MainWindow.SetWindowIcon();
 

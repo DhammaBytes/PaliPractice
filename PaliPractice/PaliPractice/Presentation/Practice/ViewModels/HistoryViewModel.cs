@@ -28,6 +28,14 @@ public class HistoryViewModel : ObservableObject
         _navigator = navigator;
         CurrentPracticeType = data.PracticeType;
 
+#if DEBUG
+        if (ScreenshotMode.IsEnabled)
+        {
+            Sections = CreateScreenshotHistory(data.PracticeType);
+            return;
+        }
+#endif
+
         // Load history from database and resolve form text from FormId
         var history = db.UserData.GetRecentHistory(data.PracticeType, limit: 1000);
         foreach (var record in history)
@@ -92,4 +100,180 @@ public class HistoryViewModel : ObservableObject
         // Format as "5 Jan" (day + abbreviated month)
         return date.ToString("d MMM");
     }
+
+#if DEBUG
+    #region Screenshot Mode
+
+    /// <summary>
+    /// Mock implementation of IPracticeHistory for screenshot mode.
+    /// </summary>
+    class MockPracticeHistory : IPracticeHistory
+    {
+        public int Id { get; init; }
+        public long FormId { get; init; }
+        public string FormText { get; set; } = "";
+        public int OldLevel { get; init; }
+        public int NewLevel { get; init; }
+        public DateTime PracticedUtc { get; init; }
+        public bool IsImproved => NewLevel > OldLevel;
+        public int NewLevelPercent => Math.Min(NewLevel, 10) * 10;
+    }
+
+    /// <summary>
+    /// Creates mock history data for screenshots.
+    /// 20 items: 12 today + 8 yesterday, with varied easy/hard progression.
+    /// </summary>
+    static List<HistorySection> CreateScreenshotHistory(PracticeType type)
+    {
+        var records = type == PracticeType.Declension
+            ? CreateMockNounHistory()
+            : CreateMockVerbHistory();
+
+        return GroupByDate(records);
+    }
+
+    /// <summary>
+    /// Creates 20 mock noun history records with high-EBT forms.
+    /// </summary>
+    static List<IPracticeHistory> CreateMockNounHistory()
+    {
+        var now = DateTime.UtcNow;
+        var yesterday8pm = now.Date.AddDays(-1).AddHours(20);
+
+        // Forms for today (12 items) and yesterday (8 items)
+        var todayForms = new[]
+        {
+            "bhikkhuno", "bhikkhave", "dhammato", "bhagavā",
+            "bhante", "āyasmato", "cittena", "samaye", "brāhmaṇassa"
+        };
+        var yesterdayForms = new[]
+        {
+            "loke", "āpattiṃ", "kāyena", "dukkhaṃ", "bhikkhū",
+            "dhammassa", "cittaṃ"
+        };
+
+        // Progression pattern: easy, hard, easy, easy, hard, hard (repeated)
+        var pattern = new[] { true, false, true, true, false, false };
+
+        var records = new List<IPracticeHistory>();
+        var id = 1;
+        var level = 3; // Starting level
+
+        // Today's records (most recent first)
+        for (var i = 0; i < todayForms.Length; i++)
+        {
+            var wasEasy = pattern[i % pattern.Length];
+            var oldLevel = level;
+            var newLevel = wasEasy ? Math.Min(level + 1, 10) : Math.Max(level - 1, 1);
+            level = newLevel;
+
+            records.Add(new MockPracticeHistory
+            {
+                Id = id++,
+                FormId = 100000000 + i,
+                FormText = todayForms[i],
+                OldLevel = oldLevel,
+                NewLevel = newLevel,
+                PracticedUtc = now.AddMinutes(-5 * i)
+            });
+        }
+
+        // Reset level for yesterday
+        level = 2;
+
+        // Yesterday's records
+        for (var i = 0; i < yesterdayForms.Length; i++)
+        {
+            var wasEasy = pattern[i % pattern.Length];
+            var oldLevel = level;
+            var newLevel = wasEasy ? Math.Min(level + 1, 10) : Math.Max(level - 1, 1);
+            level = newLevel;
+
+            records.Add(new MockPracticeHistory
+            {
+                Id = id++,
+                FormId = 100000100 + i,
+                FormText = yesterdayForms[i],
+                OldLevel = oldLevel,
+                NewLevel = newLevel,
+                PracticedUtc = yesterday8pm.AddMinutes(-5 * i)
+            });
+        }
+
+        return records;
+    }
+
+    /// <summary>
+    /// Creates 20 mock verb history records with high-EBT forms.
+    /// </summary>
+    static List<IPracticeHistory> CreateMockVerbHistory()
+    {
+        var now = DateTime.UtcNow;
+        var yesterday8pm = now.Date.AddDays(-1).AddHours(20);
+
+        // Forms for today (12 items) and yesterday (8 items)
+        var todayForms = new[]
+        {
+            "hoti", "viharati", "bhavetha", "yāti", "pajānāti", "atthi",
+            "vadati", "karoti", "vuccati", "gacchati", "uppajjati", "natthi"
+        };
+        var yesterdayForms = new[]
+        {
+            "eti", "passati", "jānāti", "maññati", "peti", "bhāti",
+            "vadeti", "honti"
+        };
+
+        // Progression pattern: easy, hard, easy, easy, hard, hard (repeated)
+        var pattern = new[] { true, false, true, true, false, false };
+
+        var records = new List<IPracticeHistory>();
+        var id = 1;
+        var level = 3; // Starting level
+
+        // Today's records (most recent first)
+        for (var i = 0; i < todayForms.Length; i++)
+        {
+            var wasEasy = pattern[i % pattern.Length];
+            var oldLevel = level;
+            var newLevel = wasEasy ? Math.Min(level + 1, 10) : Math.Max(level - 1, 1);
+            level = newLevel;
+
+            records.Add(new MockPracticeHistory
+            {
+                Id = id++,
+                FormId = 700000000 + i,
+                FormText = todayForms[i],
+                OldLevel = oldLevel,
+                NewLevel = newLevel,
+                PracticedUtc = now.AddMinutes(-5 * i)
+            });
+        }
+
+        // Reset level for yesterday
+        level = 2;
+
+        // Yesterday's records
+        for (var i = 0; i < yesterdayForms.Length; i++)
+        {
+            var wasEasy = pattern[i % pattern.Length];
+            var oldLevel = level;
+            var newLevel = wasEasy ? Math.Min(level + 1, 10) : Math.Max(level - 1, 1);
+            level = newLevel;
+
+            records.Add(new MockPracticeHistory
+            {
+                Id = id++,
+                FormId = 700000100 + i,
+                FormText = yesterdayForms[i],
+                OldLevel = oldLevel,
+                NewLevel = newLevel,
+                PracticedUtc = yesterday8pm.AddMinutes(-5 * i)
+            });
+        }
+
+        return records;
+    }
+
+    #endregion
+#endif
 }

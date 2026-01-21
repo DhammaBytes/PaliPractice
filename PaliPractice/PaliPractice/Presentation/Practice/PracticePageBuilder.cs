@@ -106,13 +106,23 @@ public static class PracticePageBuilder
             heightClass);
         elements.ButtonElements.AddRange(buttonElements);
 
-        // Debug text for size bracket (in header middle)
-        var debugText = RegularText()
-            .Text("Size: --")
-            .FontSize(fonts.Debug)
-            .Foreground(ThemeResource.Get<Brush>("OnSurfaceSecondaryBrush"));
-        elements.DebugTextBlock = debugText;
 
+#if DEBUG
+        // Debug text for size bracket (in header middle) - hidden in screenshot mode
+        TextBlock? debugText = null;
+        if (!ScreenshotMode.IsEnabled)
+        {
+            debugText = RegularText()
+                .Text("Size: --")
+                .FontSize(fonts.Debug)
+                .Foreground(ThemeResource.Get<Brush>("OnSurfaceSecondaryBrush"));
+            elements.DebugTextBlock = debugText;
+        }
+#else
+        TextBlock? debugText = null;
+#endif
+
+        
         // Assemble card children
         var cardChildren = new List<UIElement>
         {
@@ -990,8 +1000,10 @@ public static class PracticePageBuilder
         // Debug text
         if (elements.DebugTextBlock is not null)
         {
+            #if DEBUG
             var windowHeight = App.MainWindow?.Bounds.Height ?? 0;
             elements.DebugTextBlock.Text = $"{heightClass} ({windowHeight:F0}pt)";
+            #endif
         }
     }
 

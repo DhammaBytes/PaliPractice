@@ -28,11 +28,22 @@ public partial class DailyGoalViewModel : ObservableObject
     /// </summary>
     public void Refresh()
     {
-        var progress = _userData.GetTodayProgress();
         var goal = _userData.GetDailyGoal(_practiceType);
-        var completed = _practiceType == PracticeType.Declension
-            ? progress.DeclensionsCompleted
-            : progress.ConjugationsCompleted;
+
+        int completed;
+#if DEBUG
+        if (ScreenshotMode.IsEnabled)
+        {
+            completed = 20;
+        }
+        else
+#endif
+        {
+            var progress = _userData.GetTodayProgress();
+            completed = _practiceType == PracticeType.Declension
+                ? progress.DeclensionsCompleted
+                : progress.ConjugationsCompleted;
+        }
 
         DailyGoalText = $"{completed}/{goal}";
         DailyProgress = goal > 0 ? 100.0 * Math.Min(completed, goal) / goal : 0;

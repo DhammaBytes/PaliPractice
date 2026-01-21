@@ -13,6 +13,7 @@ namespace PaliPractice.Presentation.Practice.ViewModels;
 public partial class ConjugationPracticeViewModel : PracticeViewModelBase
 {
     readonly IInflectionService _inflectionService;
+    readonly IDatabaseService _db;
     Conjugation? _currentConjugation;
 
     // Current grammatical parameters from the SRS queue
@@ -56,7 +57,14 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
         : base(provider, db.UserData, flashCard, navigator, storeReviewService, logger)
     {
         _inflectionService = inflectionService;
-        _ = InitializeAsync();
+        _db = db;
+
+#if DEBUG
+        if (ScreenshotMode.IsEnabled)
+            _ = InitializeForScreenshotAsync();
+        else
+#endif
+            _ = InitializeAsync();
     }
 
     public override ICommand GoToSettingsCommand =>
@@ -182,4 +190,65 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
             .Where(f => !string.IsNullOrEmpty(f))
             .ToList();
     }
+
+#if DEBUG
+    #region Screenshot Mode
+
+    /// <summary>
+    /// Initialize with predetermined content for App Store screenshots.
+    /// Loads "bhavati" (LemmaId: 70008) with Optative Second Plural Active → "bhavetha".
+    /// </summary>
+    async Task InitializeForScreenshotAsync()
+    {
+        try
+        {
+            FlashCard.IsLoading = true;
+
+            // Load the specific lemma for screenshots
+            var lemma = _db.Verbs.GetLemma(ScreenshotMode.BhavatiLemmaId);
+            if (lemma == null)
+            {
+                Logger.LogError("Screenshot mode: Failed to load bhavati lemma");
+                await InitializeAsync(); // Fallback to normal initialization
+                return;
+            }
+
+            _db.Verbs.EnsureDetails(lemma);
+            ScreenshotLemma = lemma;
+
+            // Set the predetermined grammatical parameters
+            _currentTense = Tense.Optative;
+            _currentPerson = Person.Second;
+            _currentNumber = Number.Plural;
+            _currentVoice = Voice.Active;
+
+            // Display the word
+            var verb = (Verb)lemma.Primary;
+            FlashCard.DisplayWord(verb, 1, 1, masteryLevel: 5, verb.Details?.Root);
+
+            // Generate the conjugation
+            _currentConjugation = _inflectionService.GenerateVerbForms(verb, _currentPerson, _currentNumber, _currentTense, reflexive: false);
+            UpdateBadges(_currentConjugation!);
+
+            // Set the answer
+            FlashCard.SetAnswer(GetInflectedForm(), GetInflectedEnding());
+            AlternativeForms = GetAlternativeForms();
+
+            // Initialize example carousel
+            ExampleCarousel.Initialize(lemma.Words);
+            ExampleCarousel.SetFormsToAvoid(GetAllInflectedForms());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Screenshot mode initialization failed");
+            await InitializeAsync(); // Fallback to normal initialization
+        }
+        finally
+        {
+            FlashCard.IsLoading = false;
+        }
+    }
+
+    #endregion
+#endif
 }

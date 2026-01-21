@@ -118,9 +118,10 @@ public static class FrozenHeaderTable
         var panel = new StackPanel()
             .Orientation(Orientation.Vertical);
 
-        foreach (var header in headers)
+        for (int row = 0; row < headers.Count; row++)
         {
-            var cell = BuildRowHeaderCell(header, isGhost: false);
+            bool isLastRow = row == headers.Count - 1;
+            var cell = BuildRowHeaderCell(headers[row], isGhost: false, isLastRow: isLastRow);
             clonedCells.Add(cell);
             panel.Children.Add(cell);
         }
@@ -154,7 +155,8 @@ public static class FrozenHeaderTable
         // Add ghost row headers (column 0) - transparent but participate in layout
         for (int row = 0; row < rowCount; row++)
         {
-            var ghostCell = BuildRowHeaderCell(rowHeaders[row], isGhost: true);
+            bool isLastRow = row == rowCount - 1;
+            var ghostCell = BuildRowHeaderCell(rowHeaders[row], isGhost: true, isLastRow: isLastRow);
             ghostCell.Grid(row: row, column: 0);
             grid.Children.Add(ghostCell);
 
@@ -172,14 +174,17 @@ public static class FrozenHeaderTable
         // Add data cells (columns 1-N)
         for (int row = 0; row < cells.Count; row++)
         {
+            bool isLastRow = row == cells.Count - 1;
             var rowCells = cells[row];
             for (int col = 0; col < rowCells.Count; col++)
             {
+                bool isLastColumn = col == rowCells.Count - 1;
+
                 // Check for non-corpus forms
                 if (rowCells[col].Forms.Any(f => !f.InCorpus))
                     hasNonCorpusForms = true;
 
-                var cell = BuildDataCell(rowCells[col]);
+                var cell = BuildDataCell(rowCells[col], isLastRow, isLastColumn);
                 cell.Grid(row: row, column: col + 1); // +1 because column 0 is row headers
                 grid.Children.Add(cell);
             }
@@ -194,16 +199,18 @@ public static class FrozenHeaderTable
             .Orientation(Orientation.Horizontal)
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"));
 
-        foreach (var header in headers)
+        for (int col = 0; col < headers.Count; col++)
         {
+            bool isLastColumn = col == headers.Count - 1;
             var cell = new Border()
                 .Width(CellWidth)
                 .Padding(8, 6)
                 .BorderBrush(ThemeResource.Get<Brush>("NeutralGrayBrush"))
-                .BorderThickness(0, 0, 1, 1)
+                // Bottom border always, right border only between columns (not on last)
+                .BorderThickness(0, 0, isLastColumn ? 0 : 1, 1)
                 .Child(
                     RegularText()
-                        .Text(header)
+                        .Text(headers[col])
                         .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
                         .Foreground(ThemeResource.Get<Brush>("AccentBrush"))
                         .TextAlignment(TextAlignment.Center)
@@ -215,7 +222,7 @@ public static class FrozenHeaderTable
         return panel;
     }
 
-    static Border BuildRowHeaderCell(string header, bool isGhost = false)
+    static Border BuildRowHeaderCell(string header, bool isGhost, bool isLastRow)
     {
         var border = new Border()
             .Width(RowHeaderWidth)
@@ -230,10 +237,11 @@ public static class FrozenHeaderTable
         else
         {
             // Visible cell: has background, border, and content
+            // Right border always (to separate from data), bottom border only between rows (not on last)
             border
                 .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
                 .BorderBrush(ThemeResource.Get<Brush>("NeutralGrayBrush"))
-                .BorderThickness(0, 0, 1, 1)
+                .BorderThickness(0, 0, 1, isLastRow ? 0 : 1)
                 .Child(
                     RegularText()
                         .Text(header)
@@ -247,7 +255,7 @@ public static class FrozenHeaderTable
         return border;
     }
 
-    static Border BuildDataCell(TableCell cell)
+    static Border BuildDataCell(TableCell cell, bool isLastRow, bool isLastColumn)
     {
         var panel = new StackPanel()
             .Spacing(2)
@@ -292,12 +300,13 @@ public static class FrozenHeaderTable
                 .HorizontalAlignment(HorizontalAlignment.Center));
         }
 
+        // Right border only between columns (not on last), bottom border only between rows (not on last)
         return new Border()
             .MinHeight(CellMinHeight)
             .Width(CellWidth)
             .Padding(8, 4)
             .BorderBrush(ThemeResource.Get<Brush>("NeutralGrayBrush"))
-            .BorderThickness(0, 0, 1, 1)
+            .BorderThickness(0, 0, isLastColumn ? 0 : 1, isLastRow ? 0 : 1)
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
             .Child(panel);
     }

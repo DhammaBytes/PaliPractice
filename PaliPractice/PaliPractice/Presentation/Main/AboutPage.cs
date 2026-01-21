@@ -40,7 +40,7 @@ public sealed partial class AboutPage : Page
                                 .Children(
                                     // App icon
                                     new Image()
-                                        .Source("ms-appx:///Assets/Svg/icon.svg")
+                                        .Source("ms-appx:///Assets/Svg/quail.svg")
                                         .Width(100)
                                         .Height(100)
                                         .Stretch(Stretch.Uniform)

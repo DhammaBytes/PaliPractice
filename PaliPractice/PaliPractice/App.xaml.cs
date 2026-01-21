@@ -159,6 +159,10 @@ public partial class App : Application
         {
             DesktopWindowHelper.ConfigureDesktopWindow(MainWindow);
         }
+        else if (OperatingSystem.IsIOS())
+        {
+            TabletWindowHelper.ConfigureMinimumSize();
+        }
 
 #if DEBUG
         // MainWindow.UseStudio();

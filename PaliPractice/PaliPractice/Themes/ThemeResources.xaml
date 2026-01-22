@@ -12,7 +12,6 @@
             <SolidColorBrush x:Key="NeutralGrayBrush" Color="#E9E9E9"/>
 
             <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF"/>
-            <SolidColorBrush x:Key="SurfaceVariantBrush" Color="#FFF5EB"/>
 
             <!-- Text Colors -->
             <SolidColorBrush x:Key="OnBackgroundBrush" Color="#672000"/>
@@ -34,7 +33,14 @@
             <SolidColorBrush x:Key="AccentSubtleBrush" Color="{StaticResource SystemAccentColor}" Opacity="0.08"/>
             <SolidColorBrush x:Key="AccentSubtleHoverBrush" Color="{StaticResource SystemAccentColor}" Opacity="0.12"/>
 
+            <SolidColorBrush x:Key="AccentEndingBrush" Color="#1A7ECB"/>
             <SolidColorBrush x:Key="AccentBlueBrush" Color="#1A7ECB"/>
+
+            <!-- Link Colors -->
+            <SolidColorBrush x:Key="LinkBrush" Color="{StaticResource SystemAccentColorDark1}"/>
+            <SolidColorBrush x:Key="LinkHoverBrush" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="LinkPressedBrush" Color="{StaticResource SystemAccentColorDark2}"/>
+
             <SolidColorBrush x:Key="AccentRedBrush" Color="#E83D2D"/>
             <SolidColorBrush x:Key="AccentOrangeBrush" Color="#FC9F5A"/>
             <SolidColorBrush x:Key="AccentGreenBrush" Color="#78B868"/>
@@ -93,17 +99,16 @@
         <ResourceDictionary x:Key="Dark">
             <!-- Background and Surface Colors -->
             <SolidColorBrush x:Key="BackgroundBrush" Color="#2D1C14"/>
-            <SolidColorBrush x:Key="BackgroundVariantBrush" Color="#4A3525"/>
-            <SolidColorBrush x:Key="NeutralGrayBrush" Color="#5A5A5A"/>
+            <SolidColorBrush x:Key="BackgroundVariantBrush" Color="#4A3524"/>
+            <SolidColorBrush x:Key="NeutralGrayBrush" Color="#686058"/>
 
-            <SolidColorBrush x:Key="SurfaceBrush" Color="#3D2518"/>
-            <SolidColorBrush x:Key="SurfaceVariantBrush" Color="#4A3025"/>
+            <SolidColorBrush x:Key="SurfaceBrush" Color="#402A20"/>
 
             <!-- Text Colors -->
-            <SolidColorBrush x:Key="OnBackgroundBrush" Color="#FFD4B8"/>
+            <SolidColorBrush x:Key="OnBackgroundBrush" Color="#FFD4B9"/>
             <SolidColorBrush x:Key="OnSurfaceBrush" Color="#FFE8D8"/>
-            <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="#D4B8A8"/>
-            <SolidColorBrush x:Key="OnSurfaceSecondaryBrush" Color="#A89890"/>
+            <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="#FFE8D8" Opacity="0.7"/>
+            <SolidColorBrush x:Key="OnSurfaceSecondaryBrush" Color="#9A9090"/>
 
             <!-- System Accent Colors -->
             <Color x:Key="SystemAccentColor">#FFB080</Color>
@@ -118,37 +123,45 @@
             <SolidColorBrush x:Key="AccentPressedBrush" Color="{StaticResource SystemAccentColorDark1}"/>
             <SolidColorBrush x:Key="AccentSubtleBrush" Color="{StaticResource SystemAccentColor}" Opacity="0.08"/>
             <SolidColorBrush x:Key="AccentSubtleHoverBrush" Color="{StaticResource SystemAccentColor}" Opacity="0.12"/>
-            <SolidColorBrush x:Key="AccentBlueBrush" Color="#6BAFE0"/>
-            <SolidColorBrush x:Key="AccentRedBrush" Color="#F06050"/>
-            <SolidColorBrush x:Key="AccentOrangeBrush" Color="#FFB070"/>
-            <SolidColorBrush x:Key="AccentGreenBrush" Color="#90D080"/>
+
+            <SolidColorBrush x:Key="AccentEndingBrush" Color="#6CAFE0"/>
+            <SolidColorBrush x:Key="AccentBlueBrush" Color="#2B6CA4"/>
+
+            <!-- Link Colors -->
+            <SolidColorBrush x:Key="LinkBrush" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="LinkHoverBrush" Color="{StaticResource SystemAccentColorLight1}"/>
+            <SolidColorBrush x:Key="LinkPressedBrush" Color="{StaticResource SystemAccentColorDark1}"/>
+
+            <SolidColorBrush x:Key="AccentRedBrush" Color="#C8302C"/>
+            <SolidColorBrush x:Key="AccentOrangeBrush" Color="#C17023"/>
+            <SolidColorBrush x:Key="AccentGreenBrush" Color="#528735"/>
 
             <!-- Calendar Intensity (0=empty uses BackgroundBrush, 1-2 progress toward 3=AccentBrush) -->
-            <SolidColorBrush x:Key="CalendarIntensity1Brush" Color="#5A4535"/>
-            <SolidColorBrush x:Key="CalendarIntensity2Brush" Color="#8A6550"/>
+            <SolidColorBrush x:Key="CalendarIntensity1Brush" Color="#5F3615"/>
+            <SolidColorBrush x:Key="CalendarIntensity2Brush" Color="#914F17"/>
 
             <!-- Button Colors -->
-            <SolidColorBrush x:Key="NavigationButtonBrush" Color="#3D2E26"/>
-            <SolidColorBrush x:Key="NavigationButtonOutlineBrush" Color="#5A4538"/>
+            <SolidColorBrush x:Key="NavigationButtonBrush" Color="#402A20"/>
+            <SolidColorBrush x:Key="NavigationButtonOutlineBrush" Color="#55382A"/>
 
-            <SolidColorBrush x:Key="NavigationButtonVariantBrush" Color="#5C4838"/>
-            <SolidColorBrush x:Key="NavigationButtonVariantOutlineBrush" Color="#FFB896" Opacity="0.07"/>
+            <SolidColorBrush x:Key="NavigationButtonVariantBrush" Color="#634131"/>
+            <SolidColorBrush x:Key="NavigationButtonVariantOutlineBrush" Color="#784C38"/>
 
-            <SolidColorBrush x:Key="HardButtonBrush" Color="#8A4030"/>
-            <SolidColorBrush x:Key="HardButtonOutlineBrush" Color="#FFB896" Opacity="0.1"/>
-            <SolidColorBrush x:Key="OnHardButtonBrush" Color="#FFB896"/>
+            <SolidColorBrush x:Key="HardButtonBrush" Color="#894031"/>
+            <SolidColorBrush x:Key="HardButtonOutlineBrush" Color="#944C3A"/>
+            <SolidColorBrush x:Key="OnHardButtonBrush" Color="#FFC3AA"/>
 
-            <SolidColorBrush x:Key="EasyButtonBrush" Color="#3A5A30"/>
-            <SolidColorBrush x:Key="EasyButtonOutlineBrush" Color="#A8D898" Opacity="0.1"/>
-            <SolidColorBrush x:Key="OnEasyButtonBrush" Color="#A8D898"/>
+            <SolidColorBrush x:Key="EasyButtonBrush" Color="#3A5B30"/>
+            <SolidColorBrush x:Key="EasyButtonOutlineBrush" Color="#45663B"/>
+            <SolidColorBrush x:Key="OnEasyButtonBrush" Color="#A7D897"/>
 
             <!-- Badge Colors -->
-            <SolidColorBrush x:Key="BadgePinkBrush" Color="#503838"/>
-            <SolidColorBrush x:Key="BadgeGreenBrush" Color="#384538"/>
-            <SolidColorBrush x:Key="BadgeBlueBrush" Color="#384550"/>
-            <SolidColorBrush x:Key="BadgeYellowBrush" Color="#504538"/>
-            <SolidColorBrush x:Key="BadgePurpleBrush" Color="#453850"/>
-            <SolidColorBrush x:Key="BadgeGrayBrush" Color="#454040"/>
+            <SolidColorBrush x:Key="BadgePinkBrush" Color="#7E3939"/>
+            <SolidColorBrush x:Key="BadgeGreenBrush" Color="#415239"/>
+            <SolidColorBrush x:Key="BadgeBlueBrush" Color="#3A4C5B"/>
+            <SolidColorBrush x:Key="BadgeYellowBrush" Color="#704730"/>
+            <SolidColorBrush x:Key="BadgePurpleBrush" Color="#624561"/>
+            <SolidColorBrush x:Key="BadgeGrayBrush" Color="#5E534D"/>
 
             <!-- Shadow Collections -->
             <utu:ShadowCollection x:Key="CardShadow">

@@ -59,9 +59,12 @@ public static class ControlStyling
         resources["SliderThumbBackgroundPointerOver"] = accentHover;
         resources["SliderThumbBackgroundPressed"] = accentPressed;
 
-        // Hyperlink
-        resources["HyperlinkForeground"] = accent;
-        resources["HyperlinkForegroundPointerOver"] = accentHover;
-        resources["HyperlinkForegroundPressed"] = accentPressed;
+        // Hyperlink - use dedicated link colors for better visibility
+        var link = resources["LinkBrush"];
+        var linkHover = resources["LinkHoverBrush"];
+        var linkPressed = resources["LinkPressedBrush"];
+        resources["HyperlinkForeground"] = link;
+        resources["HyperlinkForegroundPointerOver"] = linkHover;
+        resources["HyperlinkForegroundPressed"] = linkPressed;
     }
 }

@@ -12,7 +12,7 @@ public sealed class FadeOverlay : Border
 {
     public FadeOverlay()
     {
-        Height = 24;
+        Height = 30;
         VerticalAlignment = VerticalAlignment.Bottom;
         HorizontalAlignment = HorizontalAlignment.Stretch;
         IsHitTestVisible = false;

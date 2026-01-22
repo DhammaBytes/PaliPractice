@@ -9,9 +9,9 @@
         <ApplicationTitle>PāliPractice</ApplicationTitle>
         <!-- App Identifier -->
         <ApplicationId>org.dhammabytes.palipractice</ApplicationId>
-        <!-- Versions, 00 for parsing issues, use 1.1 or 1.23 later -->
-        <ApplicationDisplayVersion>1.00</ApplicationDisplayVersion>
-        <ApplicationVersion>1</ApplicationVersion>
+        <!-- Versions -->
+        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+        <ApplicationVersion>2</ApplicationVersion>
         <!-- Package Publisher -->
         <ApplicationPublisher>O=DhammaBytes</ApplicationPublisher>
         <!-- Package Description -->
@@ -46,6 +46,10 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <MtouchLink>SdkOnly</MtouchLink>
+    </PropertyGroup>
+
     <ItemGroup>
       <PackageReference Include="Markdig" />
       <PackageReference Include="sqlite-net-pcl" />
@@ -57,6 +61,7 @@
       <Content Include="Data\pali.db">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
+      <Content Remove="Assets\SVG_ICONS.md" />
     </ItemGroup>
 
     <!-- iOS: Bundle resource -->
@@ -65,6 +70,7 @@
         <Link>Data/pali.db</Link>
       </BundleResource>
       <BundleResource Include="Platforms\iOS\LaunchScreen.storyboard" />
+      <BundleResource Include="Platforms\iOS\PrivacyInfo.xcprivacy" LogicalName="PrivacyInfo.xcprivacy" />
     </ItemGroup>
 
     <!-- Android: Asset -->
@@ -93,7 +99,6 @@
 
     <!-- Internal documentation - excluded from build output -->
     <ItemGroup>
-      <None Include="Assets\SharedAssets.md" />
       <None Include="Assets\SVG_ICONS.md" />
       <Content Remove="Assets\SVG_ICONS.md" />
       <Content Remove="Assets\SharedAssets.md" />

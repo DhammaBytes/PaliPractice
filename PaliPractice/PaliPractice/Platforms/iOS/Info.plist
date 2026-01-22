@@ -36,10 +36,8 @@
 		<key>UILaunchStoryboardName</key>
 		<string>LaunchScreen</string>
 
-		<!--
-		Adjust this to your application's encryption usage.
+		<!-- Standard HTTPS and SQLite only - no custom encryption -->
 		<key>ITSAppUsesNonExemptEncryption</key>
 		<false/>
-		-->
 	</dict>
 </plist>

@@ -1,4 +1,4 @@
-namespace PaliPractice.Themes;
+namespace PaliPractice.Themes.Icons;
 
 /// <summary>
 /// Helper for menu icon paths on the start page.

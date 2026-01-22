@@ -1,6 +1,7 @@
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Main.ViewModels;
 using PaliPractice.Themes;
+using PaliPractice.Themes.Icons;
 using static PaliPractice.Presentation.Common.Text.TextHelpers;
 using static PaliPractice.Presentation.Common.ShadowHelper;
 

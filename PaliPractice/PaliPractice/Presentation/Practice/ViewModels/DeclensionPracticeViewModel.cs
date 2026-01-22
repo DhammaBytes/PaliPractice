@@ -6,6 +6,7 @@ using PaliPractice.Presentation.Settings.ViewModels;
 using PaliPractice.Services.Feedback;
 using PaliPractice.Services.Grammar;
 using PaliPractice.Themes;
+using PaliPractice.Themes.Icons;
 
 namespace PaliPractice.Presentation.Practice.ViewModels;
 
@@ -96,19 +97,19 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
         GenderLabel = UseAbbreviatedLabels
             ? BadgeLabelMaps.GetAbbreviated(d.Gender)
             : BadgeLabelMaps.GetFull(d.Gender);
-        GenderColor = OptionPresentation.GetChipColor(d.Gender);
+        GenderColor = BadgePresentation.GetChipColor(d.Gender);
         GenderIconPath = BadgeIcons.GetIconPath(d.Gender);
 
         // Number badge (abbreviatable)
         NumberLabel = UseAbbreviatedLabels
             ? BadgeLabelMaps.GetAbbreviated(d.Number)
             : BadgeLabelMaps.GetFull(d.Number);
-        NumberColor = OptionPresentation.GetChipColor(d.Number);
+        NumberColor = BadgePresentation.GetChipColor(d.Number);
         NumberIconPath = BadgeIcons.GetIconPath(d.Number);
 
         // Case badge (always full - never abbreviated)
         CaseLabel = d.Case.ToString();
-        CaseColor = OptionPresentation.GetChipColor(d.Case);
+        CaseColor = BadgePresentation.GetChipColor(d.Case);
         CaseIconPath = BadgeIcons.GetIconPath(d.Case);
         CaseHint = d.Case switch
         {
@@ -148,15 +149,15 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
     void SetBadgesFallback(Noun noun)
     {
         GenderLabel = noun.Gender.ToString();
-        GenderColor = OptionPresentation.GetChipColor(noun.Gender);
+        GenderColor = BadgePresentation.GetChipColor(noun.Gender);
         GenderIconPath = BadgeIcons.GetIconPath(noun.Gender);
 
         NumberLabel = "Singular";
-        NumberColor = OptionPresentation.GetChipColor(Number.Singular);
+        NumberColor = BadgePresentation.GetChipColor(Number.Singular);
         NumberIconPath = BadgeIcons.GetIconPath(Number.Singular);
 
         CaseLabel = "Nominative";
-        CaseColor = OptionPresentation.GetChipColor(Case.Nominative);
+        CaseColor = BadgePresentation.GetChipColor(Case.Nominative);
         CaseIconPath = BadgeIcons.GetIconPath(Case.Nominative);
         CaseHint = "who? what? (subject)";
     }

@@ -14,7 +14,7 @@ public enum BadgeColor
     Gray
 }
 
-public static class OptionPresentation
+public static class BadgePresentation
 {
     // === Badge Color Assignments ===
     // Change these to quickly reassign colors to badge types

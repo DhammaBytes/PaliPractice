@@ -191,6 +191,12 @@ public partial class App : Application
 
         frame.GoBack();
         e.Handled = true;
+
+        // Clear keyboard focus to avoid focus rectangle appearing on first control
+        if (frame.Content is Page page)
+        {
+            page.Focus(FocusState.Pointer);
+        }
     }
 
     void ApplySavedTheme()

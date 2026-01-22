@@ -6,6 +6,7 @@ using PaliPractice.Presentation.Settings.ViewModels;
 using PaliPractice.Services.Feedback;
 using PaliPractice.Services.Grammar;
 using PaliPractice.Themes;
+using PaliPractice.Themes.Icons;
 
 namespace PaliPractice.Presentation.Practice.ViewModels;
 
@@ -108,19 +109,19 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
             Person.Third => "3rd",
             _ => c.Person.ToString()
         };
-        PersonColor = OptionPresentation.GetChipColor(c.Person);
+        PersonColor = BadgePresentation.GetChipColor(c.Person);
         PersonIconPath = BadgeIcons.GetIconPath(c.Person);
 
         // Number badge (abbreviatable)
         NumberLabel = UseAbbreviatedLabels
             ? BadgeLabelMaps.GetAbbreviated(c.Number)
             : BadgeLabelMaps.GetFull(c.Number);
-        NumberColor = OptionPresentation.GetChipColor(c.Number);
+        NumberColor = BadgePresentation.GetChipColor(c.Number);
         NumberIconPath = BadgeIcons.GetIconPath(c.Number);
 
         // Tense badge (always full - never abbreviated)
         TenseLabel = c.Tense.ToString();
-        TenseColor = OptionPresentation.GetChipColor(c.Tense);
+        TenseColor = BadgePresentation.GetChipColor(c.Tense);
         TenseIconPath = BadgeIcons.GetIconPath(c.Tense);
 
         // Voice badge (abbreviatable, only visible for reflexive)
@@ -128,7 +129,7 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
         VoiceLabel = UseAbbreviatedLabels
             ? BadgeLabelMaps.GetAbbreviated(Voice.Reflexive)
             : BadgeLabelMaps.GetFull(Voice.Reflexive);
-        VoiceColor = OptionPresentation.GetChipColor(Voice.Reflexive);
+        VoiceColor = BadgePresentation.GetChipColor(Voice.Reflexive);
         VoiceIconPath = BadgeIcons.GetIconPath(Voice.Reflexive);
     }
 
@@ -156,15 +157,15 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
     void SetBadgesFallback()
     {
         PersonLabel = "3rd";
-        PersonColor = OptionPresentation.GetChipColor(Person.Third);
+        PersonColor = BadgePresentation.GetChipColor(Person.Third);
         PersonIconPath = BadgeIcons.GetIconPath(Person.Third);
 
         NumberLabel = "Singular";
-        NumberColor = OptionPresentation.GetChipColor(Number.Singular);
+        NumberColor = BadgePresentation.GetChipColor(Number.Singular);
         NumberIconPath = BadgeIcons.GetIconPath(Number.Singular);
 
         TenseLabel = "Present";
-        TenseColor = OptionPresentation.GetChipColor(Tense.Present);
+        TenseColor = BadgePresentation.GetChipColor(Tense.Present);
         TenseIconPath = BadgeIcons.GetIconPath(Tense.Present);
 
         IsReflexive = false;

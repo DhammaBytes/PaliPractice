@@ -171,6 +171,26 @@ public partial class App : Application
 
         // Apply saved theme preference (after navigation so XamlRoot is available)
         ApplySavedTheme();
+
+        // Handle Android hardware back button
+        SetupBackButtonHandler();
+    }
+
+    static void SetupBackButtonHandler()
+    {
+        var manager = Windows.UI.Core.SystemNavigationManager.GetForCurrentView();
+        manager.BackRequested += OnBackRequested;
+    }
+
+    static void OnBackRequested(object? sender, Windows.UI.Core.BackRequestedEventArgs e)
+    {
+        // Access the Frame through Shell's ContentControl (ExtendedSplashScreen -> FrameView -> Content -> Frame)
+        if (MainWindow?.Content is not Shell shell) return;
+        if (shell.ContentControl.Content is not FrameView frameView) return;
+        if (frameView.Content is not Frame { CanGoBack: true } frame) return;
+
+        frame.GoBack();
+        e.Handled = true;
     }
 
     void ApplySavedTheme()

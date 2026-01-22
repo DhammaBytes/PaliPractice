@@ -11,7 +11,7 @@
         <ApplicationId>org.dhammabytes.palipractice</ApplicationId>
         <!-- Versions -->
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-        <ApplicationVersion>3</ApplicationVersion>
+        <ApplicationVersion>4</ApplicationVersion>
         <!-- Package Publisher -->
         <ApplicationPublisher>O=DhammaBytes</ApplicationPublisher>
         <!-- Package Description -->
@@ -54,6 +54,11 @@
       <PackageReference Include="Markdig" />
       <PackageReference Include="sqlite-net-pcl" />
       <PackageReference Include="Uno.Toolkit.Skia.WinUI" />
+    </ItemGroup>
+
+    <!-- Override SQLitePCLRaw to 3.x for 16KB page size support on Android -->
+    <ItemGroup Condition="$(TargetFramework.Contains('-android'))">
+      <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" />
     </ItemGroup>
 
     <!-- Desktop and WASM: Content with copy to output -->

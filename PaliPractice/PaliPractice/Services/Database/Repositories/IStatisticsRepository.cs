@@ -1,4 +1,3 @@
-using PaliPractice.Models.Inflection;
 using PaliPractice.Services.UserData.Statistics;
 
 namespace PaliPractice.Services.Database.Repositories;

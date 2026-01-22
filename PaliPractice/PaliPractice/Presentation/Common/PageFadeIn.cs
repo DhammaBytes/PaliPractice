@@ -1,5 +1,3 @@
-using Microsoft.UI.Xaml.Navigation;
-
 namespace PaliPractice.Presentation.Common;
 
 /// <summary>

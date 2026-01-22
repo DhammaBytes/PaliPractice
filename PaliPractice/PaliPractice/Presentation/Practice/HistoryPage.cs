@@ -1,4 +1,3 @@
-using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Practice.ViewModels;
 using PaliPractice.Services.UserData.Entities;

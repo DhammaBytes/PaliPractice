@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using PaliPractice.Services.Database;
 using PaliPractice.Services.UserData.Statistics;
 
 namespace PaliPractice.Presentation.Statistics.ViewModels;

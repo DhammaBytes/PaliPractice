@@ -1,5 +1,3 @@
-using Windows.Storage;
-
 namespace PaliPractice.Services.Feedback.Storage;
 
 /// <summary>

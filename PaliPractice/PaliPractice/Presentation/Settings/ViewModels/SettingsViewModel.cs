@@ -2,7 +2,6 @@ using PaliPractice.Presentation.Main.ViewModels;
 using PaliPractice.Services.Database.Repositories;
 using PaliPractice.Services.Feedback;
 using PaliPractice.Services.UserData;
-using Uno.Toolkit.UI;
 
 namespace PaliPractice.Presentation.Settings.ViewModels;
 

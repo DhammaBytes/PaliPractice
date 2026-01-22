@@ -3,7 +3,6 @@ using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Practice.Common;
 using PaliPractice.Presentation.Practice.ViewModels;
-using PaliPractice.Presentation.Practice.ViewModels.Common;
 using PaliPractice.Themes;
 using static PaliPractice.Presentation.Common.Text.TextHelpers;
 using static PaliPractice.Presentation.Common.ShadowHelper;

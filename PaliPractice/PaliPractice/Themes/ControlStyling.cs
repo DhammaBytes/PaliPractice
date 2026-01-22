@@ -58,5 +58,10 @@ public static class ControlStyling
         resources["SliderThumbBackground"] = accent;
         resources["SliderThumbBackgroundPointerOver"] = accentHover;
         resources["SliderThumbBackgroundPressed"] = accentPressed;
+
+        // Hyperlink
+        resources["HyperlinkForeground"] = accent;
+        resources["HyperlinkForegroundPointerOver"] = accentHover;
+        resources["HyperlinkForegroundPressed"] = accentPressed;
     }
 }

@@ -1,4 +1,3 @@
-using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Main.Helpers;
 using PaliPractice.Presentation.Main.ViewModels;
 using PaliPractice.Presentation.Practice.Providers;
@@ -11,7 +10,6 @@ using PaliPractice.Services.Grammar;
 using PaliPractice.Services.Practice;
 using PaliPractice.Services.UserData;
 using PaliPractice.Themes;
-using Uno.Toolkit.UI;
 using AboutPage = PaliPractice.Presentation.Main.AboutPage;
 using ConjugationPracticePage = PaliPractice.Presentation.Practice.ConjugationPracticePage;
 using ConjugationPracticeViewModel = PaliPractice.Presentation.Practice.ViewModels.ConjugationPracticeViewModel;

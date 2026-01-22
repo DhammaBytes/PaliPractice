@@ -1,6 +1,5 @@
 using Microsoft.UI.Text;
 using PaliPractice.Presentation.Common;
-using PaliPractice.Presentation.Practice.ViewModels.Common;
 using PaliPractice.Themes;
 
 namespace PaliPractice.Presentation.Practice.Common;

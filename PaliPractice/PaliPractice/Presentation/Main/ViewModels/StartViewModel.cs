@@ -1,7 +1,6 @@
 using PaliPractice.Presentation.Practice.ViewModels;
 using PaliPractice.Presentation.Settings.ViewModels;
 using PaliPractice.Presentation.Statistics.ViewModels;
-using PaliPractice.Services.Database;
 
 namespace PaliPractice.Presentation.Main.ViewModels;
 

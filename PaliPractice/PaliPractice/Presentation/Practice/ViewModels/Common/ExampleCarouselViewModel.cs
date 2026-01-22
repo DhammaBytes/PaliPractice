@@ -1,6 +1,4 @@
-using Microsoft.UI.Xaml.Media;
 using PaliPractice.Models.Words;
-using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Practice.Common;
 using PaliPractice.Presentation.Practice.ViewModels.Common.Entries;
 using PaliPractice.Themes;

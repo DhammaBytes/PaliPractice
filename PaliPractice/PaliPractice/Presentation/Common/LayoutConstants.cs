@@ -146,8 +146,8 @@ public static class LayoutConstants
             Badge: 14,
             BadgeHint: 14,
             
-            PaliRoot: 14,
-            Level: 12,
+            PaliRoot: 13,
+            Level: 11,
             
             Translation: 16,
             TranslationPagination: 12,
@@ -170,11 +170,11 @@ public static class LayoutConstants
             Badge: 13,
             BadgeHint: 13,
             
-            PaliRoot: 13,
-            Level: 11,
+            PaliRoot: 12,
+            Level: 10,
             
             Translation: 15,
-            TranslationPagination: 12,
+            TranslationPagination: 11,
             TranslationDots: 26,
             
             SuttaExample: 15,
@@ -239,9 +239,9 @@ public static class LayoutConstants
         public static double CardPaddingBottom(HeightClass h) => h switch
         {
             HeightClass.Tall => 22,
-            HeightClass.Medium => 16,
-            HeightClass.Short => 10,
-            _ => 0
+            HeightClass.Medium => 18,
+            HeightClass.Short => 14,
+            _ => 10
         };
 
         /// <summary>Spacing between card child elements (word, answer, badges).</summary>
@@ -258,8 +258,8 @@ public static class LayoutConstants
         {
             HeightClass.Tall => 12,
             HeightClass.Medium => 8,
-            HeightClass.Short => 4,
-            _ => 0
+            HeightClass.Short => 0,
+            _ => -4
         };
 
         /// <summary>Margin below the main word.</summary>
@@ -267,8 +267,8 @@ public static class LayoutConstants
         {
             HeightClass.Tall => 12,
             HeightClass.Medium => 8,
-            HeightClass.Short => 4,
-            _ => 0
+            HeightClass.Short => 6,
+            _ => 4
         };
         
         // === Badge ===
@@ -300,12 +300,13 @@ public static class LayoutConstants
 
         // === Answer Section ===
 
-        /// <summary>Margin above the answer container.</summary>
+        /// <summary>Margin above the answer container (negative pulls it closer to badge/hint).</summary>
         public static double AnswerMarginTop(HeightClass h) => h switch
         {
             HeightClass.Tall => 4,
-            HeightClass.Medium => 2,
-            _ => 0
+            HeightClass.Medium => 0,
+            HeightClass.Short => -4,
+            _ => -8
         };
 
         /// <summary>Spacing between answer lines.</summary>
@@ -332,9 +333,8 @@ public static class LayoutConstants
         public static double TranslationPaddingV(HeightClass h) => h switch
         {
             HeightClass.Tall => 16,
-            HeightClass.Medium => 14,
-            HeightClass.Short => 12,
-            _ => 10
+            HeightClass.Medium => 12,
+            _ => 8
         };
 
         /// <summary>Spacing between translation text and pagination.</summary>

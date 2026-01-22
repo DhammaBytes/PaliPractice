@@ -1,5 +1,3 @@
-using Uno.Toolkit.UI;
-
 namespace PaliPractice.Presentation.Common;
 
 /// <summary>

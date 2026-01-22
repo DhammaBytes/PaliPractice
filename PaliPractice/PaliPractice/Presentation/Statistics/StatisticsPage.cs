@@ -2,6 +2,7 @@ using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Statistics.ViewModels;
 using PaliPractice.Services.UserData.Entities;
 using PaliPractice.Services.UserData.Statistics;
+using PaliPractice.Themes;
 using Microsoft.UI.Xaml.Media;
 using static PaliPractice.Presentation.Common.Text.TextHelpers;
 
@@ -136,9 +137,9 @@ public sealed partial class StatisticsPage : Page
                                     .HorizontalAlignment(HorizontalAlignment.Stretch)
                                     .ColumnDefinitions("*,*")
                                     .Children(
-                                        BuildStreakCard("\uE8E1", "Practice Streak",
+                                        BuildStreakCard(BadgeIcons.CaseAccusative, "Practice Streak",
                                             tb => tb.Text(() => vm.General.CurrentPracticeStreak, v => $"{v} {(v == 1 ? "day" : "days")}"), 0),
-                                        BuildStreakCard("\uE735", "Total",
+                                        BuildStreakCard(BadgeIcons.CaseNominative, "Total",
                                             tb => tb.Text(() => vm.General.TotalPracticeDays, v => $"{v} {(v == 1 ? "day" : "days")}"), 1)
                                     ),
                                 // Calendar heatmap
@@ -321,7 +322,7 @@ public sealed partial class StatisticsPage : Page
             .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"));
     }
 
-    static FrameworkElement BuildStreakCard(string icon, string label, Action<TextBlock> bindValue, int column)
+    static FrameworkElement BuildStreakCard(string iconPath, string label, Action<TextBlock> bindValue, int column)
     {
         var valueText = RegularText()
             .FontSize(24)
@@ -338,9 +339,13 @@ public sealed partial class StatisticsPage : Page
                     .Orientation(Orientation.Horizontal)
                     .Spacing(6)
                     .Children(
-                        new FontIcon().Glyph(icon).FontSize(16)
-                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush")),
-                        RegularText().Text(label).FontSize(12)
+                        new BitmapIcon()
+                            .ShowAsMonochrome(true)
+                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
+                            .Height(16)
+                            .Width(16)
+                            .UriSource(new Uri(iconPath)),
+                        RegularText().Text(label).FontSize(15)
                             .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
                     ),
                 valueText

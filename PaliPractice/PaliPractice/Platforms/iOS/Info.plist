@@ -30,7 +30,7 @@
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false/>
 		<key>XSAppIconAssets</key>
-		<string>Assets.xcassets/icon.appiconset</string>
+		<string>Media.xcassets/AppIcon.appiconset</string>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
 		<key>UILaunchStoryboardName</key>

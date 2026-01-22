@@ -39,7 +39,7 @@ All forms start at level 4. Marking **Easy** increases the level by 1; marking *
     public static string FaqGrammar => """
 **Where can I learn the grammar?**
 
-This app is focused on memorizing, so it does not replace textbooks or courses. See the [Learn Pali: Best way to start?](https://palistudies.blogspot.com/2018/05/learn-pali-where-to-begin.html) guide and its author's [Learn Pali Language series](https://www.youtube.com/playlist?list=PLf6RXFuRpeLRYj-wWs4KFrTPrzvAWWMpo) on YouTube.
+This app is focused on memorizing, so it does not replace textbooks or courses. See the [Learn Pāli: Best way to start?](https://palistudies.blogspot.com/2018/05/learn-pali-where-to-begin.html) guide and its author's [Learn Pāli Language series](https://www.youtube.com/playlist?list=PLf6RXFuRpeLRYj-wWs4KFrTPrzvAWWMpo) on YouTube.
 """;
 
     public static string FaqMultipleForms => """

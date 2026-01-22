@@ -1,4 +1,4 @@
-namespace PaliPractice.Themes;
+namespace PaliPractice.Themes.Icons;
 
 /// <summary>
 /// Helper for practice page icon paths.

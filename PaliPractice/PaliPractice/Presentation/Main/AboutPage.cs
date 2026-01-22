@@ -1,6 +1,8 @@
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Main.ViewModels;
+using PaliPractice.Themes;
+using PaliPractice.Themes.Icons;
 using static PaliPractice.Presentation.Common.Text.TextHelpers;
 using static PaliPractice.Presentation.Common.Text.RichTextHelper;
 using static PaliPractice.Presentation.Common.ShadowHelper;
@@ -68,12 +70,15 @@ public sealed partial class AboutPage : Page
                                             .Command(() => vm.ContactUsCommand)
                                             .Child(new StackPanel()
                                                 .Orientation(Orientation.Horizontal)
-                                                .Spacing(6)
+                                                .Spacing(8)
                                                 .Children(
-                                                    new FontIcon()
-                                                        .Glyph("\uE715") // Message
-                                                        .FontSize(16)
-                                                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
+                                                    new BitmapIcon()
+                                                        .ShowAsMonochrome(true)
+                                                        .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+                                                        .Height(18)
+                                                        .Width(18)
+                                                        .VerticalAlignment(VerticalAlignment.Center)
+                                                        .UriSource(new Uri(SettingsIcons.Contact)),
                                                     RegularText()
                                                         .Text("Contact DhammaBytes")
                                                         .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))

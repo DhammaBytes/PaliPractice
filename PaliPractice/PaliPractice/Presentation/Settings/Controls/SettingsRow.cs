@@ -77,6 +77,52 @@ public static class SettingsRow
         .HorizontalContentAlignment(HorizontalAlignment.Stretch)
         .Background(ThemeResource.Get<Brush>("SurfaceBrush"));
 
+    /// <summary>
+    /// Creates a tintable BitmapIcon from a PNG icon path.
+    /// </summary>
+    static BitmapIcon CreateBitmapIcon(string iconPath) =>
+        new BitmapIcon()
+            .ShowAsMonochrome(true)
+            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
+            .Height(18)
+            .Width(18)
+            .VerticalAlignment(VerticalAlignment.Center)
+            .Margin(0, -1, 12, 0)
+            .UriSource(new Uri(iconPath));
+
+    public static Grid BuildNavigationWithIcon<TDC>(
+        string label,
+        string iconPath,
+        Expression<Func<TDC, ICommand>> commandExpr)
+    {
+        var button = CreateChromelessButton()
+            .Padding(16, 12)
+            .Command(commandExpr)
+            .Content(
+                new Grid()
+                    .ColumnDefinitions("Auto,*,Auto")
+                    .Children(
+                        CreateBitmapIcon(iconPath)
+                            .Grid(column: 0),
+                        RegularText()
+                            .Text(label)
+                            .FontSize(16)
+                            .VerticalAlignment(VerticalAlignment.Center)
+                            .Grid(column: 1),
+                        new FontIcon()
+                            .Glyph("\uE76C") // Chevron right
+                            .FontSize(14)
+                            .VerticalAlignment(VerticalAlignment.Center)
+                            .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
+                            .Grid(column: 2)
+                    )
+            );
+
+        return new Grid()
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .Children(button);
+    }
+
     public static Grid BuildNavigation<TDC>(
         string label,
         string iconGlyph,
@@ -216,6 +262,41 @@ public static class SettingsRow
                     .VerticalAlignment(VerticalAlignment.Center)
                     .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
                     .Margin(0, 0, 12, 0)
+                    .Grid(column: 0),
+                RegularText()
+                    .Text(label)
+                    .FontSize(16)
+                    .VerticalAlignment(VerticalAlignment.Center)
+                    .Grid(column: 1),
+                comboBox
+            );
+    }
+
+    /// <summary>
+    /// Builds a settings row with a PNG icon, label, and dropdown (ComboBox).
+    /// </summary>
+    public static Grid BuildDropdownWithBitmapIcon(
+        string label,
+        string iconPath,
+        string[] options,
+        Action<ComboBox> bindSelectedItem)
+    {
+        var comboBox = new ComboBox()
+            .VerticalAlignment(VerticalAlignment.Center)
+            .Grid(column: 2);
+
+        foreach (var option in options)
+            comboBox.Items.Add(option);
+
+        bindSelectedItem(comboBox);
+
+        return new Grid()
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .ColumnDefinitions("Auto,*,Auto")
+            .Padding(16, 12)
+            .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
+            .Children(
+                CreateBitmapIcon(iconPath)
                     .Grid(column: 0),
                 RegularText()
                     .Text(label)
@@ -400,6 +481,36 @@ public static class SettingsRow
                             .VerticalAlignment(VerticalAlignment.Center)
                             .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
                             .Margin(0, 0, 12, 0)
+                            .Grid(column: 0),
+                        RegularText()
+                            .Text(label)
+                            .FontSize(16)
+                            .VerticalAlignment(VerticalAlignment.Center)
+                            .Grid(column: 1)
+                    )
+            );
+
+        return new Grid()
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
+            .Children(button);
+    }
+
+    /// <summary>
+    /// Builds a settings row with a label, PNG icon, and action button.
+    /// </summary>
+    public static Grid BuildActionWithIcon<TDC>(
+        string label,
+        string iconPath,
+        Expression<Func<TDC, ICommand>> commandExpr)
+    {
+        var button = CreateChromelessButton()
+            .Padding(16, 12)
+            .Command(commandExpr)
+            .Content(
+                new Grid()
+                    .ColumnDefinitions("Auto,*")
+                    .Children(
+                        CreateBitmapIcon(iconPath)
                             .Grid(column: 0),
                         RegularText()
                             .Text(label)

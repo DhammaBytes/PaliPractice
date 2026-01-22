@@ -5,6 +5,7 @@ using PaliPractice.Presentation.Settings.Controls;
 using PaliPractice.Presentation.Settings.ViewModels;
 using PaliPractice.Services.UserData;
 using PaliPractice.Themes;
+using PaliPractice.Themes.Icons;
 
 namespace PaliPractice.Presentation.Settings;
 

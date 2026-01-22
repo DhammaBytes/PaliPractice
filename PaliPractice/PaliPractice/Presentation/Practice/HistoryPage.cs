@@ -2,6 +2,7 @@ using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Practice.ViewModels;
 using PaliPractice.Services.UserData.Entities;
 using PaliPractice.Themes;
+using PaliPractice.Themes.Icons;
 using static PaliPractice.Presentation.Common.Text.TextHelpers;
 
 namespace PaliPractice.Presentation.Practice;

@@ -163,4 +163,15 @@
       <UnoImage Include="Assets\Svg\Navigation\history.svg" BaseSize="18,16" />
     </ItemGroup>
 
+    <!-- Settings icons: SVG -> PNG for settings rows -->
+    <!-- viewBox 64x64 → BaseSize 21 for ~20px display height -->
+    <ItemGroup>
+      <UnoImage Include="Assets\Svg\Settings\about.svg" BaseSize="21,21" />
+      <UnoImage Include="Assets\Svg\Settings\appearance.svg" BaseSize="21,21" />
+      <UnoImage Include="Assets\Svg\Settings\contact.svg" BaseSize="21,21" />
+      <UnoImage Include="Assets\Svg\Settings\noun.svg" BaseSize="21,21" />
+      <UnoImage Include="Assets\Svg\Settings\rate.svg" BaseSize="21,21" />
+      <UnoImage Include="Assets\Svg\Settings\verb.svg" BaseSize="21,21" />
+    </ItemGroup>
+
 </Project>

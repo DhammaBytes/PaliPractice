@@ -7,7 +7,7 @@ using PaliPractice.Themes;
 using static PaliPractice.Presentation.Common.Text.TextHelpers;
 using static PaliPractice.Presentation.Common.ShadowHelper;
 using ExampleCarouselViewModel = PaliPractice.Presentation.Practice.ViewModels.Common.ExampleCarouselViewModel;
-using PracticeIcons = PaliPractice.Themes.PracticeIcons;
+using PracticeIcons = PaliPractice.Themes.Icons.PracticeIcons;
 
 namespace PaliPractice.Presentation.Practice;
 
@@ -455,7 +455,7 @@ public static class PracticePageBuilder
         var endingRun = new Run()
             .FontFamily(paliFont)
             .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
-            .Foreground(ThemeResource.Get<Brush>("AccentBlueBrush"));
+            .Foreground(ThemeResource.Get<Brush>("AccentEndingBrush"));
         endingRun.SetBinding(Run.TextProperty, Bind.Path(answerEndingPath));
 
         var textBlock = PaliText()

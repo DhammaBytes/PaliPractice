@@ -2,6 +2,8 @@ using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Settings.Controls;
 using PaliPractice.Presentation.Settings.ViewModels;
+using PaliPractice.Themes;
+using PaliPractice.Themes.Icons;
 using static PaliPractice.Presentation.Common.Text.TextHelpers;
 
 namespace PaliPractice.Presentation.Settings;
@@ -32,9 +34,9 @@ public sealed partial class SettingsPage : Page
                                     .Children(
                                         // General section
                                         SettingsSection.Build("General",
-                                            SettingsRow.BuildDropdownWithIcon(
+                                            SettingsRow.BuildDropdownWithBitmapIcon(
                                                 "Theme",
-                                                "\uE790", // ColorSolid
+                                                SettingsIcons.Appearance,
                                                 SettingsViewModel.ThemeOptions,
                                                 cb => cb.SetBinding(
                                                     ComboBox.SelectedIndexProperty,
@@ -43,29 +45,29 @@ public sealed partial class SettingsPage : Page
 
                                         // Practice settings sections
                                         SettingsSection.Build("Practice",
-                                            SettingsRow.BuildNavigation<SettingsViewModel>(
+                                            SettingsRow.BuildNavigationWithIcon<SettingsViewModel>(
                                                 "Noun declensions",
-                                                "\uE8AB", // Shuffle
+                                                SettingsIcons.Noun,
                                                 v => v.GoToDeclensionSettingsCommand),
-                                            SettingsRow.BuildNavigation<SettingsViewModel>(
+                                            SettingsRow.BuildNavigationWithIcon<SettingsViewModel>(
                                                 "Verb conjugations",
-                                                "\uE823", // Clock
+                                                SettingsIcons.Verb,
                                                 v => v.GoToConjugationSettingsCommand)
                                         ),
 
                                         // About & Support section
                                         SettingsSection.Build("About & Support",
-                                            SettingsRow.BuildNavigation<SettingsViewModel>(
+                                            SettingsRow.BuildNavigationWithIcon<SettingsViewModel>(
                                                 "About Pāli Practice",
-                                                "\uE946", // Info
+                                                SettingsIcons.About,
                                                 v => v.GoToAboutCommand),
-                                            SettingsRow.BuildAction<SettingsViewModel>(
+                                            SettingsRow.BuildActionWithIcon<SettingsViewModel>(
                                                 "Contact us",
-                                                "\uE715", // Message
+                                                SettingsIcons.Contact,
                                                 v => v.ContactUsCommand),
-                                            SettingsRow.BuildAction<SettingsViewModel>(
+                                            SettingsRow.BuildActionWithIcon<SettingsViewModel>(
                                                 "Write a review",
-                                                "\uE734", // FavoriteStar outline
+                                                SettingsIcons.Rate,
                                                 v => v.RateAppCommand)
                                                 .Visibility(Visibility.Collapsed)
                                                 .Visibility(() => vm.IsStoreReviewAvailable)

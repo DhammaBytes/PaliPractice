@@ -1,4 +1,4 @@
-<img src="PaliPractice/PaliPractice/Assets/Svg/icon.svg?v=2" alt="Pāli Practice app icon: a quail hiding behind rocks" width="128">
+<img src="PaliPractice/PaliPractice/Assets/Svg/quail.svg?v=2" alt="Pāli Practice app icon: a quail hiding behind rocks" width="128">
 
 # Pāli Practice
 

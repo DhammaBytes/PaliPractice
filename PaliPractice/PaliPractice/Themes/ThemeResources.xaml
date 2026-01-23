@@ -64,6 +64,9 @@
             <SolidColorBrush x:Key="EasyButtonOutlineBrush" Color="#293F1C" Opacity="0.1"/>
             <SolidColorBrush x:Key="OnEasyButtonBrush" Color="#293F1C"/>
 
+            <!-- Button Overlay (hover/pressed states) - matches OnSurfaceVariantBrush for consistency -->
+            <SolidColorBrush x:Key="ButtonOverlayBrush" Color="#7A5040"/>
+
             <!-- Badge Colors -->
             <SolidColorBrush x:Key="BadgePinkBrush" Color="#FFDBCF"/>
             <SolidColorBrush x:Key="BadgeGreenBrush" Color="#E0EDCF"/>
@@ -154,6 +157,9 @@
             <SolidColorBrush x:Key="EasyButtonBrush" Color="#3A5B30"/>
             <SolidColorBrush x:Key="EasyButtonOutlineBrush" Color="#45663B"/>
             <SolidColorBrush x:Key="OnEasyButtonBrush" Color="#A7D897"/>
+
+            <!-- Button Overlay (hover/pressed states) - warm light for subtle interaction feedback -->
+            <SolidColorBrush x:Key="ButtonOverlayBrush" Color="#FFE0C0"/>
 
             <!-- Badge Colors -->
             <SolidColorBrush x:Key="BadgePinkBrush" Color="#7E3939"/>

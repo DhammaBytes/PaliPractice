@@ -1,4 +1,5 @@
 using Microsoft.UI.Xaml.Markup;
+using PaliPractice.Themes;
 using ShapePath = Microsoft.UI.Xaml.Shapes.Path;
 
 namespace PaliPractice.Presentation.Common.Squircle;
@@ -39,7 +40,7 @@ public class SquircleButton : Button
     public SquircleButton()
     {
         // Remove default button chrome (background/border) so our squircle is the only visual
-        Background = new SolidColorBrush(Colors.Transparent);
+        Background = CachedBrushes.Transparent;
         BorderThickness = new Thickness(0);
 
         // Apply our custom ControlTemplate (created via XamlReader - see CreateControlTemplate)
@@ -47,6 +48,9 @@ public class SquircleButton : Button
 
         // Geometry must be recalculated when size changes
         SizeChanged += OnSizeChanged;
+
+        // Update overlay color when theme changes
+        ActualThemeChanged += (_, _) => UpdateOverlayColor();
     }
 
     #region Dependency Properties
@@ -176,12 +180,12 @@ public class SquircleButton : Button
                             </VisualState>
                             <VisualState x:Name="PointerOver">
                                 <VisualState.Setters>
-                                    <Setter Target="PART_Hover.Opacity" Value="0.08"/>
+                                    <Setter Target="PART_Hover.Opacity" Value="0.07"/>
                                 </VisualState.Setters>
                             </VisualState>
                             <VisualState x:Name="Pressed">
                                 <VisualState.Setters>
-                                    <Setter Target="PART_Pressed.Opacity" Value="0.12"/>
+                                    <Setter Target="PART_Pressed.Opacity" Value="0.14"/>
                                 </VisualState.Setters>
                             </VisualState>
                             <VisualState x:Name="Disabled">
@@ -235,16 +239,17 @@ public class SquircleButton : Button
 
     void UpdateOverlayColor()
     {
-        // Use semi-transparent black for a neutral gray overlay effect
-        // At 8-12% opacity (set in template), this creates a subtle darkening
-        // that works well in both light and dark themes
-        var overlayBrush = new SolidColorBrush(Colors.Black);
+        // Use themed overlay brush for warm, subtle interaction feedback
+        // Opacity is controlled in the ControlTemplate visual states
+        if (Application.Current.Resources.TryGetValue("ButtonOverlayBrush", out var resource)
+            && resource is Brush overlayBrush)
+        {
+            if (_hoverPath != null)
+                _hoverPath.Fill = overlayBrush;
 
-        if (_hoverPath != null)
-            _hoverPath.Fill = overlayBrush;
-
-        if (_pressedPath != null)
-            _pressedPath.Fill = overlayBrush;
+            if (_pressedPath != null)
+                _pressedPath.Fill = overlayBrush;
+        }
     }
 
     static void OnShapePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

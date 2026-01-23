@@ -13,12 +13,12 @@ public static class SettingsRow
     /// <summary>
     /// Creates a chromeless button template that only uses the Background property,
     /// without any default WinUI button chrome that can cause theme flashing.
-    /// Uses semi-transparent black overlay for hover/pressed states (works in both themes).
+    /// Uses themed overlay brush for hover/pressed states that updates on theme change.
     /// </summary>
     /// <remarks>
     /// Uses VisualState.Setters instead of Storyboard animations because
     /// DoubleAnimation on Opacity doesn't interpolate correctly on iOS Skia,
-    /// causing the overlay to appear at full opacity (black) instead of 4-8%.
+    /// causing the overlay to appear at full opacity instead of the intended %.
     /// Setters provide immediate visual feedback which works on all platforms.
     /// </remarks>
     static ControlTemplate CreateChromelessButtonTemplate()
@@ -38,12 +38,12 @@ public static class SettingsRow
                             </VisualState>
                             <VisualState x:Name="PointerOver">
                                 <VisualState.Setters>
-                                    <Setter Target="HoverOverlay.Opacity" Value="0.04"/>
+                                    <Setter Target="HoverOverlay.Opacity" Value="0.07"/>
                                 </VisualState.Setters>
                             </VisualState>
                             <VisualState x:Name="Pressed">
                                 <VisualState.Setters>
-                                    <Setter Target="HoverOverlay.Opacity" Value="0.08"/>
+                                    <Setter Target="HoverOverlay.Opacity" Value="0.14"/>
                                 </VisualState.Setters>
                             </VisualState>
                             <VisualState x:Name="Disabled">
@@ -53,7 +53,7 @@ public static class SettingsRow
                             </VisualState>
                         </VisualStateGroup>
                     </VisualStateManager.VisualStateGroups>
-                    <Border x:Name="HoverOverlay" Background="Black" Opacity="0"/>
+                    <Border x:Name="HoverOverlay" Background="{ThemeResource ButtonOverlayBrush}" Opacity="0"/>
                     <ContentPresenter
                         Content="{TemplateBinding Content}"
                         Padding="{TemplateBinding Padding}"

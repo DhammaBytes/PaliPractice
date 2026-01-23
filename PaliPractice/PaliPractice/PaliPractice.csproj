@@ -47,7 +47,7 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="$(TargetFramework.Contains('-android'))">
-        <!-- Include 32-bit ARM for older devices (Galaxy A02, etc.) -->
+        <!-- Include 32-bit ARM for older devices -->
         <!-- AAB ensures users only download their device's architecture -->
         <RuntimeIdentifiers>android-arm;android-arm64;android-x64</RuntimeIdentifiers>
     </PropertyGroup>

@@ -1,4 +1,5 @@
 using PaliPractice.Presentation.Grammar.ViewModels;
+using PaliPractice.Themes;
 using static PaliPractice.Presentation.Common.Text.TextHelpers;
 
 namespace PaliPractice.Presentation.Grammar;
@@ -232,7 +233,7 @@ public static class FrozenHeaderTable
         if (isGhost)
         {
             // Ghost cell: transparent, no content, just occupies space for layout
-            border.Background(new SolidColorBrush(Colors.Transparent));
+            border.Background(CachedBrushes.Transparent);
         }
         else
         {

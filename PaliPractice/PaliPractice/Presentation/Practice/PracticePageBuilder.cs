@@ -657,7 +657,7 @@ public static class PracticePageBuilder
         var prevButton = new Border()
             .Width(hitSize)
             .Height(hitSize)
-            .Background(new SolidColorBrush(Colors.Transparent))
+            .Background(CachedBrushes.Transparent)
             .VerticalAlignment(VerticalAlignment.Top)
             .HorizontalAlignment(HorizontalAlignment.Left)
             .Scope(carouselPath)
@@ -692,7 +692,7 @@ public static class PracticePageBuilder
         var nextButton = new Border()
             .Width(hitSize)
             .Height(hitSize)
-            .Background(new SolidColorBrush(Colors.Transparent))
+            .Background(CachedBrushes.Transparent)
             .VerticalAlignment(VerticalAlignment.Top)
             .HorizontalAlignment(HorizontalAlignment.Right)
             .Opacity(0) // Start hidden to prevent blink on load

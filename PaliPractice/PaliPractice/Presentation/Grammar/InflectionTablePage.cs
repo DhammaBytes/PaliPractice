@@ -99,7 +99,7 @@ public sealed partial class InflectionTablePage : Page
                 {
                     Text = vm.LikeExample,
                     FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
-                    FontFamily = new FontFamily(FontPaths.LibertinusSans)
+                    FontFamily = PaliFont
                 });
                 _headerTextBlock.Inlines.Add(new Run { Text = ")" });
             }

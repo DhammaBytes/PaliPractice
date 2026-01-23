@@ -10,6 +10,18 @@ namespace PaliPractice.Presentation.Common.Text;
 public static class TextHelpers
 {
     /// <summary>
+    /// Cached FontFamily for Pāli text (LibertinusSans).
+    /// Static caching prevents GC from collecting font while Skia render thread is using it.
+    /// </summary>
+    public static readonly FontFamily PaliFont = new(FontPaths.LibertinusSans);
+
+    /// <summary>
+    /// Cached FontFamily for UI text (SourceSans3).
+    /// Static caching prevents GC from collecting font while Skia render thread is using it.
+    /// </summary>
+    public static readonly FontFamily RegularFont = new(FontPaths.SourceSans);
+
+    /// <summary>
     /// Creates a TextBlock with LibertinusSans font for Pāli text.
     /// Serif-like pronounced rhythm helps with letter-by-letter decoding of unfamiliar words.
     /// </summary>

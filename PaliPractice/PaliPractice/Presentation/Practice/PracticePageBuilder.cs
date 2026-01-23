@@ -444,16 +444,14 @@ public static class PracticePageBuilder
         Expression<Func<TVM, string>> answerEndingPath,
         LayoutConstants.PracticeFontSizes fonts)
     {
-        var paliFont = new FontFamily(FontPaths.LibertinusSans);
-
         var stemRun = new Run()
-            .FontFamily(paliFont)
+            .FontFamily(PaliFont)
             .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
             .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"));
         stemRun.SetBinding(Run.TextProperty, Bind.Path(answerStemPath));
 
         var endingRun = new Run()
-            .FontFamily(paliFont)
+            .FontFamily(PaliFont)
             .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
             .Foreground(ThemeResource.Get<Brush>("AccentEndingBrush"));
         endingRun.SetBinding(Run.TextProperty, Bind.Path(answerEndingPath));

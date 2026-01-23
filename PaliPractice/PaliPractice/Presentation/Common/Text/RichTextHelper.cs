@@ -1,7 +1,7 @@
 using Markdig;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
-using PaliPractice.Themes;
+using static PaliPractice.Presentation.Common.Text.TextHelpers;
 
 namespace PaliPractice.Presentation.Common.Text;
 
@@ -26,7 +26,6 @@ public static class RichTextHelper
     /// </summary>
     public static StackPanel CreateRichContent(string text, double fontSize = 14)
     {
-        var font = new FontFamily(FontPaths.SourceSans);
         var panel = new StackPanel();
         var document = Markdown.Parse(text, Pipeline);
         var blocks = document.ToList();
@@ -34,7 +33,7 @@ public static class RichTextHelper
         for (int i = 0; i < blocks.Count; i++)
         {
             bool isLast = i == blocks.Count - 1;
-            var element = ProcessBlock(blocks[i], font, fontSize, isLast);
+            var element = ProcessBlock(blocks[i], fontSize, isLast);
             if (element is not null)
                 panel.Children.Add(element);
         }
@@ -45,12 +44,12 @@ public static class RichTextHelper
     /// <summary>
     /// Processes a markdown block and returns the appropriate UI element.
     /// </summary>
-    static UIElement? ProcessBlock(Markdig.Syntax.Block block, FontFamily font, double fontSize, bool isLast)
+    static UIElement? ProcessBlock(Markdig.Syntax.Block block, double fontSize, bool isLast)
     {
         UIElement? element = block switch
         {
-            ParagraphBlock para => CreateParagraphTextBlock(para, font, fontSize),
-            ListBlock list => CreateListPanel(list, font, fontSize),
+            ParagraphBlock para => CreateParagraphTextBlock(para, fontSize),
+            ListBlock list => CreateListPanel(list, fontSize),
             _ => null
         };
 
@@ -67,21 +66,21 @@ public static class RichTextHelper
     /// <summary>
     /// Creates a TextBlock from a paragraph block.
     /// </summary>
-    static TextBlock CreateParagraphTextBlock(ParagraphBlock paragraph, FontFamily font, double fontSize = 14)
+    static TextBlock CreateParagraphTextBlock(ParagraphBlock paragraph, double fontSize = 14)
     {
         var textBlock = new TextBlock()
-            .FontFamily(font)
+            .FontFamily(RegularFont)
             .FontSize(fontSize)
             .TextWrapping(TextWrapping.Wrap);
 
-        ProcessInlineContainer(textBlock, paragraph.Inline, font);
+        ProcessInlineContainer(textBlock, paragraph.Inline);
         return textBlock;
     }
 
     /// <summary>
     /// Creates a StackPanel containing list items.
     /// </summary>
-    static StackPanel CreateListPanel(ListBlock list, FontFamily font, double fontSize = 14)
+    static StackPanel CreateListPanel(ListBlock list, double fontSize = 14)
     {
         var panel = new StackPanel()
             .Margin(ListIndent, 0, 0, 0);
@@ -93,7 +92,7 @@ public static class RichTextHelper
             {
                 bool isLast = i == items.Count - 1;
                 string bullet = list.IsOrdered ? $"{i + 1}." : "•";
-                var itemElement = CreateListItemElement(listItem, font, fontSize, bullet, isLast);
+                var itemElement = CreateListItemElement(listItem, fontSize, bullet, isLast);
                 panel.Children.Add(itemElement);
             }
         }
@@ -104,7 +103,7 @@ public static class RichTextHelper
     /// <summary>
     /// Creates a Grid for a single list item with bullet/number and content.
     /// </summary>
-    static Grid CreateListItemElement(ListItemBlock item, FontFamily font, double fontSize, string bullet, bool isLast)
+    static Grid CreateListItemElement(ListItemBlock item, double fontSize, string bullet, bool isLast)
     {
         // Get content from the list item (usually contains a ParagraphBlock)
         var contentPanel = new StackPanel();
@@ -114,7 +113,7 @@ public static class RichTextHelper
         {
             if (itemBlocks[i] is ParagraphBlock para)
             {
-                var tb = CreateParagraphTextBlock(para, font, fontSize);
+                var tb = CreateParagraphTextBlock(para, fontSize);
                 // Add spacing between multiple paragraphs in same list item
                 if (i > 0)
                     tb.Margin(0, ListItemSpacing, 0, 0);
@@ -123,13 +122,13 @@ public static class RichTextHelper
             else if (itemBlocks[i] is ListBlock nestedList)
             {
                 // Handle nested lists
-                var nestedPanel = CreateListPanel(nestedList, font, fontSize);
+                var nestedPanel = CreateListPanel(nestedList, fontSize);
                 nestedPanel.Margin(0, ListItemSpacing, 0, 0);
                 contentPanel.Children.Add(nestedPanel);
             }
         }
 
-        var bulletTextBlock = new TextBlock { Text = bullet, FontFamily = font }
+        var bulletTextBlock = new TextBlock { Text = bullet, FontFamily = RegularFont }
             .FontSize(fontSize)
             .Grid(column: 0)
             .VerticalAlignment(VerticalAlignment.Top);
@@ -155,19 +154,18 @@ public static class RichTextHelper
     /// </summary>
     public static TextBlock CreateRichText(string text)
     {
-        var font = new FontFamily(FontPaths.SourceSans);
         var textBlock = new TextBlock()
-            .FontFamily(font)
+            .FontFamily(RegularFont)
             .TextWrapping(TextWrapping.Wrap);
 
-        PopulateInlines(textBlock, text, font);
+        PopulateInlines(textBlock, text);
         return textBlock;
     }
 
     /// <summary>
     /// Populates the Inlines collection of a TextBlock from Markdown text.
     /// </summary>
-    static void PopulateInlines(TextBlock textBlock, string text, FontFamily font)
+    static void PopulateInlines(TextBlock textBlock, string text)
     {
         var document = Markdown.Parse(text, Pipeline);
 
@@ -175,7 +173,7 @@ public static class RichTextHelper
         {
             if (block is ParagraphBlock paragraph)
             {
-                ProcessInlineContainer(textBlock, paragraph.Inline, font);
+                ProcessInlineContainer(textBlock, paragraph.Inline);
                 textBlock.Inlines.Add(new LineBreak());
             }
         }
@@ -190,25 +188,25 @@ public static class RichTextHelper
     /// <summary>
     /// Processes a container of inline elements.
     /// </summary>
-    static void ProcessInlineContainer(TextBlock textBlock, ContainerInline? container, FontFamily font)
+    static void ProcessInlineContainer(TextBlock textBlock, ContainerInline? container)
     {
         if (container is null) return;
 
         foreach (var inline in container)
         {
-            ProcessInline(textBlock, inline, font);
+            ProcessInline(textBlock, inline);
         }
     }
 
     /// <summary>
     /// Processes a single inline element and adds appropriate XAML inline.
     /// </summary>
-    static void ProcessInline(TextBlock textBlock, Markdig.Syntax.Inlines.Inline inline, FontFamily font)
+    static void ProcessInline(TextBlock textBlock, Markdig.Syntax.Inlines.Inline inline)
     {
         switch (inline)
         {
             case LiteralInline literal:
-                textBlock.Inlines.Add(new Run { Text = literal.Content.ToString(), FontFamily = font });
+                textBlock.Inlines.Add(new Run { Text = literal.Content.ToString(), FontFamily = RegularFont });
                 break;
 
             case LinkInline link:
@@ -221,7 +219,7 @@ public static class RichTextHelper
                     {
                         if (child is LiteralInline linkText)
                         {
-                            hyperlink.Inlines.Add(new Run { Text = linkText.Content.ToString(), FontFamily = font });
+                            hyperlink.Inlines.Add(new Run { Text = linkText.Content.ToString(), FontFamily = RegularFont });
                         }
                     }
 
@@ -232,14 +230,14 @@ public static class RichTextHelper
                     // Invalid URL - just show the text
                     foreach (var child in link)
                     {
-                        ProcessInline(textBlock, child, font);
+                        ProcessInline(textBlock, child);
                     }
                 }
                 break;
 
             case EmphasisInline emphasis:
                 // Handle *italic* and **bold**
-                var span = new Span { FontFamily = font };
+                var span = new Span { FontFamily = RegularFont };
                 if (emphasis.DelimiterCount == 2)
                 {
                     span.FontWeight = Microsoft.UI.Text.FontWeights.Bold;
@@ -253,7 +251,7 @@ public static class RichTextHelper
                 {
                     if (child is LiteralInline emphasisText)
                     {
-                        span.Inlines.Add(new Run { Text = emphasisText.Content.ToString(), FontFamily = font });
+                        span.Inlines.Add(new Run { Text = emphasisText.Content.ToString(), FontFamily = RegularFont });
                     }
                 }
 
@@ -268,7 +266,7 @@ public static class RichTextHelper
                 // For any other inline type, try to get its text content
                 if (inline is ContainerInline container)
                 {
-                    ProcessInlineContainer(textBlock, container, font);
+                    ProcessInlineContainer(textBlock, container);
                 }
                 break;
         }

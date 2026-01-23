@@ -1,7 +1,7 @@
 using PaliPractice.Models.Words;
+using PaliPractice.Presentation.Common.Text;
 using PaliPractice.Presentation.Practice.Common;
 using PaliPractice.Presentation.Practice.ViewModels.Common.Entries;
-using PaliPractice.Themes;
 
 namespace PaliPractice.Presentation.Practice.ViewModels.Common;
 
@@ -22,7 +22,7 @@ public partial class ExampleCarouselViewModel : ObservableObject
     // Text balancing parameters (set by UI layer)
     double _availableWidth;
     double _fontSize = 18;
-    FontFamily _fontFamily = new(FontPaths.SourceSans);
+    FontFamily _fontFamily = TextHelpers.RegularFont;
 
     [ObservableProperty] int _currentIndex;
     [ObservableProperty] int _totalTranslations;

@@ -50,6 +50,7 @@ public sealed partial class HelpPage : Page
                                         HelpViewModel.FaqExamples,
                                         HelpViewModel.FaqMissingWords,
                                         HelpViewModel.FaqMissingForms,
+                                        HelpViewModel.FaqDataStorage,
                                         HelpViewModel.FaqAboutApp)
                                 )
                         )

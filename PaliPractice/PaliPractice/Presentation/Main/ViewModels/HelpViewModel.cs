@@ -71,4 +71,12 @@ These forms vary considerably across verbs and often require learning on a word-
 
 See the About section in Settings for details about the app, its data sources, licensing, and how to contact us.
 """;
+
+    public static string FaqDataStorage => """
+**Where is my data stored?**
+
+This app works completely offline and does not back up your settings or practice progress, nor does it sync data between devices.
+
+On mobile devices, your phone's system backup typically includes all local app data automatically. On desktop, the data is stored in typical app configuration directories and needs to be backed up manually.
+""";
 }

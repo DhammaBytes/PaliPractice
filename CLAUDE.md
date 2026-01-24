@@ -78,7 +78,6 @@ The app uses a normalized SQLite database:
 2. **Navigation**: Route-based navigation with Shell pattern
 3. **Database Access**: Async SQLite operations via DatabaseService
 4. **UI Construction**: C# Markup fluent API instead of XAML
-5. **Localization**: Supports 6 languages (en, es, fr, pt, th, ru)
 
 ### State Management
 - **Minimize mutable state**: Only introduce new state when absolutely necessary; prefer derived/computed values over stored state

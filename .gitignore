@@ -41,7 +41,6 @@ BenchmarkDotNet.Artifacts/
 # Project-specific artifacts
 scripts/config.ini
 scripts/dpd_operations.log
-PaliPractice/PaliPractice/Data/*.db
 config.ini
 .claude/plans/*
 */__pycache__

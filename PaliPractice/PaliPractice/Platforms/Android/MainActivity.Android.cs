@@ -37,5 +37,29 @@ public class MainActivity : ApplicationActivity
         AndroidX.Core.SplashScreen.SplashScreen.InstallSplashScreen(this);
 
         base.OnCreate(savedInstanceState);
+
+        // Android 15+ uses predictive back gestures and no longer routes back events
+        // through SystemNavigationManager.BackRequested. Handle back directly.
+        OnBackPressedDispatcher.AddCallback(this, new NavigationBackCallback(this));
+    }
+
+    sealed class NavigationBackCallback(MainActivity activity)
+        : AndroidX.Activity.OnBackPressedCallback(true)
+    {
+        public override void HandleOnBackPressed()
+        {
+            if (App.MainWindow?.Content is Presentation.Main.Shell { ContentControl.Content: FrameView { Content: Frame { CanGoBack: true } frame } })
+            {
+                frame.GoBack();
+                if (frame.Content is Page page)
+                    page.Focus(FocusState.Pointer);
+                return;
+            }
+
+            // Root page — disable this callback and re-dispatch so the system closes the app
+            Enabled = false;
+            activity.OnBackPressedDispatcher.OnBackPressed();
+            Enabled = true;
+        }
     }
 }

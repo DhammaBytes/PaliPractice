@@ -181,22 +181,18 @@ public partial class App : Application
         var manager = Windows.UI.Core.SystemNavigationManager.GetForCurrentView();
         manager.BackRequested += OnBackRequested;
     }
-
+    
+    // Android 7-14, for Android 15+ see MainActivity.Android.cs
     static void OnBackRequested(object? sender, Windows.UI.Core.BackRequestedEventArgs e)
     {
-        // Access the Frame through Shell's ContentControl (ExtendedSplashScreen -> FrameView -> Content -> Frame)
-        if (MainWindow?.Content is not Shell shell) return;
-        if (shell.ContentControl.Content is not FrameView frameView) return;
-        if (frameView.Content is not Frame { CanGoBack: true } frame) return;
+        if (MainWindow?.Content is not Shell { ContentControl.Content: FrameView { Content: Frame { CanGoBack: true } frame } })
+            return;
 
         frame.GoBack();
         e.Handled = true;
 
-        // Clear keyboard focus to avoid focus rectangle appearing on first control
         if (frame.Content is Page page)
-        {
             page.Focus(FocusState.Pointer);
-        }
     }
 
     void ApplySavedTheme()

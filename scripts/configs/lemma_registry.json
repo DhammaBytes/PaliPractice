@@ -1,7 +1,7 @@
 {
   "version": 1,
   "next_noun_id": 45247,
-  "next_verb_id": 77606,
+  "next_verb_id": 77607,
   "nouns": {
     "bhikkhu": 10001,
     "na": 10002,
@@ -42855,6 +42855,7 @@
     "nillāleti": 77602,
     "anusūyati": 77603,
     "vippavadati": 77604,
-    "abhitthanayati": 77605
+    "abhitthanayati": 77605,
+    "pareti": 77606
   }
 }

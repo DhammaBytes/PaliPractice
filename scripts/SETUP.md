@@ -215,6 +215,7 @@ This takes **~1 hour** and creates `dpd.db` (~450MB).
 ```bash
 cd /Users/ivm/Sources/PaliPractice
 source .venv/bin/activate
+pip install aksharamukha
 cd scripts
 python3 extract_nouns_and_verbs.py --nouns 1500 --verbs 750
 python3 validate_db.py
@@ -431,18 +432,6 @@ dotnet build --framework net10.0-android
 
 # Desktop (Windows/Mac/Linux)
 dotnet build --framework net10.0-desktop
-```
-
----
-
-## Legacy Setup (PaliPractice Python Environment)
-
-For the extraction scripts only (not dpd-db):
-```bash
-cd /Users/ivm/Sources/PaliPractice
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r scripts/requirements.txt
 ```
 
 ---

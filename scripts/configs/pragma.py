@@ -11,4 +11,4 @@ and ensure BundleVersion in DatabaseService.cs matches or exceeds this value.
 
 # Database version - increment when schema or data format changes
 # Must match or exceed BundleVersion in DatabaseService.cs
-DATABASE_VERSION = 1
+DATABASE_VERSION = 1100

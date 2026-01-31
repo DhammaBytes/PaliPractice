@@ -18,6 +18,9 @@ _ReSharper*/
 artifacts/
 *.log
 
+# Release staging
+release/
+
 # .NET artifacts
 *.dll
 *.dylib

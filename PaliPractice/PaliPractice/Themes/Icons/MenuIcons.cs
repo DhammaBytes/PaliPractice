@@ -14,4 +14,8 @@ public static class MenuIcons
     public static string Settings => $"{BasePath}settings.png";
     public static string Stats => $"{BasePath}stats.png";
     public static string Help => $"{BasePath}help.png";
+
+    // Decorative lotus elements
+    public static string LotusTop => $"{BasePath}lotus_top.png";
+    public static string LotusBottom => $"{BasePath}lotus_bottom.png";
 }

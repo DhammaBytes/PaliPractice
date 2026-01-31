@@ -9,79 +9,149 @@ namespace PaliPractice.Presentation.Main;
 
 public sealed partial class StartPage : Page
 {
+    readonly BitmapIcon _lotusTop;
+    readonly BitmapIcon _lotusBottom;
+    StackPanel _contentStack = null!;
+
     public StartPage()
     {
+        _lotusTop = new BitmapIcon()
+            .UriSource(new Uri(MenuIcons.LotusTop))
+            .ShowAsMonochrome(true)
+            .Foreground(ThemeResource.Get<Brush>("NavigationButtonOutlineBrush"))
+            .Width(180)
+            .HorizontalAlignment(HorizontalAlignment.Center);
+
+        _lotusBottom = new BitmapIcon()
+            .UriSource(new Uri(MenuIcons.LotusBottom))
+            .ShowAsMonochrome(true)
+            .Foreground(ThemeResource.Get<Brush>("NavigationButtonOutlineBrush"))
+            .Width(288)
+            .Margin(IsDesktop ? new Thickness(0, 0, 12, 12) : new Thickness(0, 0, 8, 20))
+            .HorizontalAlignment(HorizontalAlignment.Right)
+            .VerticalAlignment(VerticalAlignment.Bottom);
+
         this.DataContext<StartViewModel>((page, vm) => page
             .NavigationCacheMode(NavigationCacheMode.Required)
             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
             .Content(PageFadeIn.Wrap(page,
                 new Grid()
-                    .SafeArea(SafeArea.InsetMask.VisibleBounds)
-                    .RowDefinitions("Auto,*")
                     .Children(
-                        // Main content area
+                        // Bottom lotus decoration (outside SafeArea, screen-edge aligned, lowest Z-order)
+                        _lotusBottom,
+
+                        // SafeArea content
                         new Grid()
-                            .Grid(row: 1)
-                            .Margin(20)
+                            .SafeArea(SafeArea.InsetMask.VisibleBounds)
+                            .RowDefinitions("Auto,*")
                             .Children(
-                                new StackPanel()
-                                    .VerticalAlignment(VerticalAlignment.Center)
-                                    .HorizontalAlignment(HorizontalAlignment.Center)
-                                    .Margin(0, 0, 0, 48) // Shift center up by 24pt
-                                    .Spacing(32)
-                                    .MaxWidth(400)
+                                // Main content area
+                                new Grid()
+                                    .Grid(row: 1)
+                                    .Margin(20)
                                     .Children(
-                                        // App title (no icon, larger font)
-                                        PaliText()
-                                            .Text("Pāli Practice")
-                                            .FontSize(48)
-                                            .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
+                                        (_contentStack = new StackPanel()
+                                            .VerticalAlignment(VerticalAlignment.Center)
                                             .HorizontalAlignment(HorizontalAlignment.Center)
-                                            .TextAlignment(TextAlignment.Center)
-                                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
-
-                                        // Practice buttons
-                                        new StackPanel()
-                                            .Spacing(16)
+                                            .Spacing(32)
+                                            .MaxWidth(400))
                                             .Children(
-                                                // Declension Practice Button
-                                                // Command must be set at call site for source generator to see the binding
-                                                StartPrimaryButtonShadow(
-                                                    BuildPracticeButton(MenuIcons.Nouns, "Nouns & Cases", "Declension Practice")
-                                                        .Command(() => vm.GoToDeclensionCommand)),
-
-                                                // Conjugation Practice Button
-                                                StartPrimaryButtonShadow(
-                                                    BuildPracticeButton(MenuIcons.Verbs, "Verbs & Tenses", "Conjugation Practice")
-                                                        .Command(() => vm.GoToConjugationCommand)),
-
-                                                // Settings Button
-                                                StartSecondaryButtonShadow(
-                                                    BuildSecondaryButton(MenuIcons.Settings, "Settings", iconHeight: 30)
-                                                        .Command(() => vm.GoToSettingsCommand)),
-
-                                                // Stats and Help row (side by side)
-                                                new Grid()
-                                                    .ColumnDefinitions("*,16,*")
+                                                // Title group: lotus + title
+                                                new StackPanel()
+                                                    .HorizontalAlignment(HorizontalAlignment.Center)
+                                                    .Spacing(24)
                                                     .Children(
-                                                        // Stats Button
-                                                        StartSecondaryButtonShadow(
-                                                            BuildSecondaryButton(MenuIcons.Stats, "Stats", iconHeight: 27, centerContent: true, iconVerticalOffset: -2)
-                                                                .Command(() => vm.GoToStatisticsCommand))
-                                                            .Grid(column: 0),
+                                                        _lotusTop,
+                                                        PaliText()
+                                                            .Text("Pāli Practice")
+                                                            .FontSize(48)
+                                                            .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
+                                                            .HorizontalAlignment(HorizontalAlignment.Center)
+                                                            .TextAlignment(TextAlignment.Center)
+                                                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
+                                                    ),
 
-                                                        // Help Button
+                                                // Practice buttons
+                                                new StackPanel()
+                                                    .Spacing(16)
+                                                    .Children(
+                                                        // Declension Practice Button
+                                                        // Command must be set at call site for source generator to see the binding
+                                                        StartPrimaryButtonShadow(
+                                                            BuildPracticeButton(MenuIcons.Nouns, "Nouns & Cases", "Declension Practice")
+                                                                .Command(() => vm.GoToDeclensionCommand)),
+
+                                                        // Conjugation Practice Button
+                                                        StartPrimaryButtonShadow(
+                                                            BuildPracticeButton(MenuIcons.Verbs, "Verbs & Tenses", "Conjugation Practice")
+                                                                .Command(() => vm.GoToConjugationCommand)),
+
+                                                        // Settings Button
                                                         StartSecondaryButtonShadow(
-                                                            BuildSecondaryButton(MenuIcons.Help, "Help", iconHeight: 27, centerContent: true)
-                                                                .Command(() => vm.GoToHelpCommand))
-                                                            .Grid(column: 2)
+                                                            BuildSecondaryButton(MenuIcons.Settings, "Settings", iconHeight: 30)
+                                                                .Command(() => vm.GoToSettingsCommand)),
+
+                                                        // Stats and Help row (side by side)
+                                                        new Grid()
+                                                            .ColumnDefinitions("*,16,*")
+                                                            .Children(
+                                                                // Stats Button
+                                                                StartSecondaryButtonShadow(
+                                                                    BuildSecondaryButton(MenuIcons.Stats, "Stats", iconHeight: 27, centerContent: true, iconVerticalOffset: -2)
+                                                                        .Command(() => vm.GoToStatisticsCommand))
+                                                                    .Grid(column: 0),
+
+                                                                // Help Button
+                                                                StartSecondaryButtonShadow(
+                                                                    BuildSecondaryButton(MenuIcons.Help, "Help", iconHeight: 27, centerContent: true)
+                                                                        .Command(() => vm.GoToHelpCommand))
+                                                                    .Grid(column: 2)
+                                                            )
                                                     )
                                             )
                                     )
                             )
                     )
             )));
+
+        AttachResponsiveHandler();
     }
+
+    void AttachResponsiveHandler()
+    {
+        var window = App.MainWindow;
+        if (window is null) return;
+
+        Update();
+        window.SizeChanged += (_, _) => Update();
+        return;
+
+        void Update()
+        {
+            var heightClass = LayoutConstants.GetCurrentHeightClass();
+            var width = window.Bounds.Width;
+
+            // Top lotus: hidden on Short/Minimum
+            _lotusTop.Visibility = heightClass is HeightClass.Short or HeightClass.Minimum
+                ? Visibility.Collapsed
+                : Visibility.Visible;
+
+            // Push content stack higher on tall screens via bottom margin
+            var bottomShift = heightClass switch
+            {
+                HeightClass.Tall => 100,
+                HeightClass.Medium => 80,
+                HeightClass.Short => 48,
+                _ => 24
+            };
+            _contentStack.Margin(0, 0, 0, bottomShift);
+
+            // Bottom lotus: 70% of screen width, max 280px
+            _lotusBottom.Width = Math.Min(width * 0.7, 280);
+        }
+    }
+
+    static bool IsDesktop => OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() || OperatingSystem.IsLinux();
 
     /// <summary>
     /// Builds a primary practice button (Nouns & Cases, Verbs & Tenses).

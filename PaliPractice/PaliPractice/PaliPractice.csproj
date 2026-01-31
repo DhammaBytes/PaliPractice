@@ -163,6 +163,9 @@
       <UnoImage Include="Assets\Svg\Menu\settings.svg" BaseSize="35,35" />
       <UnoImage Include="Assets\Svg\Menu\stats.svg" BaseSize="35,35" />
       <UnoImage Include="Assets\Svg\Menu\help.svg" BaseSize="35,35" />
+      <!-- Lotus decorations: BaseSize matches display size at aspect ratio of viewBox -->
+      <UnoImage Include="Assets\Svg\Menu\lotus_top.svg" BaseSize="180,77" />
+      <UnoImage Include="Assets\Svg\Menu\lotus_bottom.svg" BaseSize="280,209" />
     </ItemGroup>
 
     <!-- Practice icons: SVG -> PNG for practice page buttons -->

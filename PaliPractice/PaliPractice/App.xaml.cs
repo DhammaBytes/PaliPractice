@@ -169,6 +169,11 @@ public partial class App : Application
 
         Host = await builder.NavigateAsync<Shell>();
 
+        // Install native macOS menu bar (App/Edit/View/Window/Help).
+        // See Services/MacMenu/MacMenuBridge.cs for how the ObjC↔C# bridge works.
+        if (OperatingSystem.IsMacOS())
+            Services.MacMenu.MacMenuBridge.Initialize();
+
         // Apply saved theme preference (after navigation so XamlRoot is available)
         ApplySavedTheme();
 

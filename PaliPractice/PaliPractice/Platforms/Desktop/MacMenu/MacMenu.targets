@@ -1,0 +1,56 @@
+<Project>
+  <!--
+    Native macOS menu bar build target.
+
+    Uno Platform's Skia desktop backend doesn't create a native macOS menu bar —
+    the app window gets a blank menu. To provide standard macOS menus (App, Edit,
+    View, Window, Help), we compile a small Objective-C file (PaliMenu.m) into a
+    shared library and load it at runtime via P/Invoke from MacMenuBridge.cs.
+
+    Build pipeline:
+      1. CompilePaliMenu — runs clang to produce a universal (arm64 + x86_64)
+         dylib from PaliMenu.m, output to obj/MacMenu/ to keep it out of source.
+      2. IncludePaliMenuDylib — adds the dylib as Content so MSBuild copies it
+         to the output directory next to PaliPractice.dll.
+
+    The dylib is added to Content inside a Target (not a static ItemGroup) because
+    the file doesn't exist until CompilePaliMenu runs; a static ItemGroup would
+    fail on the first build when the file is missing.
+
+    Both targets are conditioned on macOS host + desktop TFM. On Windows/Linux
+    hosts or non-desktop TFMs, these targets are completely skipped — there is
+    no clang invocation and no dylib in the output.
+  -->
+
+  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX')) AND $(TargetFramework.Contains('-desktop'))">
+    <_PaliMenuSource>$(MSBuildThisFileDirectory)PaliMenu.m</_PaliMenuSource>
+    <!-- Use an absolute path under obj/ to avoid MSBuild's backslash issues on macOS -->
+    <_PaliMenuObjDir>$(MSBuildProjectDirectory)/obj/MacMenu/</_PaliMenuObjDir>
+    <_PaliMenuDylib>$(_PaliMenuObjDir)libPaliMenu.dylib</_PaliMenuDylib>
+  </PropertyGroup>
+
+  <!-- Incremental: only recompiles when PaliMenu.m changes -->
+  <Target Name="CompilePaliMenu"
+          BeforeTargets="AssignTargetPaths"
+          Condition="$([MSBuild]::IsOSPlatform('OSX')) AND $(TargetFramework.Contains('-desktop'))"
+          Inputs="$(_PaliMenuSource)"
+          Outputs="$(_PaliMenuDylib)">
+
+    <MakeDir Directories="$(_PaliMenuObjDir)" />
+    <Exec Command="clang -shared -fobjc-arc -arch arm64 -arch x86_64 -framework AppKit -o &quot;$(_PaliMenuDylib)&quot; &quot;$(_PaliMenuSource)&quot;" />
+  </Target>
+
+  <!-- Must run after CompilePaliMenu so the file exists when MSBuild evaluates it -->
+  <Target Name="IncludePaliMenuDylib"
+          BeforeTargets="AssignTargetPaths"
+          AfterTargets="CompilePaliMenu"
+          Condition="$([MSBuild]::IsOSPlatform('OSX')) AND $(TargetFramework.Contains('-desktop'))">
+
+    <ItemGroup>
+      <Content Include="$(_PaliMenuDylib)"
+               CopyToOutputDirectory="PreserveNewest"
+               Link="libPaliMenu.dylib" />
+    </ItemGroup>
+  </Target>
+
+</Project>

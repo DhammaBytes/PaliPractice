@@ -20,6 +20,7 @@ artifacts/
 
 # .NET artifacts
 *.dll
+*.dylib
 *.exe
 *.pdb
 *.cache

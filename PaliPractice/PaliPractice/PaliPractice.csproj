@@ -4,6 +4,7 @@
 
         <OutputType>Exe</OutputType>
         <UnoSingleProject>true</UnoSingleProject>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
         <!-- Display name -->
         <ApplicationTitle>PāliPractice</ApplicationTitle>
@@ -56,6 +57,14 @@
       <MtouchLink>SdkOnly</MtouchLink>
     </PropertyGroup>
 
+    <!-- App icon for desktop and WASM (Resizetizer generates .icns for macOS, .ico for Windows) -->
+    <!-- Android and iOS are excluded below (they use platform-native icons) -->
+    <ItemGroup>
+        <UnoIcon Include="Assets\Icons\icon.png"
+                 ForegroundFile="Assets\Icons\icon.png"
+                 Color="Transparent" />
+    </ItemGroup>
+
     <ItemGroup>
       <PackageReference Include="Markdig" />
       <PackageReference Include="sqlite-net-pcl" />
@@ -102,10 +111,9 @@
       <AndroidResource Include="Platforms\Android\Resources\values\icon_background.xml" />
     </ItemGroup>
 
-    <!-- Exclude Resizetizer icon generation for Android (use custom mipmap icons) -->
-    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <!-- Exclude Resizetizer icon generation for Android and iOS (use platform-native icons) -->
+    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' OR $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
         <UnoIcon Remove="@(UnoIcon)" />
-        <UnoIcon Remove="Assets\Icons\icon.svg" />
     </ItemGroup>
 
     <!-- Internal documentation - excluded from build output -->
@@ -184,5 +192,8 @@
       <UnoImage Include="Assets\Svg\Settings\rate.svg" BaseSize="21,21" />
       <UnoImage Include="Assets\Svg\Settings\verb.svg" BaseSize="21,21" />
     </ItemGroup>
+
+    <!-- Native macOS menu bar: compiles PaliMenu.m → libPaliMenu.dylib on macOS builds -->
+    <Import Project="Platforms\Desktop\MacMenu\MacMenu.targets" />
 
 </Project>

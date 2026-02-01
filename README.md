@@ -10,7 +10,7 @@ A cross-platform Pāli language learning app designed to train noun declensions 
 - Android 7+ (Nougat)
 - iOS 15+ (iPhone & iPad)
 
-This is work in progress, with the aim to be published on all the platforms.
+Install from [Google Play](https://play.google.com/store/apps/details?id=org.dhammabytes.palipractice) or the [App Store](https://apps.apple.com/us/app/pāli-practice/id6742040410), or directly download an Android APK and desktop versions from the [Releases page](https://github.com/DhammaBytes/PaliPractice/releases).
 
 ## Setup
 

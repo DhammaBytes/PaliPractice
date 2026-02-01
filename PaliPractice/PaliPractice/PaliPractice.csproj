@@ -5,6 +5,8 @@
         <OutputType>Exe</OutputType>
         <UnoSingleProject>true</UnoSingleProject>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <!-- Windows .exe icon (embedded in PE header so Explorer shows it) -->
+        <ApplicationIcon>Assets\Icons\icon.ico</ApplicationIcon>
 
         <!-- Display name -->
         <ApplicationTitle>PāliPractice</ApplicationTitle>

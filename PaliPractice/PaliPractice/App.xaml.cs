@@ -152,6 +152,7 @@ public partial class App : Application
             );
         
         MainWindow = builder.Window;
+        MainWindow.Title = "Pāli Practice";
 
         if (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() || OperatingSystem.IsLinux())
         {
@@ -165,7 +166,7 @@ public partial class App : Application
 #if DEBUG
         // MainWindow.UseStudio();
 #endif
-        // MainWindow.SetWindowIcon();
+        MainWindow.AppWindow.SetIcon("Assets/Icons/icon.png");
 
         Host = await builder.NavigateAsync<Shell>();
 

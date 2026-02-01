@@ -25,14 +25,14 @@ class Program
             e.SetObserved(); // Prevent process termination
         };
 #endif
-        // macOS: Override ApplicationData path to use ~/Library/Application Support/
-        // instead of Uno's default ~/.local/share/ (which follows Linux XDG, not macOS convention)
-        if (OperatingSystem.IsMacOS())
-        {
-            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            WinRTFeatureConfiguration.ApplicationData.ApplicationDataPathOverride =
-                IOPath.Combine(appDataPath, "PaliPractice");
-        }
+        // Uno's default ApplicationData path nests under Publisher/AppName.
+        // Override to use just the app name under each platform's standard data directory:
+        //   macOS:   ~/Library/Application Support/PaliPractice
+        //   Linux:   ~/.local/share/PaliPractice
+        //   Windows: %LOCALAPPDATA%\PaliPractice  (i.e. AppData\Local\PaliPractice)
+        var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        WinRTFeatureConfiguration.ApplicationData.ApplicationDataPathOverride =
+            IOPath.Combine(appDataPath, "PaliPractice");
 
         var host = UnoPlatformHostBuilder.Create()
             .App(() => new App())

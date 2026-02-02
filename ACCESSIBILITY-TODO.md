@@ -283,7 +283,84 @@ Person3rd=Third person
 
 ---
 
-## 10. TESTING CHECKLIST
+## 10. TEXT SIZE & READABILITY
+
+> **User report**: Inflection tables are hard to read because the text is too small.
+
+### 10.1 Inflection Table — No Explicit Font Sizes
+**File**: `FrozenHeaderTable.cs`
+
+All text in the inflection table uses the platform default (~14px), which is too small for Pali diacritics that need character-by-character reading.
+
+**Data cells** (line 267):
+```csharp
+// Current — no FontSize set
+var textBlock = PaliText()
+    .TextWrapping(TextWrapping.NoWrap);
+
+// Needs minimum 16px, ideally 17-18px
+var textBlock = PaliText()
+    .FontSize(17)
+    .TextWrapping(TextWrapping.NoWrap);
+```
+
+**Column headers** (line 213):
+```csharp
+// Current — no FontSize
+RegularText()
+    .Text(headers[col])
+    .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+
+// Needs ~15-16px
+    .FontSize(15)
+```
+
+**Row headers** (line 247):
+```csharp
+// Current — no FontSize
+RegularText()
+    .Text(header)
+    .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
+
+// Needs ~15-16px
+    .FontSize(15)
+```
+
+### 10.2 Fixed Cell Dimensions Too Tight
+**File**: `FrozenHeaderTable.cs:315-317`
+
+Cell dimensions are hardcoded constants that don't scale with text size:
+```csharp
+const double CellWidth = 120;      // Too narrow for longer forms at larger font
+const double RowHeaderWidth = 70;   // Barely fits "Accusative" etc.
+const double CellMinHeight = 36;    // Too short if font grows
+```
+
+Consider increasing these alongside the font size bump:
+- `CellWidth`: 120 → 140
+- `RowHeaderWidth`: 70 → 85
+- `CellMinHeight`: 36 → 40
+
+### 10.3 Hint Text Too Small
+**File**: `InflectionTablePage.cs:33`
+
+The non-corpus forms hint is 12px — below the 16px minimum for body text:
+```csharp
+// Current
+_hintTextBlock = RegularText().FontSize(12)
+
+// Should be at least 14px (secondary) or 16px (body)
+_hintTextBlock = RegularText().FontSize(14)
+```
+
+### 10.4 No Responsive Scaling for Tables
+The practice page uses `LayoutConstants` with `HeightClass` for responsive font sizing across window heights (Tall/Medium/Short/Minimum). The inflection table page has no equivalent — text stays the same size regardless of window or device.
+
+Consider adding table-specific entries to `LayoutConstants`, or a simpler approach: use `Responsive` markup extension on the table card to switch between compact (mobile) and comfortable (desktop) cell sizes.
+
+---
+
+## 11. TESTING CHECKLIST
 
 After implementing:
 

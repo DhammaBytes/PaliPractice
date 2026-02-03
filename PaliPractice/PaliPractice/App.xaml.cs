@@ -166,8 +166,6 @@ public partial class App : Application
 #if DEBUG
         // MainWindow.UseStudio();
 #endif
-        MainWindow.AppWindow.SetIcon("Assets/Icons/icon.png");
-
         Host = await builder.NavigateAsync<Shell>();
 
         // Install native macOS menu bar (App/Edit/View/Window/Help).

@@ -33,7 +33,19 @@ dotnet publish PaliPractice/PaliPractice.csproj -f net10.0-desktop -r linux-x64 
 dotnet publish PaliPractice/PaliPractice.csproj -f net10.0-android -c Release
 ```
 
-### 3. Sign and notarize macOS .app
+### 3. Purge stale files from publish directories
+
+Previous builds leave behind notarization zips, release archives, and PDB files that `dotnet publish` may copy into the `.app` bundle. Remove them before signing.
+
+```
+# Remove stale zips/archives that bloat the macOS .app bundle
+find PaliPractice/PaliPractice/bin/Release/net10.0-desktop/osx-arm64/publish/ \
+  -maxdepth 1 -name '*.zip' -delete
+find "PaliPractice/PaliPractice/bin/Release/net10.0-desktop/osx-arm64/publish/PāliPractice.app/Contents/Resources/" \
+  -maxdepth 1 -name '*.zip' -delete
+```
+
+### 4. Sign and notarize macOS .app
 
 Uno's built-in signing fails on macOS 15+ (UNOB0018 xattr bug), so sign manually.
 
@@ -70,7 +82,7 @@ xcrun stapler staple \
   "PaliPractice/PaliPractice/bin/Release/net10.0-desktop/osx-arm64/publish/PāliPractice.app"
 ```
 
-### 4. Package release artifacts into /release/
+### 5. Package release artifacts into /release/
 
 **macOS** — use `ditto` (preserves code signatures, unlike `zip`):
 ```
@@ -97,7 +109,7 @@ cp PaliPractice/PaliPractice/bin/Release/net10.0-android/org.dhammabytes.palipra
    release/PaliPractice-android.apk
 ```
 
-### 5. Verify
+### 6. Verify
 
 List the release directory and confirm four files exist:
 - `PaliPractice-macos-arm64.zip`

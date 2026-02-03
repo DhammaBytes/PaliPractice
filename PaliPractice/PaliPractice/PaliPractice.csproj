@@ -13,8 +13,8 @@
         <!-- App Identifier -->
         <ApplicationId>org.dhammabytes.palipractice</ApplicationId>
         <!-- Versions -->
-        <ApplicationDisplayVersion>1.1</ApplicationDisplayVersion>
-        <ApplicationVersion>1100</ApplicationVersion>
+        <ApplicationDisplayVersion>1.11</ApplicationDisplayVersion>
+        <ApplicationVersion>1110</ApplicationVersion>
         <!-- Package Publisher -->
         <ApplicationPublisher>O=DhammaBytes</ApplicationPublisher>
         <!-- Package Description -->

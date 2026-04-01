@@ -48,6 +48,12 @@ public enum Number
     Plural = 2
 }
 
+public enum TranslationLanguagePreference
+{
+    English = 0,
+    Russian = 1
+}
+
 /// <summary>
 /// Voice for verb conjugations.
 /// Pali grammar traditionally distinguishes between active (parassapada)

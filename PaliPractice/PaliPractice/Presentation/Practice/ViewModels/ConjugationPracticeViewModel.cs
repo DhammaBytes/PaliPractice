@@ -236,7 +236,7 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
             AlternativeForms = GetAlternativeForms();
 
             // Initialize example carousel
-            ExampleCarousel.Initialize(lemma.Words);
+            ExampleCarousel.Initialize(lemma.Words, GetEffectiveTranslationLanguageCode());
             ExampleCarousel.SetFormsToAvoid(GetAllInflectedForms());
         }
         catch (Exception ex)

@@ -625,6 +625,15 @@ public class VerbDataIntegrityTests
     }
 
     [Test]
+    public void SomeVerbDetails_HaveRussianMeaning()
+    {
+        _paliVerbDetails!
+            .Count(d => !string.IsNullOrWhiteSpace(d.MeaningRu))
+            .Should().BeGreaterThan(0,
+                "Russian meanings should be imported into verbs_details.meaning_ru");
+    }
+
+    [Test]
     public void AllVerbLemmaIds_AreInExpectedRange()
     {
         // Verb lemma IDs should be in range 70001-99999

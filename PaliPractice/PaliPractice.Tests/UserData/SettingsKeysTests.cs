@@ -162,5 +162,11 @@ public class SettingsKeysTests
         SettingsKeys.DefaultLemmaMax.Should().BeGreaterThan(SettingsKeys.DefaultLemmaMin);
     }
 
+    [Test]
+    public void DefaultTranslationLanguage_ShouldBeEnglish()
+    {
+        SettingsKeys.DefaultAppearanceTranslationLanguage.Should().Be((int)TranslationLanguagePreference.English);
+    }
+
     #endregion
 }

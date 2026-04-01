@@ -2,8 +2,15 @@
 """Validate the extracted inflection database."""
 
 import sqlite3
+import sys
 from pathlib import Path
 from collections import Counter
+
+SCRIPTS_ROOT = Path(__file__).resolve().parents[1]
+if str(SCRIPTS_ROOT) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_ROOT))
+
+from configs import DATABASE_VERSION
 
 
 # Enum value mappings for display (matching C# Enums.cs)
@@ -61,10 +68,22 @@ def validate_database(db_path: str = "../PaliPractice/PaliPractice/Data/pali.db"
 
     print(f"✅ Validating database: {db_path}")
 
+    cursor.execute("PRAGMA user_version")
+    user_version = cursor.fetchone()[0]
+    if user_version == DATABASE_VERSION:
+        print(f"✅ PRAGMA user_version matches shared version: {user_version}")
+    else:
+        print(f"❌ PRAGMA user_version mismatch: database={user_version}, expected={DATABASE_VERSION}")
+        return False
+
     # Check tables
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
     tables = [row[0] for row in cursor.fetchall()]
-    expected_tables = ['nouns', 'verbs', 'corpus_declensions', 'corpus_conjugations']
+    expected_tables = [
+        'nouns', 'nouns_details',
+        'verbs', 'verbs_details',
+        'nouns_corpus_forms', 'verbs_corpus_forms'
+    ]
 
     all_present = True
     for table in expected_tables:
@@ -109,19 +128,29 @@ def validate_database(db_path: str = "../PaliPractice/PaliPractice/Data/pali.db"
     # Validate corpus tables have form_id column
     print("\n🔍 Validating form_id columns:")
 
-    cursor.execute("PRAGMA table_info(corpus_declensions)")
+    cursor.execute("PRAGMA table_info(nouns_corpus_forms)")
     decl_columns = [row[1] for row in cursor.fetchall()]
     if 'form_id' in decl_columns:
-        print("  ✅ corpus_declensions.form_id column exists")
+        print("  ✅ nouns_corpus_forms.form_id column exists")
     else:
-        print("  ❌ corpus_declensions.form_id column missing")
+        print("  ❌ nouns_corpus_forms.form_id column missing")
 
-    cursor.execute("PRAGMA table_info(corpus_conjugations)")
+    cursor.execute("PRAGMA table_info(verbs_corpus_forms)")
     conj_columns = [row[1] for row in cursor.fetchall()]
     if 'form_id' in conj_columns:
-        print("  ✅ corpus_conjugations.form_id column exists")
+        print("  ✅ verbs_corpus_forms.form_id column exists")
     else:
-        print("  ❌ corpus_conjugations.form_id column missing")
+        print("  ❌ verbs_corpus_forms.form_id column missing")
+
+    print("\n🔍 Validating Russian meaning columns:")
+    for table_name in ("nouns_details", "verbs_details"):
+        cursor.execute(f"PRAGMA table_info({table_name})")
+        columns = [row[1] for row in cursor.fetchall()]
+        if 'meaning_ru' in columns:
+            print(f"  ✅ {table_name}.meaning_ru column exists")
+        else:
+            print(f"  ❌ {table_name}.meaning_ru column missing")
+            all_present = False
 
     # Check data counts
     cursor.execute("SELECT COUNT(*) FROM nouns")
@@ -132,19 +161,30 @@ def validate_database(db_path: str = "../PaliPractice/PaliPractice/Data/pali.db"
     verb_count = cursor.fetchone()[0]
     print(f"✅ Verbs: {verb_count}")
 
-    cursor.execute("SELECT COUNT(*) FROM corpus_declensions")
+    cursor.execute("SELECT COUNT(*) FROM nouns_corpus_forms")
     declension_count = cursor.fetchone()[0]
-    print(f"✅ Corpus Declensions: {declension_count}")
+    print(f"✅ Noun Corpus Forms: {declension_count}")
 
-    cursor.execute("SELECT COUNT(*) FROM corpus_conjugations")
+    cursor.execute("SELECT COUNT(*) FROM verbs_corpus_forms")
     conjugation_count = cursor.fetchone()[0]
-    print(f"✅ Corpus Conjugations: {conjugation_count}")
+    print(f"✅ Verb Corpus Forms: {conjugation_count}")
+
+    cursor.execute("SELECT COUNT(*), COUNT(NULLIF(TRIM(COALESCE(meaning_ru, '')), '')) FROM nouns_details")
+    noun_details_count, noun_ru_count = cursor.fetchone()
+    cursor.execute("SELECT COUNT(*), COUNT(NULLIF(TRIM(COALESCE(meaning_ru, '')), '')) FROM verbs_details")
+    verb_details_count, verb_ru_count = cursor.fetchone()
+
+    print("\n✅ Russian Meaning Coverage:")
+    noun_coverage = noun_ru_count / noun_details_count * 100 if noun_details_count > 0 else 0
+    verb_coverage = verb_ru_count / verb_details_count * 100 if verb_details_count > 0 else 0
+    print(f"  nouns_details.meaning_ru: {noun_ru_count}/{noun_details_count} ({noun_coverage:.1f}%)")
+    print(f"  verbs_details.meaning_ru: {verb_ru_count}/{verb_details_count} ({verb_coverage:.1f}%)")
 
     # Parse form_ids and compute statistics
     print("\n📊 Parsing form_ids for statistics...")
 
     # Declension statistics
-    cursor.execute("SELECT form_id FROM corpus_declensions")
+    cursor.execute("SELECT form_id FROM nouns_corpus_forms")
     decl_form_ids = [row[0] for row in cursor.fetchall()]
 
     case_counts = Counter()
@@ -161,7 +201,7 @@ def validate_database(db_path: str = "../PaliPractice/PaliPractice/Data/pali.db"
             decl_complete += 1
 
     # Conjugation statistics
-    cursor.execute("SELECT form_id FROM corpus_conjugations")
+    cursor.execute("SELECT form_id FROM verbs_corpus_forms")
     conj_form_ids = [row[0] for row in cursor.fetchall()]
 
     tense_counts = Counter()
@@ -215,34 +255,48 @@ def validate_database(db_path: str = "../PaliPractice/PaliPractice/Data/pali.db"
 
     # Sample nouns with declension counts (using lemma_id to join)
     print("\n📝 Sample nouns with declensions:")
-    cursor.execute("SELECT lemma_id, lemma, meaning, gender, ebt_count FROM nouns ORDER BY ebt_count DESC LIMIT 5")
-    for lemma_id, lemma, meaning, gender, ebt_count in cursor.fetchall():
+    cursor.execute("""
+        SELECT n.lemma_id, n.lemma, d.meaning, d.meaning_ru, n.gender, n.ebt_count
+        FROM nouns n
+        JOIN nouns_details d ON d.id = n.id
+        ORDER BY n.ebt_count DESC
+        LIMIT 5
+    """)
+    for lemma_id, lemma, meaning, meaning_ru, gender, ebt_count in cursor.fetchall():
         # Count forms for this lemma_id by checking form_id range
         min_form_id = lemma_id * 10_000
         max_form_id = (lemma_id + 1) * 10_000
         cursor.execute(
-            "SELECT COUNT(*) FROM corpus_declensions WHERE form_id >= ? AND form_id < ?",
+            "SELECT COUNT(*) FROM nouns_corpus_forms WHERE form_id >= ? AND form_id < ?",
             (min_form_id, max_form_id)
         )
         form_count = cursor.fetchone()[0]
         gender_str = GENDER_NAMES.get(gender, '?')
         meaning_short = meaning[:40] + '...' if meaning and len(meaning) > 40 else meaning
-        print(f"  {lemma} ({gender_str}): {form_count} forms - {meaning_short}")
+        meaning_ru_short = meaning_ru[:30] + '...' if meaning_ru and len(meaning_ru) > 30 else meaning_ru
+        print(f"  {lemma} ({gender_str}): {form_count} forms - EN: {meaning_short} | RU: {meaning_ru_short}")
 
     # Sample verbs with conjugation counts
     print("\n📝 Sample verbs with conjugations:")
-    cursor.execute("SELECT lemma_id, lemma, meaning, pos, ebt_count FROM verbs ORDER BY ebt_count DESC LIMIT 5")
-    for lemma_id, lemma, meaning, pos, ebt_count in cursor.fetchall():
+    cursor.execute("""
+        SELECT v.lemma_id, v.lemma, d.meaning, d.meaning_ru, d.type, v.ebt_count
+        FROM verbs v
+        JOIN verbs_details d ON d.id = v.id
+        ORDER BY v.ebt_count DESC
+        LIMIT 5
+    """)
+    for lemma_id, lemma, meaning, meaning_ru, pos, ebt_count in cursor.fetchall():
         # Count forms for this lemma_id by checking form_id range
         min_form_id = lemma_id * 100_000
         max_form_id = (lemma_id + 1) * 100_000
         cursor.execute(
-            "SELECT COUNT(*) FROM corpus_conjugations WHERE form_id >= ? AND form_id < ?",
+            "SELECT COUNT(*) FROM verbs_corpus_forms WHERE form_id >= ? AND form_id < ?",
             (min_form_id, max_form_id)
         )
         form_count = cursor.fetchone()[0]
         meaning_short = meaning[:40] + '...' if meaning and len(meaning) > 40 else meaning
-        print(f"  {lemma} ({pos}): {form_count} forms - {meaning_short}")
+        meaning_ru_short = meaning_ru[:30] + '...' if meaning_ru and len(meaning_ru) > 30 else meaning_ru
+        print(f"  {lemma} ({pos}): {form_count} forms - EN: {meaning_short} | RU: {meaning_ru_short}")
 
     conn.close()
     return True

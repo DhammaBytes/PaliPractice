@@ -252,4 +252,34 @@ public class UserDataRepositoryTests
     }
 
     #endregion
+
+    #region Appearance Settings Tests
+
+    [Test]
+    public void InitializeDefaultsIfNeeded_SetsTranslationLanguageToInitialPreference()
+    {
+        _repository.InitializeDefaultsIfNeeded();
+
+        var value = _repository.GetSetting(
+            SettingsKeys.AppearanceTranslationLanguage,
+            -1);
+
+        value.Should().Be((int)TranslationLanguageResolver.GetInitialPreference());
+    }
+
+    [Test]
+    public void TranslationLanguageSetting_RoundTrips()
+    {
+        _repository.SetSetting(
+            SettingsKeys.AppearanceTranslationLanguage,
+            (int)TranslationLanguagePreference.Russian);
+
+        var value = _repository.GetSetting(
+            SettingsKeys.AppearanceTranslationLanguage,
+            SettingsKeys.DefaultAppearanceTranslationLanguage);
+
+        value.Should().Be((int)TranslationLanguagePreference.Russian);
+    }
+
+    #endregion
 }

@@ -25,6 +25,7 @@ public class PaliNounDetails
     public int LemmaId { get; set; }
     public string Variant { get; set; } = string.Empty;
     public string Meaning { get; set; } = string.Empty;
+    public string MeaningRu { get; set; } = string.Empty;
     public string Source1 { get; set; } = string.Empty;
     public string Sutta1 { get; set; } = string.Empty;
     public string Example1 { get; set; } = string.Empty;
@@ -57,6 +58,7 @@ public class PaliVerbDetails
     public string VerbType { get; set; } = string.Empty;
     public string Trans { get; set; } = string.Empty;
     public string Meaning { get; set; } = string.Empty;
+    public string MeaningRu { get; set; } = string.Empty;
     public string Source1 { get; set; } = string.Empty;
     public string Sutta1 { get; set; } = string.Empty;
     public string Example1 { get; set; } = string.Empty;
@@ -121,7 +123,7 @@ public class PaliDbLoader : IDisposable
         var details = new List<PaliNounDetails>();
 
         const string sql = """
-            SELECT id, lemma_id, word, meaning, source_1, sutta_1, example_1,
+            SELECT id, lemma_id, word, meaning, meaning_ru, source_1, sutta_1, example_1,
                    source_2, sutta_2, example_2
             FROM nouns_details
             """;
@@ -138,12 +140,13 @@ public class PaliDbLoader : IDisposable
                 LemmaId = reader.GetInt32(1),
                 Variant = reader.IsDBNull(2) ? "" : reader.GetString(2),
                 Meaning = reader.IsDBNull(3) ? "" : reader.GetString(3),
-                Source1 = reader.IsDBNull(4) ? "" : reader.GetString(4),
-                Sutta1 = reader.IsDBNull(5) ? "" : reader.GetString(5),
-                Example1 = reader.IsDBNull(6) ? "" : reader.GetString(6),
-                Source2 = reader.IsDBNull(7) ? "" : reader.GetString(7),
-                Sutta2 = reader.IsDBNull(8) ? "" : reader.GetString(8),
-                Example2 = reader.IsDBNull(9) ? "" : reader.GetString(9)
+                MeaningRu = reader.IsDBNull(4) ? "" : reader.GetString(4),
+                Source1 = reader.IsDBNull(5) ? "" : reader.GetString(5),
+                Sutta1 = reader.IsDBNull(6) ? "" : reader.GetString(6),
+                Example1 = reader.IsDBNull(7) ? "" : reader.GetString(7),
+                Source2 = reader.IsDBNull(8) ? "" : reader.GetString(8),
+                Sutta2 = reader.IsDBNull(9) ? "" : reader.GetString(9),
+                Example2 = reader.IsDBNull(10) ? "" : reader.GetString(10)
             });
         }
 
@@ -187,7 +190,7 @@ public class PaliDbLoader : IDisposable
         var details = new List<PaliVerbDetails>();
 
         const string sql = """
-            SELECT id, lemma_id, word, type, trans, meaning,
+            SELECT id, lemma_id, word, type, trans, meaning, meaning_ru,
                    source_1, sutta_1, example_1, source_2, sutta_2, example_2
             FROM verbs_details
             """;
@@ -206,12 +209,13 @@ public class PaliDbLoader : IDisposable
                 VerbType = reader.IsDBNull(3) ? "" : reader.GetString(3),
                 Trans = reader.IsDBNull(4) ? "" : reader.GetString(4),
                 Meaning = reader.IsDBNull(5) ? "" : reader.GetString(5),
-                Source1 = reader.IsDBNull(6) ? "" : reader.GetString(6),
-                Sutta1 = reader.IsDBNull(7) ? "" : reader.GetString(7),
-                Example1 = reader.IsDBNull(8) ? "" : reader.GetString(8),
-                Source2 = reader.IsDBNull(9) ? "" : reader.GetString(9),
-                Sutta2 = reader.IsDBNull(10) ? "" : reader.GetString(10),
-                Example2 = reader.IsDBNull(11) ? "" : reader.GetString(11)
+                MeaningRu = reader.IsDBNull(6) ? "" : reader.GetString(6),
+                Source1 = reader.IsDBNull(7) ? "" : reader.GetString(7),
+                Sutta1 = reader.IsDBNull(8) ? "" : reader.GetString(8),
+                Example1 = reader.IsDBNull(9) ? "" : reader.GetString(9),
+                Source2 = reader.IsDBNull(10) ? "" : reader.GetString(10),
+                Sutta2 = reader.IsDBNull(11) ? "" : reader.GetString(11),
+                Example2 = reader.IsDBNull(12) ? "" : reader.GetString(12)
             });
         }
 

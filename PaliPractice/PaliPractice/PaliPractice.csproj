@@ -13,8 +13,8 @@
         <!-- App Identifier -->
         <ApplicationId>org.dhammabytes.palipractice</ApplicationId>
         <!-- Versions -->
-        <ApplicationDisplayVersion>1.11</ApplicationDisplayVersion>
-        <ApplicationVersion>1110</ApplicationVersion>
+        <ApplicationDisplayVersion>1.2</ApplicationDisplayVersion>
+        <ApplicationVersion>1200</ApplicationVersion>
         <!-- Package Publisher -->
         <ApplicationPublisher>O=DhammaBytes</ApplicationPublisher>
         <!-- Package Description -->
@@ -83,6 +83,9 @@
       <Content Include="Data\pali.db">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
+      <Content Include="Data\pali.version.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
       <Content Remove="Assets\SVG_ICONS.md" />
     </ItemGroup>
 
@@ -90,6 +93,9 @@
     <ItemGroup Condition="$(TargetFramework.Contains('-ios'))">
       <BundleResource Include="Data\pali.db">
         <Link>Data/pali.db</Link>
+      </BundleResource>
+      <BundleResource Include="Data\pali.version.txt">
+        <Link>Data/pali.version.txt</Link>
       </BundleResource>
       <BundleResource Include="Platforms\iOS\LaunchScreen.storyboard" />
       <BundleResource Include="Platforms\iOS\PrivacyInfo.xcprivacy" LogicalName="PrivacyInfo.xcprivacy" />
@@ -99,6 +105,9 @@
     <ItemGroup Condition="$(TargetFramework.Contains('-android'))">
       <AndroidAsset Include="Data\pali.db">
         <Link>Data/pali.db</Link>
+      </AndroidAsset>
+      <AndroidAsset Include="Data\pali.version.txt">
+        <Link>Data/pali.version.txt</Link>
       </AndroidAsset>
     </ItemGroup>
 

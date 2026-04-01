@@ -15,6 +15,7 @@ public partial class SettingsViewModel : ObservableObject
     bool _isLoading = true;
 
     public static readonly string[] ThemeOptions = ["System", "Light", "Dark"];
+    public static readonly string[] TranslationLanguageOptions = ["English", "Russian"];
 
     public SettingsViewModel(
         INavigator navigator,
@@ -34,6 +35,10 @@ public partial class SettingsViewModel : ObservableObject
     void LoadSettings()
     {
         ThemeIndex = _userData.GetSetting(SettingsKeys.AppearanceTheme, SettingsKeys.DefaultAppearanceTheme);
+        var defaultTranslationLanguage = (int)TranslationLanguageResolver.GetInitialPreference();
+        TranslationLanguageIndex = (int)TranslationLanguageResolver.NormalizePreference(_userData.GetSetting(
+            SettingsKeys.AppearanceTranslationLanguage,
+            defaultTranslationLanguage));
     }
 
     #region Theme settings
@@ -43,6 +48,9 @@ public partial class SettingsViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     int _themeIndex;
+
+    [ObservableProperty]
+    int _translationLanguageIndex;
 
     partial void OnThemeIndexChanged(int value)
     {
@@ -64,6 +72,13 @@ public partial class SettingsViewModel : ObservableObject
                 root.RequestedTheme = ElementTheme.Default;
                 break;
         }
+    }
+
+    partial void OnTranslationLanguageIndexChanged(int value)
+    {
+        if (_isLoading) return;
+
+        _userData.SetSetting(SettingsKeys.AppearanceTranslationLanguage, value);
     }
 
     #endregion

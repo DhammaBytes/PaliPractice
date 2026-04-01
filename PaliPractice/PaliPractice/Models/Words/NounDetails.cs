@@ -29,7 +29,10 @@ public class NounDetails : IWordDetails
     public string Root { get; set; } = string.Empty;
 
     [Column("meaning")]
-    public string Meaning { get; set; } = string.Empty;
+    public string MeaningEn { get; set; } = string.Empty;
+
+    [Column("meaning_ru")]
+    public string MeaningRu { get; set; } = string.Empty;
 
     [Column("source_1")]
     public string Source1 { get; set; } = string.Empty;

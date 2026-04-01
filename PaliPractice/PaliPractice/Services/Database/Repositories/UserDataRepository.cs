@@ -73,6 +73,12 @@ public class UserDataRepository : IUserDataRepository
         SetSetting(SettingsKeys.VerbsVoices, SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultVoices));
         SetSetting(SettingsKeys.VerbsPatterns, SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultPatterns));
 
+        // Appearance settings
+        SetSetting(SettingsKeys.AppearanceTheme, SettingsKeys.DefaultAppearanceTheme);
+        SetSetting(
+            SettingsKeys.AppearanceTranslationLanguage,
+            (int)TranslationLanguageResolver.GetInitialPreference());
+
         // Mark as initialized
         SetSetting(SettingsInitializedKey, true);
         System.Diagnostics.Debug.WriteLine("[UserData] Default settings initialized");

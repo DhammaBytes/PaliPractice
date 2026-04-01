@@ -193,7 +193,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         FlashCard.DisplayWord(lemma.Primary, _provider.CurrentIndex, _provider.TotalCount, masteryLevel, root);
 
         // Initialize carousel with all word variants for this lemma
-        ExampleCarousel.Initialize(lemma.Words);
+        ExampleCarousel.Initialize(lemma.Words, GetEffectiveTranslationLanguageCode());
 
         var parameters = _provider.GetCurrentParameters();
         PrepareCardAnswer(lemma, parameters);
@@ -202,6 +202,16 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
         // Filter examples to avoid those containing answer forms
         ExampleCarousel.SetFormsToAvoid(GetAllInflectedForms());
+    }
+
+    protected string GetEffectiveTranslationLanguageCode()
+    {
+        var defaultTranslationLanguage = (int)TranslationLanguageResolver.GetInitialPreference();
+        var rawPreference = UserData.GetSetting(
+            SettingsKeys.AppearanceTranslationLanguage,
+            defaultTranslationLanguage);
+        var preference = TranslationLanguageResolver.NormalizePreference(rawPreference);
+        return TranslationLanguageResolver.ResolveEffectiveLanguageCode(preference);
     }
 
     void RevealAnswer()

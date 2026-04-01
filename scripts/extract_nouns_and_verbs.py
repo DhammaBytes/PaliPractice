@@ -14,7 +14,6 @@ This script uses modular components from the extraction/ package:
 
 import json
 import sqlite3
-import os
 import sys
 from pathlib import Path
 from typing import List, Dict, Any, Set
@@ -47,6 +46,8 @@ from extraction import (
     parse_verb_title,
     # Plural Deduplication
     PluralOnlyDeduplicator,
+    # Russian meanings
+    load_russian_meanings,
     # Translations
     TranslationAdjustments,
 )
@@ -66,7 +67,7 @@ from extraction.config import (
 from extraction.grammar import pos_to_gender
 
 from extraction.validate_inflections import InflectionValidator, PluralOnlyMatch
-from configs import DATABASE_VERSION
+from configs import compute_next_database_version, read_database_version, write_database_version
 
 sys.path.append('../dpd-db')
 
@@ -173,11 +174,12 @@ def populate_all_lemmas_to_registry():
 class NounVerbExtractor:
     """Extract nouns and verbs with grammatical categorization."""
 
-    def __init__(self, output_db_path: str = "../PaliPractice/PaliPractice/Data/pali.db",
-                 noun_limit: int = 1500, verb_limit: int = 750):
-        self.output_db_path = output_db_path
+    def __init__(self, output_db_path: str | Path = "../PaliPractice/PaliPractice/Data/pali.db",
+                 noun_limit: int = 1500, verb_limit: int = 750, database_version: int | None = None):
+        self.output_db_path = Path(output_db_path)
         self.noun_limit = noun_limit
         self.verb_limit = verb_limit
+        self.database_version = database_version
         self.db_session = get_db_session(Path("../dpd-db/dpd.db"))
 
         # Load all words found in the Pali Tipitaka corpus
@@ -187,6 +189,11 @@ class NounVerbExtractor:
 
         # Initialize plural-only deduplicator
         self.plural_dedup = PluralOnlyDeduplicator(self.db_session)
+
+        # Load Russian meanings from the DPD fork (fail fast on any issue)
+        print("Loading Russian meanings from fork TSV...")
+        self.russian_meanings = load_russian_meanings()
+        print(f"Loaded {len(self.russian_meanings)} Russian meanings")
 
         # Initialize translation adjustments
         self.translations = TranslationAdjustments()
@@ -228,8 +235,8 @@ class NounVerbExtractor:
     def create_schema(self):
         """Create a normalized database schema for nouns and verbs."""
         # Delete old database if it exists
-        if os.path.exists(self.output_db_path):
-            os.remove(self.output_db_path)
+        if self.output_db_path.exists():
+            self.output_db_path.unlink()
             print(f"Deleted old database: {self.output_db_path}")
 
         conn = sqlite3.connect(self.output_db_path)
@@ -258,6 +265,7 @@ class NounVerbExtractor:
                 word TEXT NOT NULL DEFAULT '',
                 root TEXT DEFAULT '',
                 meaning TEXT,
+                meaning_ru TEXT DEFAULT '',
                 source_1 TEXT DEFAULT '',
                 sutta_1 TEXT DEFAULT '',
                 example_1 TEXT DEFAULT '',
@@ -292,6 +300,7 @@ class NounVerbExtractor:
                 type TEXT DEFAULT '',
                 trans TEXT DEFAULT '',
                 meaning TEXT,
+                meaning_ru TEXT DEFAULT '',
                 source_1 TEXT DEFAULT '',
                 sutta_1 TEXT DEFAULT '',
                 example_1 TEXT DEFAULT '',
@@ -617,7 +626,11 @@ class NounVerbExtractor:
 
     def extract_and_save(self):
         """Main extraction process."""
+        if self.database_version is None:
+            raise ValueError("database_version must be provided before extraction")
+
         print("Starting noun and verb extraction...")
+        print(f"Using database version: {self.database_version}")
 
         # Load lemma registry
         registry = load_registry()
@@ -663,13 +676,15 @@ class NounVerbExtractor:
 
             # Apply custom translation adjustments
             meaning = self.translations.apply(word.id, word.lemma_1, word.meaning_1 or '')
+            meaning_ru = self.russian_meanings.get(word.id, '')
 
             cursor.execute("""
                 INSERT INTO nouns_details (
-                    id, lemma_id, word, root, meaning, source_1, sutta_1, example_1, source_2, sutta_2, example_2
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    id, lemma_id, word, root, meaning, meaning_ru,
+                    source_1, sutta_1, example_1, source_2, sutta_2, example_2
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
-                word.id, lemma_id, word_variant, word.family_root or '', meaning,
+                word.id, lemma_id, word_variant, word.family_root or '', meaning, meaning_ru,
                 word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
                 word.source_2 or '', word.sutta_2 or '', word.example_2 or ''
             ))
@@ -781,14 +796,15 @@ class NounVerbExtractor:
 
             # Apply custom translation adjustments
             meaning = self.translations.apply(word.id, word.lemma_1, word.meaning_1 or '')
+            meaning_ru = self.russian_meanings.get(word.id, '')
 
             cursor.execute("""
                 INSERT INTO verbs_details (
-                    id, lemma_id, word, root, type, trans, meaning,
+                    id, lemma_id, word, root, type, trans, meaning, meaning_ru,
                     source_1, sutta_1, example_1, source_2, sutta_2, example_2
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
-                word.id, lemma_id, word_variant, word.family_root or '', word.verb or '', word.trans or '', meaning,
+                word.id, lemma_id, word_variant, word.family_root or '', word.verb or '', word.trans or '', meaning, meaning_ru,
                 word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
                 word.source_2 or '', word.sutta_2 or '', word.example_2 or ''
             ))
@@ -844,7 +860,7 @@ class NounVerbExtractor:
             cursor.execute("INSERT INTO verbs_nonreflexive (lemma_id) VALUES (?)", (lemma_id,))
 
         # Set database version for app cache invalidation
-        cursor.execute(f"PRAGMA user_version = {DATABASE_VERSION}")
+        cursor.execute(f"PRAGMA user_version = {self.database_version}")
 
         conn.commit()
         conn.close()
@@ -1003,5 +1019,28 @@ Examples:
     if args.populate_registry:
         populate_all_lemmas_to_registry()
     else:
-        extractor = NounVerbExtractor(noun_limit=args.nouns, verb_limit=args.verbs)
-        extractor.extract_and_save()
+        output_db_path = Path("../PaliPractice/PaliPractice/Data/pali.db")
+        temp_output_db_path = output_db_path.with_suffix(output_db_path.suffix + ".tmp")
+        previous_version = read_database_version()
+        next_version = compute_next_database_version(previous_version)
+
+        if temp_output_db_path.exists():
+            temp_output_db_path.unlink()
+
+        extractor = NounVerbExtractor(
+            output_db_path=temp_output_db_path,
+            noun_limit=args.nouns,
+            verb_limit=args.verbs,
+            database_version=next_version,
+        )
+
+        try:
+            extractor.extract_and_save()
+            write_database_version(next_version)
+            temp_output_db_path.replace(output_db_path)
+            print(f"\nPromoted database build {next_version} to {output_db_path}")
+        except Exception:
+            if temp_output_db_path.exists():
+                temp_output_db_path.unlink()
+            write_database_version(previous_version)
+            raise

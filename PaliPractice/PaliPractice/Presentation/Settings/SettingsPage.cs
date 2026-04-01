@@ -40,7 +40,14 @@ public sealed partial class SettingsPage : Page
                                                 SettingsViewModel.ThemeOptions,
                                                 cb => cb.SetBinding(
                                                     ComboBox.SelectedIndexProperty,
-                                                    Bind.TwoWayPath<SettingsViewModel, int>(v => v.ThemeIndex)))
+                                                    Bind.TwoWayPath<SettingsViewModel, int>(v => v.ThemeIndex))),
+                                            SettingsRow.BuildDropdownWithBitmapIcon(
+                                                "Translation language",
+                                                SettingsIcons.Appearance,
+                                                SettingsViewModel.TranslationLanguageOptions,
+                                                cb => cb.SetBinding(
+                                                    ComboBox.SelectedIndexProperty,
+                                                    Bind.TwoWayPath<SettingsViewModel, int>(v => v.TranslationLanguageIndex)))
                                         ),
 
                                         // Practice settings sections

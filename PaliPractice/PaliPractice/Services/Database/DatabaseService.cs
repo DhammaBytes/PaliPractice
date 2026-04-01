@@ -2,6 +2,7 @@ using PaliPractice.Services.Database.Providers;
 using PaliPractice.Services.Database.Repositories;
 using PaliPractice.Services.UserData.Entities;
 using SQLite;
+using System.Globalization;
 using IOPath = System.IO.Path;
 using IOFile = System.IO.File;
 
@@ -59,11 +60,7 @@ public interface IDatabaseService
 /// </summary>
 public class DatabaseService : IDatabaseService
 {
-    /// <summary>
-    /// Bundle version number. Increment when pali.db schema or data changes.
-    /// Used to determine if cached database needs replacement.
-    /// </summary>
-    public const int BundleVersion = 1;
+    const string BundledPaliVersionPath = "Data/pali.version.txt";
 
     public INounRepository Nouns { get; }
     public IVerbRepository Verbs { get; }
@@ -81,6 +78,7 @@ public class DatabaseService : IDatabaseService
 
     readonly List<DatabaseProvisionedEvent> _provisionLog = [];
     readonly IBundledFileProvider _bundledFileProvider;
+    int? _bundledPaliVersion;
 
     public DatabaseService(IBundledFileProvider bundledFileProvider)
     {
@@ -268,6 +266,7 @@ public class DatabaseService : IDatabaseService
         if (!IOFile.Exists(targetPath))
             return true;
 
+        int previousVersion;
         try
         {
             using var connection = new SQLiteConnection(targetPath, SQLiteOpenFlags.ReadOnly);
@@ -283,8 +282,7 @@ public class DatabaseService : IDatabaseService
             }
 
             // Check if a bundle version is newer
-            var previousVersion = connection.ExecuteScalar<int>("PRAGMA user_version;");
-            return previousVersion < BundleVersion;
+            previousVersion = connection.ExecuteScalar<int>("PRAGMA user_version;");
         }
         catch (Exception ex)
         {
@@ -292,7 +290,33 @@ public class DatabaseService : IDatabaseService
             ReportProvision(new DatabaseProvisionedEvent(file, DatabaseProvisioningStatus.CorruptionDetected, DateTimeOffset.UtcNow, nameof(NeedsCopy), ex));
             return true;
         }
+
+        try
+        {
+            return previousVersion < GetBundledPaliVersion();
+        }
+        catch (Exception ex)
+        {
+            ReportProvision(new DatabaseProvisionedEvent(file, DatabaseProvisioningStatus.Failed, DateTimeOffset.UtcNow, nameof(GetBundledPaliVersion), ex));
+            return true;
+        }
 #endif
+    }
+
+    int GetBundledPaliVersion()
+    {
+        if (_bundledPaliVersion.HasValue)
+            return _bundledPaliVersion.Value;
+
+        using var stream = _bundledFileProvider.OpenReadStreamAsync(BundledPaliVersionPath).GetAwaiter().GetResult();
+        using var reader = new StreamReader(stream);
+        var rawVersion = reader.ReadToEnd().Trim();
+
+        if (!int.TryParse(rawVersion, NumberStyles.None, CultureInfo.InvariantCulture, out var version) || version <= 0)
+            throw new InvalidDataException($"Invalid bundled database version '{rawVersion}' in {BundledPaliVersionPath}");
+
+        _bundledPaliVersion = version;
+        return version;
     }
 
     static void InitializeUserDataSchema(SQLiteConnection connection)

@@ -592,6 +592,15 @@ public class NounDataIntegrityTests
             "all noun details should have a non-empty meaning (filtered during extraction)");
     }
 
+    [Test]
+    public void SomeNounDetails_HaveRussianMeaning()
+    {
+        _paliNounDetails!
+            .Count(d => !string.IsNullOrWhiteSpace(d.MeaningRu))
+            .Should().BeGreaterThan(0,
+                "Russian meanings should be imported into nouns_details.meaning_ru");
+    }
+
     #endregion
 
     #region Irregular Form Tests

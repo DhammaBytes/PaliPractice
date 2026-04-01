@@ -42,6 +42,7 @@ public static class SettingsKeys
 
     /// <summary>Theme selection: 0=System, 1=Light, 2=Dark</summary>
     public const string AppearanceTheme = "appearance.theme";
+    public const string AppearanceTranslationLanguage = "appearance.translation_language";
 
     // ═══════════════════════════════════════════
     // Default Values (as typed arrays)
@@ -54,6 +55,7 @@ public static class SettingsKeys
 
     // Appearance defaults
     public const int DefaultAppearanceTheme = 0;  // System
+    public const int DefaultAppearanceTranslationLanguage = (int)TranslationLanguagePreference.English;
 
     // Nouns: Beginner cases
     public static readonly Case[] NounsDefaultCases =

@@ -85,3 +85,9 @@ TIPITAKA_WORDLIST_FILES = [
     "sya_wordlist.json",
     "sc_wordlist.json",
 ]
+
+# Russian meaning import (from the DPD fork)
+RUSSIAN_MEANINGS_URL = (
+    "https://raw.githubusercontent.com/DhammaBytes/dpd-db-sbs/sbs-ru/db/backup_tsv/russian.tsv"
+)
+RUSSIAN_MEANINGS_TIMEOUT_SECONDS = 30

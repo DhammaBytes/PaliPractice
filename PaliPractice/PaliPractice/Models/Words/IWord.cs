@@ -53,9 +53,29 @@ public interface IWordDetails
     string Root { get; }
 
     /// <summary>
-    /// Primary meaning/translation. Never null - extraction filters for words with meanings.
+    /// English meaning/translation. Never null - extraction filters for words with meanings.
     /// </summary>
-    string Meaning { get; }
+    string MeaningEn { get; }
+
+    /// <summary>
+    /// Russian meaning/translation when available, otherwise empty.
+    /// </summary>
+    string MeaningRu { get; }
+
+    /// <summary>
+    /// Gets the best available meaning for a language code.
+    /// Falls back to English for unknown languages or missing translations.
+    /// </summary>
+    string GetMeaning(string languageCode)
+    {
+        if (!string.IsNullOrWhiteSpace(languageCode) &&
+            languageCode.StartsWith("ru", StringComparison.OrdinalIgnoreCase) &&
+            !string.IsNullOrWhiteSpace(MeaningRu))
+            return MeaningRu;
+
+        return MeaningEn;
+    }
+
     string Source1 { get; }
     string Sutta1 { get; }
     string Example1 { get; }

@@ -7,10 +7,17 @@ public static class TranslationLanguageResolver
     public const string EnglishLanguageCode = "en";
     public const string RussianLanguageCode = "ru";
 
-    public static TranslationLanguagePreference GetInitialPreference(CultureInfo? culture = null)
+    public static string ResolveLanguageCode(CultureInfo? culture = null)
     {
         var effectiveCulture = culture ?? CultureInfo.CurrentUICulture;
         return string.Equals(effectiveCulture.TwoLetterISOLanguageName, RussianLanguageCode, StringComparison.OrdinalIgnoreCase)
+            ? RussianLanguageCode
+            : EnglishLanguageCode;
+    }
+
+    public static TranslationLanguagePreference GetInitialPreference(CultureInfo? culture = null)
+    {
+        return string.Equals(ResolveLanguageCode(culture), RussianLanguageCode, StringComparison.OrdinalIgnoreCase)
             ? TranslationLanguagePreference.Russian
             : TranslationLanguagePreference.English;
     }

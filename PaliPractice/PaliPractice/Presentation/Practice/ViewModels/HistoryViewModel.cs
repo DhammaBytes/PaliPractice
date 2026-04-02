@@ -1,5 +1,6 @@
 using PaliPractice.Services.Grammar;
 using PaliPractice.Services.UserData.Entities;
+using PaliPractice.Localization;
 
 namespace PaliPractice.Presentation.Practice.ViewModels;
 
@@ -49,8 +50,8 @@ public class HistoryViewModel : ObservableObject
     PracticeType CurrentPracticeType { get; }
 
     public string Title => CurrentPracticeType == PracticeType.Declension
-        ? "Declension History"
-        : "Conjugation History";
+        ? AppText.Get("History.Title.Declension")
+        : AppText.Get("History.Title.Conjugation");
 
     public List<HistorySection> Sections { get; }
 
@@ -91,13 +92,7 @@ public class HistoryViewModel : ObservableObject
     /// </summary>
     static string FormatDateHeader(DateTime date, DateTime today, DateTime yesterday)
     {
-        if (date == today)
-            return "Today";
-        if (date == yesterday)
-            return "Yesterday";
-
-        // Format as "5 Jan" (day + abbreviated month)
-        return date.ToString("d MMM");
+        return AppTextFormatter.FormatHistoryHeader(date, today, yesterday);
     }
 
 #if DEBUG

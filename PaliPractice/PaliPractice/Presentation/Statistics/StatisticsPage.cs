@@ -1,5 +1,6 @@
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Statistics.ViewModels;
+using PaliPractice.Localization;
 using PaliPractice.Services.UserData.Entities;
 using PaliPractice.Services.UserData.Statistics;
 using PaliPractice.Themes;
@@ -36,7 +37,7 @@ public sealed partial class StatisticsPage : Page
                     .RowDefinitions("Auto,*")
                     .Children(
                         // Row 0: Title bar
-                        AppTitleBar.Build<StatisticsViewModel>("Statistics", v => v.GoBackCommand),
+                        AppTitleBar.Build<StatisticsViewModel>(AppText.Get("Statistics.Title"), v => v.GoBackCommand),
 
                         // Row 1: Content
                         new ScrollViewer()
@@ -54,10 +55,10 @@ public sealed partial class StatisticsPage : Page
                                         BuildGeneralSection(vm),
 
                                         // === Nouns Section ===
-                                        BuildPracticeTypeSection("Nouns", vm, isNouns: true),
+                                        BuildPracticeTypeSection(AppText.Get("Statistics.Section.Nouns"), vm, isNouns: true),
 
                                         // === Verbs Section ===
-                                        BuildPracticeTypeSection("Verbs", vm, isNouns: false)
+                                        BuildPracticeTypeSection(AppText.Get("Statistics.Section.Verbs"), vm, isNouns: false)
                                     )
                             )
                     )
@@ -122,7 +123,7 @@ public sealed partial class StatisticsPage : Page
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Spacing(8)
             .Children(
-                BuildSectionHeader("Overview"),
+                BuildSectionHeader(AppText.Get("Statistics.Section.Overview")),
                 new SquircleBorder()
                     .HorizontalAlignment(HorizontalAlignment.Stretch)
                     .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
@@ -137,10 +138,10 @@ public sealed partial class StatisticsPage : Page
                                     .HorizontalAlignment(HorizontalAlignment.Stretch)
                                     .ColumnDefinitions("*,*")
                                     .Children(
-                                        BuildStreakCard(BadgeIcons.CaseAccusative, "Practice Streak",
-                                            tb => tb.Text(() => vm.General.CurrentPracticeStreak, v => $"{v} {(v == 1 ? "day" : "days")}"), 0),
-                                        BuildStreakCard(BadgeIcons.CaseNominative, "Total",
-                                            tb => tb.Text(() => vm.General.TotalPracticeDays, v => $"{v} {(v == 1 ? "day" : "days")}"), 1)
+                                        BuildStreakCard(BadgeIcons.CaseAccusative, AppText.Get("Statistics.Streak.Current"),
+                                            tb => tb.Text(() => vm.General.CurrentPracticeStreak, value => AppTextFormatter.FormatDayCount(value)), 0),
+                                        BuildStreakCard(BadgeIcons.CaseNominative, AppText.Get("Statistics.Streak.Total"),
+                                            tb => tb.Text(() => vm.General.TotalPracticeDays, value => AppTextFormatter.FormatDayCount(value)), 1)
                                     ),
                                 // Calendar heatmap
                                 new StackPanel()
@@ -149,7 +150,7 @@ public sealed partial class StatisticsPage : Page
                                         new Grid()
                                             .ColumnDefinitions("*,Auto")
                                             .Children(
-                                                RegularText().Text("Last 30 days").FontSize(12)
+                                                RegularText().Text(AppText.Get("Statistics.Streak.Last30Days")).FontSize(12)
                                                     .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush")),
                                                 BuildCalendarLegend().Grid(column: 1)
                                             ),
@@ -184,15 +185,15 @@ public sealed partial class StatisticsPage : Page
                                 new Grid()
                                     .ColumnDefinitions("*,*,*")
                                     .Children(
-                                        BuildStatItem("All-time",
+                                        BuildStatItem(AppText.Get("Statistics.Label.AllTime"),
                                             isNouns
                                                 ? (tb => tb.Text(() => vm.NounStats.TotalPracticed, v => $"{v}"))
                                                 : (tb => tb.Text(() => vm.VerbStats.TotalPracticed, v => $"{v}")), 0),
-                                        BuildStatItem("Last 7 days",
+                                        BuildStatItem(AppText.Get("Statistics.Label.Last7Days"),
                                             isNouns
                                                 ? (tb => tb.Text(() => vm.NounStats.PeriodStats.Last7Days, v => $"{v}"))
                                                 : (tb => tb.Text(() => vm.VerbStats.PeriodStats.Last7Days, v => $"{v}")), 1),
-                                        BuildStatItem("To repeat",
+                                        BuildStatItem(AppText.Get("Statistics.Label.ToRepeat"),
                                             isNouns
                                                 ? (tb => tb.Text(() => vm.NounStats.DueForReview, v => $"{v}"))
                                                 : (tb => tb.Text(() => vm.VerbStats.DueForReview, v => $"{v}")), 2)
@@ -201,7 +202,7 @@ public sealed partial class StatisticsPage : Page
                                 new StackPanel()
                                     .Spacing(12)
                                     .Children(
-                                        RegularText().Text("Mastery Distribution").FontSize(13)
+                                        RegularText().Text(AppText.Get("Statistics.Label.MasteryDistribution")).FontSize(13)
                                             .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush")),
                                         distributionBar,
                                         BuildDistributionLegend()
@@ -215,7 +216,7 @@ public sealed partial class StatisticsPage : Page
                                             .Grid(column: 0)
                                             .Spacing(8)
                                             .Children(
-                                                RegularText().Text("Strongest").FontSize(13)
+                                                RegularText().Text(AppText.Get("Statistics.Label.Strongest")).FontSize(13)
                                                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
                                                     .Foreground(StrongBrush),
                                                 strongestPanel
@@ -224,7 +225,7 @@ public sealed partial class StatisticsPage : Page
                                             .Grid(column: 1)
                                             .Spacing(8)
                                             .Children(
-                                                RegularText().Text("Need Work").FontSize(13)
+                                                RegularText().Text(AppText.Get("Statistics.Label.NeedWork")).FontSize(13)
                                                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
                                                     .Foreground(StrugglingBrush),
                                                 weakestPanel
@@ -389,10 +390,10 @@ public sealed partial class StatisticsPage : Page
             .Spacing(4)
             .VerticalAlignment(VerticalAlignment.Center)
             .Children(
-                RegularText().Text("Less").FontSize(10)
+                RegularText().Text(AppText.Get("Statistics.Legend.Less")).FontSize(10)
                     .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush")),
                 CreateLegendCell(0), CreateLegendCell(1), CreateLegendCell(2), CreateLegendCell(3),
-                RegularText().Text("More").FontSize(10)
+                RegularText().Text(AppText.Get("Statistics.Legend.More")).FontSize(10)
                     .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
             );
     }
@@ -432,7 +433,7 @@ public sealed partial class StatisticsPage : Page
                 if (s is Border b && b.DataContext is CalendarDayDto day)
                 {
                     var date = DailyProgress.FromDateKey(day.Date);
-                    ToolTipService.SetToolTip(b, $"{date:ddd, MMM d}\nNouns: {day.DeclensionsCount}\nVerbs: {day.ConjugationsCount}");
+                    ToolTipService.SetToolTip(b, AppTextFormatter.FormatCalendarTooltip(date, day.DeclensionsCount, day.ConjugationsCount));
                 }
             };
 
@@ -445,10 +446,10 @@ public sealed partial class StatisticsPage : Page
         return new Grid()
             .ColumnDefinitions("*,*,*,*")
             .Children(
-                BuildLegendItem("Struggling", StrugglingBrush, 0),
-                BuildLegendItem("Learning", LearningBrush, 1),
-                BuildLegendItem("Strong", StrongBrush, 2),
-                BuildLegendItem("Mastered", MasteredBrush, 3)
+                BuildLegendItem(AppText.Get("Statistics.Legend.Struggling"), StrugglingBrush, 0),
+                BuildLegendItem(AppText.Get("Statistics.Legend.Learning"), LearningBrush, 1),
+                BuildLegendItem(AppText.Get("Statistics.Legend.Strong"), StrongBrush, 2),
+                BuildLegendItem(AppText.Get("Statistics.Legend.Mastered"), MasteredBrush, 3)
             );
     }
 

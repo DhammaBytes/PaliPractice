@@ -19,6 +19,7 @@
         <ApplicationPublisher>O=DhammaBytes</ApplicationPublisher>
         <!-- Package Description -->
         <Description>Pāli Practice - Learn noun declensions and verb conjugations</Description>
+        <DefaultLanguage>en</DefaultLanguage>
 
         <!--
           UnoFeatures let's you quickly add and manage implicit package references based on the features you want to use.

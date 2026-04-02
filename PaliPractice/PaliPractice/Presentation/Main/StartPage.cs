@@ -1,5 +1,6 @@
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Main.ViewModels;
+using PaliPractice.Localization;
 using PaliPractice.Themes;
 using PaliPractice.Themes.Icons;
 using static PaliPractice.Presentation.Common.Text.TextHelpers;
@@ -63,7 +64,7 @@ public sealed partial class StartPage : Page
                                                     .Children(
                                                         _lotusTop,
                                                         PaliText()
-                                                            .Text("Pāli Practice")
+                                                            .Text(AppText.Get("App.Name"))
                                                             .FontSize(48)
                                                             .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
                                                             .HorizontalAlignment(HorizontalAlignment.Center)
@@ -78,17 +79,23 @@ public sealed partial class StartPage : Page
                                                         // Declension Practice Button
                                                         // Command must be set at call site for source generator to see the binding
                                                         StartPrimaryButtonShadow(
-                                                            BuildPracticeButton(MenuIcons.Nouns, "Nouns & Cases", "Declension Practice")
+                                                            BuildPracticeButton(
+                                                                MenuIcons.Nouns,
+                                                                AppText.Get("Start.Nouns.Title"),
+                                                                AppText.Get("Start.Nouns.Subtitle"))
                                                                 .Command(() => vm.GoToDeclensionCommand)),
 
                                                         // Conjugation Practice Button
                                                         StartPrimaryButtonShadow(
-                                                            BuildPracticeButton(MenuIcons.Verbs, "Verbs & Tenses", "Conjugation Practice")
+                                                            BuildPracticeButton(
+                                                                MenuIcons.Verbs,
+                                                                AppText.Get("Start.Verbs.Title"),
+                                                                AppText.Get("Start.Verbs.Subtitle"))
                                                                 .Command(() => vm.GoToConjugationCommand)),
 
                                                         // Settings Button
                                                         StartSecondaryButtonShadow(
-                                                            BuildSecondaryButton(MenuIcons.Settings, "Settings", iconHeight: 30)
+                                                            BuildSecondaryButton(MenuIcons.Settings, AppText.Get("Settings.Title"), iconHeight: 30)
                                                                 .Command(() => vm.GoToSettingsCommand)),
 
                                                         // Stats and Help row (side by side)
@@ -97,13 +104,18 @@ public sealed partial class StartPage : Page
                                                             .Children(
                                                                 // Stats Button
                                                                 StartSecondaryButtonShadow(
-                                                                    BuildSecondaryButton(MenuIcons.Stats, "Stats", iconHeight: 27, centerContent: true, iconVerticalOffset: -2)
+                                                                    BuildSecondaryButton(
+                                                                            MenuIcons.Stats,
+                                                                            AppText.Get("Statistics.ButtonTitle"),
+                                                                            iconHeight: 27,
+                                                                            centerContent: true,
+                                                                            iconVerticalOffset: -2)
                                                                         .Command(() => vm.GoToStatisticsCommand))
                                                                     .Grid(column: 0),
 
                                                                 // Help Button
                                                                 StartSecondaryButtonShadow(
-                                                                    BuildSecondaryButton(MenuIcons.Help, "Help", iconHeight: 27, centerContent: true)
+                                                                    BuildSecondaryButton(MenuIcons.Help, AppText.Get("Help.Title"), iconHeight: 27, centerContent: true)
                                                                         .Command(() => vm.GoToHelpCommand))
                                                                     .Grid(column: 2)
                                                             )

@@ -1,5 +1,6 @@
 using PaliPractice.Models.Inflection;
 using PaliPractice.Models.Words;
+using PaliPractice.Localization;
 using PaliPractice.Presentation.Practice.Common;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Presentation.Settings.ViewModels;
@@ -101,14 +102,8 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
 
     void UpdateBadges(Conjugation c)
     {
-        // Person badge (always full - already short: 1st, 2nd, 3rd)
-        PersonLabel = c.Person switch
-        {
-            Person.First => "1st",
-            Person.Second => "2nd",
-            Person.Third => "3rd",
-            _ => c.Person.ToString()
-        };
+        // Person badge (always full - already short in both languages)
+        PersonLabel = GrammarText.GetPerson(c.Person);
         PersonColor = BadgePresentation.GetChipColor(c.Person);
         PersonIconPath = BadgeIcons.GetIconPath(c.Person);
 
@@ -120,7 +115,7 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
         NumberIconPath = BadgeIcons.GetIconPath(c.Number);
 
         // Tense badge (always full - never abbreviated)
-        TenseLabel = c.Tense.ToString();
+        TenseLabel = GrammarText.GetTense(c.Tense);
         TenseColor = BadgePresentation.GetChipColor(c.Tense);
         TenseIconPath = BadgeIcons.GetIconPath(c.Tense);
 
@@ -156,15 +151,15 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
 
     void SetBadgesFallback()
     {
-        PersonLabel = "3rd";
+        PersonLabel = GrammarText.GetPerson(Person.Third);
         PersonColor = BadgePresentation.GetChipColor(Person.Third);
         PersonIconPath = BadgeIcons.GetIconPath(Person.Third);
 
-        NumberLabel = "Singular";
+        NumberLabel = GrammarText.GetNumber(Number.Singular);
         NumberColor = BadgePresentation.GetChipColor(Number.Singular);
         NumberIconPath = BadgeIcons.GetIconPath(Number.Singular);
 
-        TenseLabel = "Present";
+        TenseLabel = GrammarText.GetTense(Tense.Present);
         TenseColor = BadgePresentation.GetChipColor(Tense.Present);
         TenseIconPath = BadgeIcons.GetIconPath(Tense.Present);
 

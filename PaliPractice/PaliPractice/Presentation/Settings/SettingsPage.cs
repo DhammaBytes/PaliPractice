@@ -2,6 +2,7 @@ using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Settings.Controls;
 using PaliPractice.Presentation.Settings.ViewModels;
+using PaliPractice.Localization;
 using PaliPractice.Themes;
 using PaliPractice.Themes.Icons;
 using static PaliPractice.Presentation.Common.Text.TextHelpers;
@@ -21,7 +22,7 @@ public sealed partial class SettingsPage : Page
                     .RowDefinitions("Auto,*")
                     .Children(
                         // Row 0: Title bar
-                        AppTitleBar.Build<SettingsViewModel>("Settings", v => v.GoBackCommand),
+                        AppTitleBar.Build<SettingsViewModel>(AppText.Get("Settings.Title"), v => v.GoBackCommand),
 
                         // Row 1: Content
                         new ScrollViewer()
@@ -33,16 +34,16 @@ public sealed partial class SettingsPage : Page
                                     .MaxWidth(LayoutConstants.ContentMaxWidth)
                                     .Children(
                                         // General section
-                                        SettingsSection.Build("General",
+                                        SettingsSection.Build(AppText.Get("Settings.Section.General"),
                                             SettingsRow.BuildDropdownWithBitmapIcon(
-                                                "Theme",
+                                                AppText.Get("Settings.Row.Theme"),
                                                 SettingsIcons.Appearance,
                                                 SettingsViewModel.ThemeOptions,
                                                 cb => cb.SetBinding(
                                                     ComboBox.SelectedIndexProperty,
                                                     Bind.TwoWayPath<SettingsViewModel, int>(v => v.ThemeIndex))),
                                             SettingsRow.BuildDropdownWithBitmapIcon(
-                                                "Translation language",
+                                                AppText.Get("Settings.Row.Language"),
                                                 SettingsIcons.Appearance,
                                                 SettingsViewModel.TranslationLanguageOptions,
                                                 cb => cb.SetBinding(
@@ -51,29 +52,29 @@ public sealed partial class SettingsPage : Page
                                         ),
 
                                         // Practice settings sections
-                                        SettingsSection.Build("Practice",
+                                        SettingsSection.Build(AppText.Get("Settings.Section.Practice"),
                                             SettingsRow.BuildNavigationWithIcon<SettingsViewModel>(
-                                                "Noun declensions",
+                                                AppText.Get("Settings.Navigation.NounDeclensions"),
                                                 SettingsIcons.Noun,
                                                 v => v.GoToDeclensionSettingsCommand),
                                             SettingsRow.BuildNavigationWithIcon<SettingsViewModel>(
-                                                "Verb conjugations",
+                                                AppText.Get("Settings.Navigation.VerbConjugations"),
                                                 SettingsIcons.Verb,
                                                 v => v.GoToConjugationSettingsCommand)
                                         ),
 
                                         // About & Support section
-                                        SettingsSection.Build("About & Support",
+                                        SettingsSection.Build(AppText.Get("Settings.Section.AboutSupport"),
                                             SettingsRow.BuildNavigationWithIcon<SettingsViewModel>(
-                                                "About Pāli Practice",
+                                                AppText.Get("Settings.Navigation.AboutApp"),
                                                 SettingsIcons.About,
                                                 v => v.GoToAboutCommand),
                                             SettingsRow.BuildActionWithIcon<SettingsViewModel>(
-                                                "Contact us",
+                                                AppText.Get("Settings.Action.ContactUs"),
                                                 SettingsIcons.Contact,
                                                 v => v.ContactUsCommand),
                                             SettingsRow.BuildActionWithIcon<SettingsViewModel>(
-                                                "Write a review",
+                                                AppText.Get("Settings.Action.WriteReview"),
                                                 SettingsIcons.Rate,
                                                 v => v.RateAppCommand)
                                                 .Visibility(Visibility.Collapsed)
@@ -82,7 +83,7 @@ public sealed partial class SettingsPage : Page
 
                                         // Review explanation (visible until user opens store page)
                                         RegularText()
-                                            .Text("If you have a minute, please leave a review for Pāli Practice. Even one sentence is valuable feedback and it helps other Pāli learners discover the app on the store.")
+                                            .Text(AppText.Get("Settings.ReviewExplanation"))
                                             .FontSize(13)
                                             .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
                                             .TextWrapping(TextWrapping.Wrap)

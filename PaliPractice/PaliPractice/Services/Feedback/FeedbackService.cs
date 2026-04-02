@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using PaliPractice.Localization;
 using PaliPractice.Services.Feedback.Providers;
 using Windows.ApplicationModel.Email;
 
@@ -54,33 +55,33 @@ public sealed class FeedbackService : IFeedbackService
         sb.AppendLine();
         sb.AppendLine();
         sb.AppendLine("---");
-        sb.AppendLine("Diagnostic information (please keep for support):");
+        sb.AppendLine(AppText.Get("Feedback.DiagnosticsHeader"));
         sb.AppendLine();
 
         try
         {
             var appVersion = GetAppVersion();
             if (appVersion != null)
-                sb.AppendLine($"App: {appVersion}");
+                sb.AppendLine($"{AppText.Get("Feedback.Label.App")}: {appVersion}");
 
             var deviceLine = BuildDeviceLine();
             if (deviceLine != null)
-                sb.AppendLine($"Device: {deviceLine}");
+                sb.AppendLine($"{AppText.Get("Feedback.Label.Device")}: {deviceLine}");
 
             if (_deviceInfo.OsVersion != null)
-                sb.AppendLine($"OS: {_deviceInfo.OsVersion}");
+                sb.AppendLine($"{AppText.Get("Feedback.Label.Os")}: {_deviceInfo.OsVersion}");
 
             var locale = GetLocaleInfo();
             if (locale != null)
-                sb.AppendLine($"Locale: {locale}");
+                sb.AppendLine($"{AppText.Get("Feedback.Label.Locale")}: {locale}");
 
             sb.AppendLine();
-            sb.AppendLine("Settings:");
+            sb.AppendLine(AppText.Get("Feedback.SettingsHeader"));
             AppendSettings(sb);
         }
         catch (Exception ex)
         {
-            sb.AppendLine($"(Could not gather diagnostics: {ex.Message})");
+            sb.AppendLine(AppText.Format("Feedback.DiagnosticsError", ex.Message));
         }
 
         return sb.ToString();
@@ -93,7 +94,7 @@ public sealed class FeedbackService : IFeedbackService
             var settings = _databaseService.UserData.GetAllSettings();
             if (settings.Count == 0)
             {
-                sb.AppendLine("  (default settings)");
+                sb.AppendLine(AppText.Get("Feedback.DefaultSettings"));
                 return;
             }
 
@@ -104,7 +105,7 @@ public sealed class FeedbackService : IFeedbackService
         }
         catch (Exception ex)
         {
-            sb.AppendLine($"  (Could not read settings: {ex.Message})");
+            sb.AppendLine(AppText.Format("Feedback.SettingsReadError", ex.Message));
         }
     }
 

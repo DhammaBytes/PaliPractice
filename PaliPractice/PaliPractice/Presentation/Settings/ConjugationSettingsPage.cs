@@ -3,6 +3,7 @@ using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Common.Text;
 using PaliPractice.Presentation.Settings.Controls;
 using PaliPractice.Presentation.Settings.ViewModels;
+using PaliPractice.Localization;
 using PaliPractice.Services.UserData;
 using PaliPractice.Themes;
 using PaliPractice.Themes.Icons;
@@ -33,7 +34,7 @@ public sealed partial class ConjugationSettingsPage : Page
                 .RowDefinitions("Auto,*")
                 .Children(
                     // Row 0: Title bar
-                    AppTitleBar.Build<ConjugationSettingsViewModel>("Conjugation Settings", v => v.GoBackCommand),
+                    AppTitleBar.Build<ConjugationSettingsViewModel>(AppText.Get("Settings.Conjugation.Title"), v => v.GoBackCommand),
 
                     // Row 1: Content
                     new ScrollViewer()
@@ -45,13 +46,13 @@ public sealed partial class ConjugationSettingsPage : Page
                                 .MaxWidth(LayoutConstants.ContentMaxWidth)
                                 .Children(
                                     // General section
-                                    SettingsSection.Build("General",
+                                    SettingsSection.Build(AppText.Get("Settings.Section.General"),
                                         SettingsRow.BuildNavigation<ConjugationSettingsViewModel>(
-                                            "Practice range",
+                                            AppText.Get("Settings.Row.PracticeRange"),
                                             v => v.GoToLemmaRangeCommand,
                                             tb => tb.Text(() => vm.RangeText)),
                                         SettingsRow.BuildNumberBox(
-                                            "Daily practice goal",
+                                            AppText.Get("Settings.Row.DailyPracticeGoal"),
                                             minimum: SettingsHelpers.DailyGoalMin,
                                             maximum: SettingsHelpers.DailyGoalMax,
                                             bindValue: nb =>
@@ -65,28 +66,28 @@ public sealed partial class ConjugationSettingsPage : Page
                                     BuildPracticeFiltersSection(vm),
 
                                     // Tenses section
-                                    SettingsSection.Build("Tenses",
+                                    SettingsSection.Build(AppText.Get("Settings.Section.Tenses"),
                                         SettingsRow.BuildToggleWithIconAndHint<ConjugationSettingsViewModel>(
                                             BadgeIcons.GetIconPath(Tense.Present),
-                                            "Present", "present/habitual actions, general truths",
+                                            GrammarText.GetTense(Tense.Present), GrammarText.GetTenseSettingsHint(Tense.Present),
                                             v => v.Present, v => v.CanDisablePresent),
                                         SettingsRow.BuildToggleWithIconAndHint<ConjugationSettingsViewModel>(
                                             BadgeIcons.GetIconPath(Tense.Imperative),
-                                            "Imperative", "commands, requests, encouragements",
+                                            GrammarText.GetTense(Tense.Imperative), GrammarText.GetTenseSettingsHint(Tense.Imperative),
                                             v => v.Imperative, v => v.CanDisableImperative),
                                         SettingsRow.BuildToggleWithIconAndHint<ConjugationSettingsViewModel>(
                                             BadgeIcons.GetIconPath(Tense.Optative),
-                                            "Optative", "wishes, 'may/might', 'should/ought to'",
+                                            GrammarText.GetTense(Tense.Optative), GrammarText.GetTenseSettingsHint(Tense.Optative),
                                             v => v.Optative, v => v.CanDisableOptative),
                                         SettingsRow.BuildToggleWithIconAndHint<ConjugationSettingsViewModel>(
                                             BadgeIcons.GetIconPath(Tense.Future),
-                                            "Future", "actions yet to happen, predictions",
+                                            GrammarText.GetTense(Tense.Future), GrammarText.GetTenseSettingsHint(Tense.Future),
                                             v => v.Future, v => v.CanDisableFuture)
                                     ),
 
                                     // Tense section footer
                                     TextHelpers.RegularText()
-                                        .Text("Aorist (past narrative tense) is not included: its forms vary a lot across verbs and often need verb-by-verb learning. A dedicated aorist trainer may be added later.")
+                                        .Text(AppText.Get("Settings.Tenses.AoristFooter"))
                                         .FontSize(13)
                                         .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
                                         .TextWrapping(TextWrapping.Wrap)
@@ -106,7 +107,7 @@ public sealed partial class ConjugationSettingsPage : Page
             .Children(
                 // Section header
                 TextHelpers.RegularText()
-                    .Text("Practice filters")
+                    .Text(AppText.Get("Settings.Section.PracticeFilters"))
                     .FontSize(14)
                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
@@ -124,14 +125,14 @@ public sealed partial class ConjugationSettingsPage : Page
                                 BuildEndingsCheckboxRow(),
                                 BuildPersonCheckboxRow(),
                                 SettingsRow.BuildDropdown(
-                                    "Number",
+                                    AppText.Get("Settings.Row.Number"),
                                     SettingsHelpers.NumberOptions,
                                     cb => cb.SetBinding(
                                         ComboBox.SelectedIndexProperty,
                                         Bind.TwoWayPath<ConjugationSettingsViewModel, int>(v => v.NumberIndex))),
                                 SettingsRow.BuildDropdownWithHint(
-                                    "Voice",
-                                    "Active (parassapada) is common, while Reflexive (attanopada) mostly appears in poetic verses",
+                                    AppText.Get("Settings.Row.Voice"),
+                                    AppText.Get("Settings.Row.VoiceHint"),
                                     ConjugationSettingsViewModel.VoiceOptions,
                                     cb => cb.SetBinding(
                                         ComboBox.SelectedIndexProperty,
@@ -221,7 +222,7 @@ public sealed partial class ConjugationSettingsPage : Page
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
             .Children(
                 TextHelpers.RegularText()
-                    .Text("Endings")
+                    .Text(AppText.Get("Settings.Row.Endings"))
                     .FontSize(16)
                     .VerticalAlignment(VerticalAlignment.Center)
                     .Grid(column: 0),
@@ -243,7 +244,7 @@ public sealed partial class ConjugationSettingsPage : Page
             .VerticalContentAlignment(VerticalAlignment.Center)
             .Content(
                 TextHelpers.RegularText()
-                    .Text("1st")
+                    .Text(GrammarText.GetPersonShort(Person.First))
                     .FontSize(16)
                     .Margin(4, 0, 0, 0)
             )
@@ -257,7 +258,7 @@ public sealed partial class ConjugationSettingsPage : Page
             .VerticalContentAlignment(VerticalAlignment.Center)
             .Content(
                 TextHelpers.RegularText()
-                    .Text("2nd")
+                    .Text(GrammarText.GetPersonShort(Person.Second))
                     .FontSize(16)
                     .Margin(4, 0, 0, 0)
             )
@@ -271,7 +272,7 @@ public sealed partial class ConjugationSettingsPage : Page
             .VerticalContentAlignment(VerticalAlignment.Center)
             .Content(
                 TextHelpers.RegularText()
-                    .Text("3rd")
+                    .Text(GrammarText.GetPersonShort(Person.Third))
                     .FontSize(16)
                     .Margin(4, 0, 0, 0)
             )
@@ -291,7 +292,7 @@ public sealed partial class ConjugationSettingsPage : Page
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
             .Children(
                 TextHelpers.RegularText()
-                    .Text("Person")
+                    .Text(AppText.Get("Settings.Row.Person"))
                     .FontSize(16)
                     .VerticalAlignment(VerticalAlignment.Center)
                     .Grid(column: 0),
@@ -338,10 +339,9 @@ public sealed partial class ConjugationSettingsPage : Page
         {
             var dialog = new ContentDialog
             {
-                Title = "Settings adjusted",
-                Content = "Present tense 3rd person singular is used as the citation form in questions because Pāli doesn't commonly use infinitives. " +
-                          "To ensure you have forms to practice, 1st and 2nd person have been re-enabled.",
-                CloseButtonText = "OK",
+                Title = AppText.Get("Settings.CitationFormWarning.Title"),
+                Content = AppText.Get("Settings.CitationFormWarning.Content"),
+                CloseButtonText = AppText.Get("Common.Ok"),
                 XamlRoot = XamlRoot
             };
 

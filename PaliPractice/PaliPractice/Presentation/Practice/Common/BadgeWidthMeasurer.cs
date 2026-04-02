@@ -1,4 +1,5 @@
 using Microsoft.UI.Text;
+using PaliPractice.Localization;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Themes;
 
@@ -15,14 +16,6 @@ public static class BadgeWidthMeasurer
     // Note: Must only be called from UI thread (e.g., SizeChanged handlers)
     static TextBlock? _measureText;
 
-    // Longest label for each category (used for worst-case measurement)
-    const string LongestCase = "Instrumental";
-    const string LongestGender = "Masculine";
-    const string LongestNumber = "Singular";
-    const string LongestTense = "Imperative";
-    const string LongestPerson = "3rd";
-    const string LongestVoice = "Reflexive";
-
     /// <summary>
     /// Measures the worst-case width needed for noun badges (Case + Gender + Number).
     /// Uses ghost measurement - creates invisible UI to measure actual rendered width.
@@ -32,9 +25,9 @@ public static class BadgeWidthMeasurer
         var fonts = LayoutConstants.PracticeFontSizes.Get(heightClass);
         var badgeSpacing = LayoutConstants.Gaps.BadgeRowSpacing(heightClass);
 
-        var caseWidth = MeasureSingleBadge(LongestCase, fonts.Badge);
-        var genderWidth = MeasureSingleBadge(LongestGender, fonts.Badge);
-        var numberWidth = MeasureSingleBadge(LongestNumber, fonts.Badge);
+        var caseWidth = MeasureMaxBadge(GrammarText.GetAllCaseLabels(), fonts.Badge);
+        var genderWidth = MeasureMaxBadge(GrammarText.GetAllGenderLabels(), fonts.Badge);
+        var numberWidth = MeasureMaxBadge(GrammarText.GetAllNumberLabels(), fonts.Badge);
 
         // Total = badges + spacing between them (2 gaps for 3 badges)
         return caseWidth + genderWidth + numberWidth + (badgeSpacing * 2);
@@ -48,9 +41,9 @@ public static class BadgeWidthMeasurer
         var fonts = LayoutConstants.PracticeFontSizes.Get(heightClass);
         var badgeSpacing = LayoutConstants.Gaps.BadgeRowSpacing(heightClass);
 
-        var tenseWidth = MeasureSingleBadge(LongestTense, fonts.Badge);
-        var personWidth = MeasureSingleBadge(LongestPerson, fonts.Badge);
-        var numberWidth = MeasureSingleBadge(LongestNumber, fonts.Badge);
+        var tenseWidth = MeasureMaxBadge(GrammarText.GetAllTenseLabels(), fonts.Badge);
+        var personWidth = MeasureMaxBadge(GrammarText.GetAllPersonLabels(), fonts.Badge);
+        var numberWidth = MeasureMaxBadge(GrammarText.GetAllNumberLabels(), fonts.Badge);
 
         if (!hasVoice)
         {
@@ -58,7 +51,7 @@ public static class BadgeWidthMeasurer
             return tenseWidth + personWidth + numberWidth + (badgeSpacing * 2);
         }
 
-        var voiceWidth = MeasureSingleBadge(LongestVoice, fonts.Badge);
+        var voiceWidth = MeasureSingleBadge(GrammarText.GetVoice(Voice.Reflexive), fonts.Badge);
 
         // 4 badges, 3 gaps
         return tenseWidth + personWidth + numberWidth + voiceWidth + (badgeSpacing * 3);
@@ -108,6 +101,9 @@ public static class BadgeWidthMeasurer
 
         return paddingLeft + iconWidth + iconTextSpacing + textWidth + paddingRight;
     }
+
+    static double MeasureMaxBadge(IEnumerable<string> labels, double fontSize)
+        => labels.Max(label => MeasureSingleBadge(label, fontSize));
 
     /// <summary>
     /// Measures actual rendered width of text using SourceSans font with Medium weight.

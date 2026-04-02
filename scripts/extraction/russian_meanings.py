@@ -3,6 +3,10 @@ Russian meaning import for PaliPractice extraction.
 
 Downloads the russian.tsv backup from the DPD fork and returns a mapping
 from DPD headword ID to Russian meaning text.
+
+Prefer the curated `ru_meaning` column, but fall back to `ru_meaning_raw`
+when `ru_meaning` is empty. Some entries in the fork currently only have
+the raw field populated.
 """
 
 from __future__ import annotations
@@ -40,11 +44,14 @@ def load_russian_meanings(
         raise RussianMeaningsError("Russian meanings TSV is missing a header row")
 
     headers = {field.strip() for field in reader.fieldnames if field}
-    required_headers = {"id", "ru_meaning"}
-    missing_headers = sorted(required_headers - headers)
-    if missing_headers:
+    if "id" not in headers:
         raise RussianMeaningsError(
-            f"Russian meanings TSV is missing required columns: {', '.join(missing_headers)}"
+            "Russian meanings TSV is missing required columns: id"
+        )
+
+    if "ru_meaning" not in headers and "ru_meaning_raw" not in headers:
+        raise RussianMeaningsError(
+            "Russian meanings TSV must include ru_meaning or ru_meaning_raw"
         )
 
     meanings: dict[int, str] = {}
@@ -70,6 +77,8 @@ def load_russian_meanings(
                 f"Russian meanings TSV contains duplicate id {headword_id} on line {line_number}"
             )
 
-        meanings[headword_id] = (row.get("ru_meaning") or "").strip()
+        primary_meaning = (row.get("ru_meaning") or "").strip()
+        raw_meaning = (row.get("ru_meaning_raw") or "").strip()
+        meanings[headword_id] = primary_meaning or raw_meaning
 
     return meanings

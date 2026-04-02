@@ -1,3 +1,5 @@
+using PaliPractice.Localization;
+
 namespace PaliPractice.Services.UserData.Statistics;
 
 /// <summary>
@@ -11,7 +13,7 @@ public static class ComboDisplayHelper
     /// </summary>
     public static string GetNounComboDisplayName(Case @case, Gender gender, Number number)
     {
-        return $"{@case} {gender} {number}";
+        return $"{GrammarText.GetCase(@case)} {GrammarText.GetGender(gender)} {GrammarText.GetNumber(number)}";
     }
 
     /// <summary>
@@ -20,16 +22,10 @@ public static class ComboDisplayHelper
     /// </summary>
     public static string GetVerbComboDisplayName(Tense tense, Person person, Number number, Voice voice)
     {
-        var personStr = person switch
-        {
-            Person.First => "1st",
-            Person.Second => "2nd",
-            Person.Third => "3rd",
-            _ => person.ToString()
-        };
+        var personStr = GrammarText.GetPerson(person);
 
-        var baseName = $"{tense} {personStr} {number}";
-        return voice == Voice.Reflexive ? $"{baseName} Reflexive" : baseName;
+        var baseName = $"{GrammarText.GetTense(tense)} {personStr} {GrammarText.GetNumber(number)}";
+        return voice == Voice.Reflexive ? $"{baseName} {GrammarText.GetVoice(Voice.Reflexive)}" : baseName;
     }
 
     /// <summary>
@@ -38,33 +34,9 @@ public static class ComboDisplayHelper
     /// </summary>
     public static string GetNounComboShortName(Case @case, Gender gender, Number number)
     {
-        var caseAbbr = @case switch
-        {
-            Case.Nominative => "Nom",
-            Case.Accusative => "Acc",
-            Case.Instrumental => "Instr",
-            Case.Dative => "Dat",
-            Case.Ablative => "Abl",
-            Case.Genitive => "Gen",
-            Case.Locative => "Loc",
-            Case.Vocative => "Voc",
-            _ => @case.ToString()
-        };
-
-        var genderAbbr = gender switch
-        {
-            Gender.Masculine => "Masc",
-            Gender.Feminine => "Fem",
-            Gender.Neuter => "Neut",
-            _ => gender.ToString()
-        };
-
-        var numberAbbr = number switch
-        {
-            Number.Singular => "Sg",
-            Number.Plural => "Pl",
-            _ => number.ToString()
-        };
+        var caseAbbr = GrammarText.GetCaseShort(@case);
+        var genderAbbr = GrammarText.GetGenderShort(gender);
+        var numberAbbr = GrammarText.GetNumberShort(number);
 
         return $"{caseAbbr} {genderAbbr} {numberAbbr}";
     }
@@ -75,31 +47,11 @@ public static class ComboDisplayHelper
     /// </summary>
     public static string GetVerbComboShortName(Tense tense, Person person, Number number, Voice voice)
     {
-        var tenseAbbr = tense switch
-        {
-            Tense.Present => "Pr",
-            Tense.Imperative => "Imp",
-            Tense.Optative => "Opt",
-            Tense.Future => "Fut",
-            _ => tense.ToString()
-        };
-
-        var personAbbr = person switch
-        {
-            Person.First => "1st",
-            Person.Second => "2nd",
-            Person.Third => "3rd",
-            _ => person.ToString()
-        };
-
-        var numberAbbr = number switch
-        {
-            Number.Singular => "Sg",
-            Number.Plural => "Pl",
-            _ => number.ToString()
-        };
+        var tenseAbbr = GrammarText.GetTenseShort(tense);
+        var personAbbr = GrammarText.GetPersonShort(person);
+        var numberAbbr = GrammarText.GetNumberShort(number);
 
         var baseName = $"{tenseAbbr} {personAbbr} {numberAbbr}";
-        return voice == Voice.Reflexive ? $"{baseName} Reflx" : baseName;
+        return voice == Voice.Reflexive ? $"{baseName} {GrammarText.GetVoiceShort(Voice.Reflexive)}" : baseName;
     }
 }

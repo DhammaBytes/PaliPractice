@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using PaliPractice.Localization;
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Themes;
 using PaliPractice.Themes.Icons;
@@ -68,7 +69,7 @@ public static class AppTitleBar
         centerButton.SetBinding(ButtonBase.CommandProperty, Bind.Path(centerClickCommand));
         centerButton.Child(
             RegularText()
-                .Text("All Forms")
+                .Text(AppText.Get("Common.AllForms"))
                 .FontSize(16)
                 .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
                 .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
@@ -175,7 +176,7 @@ public static class AppTitleBar
                     .Height(16)
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
                 RegularText()
-                    .Text("Back")
+                    .Text(AppText.Get("Common.Back"))
                     .FontSize(16)
                     .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
@@ -206,7 +207,7 @@ public static class AppTitleBar
                     .Height(16)
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
                 RegularText()
-                    .Text("History")
+                    .Text(AppText.Get("Common.History"))
                     .FontSize(16)
                     .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))

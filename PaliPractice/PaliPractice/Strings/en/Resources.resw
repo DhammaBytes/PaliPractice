@@ -1,64 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!--
-    Microsoft ResX Schema
-
-    Version 2.0
-
-    The primary goals of this format is to allow a simple XML format
-    that is mostly human readable. The generation and parsing of the
-    various data types are done through the TypeConverter classes
-    associated with the data types.
-
-    Example:
-
-    ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-resx</resheader>
-    <resheader name="version">2.0</resheader>
-    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-
-    There are any number of "resheader" rows that contain simple
-    name/value pairs.
-
-    Each data row contains a name, and value. The row also contains a
-    type or mimetype. Type corresponds to a .NET class that support
-    text/value conversion through the TypeConverter architecture.
-    Classes that don't support this are serialized and stored with the
-    mimetype set.
-
-    The mimetype is used for serialized objects, and tells the
-    ResXResourceReader how to depersist the object. This is currently not
-    extensible. For a given mimetype the value must be set accordingly:
-
-    Note - application/x-microsoft.net.object.binary.base64 is the format
-    that the ResXResourceWriter will generate, however the reader can
-    read any of the formats listed below.
-
-    mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with
-            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-            : and then encoded with base64 encoding.
-
-    mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with
-            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-            : and then encoded with base64 encoding.
-
-    mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array
-            : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding.
-    -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -117,7 +58,334 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ApplicationName" xml:space="preserve">
-    <value>PaliPractice-en</value>
-  </data>
+
+  <data name="ApplicationName" xml:space="preserve"><value>Pāli Practice</value></data>
+  <data name="App.Name" xml:space="preserve"><value>Pāli Practice</value></data>
+
+  <data name="Common.AllForms" xml:space="preserve"><value>All Forms</value></data>
+  <data name="Common.Back" xml:space="preserve"><value>Back</value></data>
+  <data name="Common.History" xml:space="preserve"><value>History</value></data>
+  <data name="Common.Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Common.Exit" xml:space="preserve"><value>Exit</value></data>
+  <data name="Common.Continue" xml:space="preserve"><value>Continue</value></data>
+  <data name="Common.PageOfFormat" xml:space="preserve"><value>{0} of {1}</value></data>
+  <data name="Common.AvailableCount" xml:space="preserve"><value>{0} available</value></data>
+  <data name="Common.DayCount.One" xml:space="preserve"><value>{0} day</value></data>
+  <data name="Common.DayCount.Few" xml:space="preserve"><value>{0} days</value></data>
+  <data name="Common.DayCount.Many" xml:space="preserve"><value>{0} days</value></data>
+
+  <data name="Start.Nouns.Title" xml:space="preserve"><value>Nouns &amp; Cases</value></data>
+  <data name="Start.Nouns.Subtitle" xml:space="preserve"><value>Declension Practice</value></data>
+  <data name="Start.Verbs.Title" xml:space="preserve"><value>Verbs &amp; Tenses</value></data>
+  <data name="Start.Verbs.Subtitle" xml:space="preserve"><value>Conjugation Practice</value></data>
+
+  <data name="Settings.Title" xml:space="preserve"><value>Settings</value></data>
+  <data name="Settings.Section.General" xml:space="preserve"><value>General</value></data>
+  <data name="Settings.Section.Practice" xml:space="preserve"><value>Practice</value></data>
+  <data name="Settings.Section.AboutSupport" xml:space="preserve"><value>About &amp; Support</value></data>
+  <data name="Settings.Section.PracticeFilters" xml:space="preserve"><value>Practice filters</value></data>
+  <data name="Settings.Section.Cases" xml:space="preserve"><value>Cases</value></data>
+  <data name="Settings.Section.Tenses" xml:space="preserve"><value>Tenses</value></data>
+  <data name="Settings.Row.Theme" xml:space="preserve"><value>Theme</value></data>
+  <data name="Settings.Row.Language" xml:space="preserve"><value>Translation language</value></data>
+  <data name="Settings.Row.PracticeRange" xml:space="preserve"><value>Practice range</value></data>
+  <data name="Settings.Row.DailyPracticeGoal" xml:space="preserve"><value>Daily practice goal</value></data>
+  <data name="Settings.Row.Number" xml:space="preserve"><value>Number</value></data>
+  <data name="Settings.Row.Voice" xml:space="preserve"><value>Voice</value></data>
+  <data name="Settings.Row.VoiceHint" xml:space="preserve"><value>Active (parassapada) is common, while Reflexive (attanopada) mostly appears in poetic verses</value></data>
+  <data name="Settings.Row.Endings" xml:space="preserve"><value>Endings</value></data>
+  <data name="Settings.Row.Person" xml:space="preserve"><value>Person</value></data>
+  <data name="Settings.Theme.System" xml:space="preserve"><value>System</value></data>
+  <data name="Settings.Theme.Light" xml:space="preserve"><value>Light</value></data>
+  <data name="Settings.Theme.Dark" xml:space="preserve"><value>Dark</value></data>
+  <data name="Settings.LanguageOption.English" xml:space="preserve"><value>English</value></data>
+  <data name="Settings.LanguageOption.Russian" xml:space="preserve"><value>Russian</value></data>
+  <data name="Settings.NumberOption.Both" xml:space="preserve"><value>Singular and plural</value></data>
+  <data name="Settings.NumberOption.SingularOnly" xml:space="preserve"><value>Singular only</value></data>
+  <data name="Settings.NumberOption.PluralOnly" xml:space="preserve"><value>Plural only</value></data>
+  <data name="Settings.VoiceOption.Both" xml:space="preserve"><value>Active and reflexive</value></data>
+  <data name="Settings.VoiceOption.ActiveOnly" xml:space="preserve"><value>Active only</value></data>
+  <data name="Settings.VoiceOption.ReflexiveOnly" xml:space="preserve"><value>Reflexive only</value></data>
+  <data name="Settings.Navigation.NounDeclensions" xml:space="preserve"><value>Noun declensions</value></data>
+  <data name="Settings.Navigation.VerbConjugations" xml:space="preserve"><value>Verb conjugations</value></data>
+  <data name="Settings.Navigation.AboutApp" xml:space="preserve"><value>About Pāli Practice</value></data>
+  <data name="Settings.Action.ContactUs" xml:space="preserve"><value>Contact us</value></data>
+  <data name="Settings.Action.WriteReview" xml:space="preserve"><value>Write a review</value></data>
+  <data name="Settings.ReviewExplanation" xml:space="preserve"><value>If you have a minute, please leave a review for Pāli Practice. Even one sentence is valuable feedback and it helps other Pāli learners discover the app on the store.</value></data>
+  <data name="Settings.Declension.Title" xml:space="preserve"><value>Declension Settings</value></data>
+  <data name="Settings.Conjugation.Title" xml:space="preserve"><value>Conjugation Settings</value></data>
+  <data name="Settings.Tenses.AoristFooter" xml:space="preserve"><value>Aorist (past narrative tense) is not included: its forms vary a lot across verbs and often need verb-by-verb learning. A dedicated aorist trainer may be added later.</value></data>
+  <data name="Settings.CitationFormWarning.Title" xml:space="preserve"><value>Settings adjusted</value></data>
+  <data name="Settings.CitationFormWarning.Content" xml:space="preserve"><value>Present tense 3rd person singular is used as the citation form in questions because Pāli does not commonly use infinitives. To ensure you have forms to practice, 1st and 2nd person have been re-enabled.</value></data>
+  <data name="Settings.Range.Title.Declension" xml:space="preserve"><value>Noun Practice Range</value></data>
+  <data name="Settings.Range.Title.Conjugation" xml:space="preserve"><value>Verb Practice Range</value></data>
+  <data name="Settings.Range.SectionTitle" xml:space="preserve"><value>Practice range</value></data>
+  <data name="Settings.Range.Top100.Title" xml:space="preserve"><value>Top 100</value></data>
+  <data name="Settings.Range.Top100.Subtitle" xml:space="preserve"><value>Most common words</value></data>
+  <data name="Settings.Range.Top300.Title" xml:space="preserve"><value>Top 300</value></data>
+  <data name="Settings.Range.Top300.Subtitle" xml:space="preserve"><value>Common words</value></data>
+  <data name="Settings.Range.Top500.Title" xml:space="preserve"><value>Top 500</value></data>
+  <data name="Settings.Range.Top500.Subtitle" xml:space="preserve"><value>Extended vocabulary</value></data>
+  <data name="Settings.Range.AllWords.Title" xml:space="preserve"><value>All words</value></data>
+  <data name="Settings.Range.Custom.Title" xml:space="preserve"><value>Custom range</value></data>
+  <data name="Settings.Range.Custom.Subtitle" xml:space="preserve"><value>Specify your own range</value></data>
+  <data name="Settings.Range.Custom.SectionTitle" xml:space="preserve"><value>Custom range</value></data>
+  <data name="Settings.Range.Custom.From" xml:space="preserve"><value>From (most common)</value></data>
+  <data name="Settings.Range.Custom.To" xml:space="preserve"><value>To (less common)</value></data>
+
+  <data name="History.Title.Declension" xml:space="preserve"><value>Declension History</value></data>
+  <data name="History.Title.Conjugation" xml:space="preserve"><value>Conjugation History</value></data>
+  <data name="History.EmptyState" xml:space="preserve"><value>No practice history yet</value></data>
+  <data name="History.Header.Today" xml:space="preserve"><value>Today</value></data>
+  <data name="History.Header.Yesterday" xml:space="preserve"><value>Yesterday</value></data>
+
+  <data name="About.Title" xml:space="preserve"><value>About</value></data>
+  <data name="About.AppNameFormat" xml:space="preserve"><value>Pāli Practice v{0}</value></data>
+  <data name="About.ContactButton" xml:space="preserve"><value>Contact us</value></data>
+  <data name="About.BlessingTranslation" xml:space="preserve"><value>may all beings be happy</value></data>
+  <data name="About.Description" xml:space="preserve"><value><![CDATA[
+Free and open-source app for learning Pāli verb conjugations and noun declensions via spaced repetition flashcards.
+
+Maintained by [DhammaBytes](https://dhammabytes.org) contributors. We welcome feedback and help with translations.
+
+Word and grammar data sourced from the [Digital Pāli Dictionary](https://dpdict.net) project.
+
+This app is also available on [other platforms](https://www.dhammabytes.org/pali-practice/).
+]]></value></data>
+  <data name="About.IconTitle" xml:space="preserve"><value>App Icon</value></data>
+  <data name="About.IconDescription" xml:space="preserve"><value><![CDATA[
+The icon shows the quail from [SN 47:6, the Sakuṇagghi Sutta](https://www.dhammatalks.org/suttas/SN/SN47_6.html) ("The Hawk"), hiding behind rocks in its ancestral territory - a newly plowed field with clumps of earth all turned up:
+
+*"Wander, monks, in what is your proper range, your own ancestral territory. In one who wanders in what is his proper range, his own ancestral territory, Māra gains no opening, Māra gains no foothold. And what, for a monk, is his proper range, his own ancestral territory? The four establishings of mindfulness."*
+
+Icon illustration and app design by [Irina Mir](https://www.instagram.com/irmirx)
+]]></value></data>
+  <data name="About.LicenseTitle" xml:space="preserve"><value>App License</value></data>
+  <data name="About.LicenseText" xml:space="preserve"><value><![CDATA[
+Released under CC BY-NC-SA 4.0, which means you are free to share and adapt under these conditions:
+
+- **BY:** Attribute the source
+- **NC:** Non-commercial use only
+- **SA:** Share under the same conditions
+
+Source code [available on GitHub](https://github.com/DhammaBytes/PaliPractice)
+]]></value></data>
+  <data name="About.FontsTitle" xml:space="preserve"><value>Fonts</value></data>
+  <data name="About.FontsText" xml:space="preserve"><value><![CDATA[
+**Libertinus Sans** is used for Pāli because its serif-like pronounced rhythm and differentiated lowercase characters help with letter-by-letter decoding of unfamiliar words.
+
+**Source Sans 3** is used for the rest of the texts and UI elements.
+
+Both fonts are licensed under the SIL Open Font License (OFL 1.1).
+]]></value></data>
+  <data name="About.LibrariesTitle" xml:space="preserve"><value>Libraries &amp; Frameworks</value></data>
+  <data name="About.LibrariesText" xml:space="preserve"><value><![CDATA[
+- [Uno Platform](https://github.com/unoplatform/uno): Apache License 2.0, copyright Uno Platform Inc.
+- [Markdig](https://github.com/xoofx/markdig): BSD 2-Clause License, copyright Alexandre Mutel.
+- [sqlite-net](https://github.com/praeclarum/sqlite-net): MIT License, copyright Krueger Systems, Inc.
+]]></value></data>
+
+  <data name="Help.Title" xml:space="preserve"><value>Help</value></data>
+  <data name="Help.HowToPractice.Title" xml:space="preserve"><value>How to Practice</value></data>
+  <data name="Help.SpacedRepetition.Title" xml:space="preserve"><value>Spaced Repetition</value></data>
+  <data name="Help.Questions.Title" xml:space="preserve"><value>Questions &amp; Answers</value></data>
+  <data name="Help.HowToPractice.Content" xml:space="preserve"><value><![CDATA[
+This app helps you memorize Pāli declensions and conjugations for nouns and verbs. You will see a Pāli word along with labels indicating the required form - such as case and number for nouns, or tense and person for verbs.
+
+Try to recall the correct inflected form and its meaning. Then tap **Reveal Answer** to see the answer along with possible translations. Finally, mark **Easy** or **Hard** based on how well you knew both.
+]]></value></data>
+  <data name="Help.SpacedRepetition.Content" xml:space="preserve"><value><![CDATA[
+The app tracks how well you know each form. Every form has a progress level from 1 to 10:
+
+- **Level 1-3:** Still learning - reviewed within days
+- **Level 4-6:** Becoming familiar - reviewed every week or two
+- **Level 7-9:** Well known - reviewed monthly or less
+- **Level 10:** Mastered - reviewed after about 8 months
+
+All forms start at level 4. Marking **Easy** increases the level by 1; marking **Hard** decreases it by 1. This ensures you spend more time on forms you find difficult.
+]]></value></data>
+  <data name="Help.Faq.Grammar" xml:space="preserve"><value><![CDATA[
+**Where can I learn the grammar?**
+
+This app is focused on memorizing, so it does not replace textbooks or courses. See the [Learn Pāli: Best way to start?](https://palistudies.blogspot.com/2018/05/learn-pali-where-to-begin.html) guide and its author's [Learn Pāli Language series](https://www.youtube.com/playlist?list=PLf6RXFuRpeLRYj-wWs4KFrTPrzvAWWMpo) on YouTube.
+]]></value></data>
+  <data name="Help.Faq.MultipleForms" xml:space="preserve"><value><![CDATA[
+**Why do some answers show multiple forms?**
+
+Certain cases and tenses in Pāli have more than one valid ending. The app displays all used forms for the given grammatical context and skips potentially valid forms that are not found in the Pāli corpus.
+]]></value></data>
+  <data name="Help.Faq.Examples" xml:space="preserve"><value><![CDATA[
+**Why do sutta examples use different forms?**
+
+Example sentences come from the [Digital Pāli Dictionary](https://dpdict.net), which provides one or two examples per word meaning rather than per inflected form. These examples illustrate how the word is used in context, not necessarily the specific form being practiced.
+]]></value></data>
+  <data name="Help.Faq.MissingWords" xml:space="preserve"><value><![CDATA[
+**Why are some words missing?**
+
+This app focuses on forms most useful for beginner-to-intermediate students. It includes the 1,500 most frequent nouns and 750 most frequent verbs from the Pāli Canon. Some proper names and complex compound words have been excluded. For extended vocabulary and grammar reference, please consult the [Digital Pāli Dictionary](https://dpdict.net).
+]]></value></data>
+  <data name="Help.Faq.MissingForms" xml:space="preserve"><value><![CDATA[
+**Why are aorist and participle forms not included?**
+
+These forms vary considerably across verbs and often require learning on a word-by-word basis. This does not fit well within the current practice format. A dedicated trainer for these forms may be added in future versions.
+]]></value></data>
+  <data name="Help.Faq.AboutApp" xml:space="preserve"><value><![CDATA[
+**Where can I get more information about the app?**
+
+See the About section in Settings for details about the app, its data sources, licensing, and how to contact us.
+]]></value></data>
+  <data name="Help.Faq.DataStorage" xml:space="preserve"><value><![CDATA[
+**Where is my data stored?**
+
+This app works completely offline and does not back up your settings or practice progress, nor does it sync data between devices.
+
+On mobile devices, your phone's system backup typically includes all local app data automatically. On desktop, the data is stored in typical app configuration directories and needs to be backed up manually.
+]]></value></data>
+
+  <data name="Statistics.Title" xml:space="preserve"><value>Statistics</value></data>
+  <data name="Statistics.ButtonTitle" xml:space="preserve"><value>Stats</value></data>
+  <data name="Statistics.Section.Overview" xml:space="preserve"><value>Overview</value></data>
+  <data name="Statistics.Section.Nouns" xml:space="preserve"><value>Nouns</value></data>
+  <data name="Statistics.Section.Verbs" xml:space="preserve"><value>Verbs</value></data>
+  <data name="Statistics.Streak.Current" xml:space="preserve"><value>Practice streak</value></data>
+  <data name="Statistics.Streak.Total" xml:space="preserve"><value>Total</value></data>
+  <data name="Statistics.Streak.Last30Days" xml:space="preserve"><value>Last 30 days</value></data>
+  <data name="Statistics.Label.AllTime" xml:space="preserve"><value>All-time</value></data>
+  <data name="Statistics.Label.Last7Days" xml:space="preserve"><value>Last 7 days</value></data>
+  <data name="Statistics.Label.ToRepeat" xml:space="preserve"><value>To repeat</value></data>
+  <data name="Statistics.Label.MasteryDistribution" xml:space="preserve"><value>Mastery Distribution</value></data>
+  <data name="Statistics.Label.Strongest" xml:space="preserve"><value>Strongest</value></data>
+  <data name="Statistics.Label.NeedWork" xml:space="preserve"><value>Need Work</value></data>
+  <data name="Statistics.Legend.Less" xml:space="preserve"><value>Less</value></data>
+  <data name="Statistics.Legend.More" xml:space="preserve"><value>More</value></data>
+  <data name="Statistics.Legend.Struggling" xml:space="preserve"><value>Struggling</value></data>
+  <data name="Statistics.Legend.Learning" xml:space="preserve"><value>Learning</value></data>
+  <data name="Statistics.Legend.Strong" xml:space="preserve"><value>Strong</value></data>
+  <data name="Statistics.Legend.Mastered" xml:space="preserve"><value>Mastered</value></data>
+  <data name="Statistics.CalendarTooltipFormat" xml:space="preserve"><value>{0}
+Nouns: {1}
+Verbs: {2}</value></data>
+
+  <data name="Practice.Title.Declension" xml:space="preserve"><value>Declension Practice</value></data>
+  <data name="Practice.Title.Conjugation" xml:space="preserve"><value>Conjugation Practice</value></data>
+  <data name="Practice.Card.LevelLabel" xml:space="preserve"><value>Level: </value></data>
+  <data name="Practice.Button.RevealAnswer" xml:space="preserve"><value>Reveal Answer</value></data>
+  <data name="Practice.Button.Hard" xml:space="preserve"><value>Hard</value></data>
+  <data name="Practice.Button.Easy" xml:space="preserve"><value>Easy</value></data>
+  <data name="Practice.DailyGoal" xml:space="preserve"><value>Daily goal</value></data>
+  <data name="Practice.Dialog.AllFormsPracticed.Title" xml:space="preserve"><value>All forms practiced</value></data>
+  <data name="Practice.Dialog.AllFormsPracticed.Content" xml:space="preserve"><value>Great work! You have practiced all available forms. Come back later when reviews are due, or adjust your settings to add more.</value></data>
+  <data name="Practice.Dialog.DailyGoalReached.Title" xml:space="preserve"><value>Daily goal reached!</value></data>
+  <data name="Practice.Dialog.DailyGoalReached.Content" xml:space="preserve"><value>Congratulations! You have completed your daily practice goal.</value></data>
+  <data name="Practice.Error.LoadData" xml:space="preserve"><value>Failed to load practice data: {0}</value></data>
+
+  <data name="Grammar.Table.PageTitle.Declension" xml:space="preserve"><value>Declension Table</value></data>
+  <data name="Grammar.Table.PageTitle.Conjugation" xml:space="preserve"><value>Conjugation Table</value></data>
+  <data name="Grammar.Table.LikePrefix" xml:space="preserve"><value> (like </value></data>
+  <data name="Grammar.Table.LikeSuffix" xml:space="preserve"><value>)</value></data>
+  <data name="Grammar.Table.NonCorpusHint" xml:space="preserve"><value>Forms not found in the Pāli corpus are grayed out.</value></data>
+
+  <data name="Feedback.DiagnosticsHeader" xml:space="preserve"><value>Diagnostic information (please keep for support):</value></data>
+  <data name="Feedback.Label.App" xml:space="preserve"><value>App</value></data>
+  <data name="Feedback.Label.Device" xml:space="preserve"><value>Device</value></data>
+  <data name="Feedback.Label.Os" xml:space="preserve"><value>OS</value></data>
+  <data name="Feedback.Label.Locale" xml:space="preserve"><value>Locale</value></data>
+  <data name="Feedback.SettingsHeader" xml:space="preserve"><value>Settings:</value></data>
+  <data name="Feedback.DefaultSettings" xml:space="preserve"><value>  (default settings)</value></data>
+  <data name="Feedback.DiagnosticsError" xml:space="preserve"><value>(Could not gather diagnostics: {0})</value></data>
+  <data name="Feedback.SettingsReadError" xml:space="preserve"><value>  (Could not read settings: {0})</value></data>
+
+  <data name="Grammar.Case.Nominative.Full" xml:space="preserve"><value>Nominative</value></data>
+  <data name="Grammar.Case.Nominative.Short" xml:space="preserve"><value>Nom</value></data>
+  <data name="Grammar.Case.Nominative.Table" xml:space="preserve"><value>nom</value></data>
+  <data name="Grammar.Case.Nominative.PracticeHint" xml:space="preserve"><value>who? what? (subject)</value></data>
+  <data name="Grammar.Case.Nominative.SettingsHint" xml:space="preserve"><value>who? what? (subject)</value></data>
+  <data name="Grammar.Case.Accusative.Full" xml:space="preserve"><value>Accusative</value></data>
+  <data name="Grammar.Case.Accusative.Short" xml:space="preserve"><value>Acc</value></data>
+  <data name="Grammar.Case.Accusative.Table" xml:space="preserve"><value>acc</value></data>
+  <data name="Grammar.Case.Accusative.PracticeHint" xml:space="preserve"><value>whom? what? (object)</value></data>
+  <data name="Grammar.Case.Accusative.SettingsHint" xml:space="preserve"><value>whom? what? (object, destination of action)</value></data>
+  <data name="Grammar.Case.Instrumental.Full" xml:space="preserve"><value>Instrumental</value></data>
+  <data name="Grammar.Case.Instrumental.Short" xml:space="preserve"><value>Instr</value></data>
+  <data name="Grammar.Case.Instrumental.Table" xml:space="preserve"><value>instr</value></data>
+  <data name="Grammar.Case.Instrumental.PracticeHint" xml:space="preserve"><value>with whom? by whom? by what means?</value></data>
+  <data name="Grammar.Case.Instrumental.SettingsHint" xml:space="preserve"><value>with whom? by whom? by what means? (passive, association)</value></data>
+  <data name="Grammar.Case.Dative.Full" xml:space="preserve"><value>Dative</value></data>
+  <data name="Grammar.Case.Dative.Short" xml:space="preserve"><value>Dat</value></data>
+  <data name="Grammar.Case.Dative.Table" xml:space="preserve"><value>dat</value></data>
+  <data name="Grammar.Case.Dative.PracticeHint" xml:space="preserve"><value>for whom? to whom? to what?</value></data>
+  <data name="Grammar.Case.Dative.SettingsHint" xml:space="preserve"><value>for whom? to whom? to what? (purpose, recipient)</value></data>
+  <data name="Grammar.Case.Ablative.Full" xml:space="preserve"><value>Ablative</value></data>
+  <data name="Grammar.Case.Ablative.Short" xml:space="preserve"><value>Abl</value></data>
+  <data name="Grammar.Case.Ablative.Table" xml:space="preserve"><value>abl</value></data>
+  <data name="Grammar.Case.Ablative.PracticeHint" xml:space="preserve"><value>from whom? from where? from what?</value></data>
+  <data name="Grammar.Case.Ablative.SettingsHint" xml:space="preserve"><value>from whom? from where? from what? (cause, origin)</value></data>
+  <data name="Grammar.Case.Genitive.Full" xml:space="preserve"><value>Genitive</value></data>
+  <data name="Grammar.Case.Genitive.Short" xml:space="preserve"><value>Gen</value></data>
+  <data name="Grammar.Case.Genitive.Table" xml:space="preserve"><value>gen</value></data>
+  <data name="Grammar.Case.Genitive.PracticeHint" xml:space="preserve"><value>whose? of whom? of what?</value></data>
+  <data name="Grammar.Case.Genitive.SettingsHint" xml:space="preserve"><value>whose? of whom? of what? (possession)</value></data>
+  <data name="Grammar.Case.Locative.Full" xml:space="preserve"><value>Locative</value></data>
+  <data name="Grammar.Case.Locative.Short" xml:space="preserve"><value>Loc</value></data>
+  <data name="Grammar.Case.Locative.Table" xml:space="preserve"><value>loc</value></data>
+  <data name="Grammar.Case.Locative.PracticeHint" xml:space="preserve"><value>in whom? where? when?</value></data>
+  <data name="Grammar.Case.Locative.SettingsHint" xml:space="preserve"><value>in whom? where? when? (position, relation, time)</value></data>
+  <data name="Grammar.Case.Vocative.Full" xml:space="preserve"><value>Vocative</value></data>
+  <data name="Grammar.Case.Vocative.Short" xml:space="preserve"><value>Voc</value></data>
+  <data name="Grammar.Case.Vocative.Table" xml:space="preserve"><value>voc</value></data>
+  <data name="Grammar.Case.Vocative.PracticeHint" xml:space="preserve"><value>O, ...! (direct address)</value></data>
+  <data name="Grammar.Case.Vocative.SettingsHint" xml:space="preserve"><value>O, ...! (direct address)</value></data>
+
+  <data name="Grammar.Gender.Masculine.Full" xml:space="preserve"><value>Masculine</value></data>
+  <data name="Grammar.Gender.Masculine.Short" xml:space="preserve"><value>Masc</value></data>
+  <data name="Grammar.Gender.Masculine.Table" xml:space="preserve"><value>masc</value></data>
+  <data name="Grammar.Gender.Feminine.Full" xml:space="preserve"><value>Feminine</value></data>
+  <data name="Grammar.Gender.Feminine.Short" xml:space="preserve"><value>Fem</value></data>
+  <data name="Grammar.Gender.Feminine.Table" xml:space="preserve"><value>fem</value></data>
+  <data name="Grammar.Gender.Neuter.Full" xml:space="preserve"><value>Neuter</value></data>
+  <data name="Grammar.Gender.Neuter.Short" xml:space="preserve"><value>Neut</value></data>
+  <data name="Grammar.Gender.Neuter.Table" xml:space="preserve"><value>neut</value></data>
+
+  <data name="Grammar.Number.Singular.Full" xml:space="preserve"><value>Singular</value></data>
+  <data name="Grammar.Number.Singular.Short" xml:space="preserve"><value>Sg</value></data>
+  <data name="Grammar.Number.Singular.Table" xml:space="preserve"><value>sg</value></data>
+  <data name="Grammar.Number.Plural.Full" xml:space="preserve"><value>Plural</value></data>
+  <data name="Grammar.Number.Plural.Short" xml:space="preserve"><value>Pl</value></data>
+  <data name="Grammar.Number.Plural.Table" xml:space="preserve"><value>pl</value></data>
+
+  <data name="Grammar.Person.First.Full" xml:space="preserve"><value>1st</value></data>
+  <data name="Grammar.Person.First.Short" xml:space="preserve"><value>1st</value></data>
+  <data name="Grammar.Person.Second.Full" xml:space="preserve"><value>2nd</value></data>
+  <data name="Grammar.Person.Second.Short" xml:space="preserve"><value>2nd</value></data>
+  <data name="Grammar.Person.Third.Full" xml:space="preserve"><value>3rd</value></data>
+  <data name="Grammar.Person.Third.Short" xml:space="preserve"><value>3rd</value></data>
+
+  <data name="Grammar.Tense.Present.Full" xml:space="preserve"><value>Present</value></data>
+  <data name="Grammar.Tense.Present.Short" xml:space="preserve"><value>Pr</value></data>
+  <data name="Grammar.Tense.Present.Table" xml:space="preserve"><value>pr</value></data>
+  <data name="Grammar.Tense.Present.SettingsHint" xml:space="preserve"><value>present and habitual actions, general truths</value></data>
+  <data name="Grammar.Tense.Imperative.Full" xml:space="preserve"><value>Imperative</value></data>
+  <data name="Grammar.Tense.Imperative.Short" xml:space="preserve"><value>Imp</value></data>
+  <data name="Grammar.Tense.Imperative.Table" xml:space="preserve"><value>imp</value></data>
+  <data name="Grammar.Tense.Imperative.SettingsHint" xml:space="preserve"><value>commands, requests, encouragements</value></data>
+  <data name="Grammar.Tense.Optative.Full" xml:space="preserve"><value>Optative</value></data>
+  <data name="Grammar.Tense.Optative.Short" xml:space="preserve"><value>Opt</value></data>
+  <data name="Grammar.Tense.Optative.Table" xml:space="preserve"><value>opt</value></data>
+  <data name="Grammar.Tense.Optative.SettingsHint" xml:space="preserve"><value>wishes, "may/might", "should/ought to"</value></data>
+  <data name="Grammar.Tense.Future.Full" xml:space="preserve"><value>Future</value></data>
+  <data name="Grammar.Tense.Future.Short" xml:space="preserve"><value>Fut</value></data>
+  <data name="Grammar.Tense.Future.Table" xml:space="preserve"><value>fut</value></data>
+  <data name="Grammar.Tense.Future.SettingsHint" xml:space="preserve"><value>actions yet to happen, predictions</value></data>
+
+  <data name="Grammar.Voice.Active.Full" xml:space="preserve"><value>Active</value></data>
+  <data name="Grammar.Voice.Active.Short" xml:space="preserve"><value>Act</value></data>
+  <data name="Grammar.Voice.Reflexive.Full" xml:space="preserve"><value>Reflexive</value></data>
+  <data name="Grammar.Voice.Reflexive.Short" xml:space="preserve"><value>Refl.</value></data>
+  <data name="Grammar.Voice.Reflexive.Table" xml:space="preserve"><value>refl.</value></data>
+
+  <data name="Grammar.Type.Declension" xml:space="preserve"><value>declension</value></data>
+  <data name="Grammar.Type.Conjugation" xml:space="preserve"><value>conjugation</value></data>
+  <data name="Grammar.Type.IrregularDeclension" xml:space="preserve"><value>irregular declension</value></data>
+  <data name="Grammar.Type.NonStandardDeclension" xml:space="preserve"><value>non-standard declension</value></data>
+  <data name="Grammar.Type.IrregularConjugation" xml:space="preserve"><value>irregular conjugation</value></data>
 </root>

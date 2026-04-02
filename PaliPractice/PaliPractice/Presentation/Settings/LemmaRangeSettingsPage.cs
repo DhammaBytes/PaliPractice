@@ -1,11 +1,17 @@
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Settings.ViewModels;
+using PaliPractice.Localization;
 using static PaliPractice.Presentation.Common.Text.TextHelpers;
 
 namespace PaliPractice.Presentation.Settings;
 
 public sealed partial class LemmaRangeSettingsPage : Page
 {
+    readonly TextBlock _titleTextBlock = RegularText()
+        .FontSize(21)
+        .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
+        .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"));
+
     static void OnNumberBoxLostFocus(object sender, RoutedEventArgs e)
     {
         if (sender is FrameworkElement { DataContext: LemmaRangeSettingsViewModel viewModel })
@@ -14,6 +20,8 @@ public sealed partial class LemmaRangeSettingsPage : Page
 
     public LemmaRangeSettingsPage()
     {
+        DataContextChanged += OnDataContextChanged;
+
         LemmaRangeSettingsPageMarkup.DataContext<LemmaRangeSettingsViewModel>(this, (page, vm) => page
             .NavigationCacheMode<LemmaRangeSettingsPage>(NavigationCacheMode.Disabled)
             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
@@ -46,9 +54,9 @@ public sealed partial class LemmaRangeSettingsPage : Page
         );
     }
 
-    static Grid BuildTitleBar(LemmaRangeSettingsViewModel vm)
+    Grid BuildTitleBar(LemmaRangeSettingsViewModel vm)
     {
-        return AppTitleBar.Build<LemmaRangeSettingsViewModel>("Practice Range", v => v.GoBackCommand);
+        return AppTitleBar.BuildWithCenterElement<LemmaRangeSettingsViewModel>(_titleTextBlock, v => v.GoBackCommand);
     }
 
     static StackPanel BuildRangeSection(LemmaRangeSettingsViewModel vm)
@@ -57,11 +65,11 @@ public sealed partial class LemmaRangeSettingsPage : Page
             .MaxColumns(1);
 
         // Add radio button options: 0=Top100, 1=Top300, 2=Top500, 3=All, 4=Custom
-        radioButtons.Items.Add(BuildRadioOption("Top 100", "Most common words"));
-        radioButtons.Items.Add(BuildRadioOption("Top 300", "Common words"));
-        radioButtons.Items.Add(BuildRadioOption("Top 500", "Extended vocabulary"));
+        radioButtons.Items.Add(BuildRadioOption(AppText.Get("Settings.Range.Top100.Title"), AppText.Get("Settings.Range.Top100.Subtitle")));
+        radioButtons.Items.Add(BuildRadioOption(AppText.Get("Settings.Range.Top300.Title"), AppText.Get("Settings.Range.Top300.Subtitle")));
+        radioButtons.Items.Add(BuildRadioOption(AppText.Get("Settings.Range.Top500.Title"), AppText.Get("Settings.Range.Top500.Subtitle")));
         radioButtons.Items.Add(BuildAllWordsOption(vm));
-        radioButtons.Items.Add(BuildRadioOption("Custom range", "Specify your own range"));
+        radioButtons.Items.Add(BuildRadioOption(AppText.Get("Settings.Range.Custom.Title"), AppText.Get("Settings.Range.Custom.Subtitle")));
 
         // Bind selected index
         radioButtons.SelectedIndex(x => x.Binding(() => vm.SelectedPreset).TwoWay());
@@ -70,7 +78,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
             .Spacing(4)
             .Children(
                 RegularText()
-                    .Text("Practice Range")
+                    .Text(AppText.Get("Settings.Range.SectionTitle"))
                     .FontSize(14)
                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
@@ -91,13 +99,13 @@ public sealed partial class LemmaRangeSettingsPage : Page
 
         // Bind to TotalLemmaCount with format
         subtitleText.Text(x => x.Binding(() => vm.TotalLemmaCount)
-            .Convert(count => $"{count} available"));
+            .Convert(AppTextFormatter.FormatAvailableCount));
 
         return new StackPanel()
             .Spacing(2)
             .Children(
                 RegularText()
-                    .Text("All words")
+                    .Text(AppText.Get("Settings.Range.AllWords.Title"))
                     .FontSize(16),
                 subtitleText
             );
@@ -155,7 +163,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
 
         section.Children(
             RegularText()
-                .Text("Custom Range")
+                .Text(AppText.Get("Settings.Range.Custom.SectionTitle"))
                 .FontSize(14)
                 .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
                 .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
@@ -172,7 +180,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
                                 .ColumnDefinitions("*,Auto")
                                 .Children(
                                     RegularText()
-                                        .Text("From (most common)")
+                                        .Text(AppText.Get("Settings.Range.Custom.From"))
                                         .FontSize(16)
                                         .VerticalAlignment(VerticalAlignment.Center)
                                         .Grid(column: 0),
@@ -182,7 +190,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
                                 .ColumnDefinitions("*,Auto")
                                 .Children(
                                     RegularText()
-                                        .Text("To (less common)")
+                                        .Text(AppText.Get("Settings.Range.Custom.To"))
                                         .FontSize(16)
                                         .VerticalAlignment(VerticalAlignment.Center)
                                         .Grid(column: 0),
@@ -193,5 +201,11 @@ public sealed partial class LemmaRangeSettingsPage : Page
         );
 
         return section;
+    }
+
+    void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs e)
+    {
+        if (e.NewValue is LemmaRangeSettingsViewModel vm)
+            _titleTextBlock.Text = vm.Title;
     }
 }

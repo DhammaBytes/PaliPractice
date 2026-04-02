@@ -1,5 +1,6 @@
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Main.ViewModels;
+using PaliPractice.Localization;
 using static PaliPractice.Presentation.Common.Text.RichTextHelper;
 using static PaliPractice.Presentation.Common.Text.TextHelpers;
 
@@ -25,7 +26,7 @@ public sealed partial class HelpPage : Page
                 .RowDefinitions("Auto,*")
                 .Children(
                     // Row 0: Title bar
-                    AppTitleBar.Build<HelpViewModel>("Help", vm => vm.GoBackCommand),
+                    AppTitleBar.Build<HelpViewModel>(AppText.Get("Help.Title"), vm => vm.GoBackCommand),
 
                     // Row 1: Content
                     new ScrollViewer()

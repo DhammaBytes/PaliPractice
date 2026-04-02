@@ -1,5 +1,6 @@
 using PaliPractice.Models.Inflection;
 using PaliPractice.Models.Words;
+using PaliPractice.Localization;
 using PaliPractice.Presentation.Practice.Common;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Presentation.Settings.ViewModels;
@@ -108,21 +109,10 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
         NumberIconPath = BadgeIcons.GetIconPath(d.Number);
 
         // Case badge (always full - never abbreviated)
-        CaseLabel = d.Case.ToString();
+        CaseLabel = GrammarText.GetCase(d.Case);
         CaseColor = BadgePresentation.GetChipColor(d.Case);
         CaseIconPath = BadgeIcons.GetIconPath(d.Case);
-        CaseHint = d.Case switch
-        {
-            Case.Nominative => "who? what? (subject)",
-            Case.Accusative => "whom? what? (object)",
-            Case.Instrumental => "with whom? by whom? by what means?",
-            Case.Dative => "for whom? to whom? to what?",
-            Case.Ablative => "from whom? from where? from what?",
-            Case.Genitive => "whose? of whom? of what?",
-            Case.Locative => "in whom? where? when?",
-            Case.Vocative => "O, …! (direct address)",
-            _ => string.Empty
-        };
+        CaseHint = GrammarText.GetCasePracticeHint(d.Case);
     }
 
     /// <summary>
@@ -148,18 +138,18 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
 
     void SetBadgesFallback(Noun noun)
     {
-        GenderLabel = noun.Gender.ToString();
+        GenderLabel = GrammarText.GetGender(noun.Gender);
         GenderColor = BadgePresentation.GetChipColor(noun.Gender);
         GenderIconPath = BadgeIcons.GetIconPath(noun.Gender);
 
-        NumberLabel = "Singular";
+        NumberLabel = GrammarText.GetNumber(Number.Singular);
         NumberColor = BadgePresentation.GetChipColor(Number.Singular);
         NumberIconPath = BadgeIcons.GetIconPath(Number.Singular);
 
-        CaseLabel = "Nominative";
+        CaseLabel = GrammarText.GetCase(Case.Nominative);
         CaseColor = BadgePresentation.GetChipColor(Case.Nominative);
         CaseIconPath = BadgeIcons.GetIconPath(Case.Nominative);
-        CaseHint = "who? what? (subject)";
+        CaseHint = GrammarText.GetCasePracticeHint(Case.Nominative);
     }
 
     protected override string GetInflectedForm()

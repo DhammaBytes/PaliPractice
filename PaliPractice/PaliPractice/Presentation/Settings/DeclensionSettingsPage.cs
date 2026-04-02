@@ -3,6 +3,7 @@ using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Common.Text;
 using PaliPractice.Presentation.Settings.Controls;
 using PaliPractice.Presentation.Settings.ViewModels;
+using PaliPractice.Localization;
 using PaliPractice.Services.UserData;
 using PaliPractice.Themes;
 using PaliPractice.Themes.Icons;
@@ -29,7 +30,7 @@ public sealed partial class DeclensionSettingsPage : Page
                 .RowDefinitions("Auto,*")
                 .Children(
                     // Row 0: Title bar
-                    AppTitleBar.Build<DeclensionSettingsViewModel>("Declension Settings", v => v.GoBackCommand),
+                    AppTitleBar.Build<DeclensionSettingsViewModel>(AppText.Get("Settings.Declension.Title"), v => v.GoBackCommand),
 
                     // Row 1: Content
                     new ScrollViewer()
@@ -41,13 +42,13 @@ public sealed partial class DeclensionSettingsPage : Page
                                 .MaxWidth(LayoutConstants.ContentMaxWidth)
                                 .Children(
                                     // General section
-                                    SettingsSection.Build("General",
+                                    SettingsSection.Build(AppText.Get("Settings.Section.General"),
                                         SettingsRow.BuildNavigation<DeclensionSettingsViewModel>(
-                                            "Practice range",
+                                            AppText.Get("Settings.Row.PracticeRange"),
                                             v => v.GoToLemmaRangeCommand,
                                             tb => tb.Text(() => vm.RangeText)),
                                         SettingsRow.BuildNumberBox(
-                                            "Daily practice goal",
+                                            AppText.Get("Settings.Row.DailyPracticeGoal"),
                                             minimum: SettingsHelpers.DailyGoalMin,
                                             maximum: SettingsHelpers.DailyGoalMax,
                                             bindValue: nb =>
@@ -61,38 +62,38 @@ public sealed partial class DeclensionSettingsPage : Page
                                     BuildPracticeFiltersSection(vm),
 
                                     // Cases section
-                                    SettingsSection.Build("Cases",
+                                    SettingsSection.Build(AppText.Get("Settings.Section.Cases"),
                                         SettingsRow.BuildToggleWithIconAndHint<DeclensionSettingsViewModel>(
                                             BadgeIcons.GetIconPath(Case.Nominative),
-                                            "Nominative", "who? what? (subject)",
+                                            GrammarText.GetCase(Case.Nominative), GrammarText.GetCaseSettingsHint(Case.Nominative),
                                             v => v.Nominative, v => v.CanDisableNominative),
                                         SettingsRow.BuildToggleWithIconAndHint<DeclensionSettingsViewModel>(
                                             BadgeIcons.GetIconPath(Case.Accusative),
-                                            "Accusative", "whom? what? (object, destination of action)",
+                                            GrammarText.GetCase(Case.Accusative), GrammarText.GetCaseSettingsHint(Case.Accusative),
                                             v => v.Accusative, v => v.CanDisableAccusative),
                                         SettingsRow.BuildToggleWithIconAndHint<DeclensionSettingsViewModel>(
                                             BadgeIcons.GetIconPath(Case.Instrumental),
-                                            "Instrumental", "with whom? by whom? by what means? (passive, association)",
+                                            GrammarText.GetCase(Case.Instrumental), GrammarText.GetCaseSettingsHint(Case.Instrumental),
                                             v => v.Instrumental, v => v.CanDisableInstrumental),
                                         SettingsRow.BuildToggleWithIconAndHint<DeclensionSettingsViewModel>(
                                             BadgeIcons.GetIconPath(Case.Dative),
-                                            "Dative", "for whom? to whom? to what? (purpose, recipient)",
+                                            GrammarText.GetCase(Case.Dative), GrammarText.GetCaseSettingsHint(Case.Dative),
                                             v => v.Dative, v => v.CanDisableDative),
                                         SettingsRow.BuildToggleWithIconAndHint<DeclensionSettingsViewModel>(
                                             BadgeIcons.GetIconPath(Case.Ablative),
-                                            "Ablative", "from whom? from where? from what? (cause, origin)",
+                                            GrammarText.GetCase(Case.Ablative), GrammarText.GetCaseSettingsHint(Case.Ablative),
                                             v => v.Ablative, v => v.CanDisableAblative),
                                         SettingsRow.BuildToggleWithIconAndHint<DeclensionSettingsViewModel>(
                                             BadgeIcons.GetIconPath(Case.Genitive),
-                                            "Genitive", "whose? of whom? of what? (possession)",
+                                            GrammarText.GetCase(Case.Genitive), GrammarText.GetCaseSettingsHint(Case.Genitive),
                                             v => v.Genitive, v => v.CanDisableGenitive),
                                         SettingsRow.BuildToggleWithIconAndHint<DeclensionSettingsViewModel>(
                                             BadgeIcons.GetIconPath(Case.Locative),
-                                            "Locative", "in whom? where? when? (position, relation, time)",
+                                            GrammarText.GetCase(Case.Locative), GrammarText.GetCaseSettingsHint(Case.Locative),
                                             v => v.Locative, v => v.CanDisableLocative),
                                         SettingsRow.BuildToggleWithIconAndHint<DeclensionSettingsViewModel>(
                                             BadgeIcons.GetIconPath(Case.Vocative),
-                                            "Vocative", "O, …! (direct address)",
+                                            GrammarText.GetCase(Case.Vocative), GrammarText.GetCaseSettingsHint(Case.Vocative),
                                             v => v.Vocative, v => v.CanDisableVocative)
                                     )
                                 )
@@ -110,7 +111,7 @@ public sealed partial class DeclensionSettingsPage : Page
             .Children(
                 // Section header
                 TextHelpers.RegularText()
-                    .Text("Practice filters")
+                    .Text(AppText.Get("Settings.Section.PracticeFilters"))
                     .FontSize(14)
                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
                     .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
@@ -126,7 +127,7 @@ public sealed partial class DeclensionSettingsPage : Page
                             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
                             .Children(
                                 GenderPatternSection.Build(
-                                    "Masculine",
+                                    GrammarText.GetGender(Gender.Masculine),
                                     [
                                         ("a", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternMascA)),
                                               cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternMascA))),
@@ -146,7 +147,7 @@ public sealed partial class DeclensionSettingsPage : Page
                                                cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternMascAnt)))
                                     ]),
                                 GenderPatternSection.Build(
-                                    "Feminine",
+                                    GrammarText.GetGender(Gender.Feminine),
                                     [
                                         ("ā", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternFemALong)),
                                               cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternFemA))),
@@ -160,7 +161,7 @@ public sealed partial class DeclensionSettingsPage : Page
                                               cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternFemAr)))
                                     ]),
                                 GenderPatternSection.Build(
-                                    "Neuter",
+                                    GrammarText.GetGender(Gender.Neuter),
                                     [
                                         ("a", cb => cb.SetBinding(CheckBox.IsCheckedProperty, Bind.TwoWayPath<DeclensionSettingsViewModel, bool>(v => v.PatternNtA)),
                                               cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternNtA))),
@@ -170,7 +171,7 @@ public sealed partial class DeclensionSettingsPage : Page
                                               cb => cb.SetBinding(IsEnabledProperty, Bind.Path<DeclensionSettingsViewModel, bool>(v => v.CanDisablePatternNtU)))
                                     ]),
                                 SettingsRow.BuildDropdown(
-                                    "Number",
+                                    AppText.Get("Settings.Row.Number"),
                                     SettingsHelpers.NumberOptions,
                                     cb => cb.SetBinding(
                                         ComboBox.SelectedIndexProperty,

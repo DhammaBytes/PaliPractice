@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using PaliPractice.Localization;
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Practice.Common;
@@ -308,7 +309,7 @@ public static class PracticePageBuilder
                     .Scope(cardPath)
                     .Children(
                         RegularText()
-                            .Text("Level: ")
+                            .Text(AppText.Get("Practice.Card.LevelLabel"))
                             .FontSize(fonts.Level)
                             .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
                             .Opacity(0.6),
@@ -572,7 +573,7 @@ public static class PracticePageBuilder
                     .FontSize(fonts.Translation)
                     .TextAlignment(TextAlignment.Center),
                 RegularText()
-                    .Text("1 / 1")
+                    .Text(AppTextFormatter.FormatPageOf(1, 1))
                     .FontSize(fonts.TranslationPagination)
                     .TextAlignment(TextAlignment.Center)
             );
@@ -778,8 +779,8 @@ public static class PracticePageBuilder
         LayoutConstants.PracticeFontSizes fonts,
         HeightClass heightClass)
     {
-        var (hardIcon, hardText, hardButton) = BuildActionButton<TVM>("Hard", PracticeIcons.Hard, 14, hardCommand, "HardButtonBrush", "HardButtonOutlineBrush", "OnHardButtonBrush", fonts, heightClass);
-        var (easyIcon, easyText, easyButton) = BuildActionButton<TVM>("Easy", PracticeIcons.Easy, 13, easyCommand, "EasyButtonBrush", "EasyButtonOutlineBrush", "OnEasyButtonBrush", fonts, heightClass);
+        var (hardIcon, hardText, hardButton) = BuildActionButton<TVM>(AppText.Get("Practice.Button.Hard"), PracticeIcons.Hard, 14, hardCommand, "HardButtonBrush", "HardButtonOutlineBrush", "OnHardButtonBrush", fonts, heightClass);
+        var (easyIcon, easyText, easyButton) = BuildActionButton<TVM>(AppText.Get("Practice.Button.Easy"), PracticeIcons.Easy, 13, easyCommand, "EasyButtonBrush", "EasyButtonOutlineBrush", "OnEasyButtonBrush", fonts, heightClass);
 
         var contentPadding = LayoutConstants.Gaps.ContentSpacing(heightClass);
         var container = new Grid()
@@ -836,7 +837,7 @@ public static class PracticePageBuilder
                         .Height(16) // Figma @1x: 24x16
                         .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush")),
                     RegularText()
-                        .Text("Reveal Answer")
+                        .Text(AppText.Get("Practice.Button.RevealAnswer"))
                         .FontSize(fonts.RevealButton)
                         .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
                         .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
@@ -960,7 +961,7 @@ public static class PracticePageBuilder
                 new StackPanel().Spacing(LayoutConstants.Gaps.DailyGoalSpacing).Children(
                     new Grid().ColumnDefinitions("*,Auto").Children(
                         RegularText()
-                            .Text("Daily goal")
+                            .Text(AppText.Get("Practice.DailyGoal"))
                             .FontSize(fonts.DailyGoal)
                             .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"))
                             .Grid(column: 0),

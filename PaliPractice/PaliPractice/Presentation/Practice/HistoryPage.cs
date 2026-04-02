@@ -1,5 +1,6 @@
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Practice.ViewModels;
+using PaliPractice.Localization;
 using PaliPractice.Services.UserData.Entities;
 using PaliPractice.Themes;
 using PaliPractice.Themes.Icons;
@@ -12,13 +13,17 @@ public sealed partial class HistoryPage : Page
     readonly StackPanel _sectionsContainer = new StackPanel()
         .HorizontalAlignment(HorizontalAlignment.Stretch)
         .MaxWidth(LayoutConstants.ContentMaxWidth);
+    readonly TextBlock _titleTextBlock = RegularText()
+        .FontSize(21)
+        .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
+        .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"));
 
     readonly TextBlock _emptyState;
 
     public HistoryPage()
     {
         _emptyState = RegularText()
-            .Text("No practice history yet")
+            .Text(AppText.Get("History.EmptyState"))
             .FontSize(16)
             .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
             .HorizontalAlignment(HorizontalAlignment.Center)
@@ -34,7 +39,7 @@ public sealed partial class HistoryPage : Page
                     .RowDefinitions("Auto,*")
                     .Children(
                         // Row 0: Title bar
-                        AppTitleBar.Build<HistoryViewModel>("History", v => v.GoBackCommand),
+                        AppTitleBar.BuildWithCenterElement<HistoryViewModel>(_titleTextBlock, v => v.GoBackCommand),
 
                         // Row 1: Content - scrollable sections
                         new ScrollViewer()
@@ -55,6 +60,7 @@ public sealed partial class HistoryPage : Page
     {
         if (e.NewValue is not HistoryViewModel vm) return;
 
+        _titleTextBlock.Text = vm.Title;
         _sectionsContainer.Children.Clear();
 
         if (!vm.HasHistory)

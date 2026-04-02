@@ -1,4 +1,5 @@
 using PaliPractice.Services.Database.Repositories;
+using PaliPractice.Localization;
 using PaliPractice.Services.UserData;
 
 namespace PaliPractice.Presentation.Settings.ViewModels;
@@ -48,8 +49,8 @@ public partial class LemmaRangeSettingsViewModel : ObservableObject
     /// Page title based on practice type.
     /// </summary>
     public string Title => _practiceType == PracticeType.Declension
-        ? "Noun Practice Range"
-        : "Verb Practice Range";
+        ? AppText.Get("Settings.Range.Title.Declension")
+        : AppText.Get("Settings.Range.Title.Conjugation");
 
     void LoadSettings()
     {

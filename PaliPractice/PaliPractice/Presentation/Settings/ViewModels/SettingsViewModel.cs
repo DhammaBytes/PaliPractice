@@ -1,4 +1,5 @@
 using PaliPractice.Presentation.Main.ViewModels;
+using PaliPractice.Localization;
 using PaliPractice.Services.Database.Repositories;
 using PaliPractice.Services.Feedback;
 using PaliPractice.Services.UserData;
@@ -14,8 +15,18 @@ public partial class SettingsViewModel : ObservableObject
     readonly IUserDataRepository _userData;
     bool _isLoading = true;
 
-    public static readonly string[] ThemeOptions = ["System", "Light", "Dark"];
-    public static readonly string[] TranslationLanguageOptions = ["English", "Russian"];
+    public static string[] ThemeOptions =>
+    [
+        AppText.Get("Settings.Theme.System"),
+        AppText.Get("Settings.Theme.Light"),
+        AppText.Get("Settings.Theme.Dark")
+    ];
+
+    public static string[] TranslationLanguageOptions =>
+    [
+        AppText.Get("Settings.LanguageOption.English"),
+        AppText.Get("Settings.LanguageOption.Russian")
+    ];
 
     public SettingsViewModel(
         INavigator navigator,

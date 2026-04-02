@@ -1,5 +1,6 @@
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Grammar.ViewModels;
+using PaliPractice.Localization;
 using PaliPractice.Themes;
 using static PaliPractice.Presentation.Common.Text.TextHelpers;
 using static PaliPractice.Presentation.Common.ShadowHelper;
@@ -94,14 +95,14 @@ public sealed partial class InflectionTablePage : Page
 
             if (!string.Equals(vm.LikeExample, vm.LemmaName, StringComparison.OrdinalIgnoreCase))
             {
-                _headerTextBlock.Inlines.Add(new Run { Text = " (like " });
+                _headerTextBlock.Inlines.Add(new Run { Text = AppText.Get("Grammar.Table.LikePrefix") });
                 _headerTextBlock.Inlines.Add(new Run
                 {
                     Text = vm.LikeExample,
                     FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
                     FontFamily = PaliFont
                 });
-                _headerTextBlock.Inlines.Add(new Run { Text = ")" });
+                _headerTextBlock.Inlines.Add(new Run { Text = AppText.Get("Grammar.Table.LikeSuffix") });
             }
         }
 
@@ -116,7 +117,7 @@ public sealed partial class InflectionTablePage : Page
             // Show hint if there are non-corpus forms
             if (_hintTextBlock != null && result.HasNonCorpusForms)
             {
-                _hintTextBlock.Text = "Forms not found in the Pāli corpus are grayed out.";
+                _hintTextBlock.Text = AppText.Get("Grammar.Table.NonCorpusHint");
                 _hintTextBlock.Visibility = Visibility.Visible;
             }
             else if (_hintTextBlock != null)

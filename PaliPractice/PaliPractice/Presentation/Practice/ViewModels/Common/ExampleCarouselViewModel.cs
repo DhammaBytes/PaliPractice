@@ -1,4 +1,5 @@
 using PaliPractice.Models.Words;
+using PaliPractice.Localization;
 using PaliPractice.Presentation.Common.Text;
 using PaliPractice.Presentation.Practice.Common;
 using PaliPractice.Presentation.Practice.ViewModels.Common.Entries;
@@ -108,7 +109,7 @@ public partial class ExampleCarouselViewModel : ObservableObject
         RebalanceMeaning();
         CurrentReference = entry.CurrentExample.Reference;
         CurrentExample = entry.CurrentExample.Example;
-        PaginationText = $"{CurrentIndex + 1} of {TotalTranslations}";
+        PaginationText = AppTextFormatter.FormatPageOf(CurrentIndex + 1, TotalTranslations);
     }
 
     void RebalanceMeaning()

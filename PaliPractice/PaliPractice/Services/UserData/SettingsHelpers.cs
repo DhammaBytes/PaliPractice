@@ -1,3 +1,5 @@
+using PaliPractice.Localization;
+
 namespace PaliPractice.Services.UserData;
 
 /// <summary>
@@ -63,7 +65,12 @@ public static class SettingsHelpers
     /// <summary>
     /// Labels for the number dropdown. Index: 0=both, 1=singular only, 2=plural only.
     /// </summary>
-    public static readonly string[] NumberOptions = ["Singular & Plural", "Singular only", "Plural only"];
+    public static string[] NumberOptions =>
+    [
+        AppText.Get("Settings.NumberOption.Both"),
+        AppText.Get("Settings.NumberOption.SingularOnly"),
+        AppText.Get("Settings.NumberOption.PluralOnly")
+    ];
 
     /// <summary>
     /// Converts dropdown index to CSV for storage.

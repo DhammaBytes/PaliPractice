@@ -1,4 +1,5 @@
 using PaliPractice.Models.Words;
+using PaliPractice.Localization;
 using PaliPractice.Presentation.Grammar.ViewModels;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Services.Database.Repositories;
@@ -158,7 +159,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to load practice queue");
-            FlashCard.ErrorMessage = $"Failed to load data: {ex.Message}";
+            FlashCard.ErrorMessage = AppText.Format("Practice.Error.LoadData", ex.Message);
         }
         finally
         {
@@ -206,11 +207,9 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     protected string GetEffectiveTranslationLanguageCode()
     {
-        var defaultTranslationLanguage = (int)TranslationLanguageResolver.GetInitialPreference();
-        var rawPreference = UserData.GetSetting(
-            SettingsKeys.AppearanceTranslationLanguage,
-            defaultTranslationLanguage);
-        var preference = TranslationLanguageResolver.NormalizePreference(rawPreference);
+        var defaultPreference = (int)TranslationLanguageResolver.GetInitialPreference();
+        var rawValue = UserData.GetSetting(SettingsKeys.AppearanceTranslationLanguage, defaultPreference);
+        var preference = TranslationLanguageResolver.NormalizePreference(rawValue);
         return TranslationLanguageResolver.ResolveEffectiveLanguageCode(preference);
     }
 

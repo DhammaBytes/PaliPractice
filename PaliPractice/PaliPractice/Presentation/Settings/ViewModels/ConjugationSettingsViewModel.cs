@@ -1,4 +1,5 @@
 using Microsoft.UI.Dispatching;
+using PaliPractice.Localization;
 using PaliPractice.Services.Database.Repositories;
 using PaliPractice.Services.UserData;
 
@@ -297,7 +298,12 @@ public partial class ConjugationSettingsViewModel : ObservableObject
     /// <summary>
     /// Labels for the voice dropdown. Index maps to: 0=both, 1=normal only, 2=reflexive only.
     /// </summary>
-    public static readonly string[] VoiceOptions = ["Active & Reflexive", "Active only", "Reflexive only"];
+    public static string[] VoiceOptions =>
+    [
+        AppText.Get("Settings.VoiceOption.Both"),
+        AppText.Get("Settings.VoiceOption.ActiveOnly"),
+        AppText.Get("Settings.VoiceOption.ReflexiveOnly")
+    ];
 
     /// <summary>
     /// Index for ComboBox binding. Maps to Voice CSV: 0="1,2", 1="1", 2="2".

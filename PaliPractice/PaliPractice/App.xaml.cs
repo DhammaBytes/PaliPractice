@@ -3,6 +3,7 @@ using PaliPractice.Presentation.Main.ViewModels;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Presentation.Practice.ViewModels;
 using PaliPractice.Presentation.Settings.ViewModels;
+using PaliPractice.Localization;
 using PaliPractice.Services.Database.Providers;
 using PaliPractice.Services.Feedback;
 using PaliPractice.Services.Feedback.Providers;
@@ -152,7 +153,7 @@ public partial class App : Application
             );
         
         MainWindow = builder.Window;
-        MainWindow.Title = "Pāli Practice";
+        MainWindow.Title = AppText.Get("App.Name");
 
         if (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() || OperatingSystem.IsLinux())
         {

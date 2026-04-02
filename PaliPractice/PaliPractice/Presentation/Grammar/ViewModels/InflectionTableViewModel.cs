@@ -1,5 +1,6 @@
 using PaliPractice.Models.Inflection;
 using PaliPractice.Models.Words;
+using PaliPractice.Localization;
 using PaliPractice.Services.Grammar;
 
 namespace PaliPractice.Presentation.Grammar.ViewModels;
@@ -9,40 +10,11 @@ namespace PaliPractice.Presentation.Grammar.ViewModels;
 /// </summary>
 static class UiAbbreviations
 {
-    public static readonly Dictionary<Case, string> Cases = new()
-    {
-        [Case.Nominative] = "nom",
-        [Case.Accusative] = "acc",
-        [Case.Instrumental] = "instr",
-        [Case.Dative] = "dat",
-        [Case.Ablative] = "abl",
-        [Case.Genitive] = "gen",
-        [Case.Locative] = "loc",
-        [Case.Vocative] = "voc"
-    };
-
-    public static readonly Dictionary<Gender, string> Genders = new()
-    {
-        [Gender.Masculine] = "masc",
-        [Gender.Feminine] = "fem",
-        [Gender.Neuter] = "neut"
-    };
-
-    public static readonly Dictionary<Number, string> Numbers = new()
-    {
-        [Number.Singular] = "sing",
-        [Number.Plural] = "plur"
-    };
-
-    public static readonly Dictionary<Tense, string> Tenses = new()
-    {
-        [Tense.Present] = "pr",
-        [Tense.Imperative] = "imp",
-        [Tense.Optative] = "opt",
-        [Tense.Future] = "fut"
-    };
-
-    public const string Reflexive = "refl";
+    public static string GetCase(Case value) => GrammarText.GetCaseTable(value);
+    public static string GetGender(Gender value) => GrammarText.GetGenderTable(value);
+    public static string GetNumber(Number value) => GrammarText.GetNumberTable(value);
+    public static string GetTense(Tense value) => GrammarText.GetTenseTable(value);
+    public static string GetReflexive() => GrammarText.GetVoiceTable(Voice.Reflexive);
 }
 
 /// <summary>
@@ -99,7 +71,9 @@ public partial class InflectionTableViewModel : ObservableObject
     /// <summary>
     /// Title for the page: "Declension Table" or "Conjugation Table"
     /// </summary>
-    public string PageTitle => IsNoun ? "Declension Table" : "Conjugation Table";
+    public string PageTitle => IsNoun
+        ? AppText.Get("Grammar.Table.PageTitle.Declension")
+        : AppText.Get("Grammar.Table.PageTitle.Conjugation");
 
     /// <summary>
     /// The lemma name (bold, Pali font)
@@ -132,10 +106,7 @@ public partial class InflectionTableViewModel : ObservableObject
     {
         get
         {
-            var baseType = IsNoun ? "declension" : "conjugation";
-            if (IsIrregular) return $"irregular {baseType}";
-            if (IsVariantPattern) return $"non-standard {baseType}";
-            return baseType;
+            return GrammarText.GetPatternTypeName(IsNoun, IsIrregular, IsVariantPattern);
         }
     }
 
@@ -184,9 +155,9 @@ public partial class InflectionTableViewModel : ObservableObject
         IsIrregular = noun.Irregular;
         IsVariantPattern = noun.IsVariant;
 
-        var genderLabel = UiAbbreviations.Genders.GetValueOrDefault(noun.Gender, "");
-        var sgLabel = UiAbbreviations.Numbers[Number.Singular];
-        var plLabel = UiAbbreviations.Numbers[Number.Plural];
+        var genderLabel = UiAbbreviations.GetGender(noun.Gender);
+        var sgLabel = UiAbbreviations.GetNumber(Number.Singular);
+        var plLabel = UiAbbreviations.GetNumber(Number.Plural);
 
         // Column headers based on gender and plural-only status
         var columns = new List<string>();
@@ -198,7 +169,7 @@ public partial class InflectionTableViewModel : ObservableObject
         // Row headers: 8 grammatical cases
         var cases = new[] { Case.Nominative, Case.Accusative, Case.Instrumental, Case.Dative,
                            Case.Ablative, Case.Genitive, Case.Locative, Case.Vocative };
-        RowHeaders = cases.Select(c => UiAbbreviations.Cases[c]).ToList();
+        RowHeaders = cases.Select(UiAbbreviations.GetCase).ToList();
 
         // Generate cells for each case × number
 
@@ -238,9 +209,9 @@ public partial class InflectionTableViewModel : ObservableObject
         var testReflexive = inflectionService.GenerateVerbForms(verb, Person.Third, Number.Singular, Tense.Present, reflexive: true);
         var hasReflexive = testReflexive.Forms.Count > 0;
 
-        var sgLabel = UiAbbreviations.Numbers[Number.Singular];
-        var plLabel = UiAbbreviations.Numbers[Number.Plural];
-        var reflxLabel = UiAbbreviations.Reflexive;
+        var sgLabel = UiAbbreviations.GetNumber(Number.Singular);
+        var plLabel = UiAbbreviations.GetNumber(Number.Plural);
+        var reflxLabel = UiAbbreviations.GetReflexive();
 
         // Column headers
         var columns = new List<string> { sgLabel, plLabel };
@@ -260,8 +231,8 @@ public partial class InflectionTableViewModel : ObservableObject
         {
             foreach (var person in persons)
             {
-                var tenseAbbrev = UiAbbreviations.Tenses[tense];
-                var personAbbrev = Conjugation.PersonAbbreviations[person];
+                var tenseAbbrev = UiAbbreviations.GetTense(tense);
+                var personAbbrev = GrammarText.GetPersonShort(person);
                 rowHeadersList.Add($"{tenseAbbrev} {personAbbrev}");
             }
         }

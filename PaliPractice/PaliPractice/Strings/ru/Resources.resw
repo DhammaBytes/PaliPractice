@@ -1,64 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!--
-    Microsoft ResX Schema
-
-    Version 2.0
-
-    The primary goals of this format is to allow a simple XML format
-    that is mostly human readable. The generation and parsing of the
-    various data types are done through the TypeConverter classes
-    associated with the data types.
-
-    Example:
-
-    ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-resx</resheader>
-    <resheader name="version">2.0</resheader>
-    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-
-    There are any number of "resheader" rows that contain simple
-    name/value pairs.
-
-    Each data row contains a name, and value. The row also contains a
-    type or mimetype. Type corresponds to a .NET class that support
-    text/value conversion through the TypeConverter architecture.
-    Classes that don't support this are serialized and stored with the
-    mimetype set.
-
-    The mimetype is used for serialized objects, and tells the
-    ResXResourceReader how to depersist the object. This is currently not
-    extensible. For a given mimetype the value must be set accordingly:
-
-    Note - application/x-microsoft.net.object.binary.base64 is the format
-    that the ResXResourceWriter will generate, however the reader can
-    read any of the formats listed below.
-
-    mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with
-            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-            : and then encoded with base64 encoding.
-
-    mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with
-            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-            : and then encoded with base64 encoding.
-
-    mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array
-            : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding.
-    -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -117,7 +58,334 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ApplicationName" xml:space="preserve">
-    <value>Практика Пали</value>
-  </data>
+
+  <data name="ApplicationName" xml:space="preserve"><value>Практика Пали</value></data>
+  <data name="App.Name" xml:space="preserve"><value>Практика Пали</value></data>
+
+  <data name="Common.AllForms" xml:space="preserve"><value>Все формы</value></data>
+  <data name="Common.Back" xml:space="preserve"><value>Назад</value></data>
+  <data name="Common.History" xml:space="preserve"><value>История</value></data>
+  <data name="Common.Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Common.Exit" xml:space="preserve"><value>Выйти</value></data>
+  <data name="Common.Continue" xml:space="preserve"><value>Продолжить</value></data>
+  <data name="Common.PageOfFormat" xml:space="preserve"><value>{0} из {1}</value></data>
+  <data name="Common.AvailableCount" xml:space="preserve"><value>Доступно: {0}</value></data>
+  <data name="Common.DayCount.One" xml:space="preserve"><value>{0} день</value></data>
+  <data name="Common.DayCount.Few" xml:space="preserve"><value>{0} дня</value></data>
+  <data name="Common.DayCount.Many" xml:space="preserve"><value>{0} дней</value></data>
+
+  <data name="Start.Nouns.Title" xml:space="preserve"><value>Существительные и падежи</value></data>
+  <data name="Start.Nouns.Subtitle" xml:space="preserve"><value>Практика склонений</value></data>
+  <data name="Start.Verbs.Title" xml:space="preserve"><value>Глаголы и времена</value></data>
+  <data name="Start.Verbs.Subtitle" xml:space="preserve"><value>Практика спряжений</value></data>
+
+  <data name="Settings.Title" xml:space="preserve"><value>Настройки</value></data>
+  <data name="Settings.Section.General" xml:space="preserve"><value>Общие</value></data>
+  <data name="Settings.Section.Practice" xml:space="preserve"><value>Практика</value></data>
+  <data name="Settings.Section.AboutSupport" xml:space="preserve"><value>О приложении и поддержка</value></data>
+  <data name="Settings.Section.PracticeFilters" xml:space="preserve"><value>Фильтры практики</value></data>
+  <data name="Settings.Section.Cases" xml:space="preserve"><value>Падежи</value></data>
+  <data name="Settings.Section.Tenses" xml:space="preserve"><value>Времена</value></data>
+  <data name="Settings.Row.Theme" xml:space="preserve"><value>Тема</value></data>
+  <data name="Settings.Row.Language" xml:space="preserve"><value>Язык перевода</value></data>
+  <data name="Settings.Row.PracticeRange" xml:space="preserve"><value>Диапазон практики</value></data>
+  <data name="Settings.Row.DailyPracticeGoal" xml:space="preserve"><value>Дневная цель</value></data>
+  <data name="Settings.Row.Number" xml:space="preserve"><value>Число</value></data>
+  <data name="Settings.Row.Voice" xml:space="preserve"><value>Залог</value></data>
+  <data name="Settings.Row.VoiceHint" xml:space="preserve"><value>Активный (parassapada) распространен, а возвратный (attanopada) в основном встречается в поэтических строфах</value></data>
+  <data name="Settings.Row.Endings" xml:space="preserve"><value>Окончания</value></data>
+  <data name="Settings.Row.Person" xml:space="preserve"><value>Лицо</value></data>
+  <data name="Settings.Theme.System" xml:space="preserve"><value>Системная</value></data>
+  <data name="Settings.Theme.Light" xml:space="preserve"><value>Светлая</value></data>
+  <data name="Settings.Theme.Dark" xml:space="preserve"><value>Темная</value></data>
+  <data name="Settings.LanguageOption.English" xml:space="preserve"><value>English</value></data>
+  <data name="Settings.LanguageOption.Russian" xml:space="preserve"><value>Русский</value></data>
+  <data name="Settings.NumberOption.Both" xml:space="preserve"><value>Единственное и множественное</value></data>
+  <data name="Settings.NumberOption.SingularOnly" xml:space="preserve"><value>Только единственное</value></data>
+  <data name="Settings.NumberOption.PluralOnly" xml:space="preserve"><value>Только множественное</value></data>
+  <data name="Settings.VoiceOption.Both" xml:space="preserve"><value>Активный и возвратный</value></data>
+  <data name="Settings.VoiceOption.ActiveOnly" xml:space="preserve"><value>Только активный</value></data>
+  <data name="Settings.VoiceOption.ReflexiveOnly" xml:space="preserve"><value>Только возвратный</value></data>
+  <data name="Settings.Navigation.NounDeclensions" xml:space="preserve"><value>Склонения существительных</value></data>
+  <data name="Settings.Navigation.VerbConjugations" xml:space="preserve"><value>Спряжения глаголов</value></data>
+  <data name="Settings.Navigation.AboutApp" xml:space="preserve"><value>О Практике Пали</value></data>
+  <data name="Settings.Action.ContactUs" xml:space="preserve"><value>Связаться с нами</value></data>
+  <data name="Settings.Action.WriteReview" xml:space="preserve"><value>Оставить отзыв</value></data>
+  <data name="Settings.ReviewExplanation" xml:space="preserve"><value>Если у вас есть минута, пожалуйста, оставьте отзыв о Практике Пали. Даже одно предложение очень полезно и помогает другим изучающим пали найти приложение в магазине.</value></data>
+  <data name="Settings.Declension.Title" xml:space="preserve"><value>Настройки склонений</value></data>
+  <data name="Settings.Conjugation.Title" xml:space="preserve"><value>Настройки спряжений</value></data>
+  <data name="Settings.Tenses.AoristFooter" xml:space="preserve"><value>Аорист (повествовательное прошедшее время) не включен: его формы сильно различаются между глаголами и часто требуют отдельного изучения для каждого слова. В будущем может появиться отдельный тренажер для аориста.</value></data>
+  <data name="Settings.CitationFormWarning.Title" xml:space="preserve"><value>Настройки скорректированы</value></data>
+  <data name="Settings.CitationFormWarning.Content" xml:space="preserve"><value>В вопросах в качестве словарной формы используется настоящее время, 3-е лицо, единственное число, потому что в пали инфинитив почти не употребляется. Чтобы у вас оставались формы для практики, 1-е и 2-е лицо были снова включены.</value></data>
+  <data name="Settings.Range.Title.Declension" xml:space="preserve"><value>Диапазон существительных</value></data>
+  <data name="Settings.Range.Title.Conjugation" xml:space="preserve"><value>Диапазон глаголов</value></data>
+  <data name="Settings.Range.SectionTitle" xml:space="preserve"><value>Диапазон практики</value></data>
+  <data name="Settings.Range.Top100.Title" xml:space="preserve"><value>Топ 100</value></data>
+  <data name="Settings.Range.Top100.Subtitle" xml:space="preserve"><value>Самые частотные слова</value></data>
+  <data name="Settings.Range.Top300.Title" xml:space="preserve"><value>Топ 300</value></data>
+  <data name="Settings.Range.Top300.Subtitle" xml:space="preserve"><value>Частотные слова</value></data>
+  <data name="Settings.Range.Top500.Title" xml:space="preserve"><value>Топ 500</value></data>
+  <data name="Settings.Range.Top500.Subtitle" xml:space="preserve"><value>Расширенный словарь</value></data>
+  <data name="Settings.Range.AllWords.Title" xml:space="preserve"><value>Все слова</value></data>
+  <data name="Settings.Range.Custom.Title" xml:space="preserve"><value>Свой диапазон</value></data>
+  <data name="Settings.Range.Custom.Subtitle" xml:space="preserve"><value>Укажите свой диапазон</value></data>
+  <data name="Settings.Range.Custom.SectionTitle" xml:space="preserve"><value>Свой диапазон</value></data>
+  <data name="Settings.Range.Custom.From" xml:space="preserve"><value>От (самые частотные)</value></data>
+  <data name="Settings.Range.Custom.To" xml:space="preserve"><value>До (менее частотные)</value></data>
+
+  <data name="History.Title.Declension" xml:space="preserve"><value>История склонений</value></data>
+  <data name="History.Title.Conjugation" xml:space="preserve"><value>История спряжений</value></data>
+  <data name="History.EmptyState" xml:space="preserve"><value>Истории практики пока нет</value></data>
+  <data name="History.Header.Today" xml:space="preserve"><value>Сегодня</value></data>
+  <data name="History.Header.Yesterday" xml:space="preserve"><value>Вчера</value></data>
+
+  <data name="About.Title" xml:space="preserve"><value>О приложении</value></data>
+  <data name="About.AppNameFormat" xml:space="preserve"><value>Практика Пали v{0}</value></data>
+  <data name="About.ContactButton" xml:space="preserve"><value>Связаться с нами</value></data>
+  <data name="About.BlessingTranslation" xml:space="preserve"><value>пусть все существа будут счастливы</value></data>
+  <data name="About.Description" xml:space="preserve"><value><![CDATA[
+Бесплатное приложение с открытым исходным кодом для изучения спряжений глаголов и склонений существительных пали с помощью карточек интервального повторения.
+
+Поддерживается участниками [DhammaBytes](https://dhammabytes.org). Мы будем рады отзывам и помощи с переводами.
+
+Данные о словах и грамматике взяты из проекта [Digital Pāli Dictionary](https://dpdict.net).
+
+Приложение также доступно на [других платформах](https://www.dhammabytes.org/pali-practice/).
+]]></value></data>
+  <data name="About.IconTitle" xml:space="preserve"><value>Иконка приложения</value></data>
+  <data name="About.IconDescription" xml:space="preserve"><value><![CDATA[
+На иконке изображена перепелка из [SN 47:6, Sakuṇagghi Sutta](https://www.dhammatalks.org/suttas/SN/SN47_6.html) ("Ястреб"), скрывающаяся за камнями на своей родной территории - на только что вспаханном поле с комьями земли:
+
+*"Странствуйте, монахи, в пределах вашего надлежащего круга, на вашей собственной исконной территории. Когда кто-то странствует в пределах своего надлежащего круга, на своей собственной исконной территории, Мара не находит для него лазейки, Мара не находит опоры. И что для монаха является его надлежащим кругом, его собственной исконной территорией? Четыре основы осознанности."*
+
+Иллюстрация иконки и дизайн приложения: [Irina Mir](https://www.instagram.com/irmirx)
+]]></value></data>
+  <data name="About.LicenseTitle" xml:space="preserve"><value>Лицензия приложения</value></data>
+  <data name="About.LicenseText" xml:space="preserve"><value><![CDATA[
+Приложение распространяется по лицензии CC BY-NC-SA 4.0. Это означает, что вы можете делиться им и адаптировать его при соблюдении следующих условий:
+
+- **BY:** Указывайте источник
+- **NC:** Только некоммерческое использование
+- **SA:** Распространяйте на тех же условиях
+
+Исходный код [доступен на GitHub](https://github.com/DhammaBytes/PaliPractice)
+]]></value></data>
+  <data name="About.FontsTitle" xml:space="preserve"><value>Шрифты</value></data>
+  <data name="About.FontsText" xml:space="preserve"><value><![CDATA[
+**Libertinus Sans** используется для пали, потому что его выраженный ритм, напоминающий антикву, и различимые строчные буквы помогают разбирать незнакомые слова буква за буквой.
+
+**Source Sans 3** используется для остальных текстов и элементов интерфейса.
+
+Оба шрифта распространяются по лицензии SIL Open Font License (OFL 1.1).
+]]></value></data>
+  <data name="About.LibrariesTitle" xml:space="preserve"><value>Библиотеки и фреймворки</value></data>
+  <data name="About.LibrariesText" xml:space="preserve"><value><![CDATA[
+- [Uno Platform](https://github.com/unoplatform/uno): Apache License 2.0, copyright Uno Platform Inc.
+- [Markdig](https://github.com/xoofx/markdig): BSD 2-Clause License, copyright Alexandre Mutel.
+- [sqlite-net](https://github.com/praeclarum/sqlite-net): MIT License, copyright Krueger Systems, Inc.
+]]></value></data>
+
+  <data name="Help.Title" xml:space="preserve"><value>Справка</value></data>
+  <data name="Help.HowToPractice.Title" xml:space="preserve"><value>Как заниматься</value></data>
+  <data name="Help.SpacedRepetition.Title" xml:space="preserve"><value>Интервальное повторение</value></data>
+  <data name="Help.Questions.Title" xml:space="preserve"><value>Вопросы и ответы</value></data>
+  <data name="Help.HowToPractice.Content" xml:space="preserve"><value><![CDATA[
+Это приложение помогает запоминать склонения и спряжения пали для существительных и глаголов. Вы увидите палийское слово и метки, указывающие нужную форму - например, падеж и число для существительных или время и лицо для глаголов.
+
+Попробуйте вспомнить правильную словоформу и ее значение. Затем нажмите **Показать ответ**, чтобы увидеть ответ и возможные переводы. После этого отметьте **Легко** или **Трудно** в зависимости от того, насколько хорошо вы знали и форму, и значение.
+]]></value></data>
+  <data name="Help.SpacedRepetition.Content" xml:space="preserve"><value><![CDATA[
+Приложение отслеживает, насколько хорошо вы знаете каждую форму. У каждой формы есть уровень прогресса от 1 до 10:
+
+- **Уровень 1-3:** Еще в изучении - повторяется в течение нескольких дней
+- **Уровень 4-6:** Становится знакомой - повторяется раз в неделю или две
+- **Уровень 7-9:** Уже хорошо известна - повторяется раз в месяц или реже
+- **Уровень 10:** Освоена - повторяется примерно через 8 месяцев
+
+Все формы начинаются с уровня 4. Оценка **Легко** повышает уровень на 1, а **Трудно** понижает его на 1. Так вы тратите больше времени на формы, которые даются сложнее.
+]]></value></data>
+  <data name="Help.Faq.Grammar" xml:space="preserve"><value><![CDATA[
+**Где можно изучать грамматику?**
+
+Это приложение сосредоточено на запоминании, поэтому оно не заменяет учебники и курсы. Посмотрите руководство [Learn Pāli: Best way to start?](https://palistudies.blogspot.com/2018/05/learn-pali-where-to-begin.html) и серию автора [Learn Pāli Language](https://www.youtube.com/playlist?list=PLf6RXFuRpeLRYj-wWs4KFrTPrzvAWWMpo) на YouTube.
+]]></value></data>
+  <data name="Help.Faq.MultipleForms" xml:space="preserve"><value><![CDATA[
+**Почему в некоторых ответах показывается несколько форм?**
+
+У некоторых падежей и времен в пали бывает больше одного правильного окончания. Приложение показывает все употребляющиеся формы для данного грамматического контекста и пропускает потенциально возможные формы, которые не встречаются в палийском корпусе.
+]]></value></data>
+  <data name="Help.Faq.Examples" xml:space="preserve"><value><![CDATA[
+**Почему примеры из сутт используют другие формы?**
+
+Примеры предложений берутся из [Digital Pāli Dictionary](https://dpdict.net), который дает один-два примера на значение слова, а не на каждую словоформу. Эти примеры показывают употребление слова в контексте, но не обязательно именно ту форму, которую вы сейчас практикуете.
+]]></value></data>
+  <data name="Help.Faq.MissingWords" xml:space="preserve"><value><![CDATA[
+**Почему некоторых слов нет?**
+
+Это приложение сосредоточено на формах, наиболее полезных для начинающих и продолжающих. В него входят 1 500 самых частотных существительных и 750 самых частотных глаголов из Палийского канона. Некоторые имена собственные и сложные составные слова исключены. Для расширенного словаря и грамматических справок обращайтесь к [Digital Pāli Dictionary](https://dpdict.net).
+]]></value></data>
+  <data name="Help.Faq.MissingForms" xml:space="preserve"><value><![CDATA[
+**Почему не включены формы аориста и причастий?**
+
+Эти формы сильно различаются между глаголами и часто требуют изучения слово за словом. Это плохо вписывается в текущий формат практики. В будущих версиях может появиться отдельный тренажер для этих форм.
+]]></value></data>
+  <data name="Help.Faq.AboutApp" xml:space="preserve"><value><![CDATA[
+**Где можно узнать больше о приложении?**
+
+См. раздел "О приложении" в настройках: там есть сведения о приложении, источниках данных, лицензировании и способах связаться с нами.
+]]></value></data>
+  <data name="Help.Faq.DataStorage" xml:space="preserve"><value><![CDATA[
+**Где хранятся мои данные?**
+
+Это приложение полностью работает офлайн и не делает резервные копии ваших настроек и прогресса, а также не синхронизирует данные между устройствами.
+
+На мобильных устройствах системное резервное копирование телефона обычно автоматически включает локальные данные приложений. На настольных платформах данные хранятся в обычных каталогах конфигурации приложений и требуют ручного резервного копирования.
+]]></value></data>
+
+  <data name="Statistics.Title" xml:space="preserve"><value>Статистика</value></data>
+  <data name="Statistics.ButtonTitle" xml:space="preserve"><value>Стат.</value></data>
+  <data name="Statistics.Section.Overview" xml:space="preserve"><value>Обзор</value></data>
+  <data name="Statistics.Section.Nouns" xml:space="preserve"><value>Существительные</value></data>
+  <data name="Statistics.Section.Verbs" xml:space="preserve"><value>Глаголы</value></data>
+  <data name="Statistics.Streak.Current" xml:space="preserve"><value>Серия дней</value></data>
+  <data name="Statistics.Streak.Total" xml:space="preserve"><value>Всего</value></data>
+  <data name="Statistics.Streak.Last30Days" xml:space="preserve"><value>Последние 30 дней</value></data>
+  <data name="Statistics.Label.AllTime" xml:space="preserve"><value>За все время</value></data>
+  <data name="Statistics.Label.Last7Days" xml:space="preserve"><value>За 7 дней</value></data>
+  <data name="Statistics.Label.ToRepeat" xml:space="preserve"><value>К повтору</value></data>
+  <data name="Statistics.Label.MasteryDistribution" xml:space="preserve"><value>Распределение уровней</value></data>
+  <data name="Statistics.Label.Strongest" xml:space="preserve"><value>Самые сильные</value></data>
+  <data name="Statistics.Label.NeedWork" xml:space="preserve"><value>Нужно подтянуть</value></data>
+  <data name="Statistics.Legend.Less" xml:space="preserve"><value>Меньше</value></data>
+  <data name="Statistics.Legend.More" xml:space="preserve"><value>Больше</value></data>
+  <data name="Statistics.Legend.Struggling" xml:space="preserve"><value>Сложно</value></data>
+  <data name="Statistics.Legend.Learning" xml:space="preserve"><value>Изучается</value></data>
+  <data name="Statistics.Legend.Strong" xml:space="preserve"><value>Уверенно</value></data>
+  <data name="Statistics.Legend.Mastered" xml:space="preserve"><value>Освоено</value></data>
+  <data name="Statistics.CalendarTooltipFormat" xml:space="preserve"><value>{0}
+Существительные: {1}
+Глаголы: {2}</value></data>
+
+  <data name="Practice.Title.Declension" xml:space="preserve"><value>Практика склонений</value></data>
+  <data name="Practice.Title.Conjugation" xml:space="preserve"><value>Практика спряжений</value></data>
+  <data name="Practice.Card.LevelLabel" xml:space="preserve"><value>Уровень: </value></data>
+  <data name="Practice.Button.RevealAnswer" xml:space="preserve"><value>Показать ответ</value></data>
+  <data name="Practice.Button.Hard" xml:space="preserve"><value>Трудно</value></data>
+  <data name="Practice.Button.Easy" xml:space="preserve"><value>Легко</value></data>
+  <data name="Practice.DailyGoal" xml:space="preserve"><value>Дневная цель</value></data>
+  <data name="Practice.Dialog.AllFormsPracticed.Title" xml:space="preserve"><value>Все формы отработаны</value></data>
+  <data name="Practice.Dialog.AllFormsPracticed.Content" xml:space="preserve"><value>Отличная работа! Вы уже отработали все доступные формы. Вернитесь позже, когда подойдет время повторений, или измените настройки, чтобы добавить больше форм.</value></data>
+  <data name="Practice.Dialog.DailyGoalReached.Title" xml:space="preserve"><value>Дневная цель достигнута!</value></data>
+  <data name="Practice.Dialog.DailyGoalReached.Content" xml:space="preserve"><value>Поздравляем! Вы выполнили свою дневную цель практики.</value></data>
+  <data name="Practice.Error.LoadData" xml:space="preserve"><value>Не удалось загрузить данные для практики: {0}</value></data>
+
+  <data name="Grammar.Table.PageTitle.Declension" xml:space="preserve"><value>Таблица склонения</value></data>
+  <data name="Grammar.Table.PageTitle.Conjugation" xml:space="preserve"><value>Таблица спряжения</value></data>
+  <data name="Grammar.Table.LikePrefix" xml:space="preserve"><value> (как </value></data>
+  <data name="Grammar.Table.LikeSuffix" xml:space="preserve"><value>)</value></data>
+  <data name="Grammar.Table.NonCorpusHint" xml:space="preserve"><value>Формы, не найденные в палийском корпусе, показаны серым.</value></data>
+
+  <data name="Feedback.DiagnosticsHeader" xml:space="preserve"><value>Диагностическая информация (пожалуйста, сохраните ее для поддержки):</value></data>
+  <data name="Feedback.Label.App" xml:space="preserve"><value>Приложение</value></data>
+  <data name="Feedback.Label.Device" xml:space="preserve"><value>Устройство</value></data>
+  <data name="Feedback.Label.Os" xml:space="preserve"><value>ОС</value></data>
+  <data name="Feedback.Label.Locale" xml:space="preserve"><value>Локаль</value></data>
+  <data name="Feedback.SettingsHeader" xml:space="preserve"><value>Настройки:</value></data>
+  <data name="Feedback.DefaultSettings" xml:space="preserve"><value>  (настройки по умолчанию)</value></data>
+  <data name="Feedback.DiagnosticsError" xml:space="preserve"><value>(Не удалось собрать диагностику: {0})</value></data>
+  <data name="Feedback.SettingsReadError" xml:space="preserve"><value>  (Не удалось прочитать настройки: {0})</value></data>
+
+  <data name="Grammar.Case.Nominative.Full" xml:space="preserve"><value>Именительный</value></data>
+  <data name="Grammar.Case.Nominative.Short" xml:space="preserve"><value>Им.</value></data>
+  <data name="Grammar.Case.Nominative.Table" xml:space="preserve"><value>им.</value></data>
+  <data name="Grammar.Case.Nominative.PracticeHint" xml:space="preserve"><value>кто? что? (подлежащее)</value></data>
+  <data name="Grammar.Case.Nominative.SettingsHint" xml:space="preserve"><value>кто? что? (подлежащее)</value></data>
+  <data name="Grammar.Case.Accusative.Full" xml:space="preserve"><value>Винительный</value></data>
+  <data name="Grammar.Case.Accusative.Short" xml:space="preserve"><value>Вин.</value></data>
+  <data name="Grammar.Case.Accusative.Table" xml:space="preserve"><value>вин.</value></data>
+  <data name="Grammar.Case.Accusative.PracticeHint" xml:space="preserve"><value>кого? что? (объект)</value></data>
+  <data name="Grammar.Case.Accusative.SettingsHint" xml:space="preserve"><value>кого? что? (объект, направление действия)</value></data>
+  <data name="Grammar.Case.Instrumental.Full" xml:space="preserve"><value>Творительный</value></data>
+  <data name="Grammar.Case.Instrumental.Short" xml:space="preserve"><value>Твор.</value></data>
+  <data name="Grammar.Case.Instrumental.Table" xml:space="preserve"><value>твор.</value></data>
+  <data name="Grammar.Case.Instrumental.PracticeHint" xml:space="preserve"><value>кем? чем? с кем? с чем?</value></data>
+  <data name="Grammar.Case.Instrumental.SettingsHint" xml:space="preserve"><value>кем? чем? с кем? с чем? (орудие, сопровождение)</value></data>
+  <data name="Grammar.Case.Dative.Full" xml:space="preserve"><value>Дательный</value></data>
+  <data name="Grammar.Case.Dative.Short" xml:space="preserve"><value>Дат.</value></data>
+  <data name="Grammar.Case.Dative.Table" xml:space="preserve"><value>дат.</value></data>
+  <data name="Grammar.Case.Dative.PracticeHint" xml:space="preserve"><value>кому? чему? для кого? для чего?</value></data>
+  <data name="Grammar.Case.Dative.SettingsHint" xml:space="preserve"><value>кому? чему? для кого? для чего? (адресат, назначение)</value></data>
+  <data name="Grammar.Case.Ablative.Full" xml:space="preserve"><value>Аблатив</value></data>
+  <data name="Grammar.Case.Ablative.Short" xml:space="preserve"><value>Абл.</value></data>
+  <data name="Grammar.Case.Ablative.Table" xml:space="preserve"><value>абл.</value></data>
+  <data name="Grammar.Case.Ablative.PracticeHint" xml:space="preserve"><value>от кого? откуда? из чего?</value></data>
+  <data name="Grammar.Case.Ablative.SettingsHint" xml:space="preserve"><value>от кого? откуда? из чего? (источник, причина)</value></data>
+  <data name="Grammar.Case.Genitive.Full" xml:space="preserve"><value>Родительный</value></data>
+  <data name="Grammar.Case.Genitive.Short" xml:space="preserve"><value>Род.</value></data>
+  <data name="Grammar.Case.Genitive.Table" xml:space="preserve"><value>род.</value></data>
+  <data name="Grammar.Case.Genitive.PracticeHint" xml:space="preserve"><value>чей? кого? чего?</value></data>
+  <data name="Grammar.Case.Genitive.SettingsHint" xml:space="preserve"><value>чей? кого? чего? (принадлежность)</value></data>
+  <data name="Grammar.Case.Locative.Full" xml:space="preserve"><value>Местный</value></data>
+  <data name="Grammar.Case.Locative.Short" xml:space="preserve"><value>Мест.</value></data>
+  <data name="Grammar.Case.Locative.Table" xml:space="preserve"><value>мест.</value></data>
+  <data name="Grammar.Case.Locative.PracticeHint" xml:space="preserve"><value>в ком? где? когда?</value></data>
+  <data name="Grammar.Case.Locative.SettingsHint" xml:space="preserve"><value>в ком? где? когда? (место, отношение, время)</value></data>
+  <data name="Grammar.Case.Vocative.Full" xml:space="preserve"><value>Звательный</value></data>
+  <data name="Grammar.Case.Vocative.Short" xml:space="preserve"><value>Зв.</value></data>
+  <data name="Grammar.Case.Vocative.Table" xml:space="preserve"><value>зв.</value></data>
+  <data name="Grammar.Case.Vocative.PracticeHint" xml:space="preserve"><value>о, ...! (обращение)</value></data>
+  <data name="Grammar.Case.Vocative.SettingsHint" xml:space="preserve"><value>о, ...! (обращение)</value></data>
+
+  <data name="Grammar.Gender.Masculine.Full" xml:space="preserve"><value>Мужской</value></data>
+  <data name="Grammar.Gender.Masculine.Short" xml:space="preserve"><value>Муж.</value></data>
+  <data name="Grammar.Gender.Masculine.Table" xml:space="preserve"><value>муж.</value></data>
+  <data name="Grammar.Gender.Feminine.Full" xml:space="preserve"><value>Женский</value></data>
+  <data name="Grammar.Gender.Feminine.Short" xml:space="preserve"><value>Жен.</value></data>
+  <data name="Grammar.Gender.Feminine.Table" xml:space="preserve"><value>жен.</value></data>
+  <data name="Grammar.Gender.Neuter.Full" xml:space="preserve"><value>Средний</value></data>
+  <data name="Grammar.Gender.Neuter.Short" xml:space="preserve"><value>Ср.</value></data>
+  <data name="Grammar.Gender.Neuter.Table" xml:space="preserve"><value>ср.</value></data>
+
+  <data name="Grammar.Number.Singular.Full" xml:space="preserve"><value>Единственное</value></data>
+  <data name="Grammar.Number.Singular.Short" xml:space="preserve"><value>Ед.</value></data>
+  <data name="Grammar.Number.Singular.Table" xml:space="preserve"><value>ед.</value></data>
+  <data name="Grammar.Number.Plural.Full" xml:space="preserve"><value>Множественное</value></data>
+  <data name="Grammar.Number.Plural.Short" xml:space="preserve"><value>Мн.</value></data>
+  <data name="Grammar.Number.Plural.Table" xml:space="preserve"><value>мн.</value></data>
+
+  <data name="Grammar.Person.First.Full" xml:space="preserve"><value>1-е</value></data>
+  <data name="Grammar.Person.First.Short" xml:space="preserve"><value>1-е</value></data>
+  <data name="Grammar.Person.Second.Full" xml:space="preserve"><value>2-е</value></data>
+  <data name="Grammar.Person.Second.Short" xml:space="preserve"><value>2-е</value></data>
+  <data name="Grammar.Person.Third.Full" xml:space="preserve"><value>3-е</value></data>
+  <data name="Grammar.Person.Third.Short" xml:space="preserve"><value>3-е</value></data>
+
+  <data name="Grammar.Tense.Present.Full" xml:space="preserve"><value>Настоящее</value></data>
+  <data name="Grammar.Tense.Present.Short" xml:space="preserve"><value>Наст.</value></data>
+  <data name="Grammar.Tense.Present.Table" xml:space="preserve"><value>наст.</value></data>
+  <data name="Grammar.Tense.Present.SettingsHint" xml:space="preserve"><value>настоящие и привычные действия, общие истины</value></data>
+  <data name="Grammar.Tense.Imperative.Full" xml:space="preserve"><value>Повелительное</value></data>
+  <data name="Grammar.Tense.Imperative.Short" xml:space="preserve"><value>Повел.</value></data>
+  <data name="Grammar.Tense.Imperative.Table" xml:space="preserve"><value>пов.</value></data>
+  <data name="Grammar.Tense.Imperative.SettingsHint" xml:space="preserve"><value>приказы, просьбы, побуждения</value></data>
+  <data name="Grammar.Tense.Optative.Full" xml:space="preserve"><value>Оптатив</value></data>
+  <data name="Grammar.Tense.Optative.Short" xml:space="preserve"><value>Опт.</value></data>
+  <data name="Grammar.Tense.Optative.Table" xml:space="preserve"><value>опт.</value></data>
+  <data name="Grammar.Tense.Optative.SettingsHint" xml:space="preserve"><value>желания, "пусть", "мог бы", "следовало бы"</value></data>
+  <data name="Grammar.Tense.Future.Full" xml:space="preserve"><value>Будущее</value></data>
+  <data name="Grammar.Tense.Future.Short" xml:space="preserve"><value>Буд.</value></data>
+  <data name="Grammar.Tense.Future.Table" xml:space="preserve"><value>буд.</value></data>
+  <data name="Grammar.Tense.Future.SettingsHint" xml:space="preserve"><value>действия, которые еще произойдут, предсказания</value></data>
+
+  <data name="Grammar.Voice.Active.Full" xml:space="preserve"><value>Активный</value></data>
+  <data name="Grammar.Voice.Active.Short" xml:space="preserve"><value>Актив.</value></data>
+  <data name="Grammar.Voice.Reflexive.Full" xml:space="preserve"><value>Возвратный</value></data>
+  <data name="Grammar.Voice.Reflexive.Short" xml:space="preserve"><value>Возвр.</value></data>
+  <data name="Grammar.Voice.Reflexive.Table" xml:space="preserve"><value>возвр.</value></data>
+
+  <data name="Grammar.Type.Declension" xml:space="preserve"><value>склонение</value></data>
+  <data name="Grammar.Type.Conjugation" xml:space="preserve"><value>спряжение</value></data>
+  <data name="Grammar.Type.IrregularDeclension" xml:space="preserve"><value>неправильное склонение</value></data>
+  <data name="Grammar.Type.NonStandardDeclension" xml:space="preserve"><value>нестандартное склонение</value></data>
+  <data name="Grammar.Type.IrregularConjugation" xml:space="preserve"><value>неправильное спряжение</value></data>
 </root>

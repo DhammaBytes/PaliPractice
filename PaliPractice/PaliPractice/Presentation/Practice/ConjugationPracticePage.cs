@@ -2,6 +2,7 @@ using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Practice.Common;
 using PaliPractice.Presentation.Practice.ViewModels;
+using PaliPractice.Localization;
 
 namespace PaliPractice.Presentation.Practice;
 
@@ -58,10 +59,10 @@ public sealed partial class ConjugationPracticePage : Page
         // Pool completely exhausted - no due or new forms available
         var dialog = new ContentDialog
         {
-            Title = "All forms practiced",
-            Content = "Great work! You've practiced all available forms. Come back later when reviews are due, or adjust your settings to add more.",
-            PrimaryButtonText = "Exit",
-            SecondaryButtonText = "Settings",
+            Title = AppText.Get("Practice.Dialog.AllFormsPracticed.Title"),
+            Content = AppText.Get("Practice.Dialog.AllFormsPracticed.Content"),
+            PrimaryButtonText = AppText.Get("Common.Exit"),
+            SecondaryButtonText = AppText.Get("Settings.Title"),
             XamlRoot = XamlRoot
         };
 
@@ -77,10 +78,10 @@ public sealed partial class ConjugationPracticePage : Page
         // Daily goal reached but more forms available
         var dialog = new ContentDialog
         {
-            Title = "Daily goal reached!",
-            Content = "Congratulations! You've completed your daily practice goal.",
-            PrimaryButtonText = "Continue",
-            SecondaryButtonText = "Exit",
+            Title = AppText.Get("Practice.Dialog.DailyGoalReached.Title"),
+            Content = AppText.Get("Practice.Dialog.DailyGoalReached.Content"),
+            PrimaryButtonText = AppText.Get("Common.Continue"),
+            SecondaryButtonText = AppText.Get("Common.Exit"),
             XamlRoot = XamlRoot
         };
 
@@ -94,7 +95,7 @@ public sealed partial class ConjugationPracticePage : Page
     static Grid BuildPageLayout(ResponsiveElements elements, HeightClass heightClass)
     {
         var config = new PracticePageConfig<ConjugationPracticeViewModel>(
-            Title: "Conjugation Practice",
+            Title: AppText.Get("Practice.Title.Conjugation"),
             FlashCardPath: vm => vm.FlashCard,
             AnswerStemPath: vm => vm.FlashCard.AnswerStem,
             AnswerEndingPath: vm => vm.FlashCard.AnswerEnding,

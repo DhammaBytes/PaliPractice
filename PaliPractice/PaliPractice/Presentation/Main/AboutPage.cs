@@ -1,6 +1,7 @@
 using PaliPractice.Presentation.Bindings;
 using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Main.ViewModels;
+using PaliPractice.Localization;
 using PaliPractice.Themes;
 using PaliPractice.Themes.Icons;
 using static PaliPractice.Presentation.Common.Text.TextHelpers;
@@ -27,7 +28,7 @@ public sealed partial class AboutPage : Page
                 .RowDefinitions("Auto,*")
                 .Children(
                     // Row 0: Title bar
-                    AppTitleBar.Build<AboutViewModel>("About", vm => vm.GoBackCommand),
+                    AppTitleBar.Build<AboutViewModel>(AppText.Get("About.Title"), vm => vm.GoBackCommand),
 
                     // Row 1: Content
                     new ScrollViewer()
@@ -80,7 +81,7 @@ public sealed partial class AboutPage : Page
                                                         .VerticalAlignment(VerticalAlignment.Center)
                                                         .UriSource(new Uri(SettingsIcons.Contact)),
                                                     RegularText()
-                                                        .Text("Contact DhammaBytes")
+                                                        .Text(AppText.Get("About.ContactButton"))
                                                         .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
                                                         .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
                                                         .VerticalAlignment(VerticalAlignment.Center)

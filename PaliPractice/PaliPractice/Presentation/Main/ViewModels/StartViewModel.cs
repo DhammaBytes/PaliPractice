@@ -1,6 +1,7 @@
 using PaliPractice.Presentation.Practice.ViewModels;
 using PaliPractice.Presentation.Settings.ViewModels;
 using PaliPractice.Presentation.Statistics.ViewModels;
+using PaliPractice.Localization;
 
 namespace PaliPractice.Presentation.Main.ViewModels;
 
@@ -23,7 +24,7 @@ public class StartViewModel : ObservableObject
         _ = Task.Run(databaseService.PreloadCaches);
     }
 
-    public string Title => "Pāli Practice";
+    public string Title => AppText.Get("App.Name");
 
     public ICommand GoToDeclensionCommand { get; }
     public ICommand GoToConjugationCommand { get; }

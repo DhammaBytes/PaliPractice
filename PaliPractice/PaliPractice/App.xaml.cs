@@ -153,7 +153,7 @@ public partial class App : Application
             );
         
         MainWindow = builder.Window;
-        MainWindow.Title = AppText.Get("App.Name");
+        MainWindow.Title = "Pali Practice";
 
         if (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() || OperatingSystem.IsLinux())
         {

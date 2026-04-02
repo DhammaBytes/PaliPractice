@@ -24,7 +24,7 @@ public class StartViewModel : ObservableObject
         _ = Task.Run(databaseService.PreloadCaches);
     }
 
-    public string Title => AppText.Get("App.Name");
+    public static string Title => "Pāli Practice";
 
     public ICommand GoToDeclensionCommand { get; }
     public ICommand GoToConjugationCommand { get; }

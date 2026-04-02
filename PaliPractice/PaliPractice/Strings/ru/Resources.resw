@@ -59,10 +59,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 
-  <data name="ApplicationName" xml:space="preserve"><value>Практика Пали</value></data>
-  <data name="App.Name" xml:space="preserve"><value>Практика Пали</value></data>
-
-  <data name="Common.AllForms" xml:space="preserve"><value>Все формы</value></data>
+  <data name="Common.AllForms" xml:space="preserve"><value>Формы</value></data>
   <data name="Common.Back" xml:space="preserve"><value>Назад</value></data>
   <data name="Common.History" xml:space="preserve"><value>История</value></data>
   <data name="Common.Ok" xml:space="preserve"><value>OK</value></data>
@@ -74,10 +71,10 @@
   <data name="Common.DayCount.Few" xml:space="preserve"><value>{0} дня</value></data>
   <data name="Common.DayCount.Many" xml:space="preserve"><value>{0} дней</value></data>
 
-  <data name="Start.Nouns.Title" xml:space="preserve"><value>Существительные и падежи</value></data>
-  <data name="Start.Nouns.Subtitle" xml:space="preserve"><value>Практика склонений</value></data>
-  <data name="Start.Verbs.Title" xml:space="preserve"><value>Глаголы и времена</value></data>
-  <data name="Start.Verbs.Subtitle" xml:space="preserve"><value>Практика спряжений</value></data>
+  <data name="Start.Nouns.Title" xml:space="preserve"><value>Cуществительные</value></data>
+  <data name="Start.Nouns.Subtitle" xml:space="preserve"><value>Падежи и склонения</value></data>
+  <data name="Start.Verbs.Title" xml:space="preserve"><value>Глаголы</value></data>
+  <data name="Start.Verbs.Subtitle" xml:space="preserve"><value>Времена и спряжения</value></data>
 
   <data name="Settings.Title" xml:space="preserve"><value>Настройки</value></data>
   <data name="Settings.Section.General" xml:space="preserve"><value>Общие</value></data>
@@ -92,12 +89,12 @@
   <data name="Settings.Row.DailyPracticeGoal" xml:space="preserve"><value>Дневная цель</value></data>
   <data name="Settings.Row.Number" xml:space="preserve"><value>Число</value></data>
   <data name="Settings.Row.Voice" xml:space="preserve"><value>Залог</value></data>
-  <data name="Settings.Row.VoiceHint" xml:space="preserve"><value>Активный (parassapada) распространен, а возвратный (attanopada) в основном встречается в поэтических строфах</value></data>
+  <data name="Settings.Row.VoiceHint" xml:space="preserve"><value>Активный (parassapada) распространён, а возвратный (attanopada) в основном встречается в поэтических строфах</value></data>
   <data name="Settings.Row.Endings" xml:space="preserve"><value>Окончания</value></data>
   <data name="Settings.Row.Person" xml:space="preserve"><value>Лицо</value></data>
   <data name="Settings.Theme.System" xml:space="preserve"><value>Системная</value></data>
   <data name="Settings.Theme.Light" xml:space="preserve"><value>Светлая</value></data>
-  <data name="Settings.Theme.Dark" xml:space="preserve"><value>Темная</value></data>
+  <data name="Settings.Theme.Dark" xml:space="preserve"><value>Тёмная</value></data>
   <data name="Settings.LanguageOption.English" xml:space="preserve"><value>English</value></data>
   <data name="Settings.LanguageOption.Russian" xml:space="preserve"><value>Русский</value></data>
   <data name="Settings.NumberOption.Both" xml:space="preserve"><value>Единственное и множественное</value></data>
@@ -111,10 +108,10 @@
   <data name="Settings.Navigation.AboutApp" xml:space="preserve"><value>О Практике Пали</value></data>
   <data name="Settings.Action.ContactUs" xml:space="preserve"><value>Связаться с нами</value></data>
   <data name="Settings.Action.WriteReview" xml:space="preserve"><value>Оставить отзыв</value></data>
-  <data name="Settings.ReviewExplanation" xml:space="preserve"><value>Если у вас есть минута, пожалуйста, оставьте отзыв о Практике Пали. Даже одно предложение очень полезно и помогает другим изучающим пали найти приложение в магазине.</value></data>
+  <data name="Settings.ReviewExplanation" xml:space="preserve"><value>Если у вас есть минута, пожалуйста, оставьте отзыв о Практике Пали. Даже одно предложение очень полезно и помогает другим изучающим пали находить приложение.</value></data>
   <data name="Settings.Declension.Title" xml:space="preserve"><value>Настройки склонений</value></data>
   <data name="Settings.Conjugation.Title" xml:space="preserve"><value>Настройки спряжений</value></data>
-  <data name="Settings.Tenses.AoristFooter" xml:space="preserve"><value>Аорист (повествовательное прошедшее время) не включен: его формы сильно различаются между глаголами и часто требуют отдельного изучения для каждого слова. В будущем может появиться отдельный тренажер для аориста.</value></data>
+  <data name="Settings.Tenses.AoristFooter" xml:space="preserve"><value>Аорист (повествовательное прошедшее время) не включён: его формы сильно различаются между глаголами и часто требуют отдельного изучения для каждого слова. В будущем может появиться отдельный тренажёр для аориста.</value></data>
   <data name="Settings.CitationFormWarning.Title" xml:space="preserve"><value>Настройки скорректированы</value></data>
   <data name="Settings.CitationFormWarning.Content" xml:space="preserve"><value>В вопросах в качестве словарной формы используется настоящее время, 3-е лицо, единственное число, потому что в пали инфинитив почти не употребляется. Чтобы у вас оставались формы для практики, 1-е и 2-е лицо были снова включены.</value></data>
   <data name="Settings.Range.Title.Declension" xml:space="preserve"><value>Диапазон существительных</value></data>
@@ -140,13 +137,13 @@
   <data name="History.Header.Yesterday" xml:space="preserve"><value>Вчера</value></data>
 
   <data name="About.Title" xml:space="preserve"><value>О приложении</value></data>
-  <data name="About.AppNameFormat" xml:space="preserve"><value>Практика Пали v{0}</value></data>
+  <data name="About.AppNameFormat" xml:space="preserve"><value>Pāli Practice v{0}</value></data>
   <data name="About.ContactButton" xml:space="preserve"><value>Связаться с нами</value></data>
   <data name="About.BlessingTranslation" xml:space="preserve"><value>пусть все существа будут счастливы</value></data>
   <data name="About.Description" xml:space="preserve"><value><![CDATA[
-Бесплатное приложение с открытым исходным кодом для изучения спряжений глаголов и склонений существительных пали с помощью карточек интервального повторения.
+Бесплатное приложение с открытым исходным кодом для изучения спряжений глаголов и склонений существительных пали с помощью карточек интервального повторения (spaced repetition).
 
-Поддерживается участниками [DhammaBytes](https://dhammabytes.org). Мы будем рады отзывам и помощи с переводами.
+Поддерживается волонтёрами [DhammaBytes](https://dhammabytes.org). Мы будем рады отзывам и помощи с переводами.
 
 Данные о словах и грамматике взяты из проекта [Digital Pāli Dictionary](https://dpdict.net).
 
@@ -154,9 +151,9 @@
 ]]></value></data>
   <data name="About.IconTitle" xml:space="preserve"><value>Иконка приложения</value></data>
   <data name="About.IconDescription" xml:space="preserve"><value><![CDATA[
-На иконке изображена перепелка из [SN 47:6, Sakuṇagghi Sutta](https://www.dhammatalks.org/suttas/SN/SN47_6.html) ("Ястреб"), скрывающаяся за камнями на своей родной территории - на только что вспаханном поле с комьями земли:
+На иконке изображена перепёлка из [SN 47:6, Sakuṇagghi Sutta](https://www.dhammatalks.org/suttas/SN/SN47_6.html) ("Ястреб"), скрывающаяся за камнями на своей исконной территории - только что вспаханном поле с перевёрнутыми комьями земли:
 
-*"Странствуйте, монахи, в пределах вашего надлежащего круга, на вашей собственной исконной территории. Когда кто-то странствует в пределах своего надлежащего круга, на своей собственной исконной территории, Мара не находит для него лазейки, Мара не находит опоры. И что для монаха является его надлежащим кругом, его собственной исконной территорией? Четыре основы осознанности."*
+*"Странствуйте, монахи, в пределах надлежащего вам удела, на вашей собственной исконной территории. В том, кто странствует в пределах надлежащего ему удела, на своей исконной территории, Мара не находит лазейки, Мара не находит опоры. И что же для монаха является надлежащим ему уделом, его собственной исконной территорией? Четыре установления осознанности."*
 
 Иллюстрация иконки и дизайн приложения: [Irina Mir](https://www.instagram.com/irmirx)
 ]]></value></data>
@@ -172,7 +169,7 @@
 ]]></value></data>
   <data name="About.FontsTitle" xml:space="preserve"><value>Шрифты</value></data>
   <data name="About.FontsText" xml:space="preserve"><value><![CDATA[
-**Libertinus Sans** используется для пали, потому что его выраженный ритм, напоминающий антикву, и различимые строчные буквы помогают разбирать незнакомые слова буква за буквой.
+**Libertinus Sans** используется для пали, потому что его выраженный ритм и различимые строчные буквы помогают разбирать незнакомые слова буква за буквой.
 
 **Source Sans 3** используется для остальных текстов и элементов интерфейса.
 
@@ -192,12 +189,12 @@
   <data name="Help.HowToPractice.Content" xml:space="preserve"><value><![CDATA[
 Это приложение помогает запоминать склонения и спряжения пали для существительных и глаголов. Вы увидите палийское слово и метки, указывающие нужную форму - например, падеж и число для существительных или время и лицо для глаголов.
 
-Попробуйте вспомнить правильную словоформу и ее значение. Затем нажмите **Показать ответ**, чтобы увидеть ответ и возможные переводы. После этого отметьте **Легко** или **Трудно** в зависимости от того, насколько хорошо вы знали и форму, и значение.
+Попробуйте вспомнить правильную словоформу и её значение. Затем нажмите **Показать ответ**, чтобы увидеть ответ и возможные переводы. После этого отметьте **Легко** или **Трудно** в зависимости от того, насколько хорошо вы знали и форму, и значение.
 ]]></value></data>
   <data name="Help.SpacedRepetition.Content" xml:space="preserve"><value><![CDATA[
 Приложение отслеживает, насколько хорошо вы знаете каждую форму. У каждой формы есть уровень прогресса от 1 до 10:
 
-- **Уровень 1-3:** Еще в изучении - повторяется в течение нескольких дней
+- **Уровень 1-3:** Ещё в изучении - повторяется в течение нескольких дней
 - **Уровень 4-6:** Становится знакомой - повторяется раз в неделю или две
 - **Уровень 7-9:** Уже хорошо известна - повторяется раз в месяц или реже
 - **Уровень 10:** Освоена - повторяется примерно через 8 месяцев
@@ -212,22 +209,22 @@
   <data name="Help.Faq.MultipleForms" xml:space="preserve"><value><![CDATA[
 **Почему в некоторых ответах показывается несколько форм?**
 
-У некоторых падежей и времен в пали бывает больше одного правильного окончания. Приложение показывает все употребляющиеся формы для данного грамматического контекста и пропускает потенциально возможные формы, которые не встречаются в палийском корпусе.
+У некоторых падежей и времён в пали бывает больше одного правильного окончания. Приложение показывает все употребляющиеся формы для данного грамматического контекста и пропускает потенциально возможные формы, которые на деле не встречаются в палийском корпусе.
 ]]></value></data>
   <data name="Help.Faq.Examples" xml:space="preserve"><value><![CDATA[
 **Почему примеры из сутт используют другие формы?**
 
-Примеры предложений берутся из [Digital Pāli Dictionary](https://dpdict.net), который дает один-два примера на значение слова, а не на каждую словоформу. Эти примеры показывают употребление слова в контексте, но не обязательно именно ту форму, которую вы сейчас практикуете.
+Примеры предложений берутся из [Digital Pāli Dictionary](https://dpdict.net), который даёт один-два примера на значение слова, а не на каждую словоформу. Эти примеры показывают употребление слова в контексте, но не обязательно именно ту форму, которая показана в практике.
 ]]></value></data>
   <data name="Help.Faq.MissingWords" xml:space="preserve"><value><![CDATA[
 **Почему некоторых слов нет?**
 
-Это приложение сосредоточено на формах, наиболее полезных для начинающих и продолжающих. В него входят 1 500 самых частотных существительных и 750 самых частотных глаголов из Палийского канона. Некоторые имена собственные и сложные составные слова исключены. Для расширенного словаря и грамматических справок обращайтесь к [Digital Pāli Dictionary](https://dpdict.net).
+Это приложение сосредоточено на формах, наиболее полезных для начинающих. В него входят 1 500 самых частотных существительных и 750 самых частотных глаголов из Палийского канона. Некоторые имена собственные и сложные составные слова исключены. Для расширенного словаря и грамматических справок обращайтесь к [Digital Pāli Dictionary](https://dpdict.net).
 ]]></value></data>
   <data name="Help.Faq.MissingForms" xml:space="preserve"><value><![CDATA[
 **Почему не включены формы аориста и причастий?**
 
-Эти формы сильно различаются между глаголами и часто требуют изучения слово за словом. Это плохо вписывается в текущий формат практики. В будущих версиях может появиться отдельный тренажер для этих форм.
+Эти формы сильно различаются между глаголами и часто требуют изучения слово за словом. Это плохо вписывается в текущий формат практики. В будущих версиях может появиться отдельный тренажёр для этих форм.
 ]]></value></data>
   <data name="Help.Faq.AboutApp" xml:space="preserve"><value><![CDATA[
 **Где можно узнать больше о приложении?**
@@ -239,7 +236,7 @@
 
 Это приложение полностью работает офлайн и не делает резервные копии ваших настроек и прогресса, а также не синхронизирует данные между устройствами.
 
-На мобильных устройствах системное резервное копирование телефона обычно автоматически включает локальные данные приложений. На настольных платформах данные хранятся в обычных каталогах конфигурации приложений и требуют ручного резервного копирования.
+На мобильных устройствах системное резервное копирование телефона обычно автоматически включает локальные данные приложений. На компьютерах данные хранятся в обычных каталогах конфигурации приложений и требуют ручного резервного копирования.
 ]]></value></data>
 
   <data name="Statistics.Title" xml:space="preserve"><value>Статистика</value></data>
@@ -285,10 +282,10 @@
   <data name="Grammar.Table.LikeSuffix" xml:space="preserve"><value>)</value></data>
   <data name="Grammar.Table.NonCorpusHint" xml:space="preserve"><value>Формы, не найденные в палийском корпусе, показаны серым.</value></data>
 
-  <data name="Feedback.DiagnosticsHeader" xml:space="preserve"><value>Диагностическая информация (пожалуйста, сохраните ее для поддержки):</value></data>
+  <data name="Feedback.DiagnosticsHeader" xml:space="preserve"><value>Диагностическая информация (пожалуйста, сохраните её для поддержки):</value></data>
   <data name="Feedback.Label.App" xml:space="preserve"><value>Приложение</value></data>
   <data name="Feedback.Label.Device" xml:space="preserve"><value>Устройство</value></data>
-  <data name="Feedback.Label.Os" xml:space="preserve"><value>ОС</value></data>
+  <data name="Feedback.Label.Os" xml:space="preserve"><value>Система</value></data>
   <data name="Feedback.Label.Locale" xml:space="preserve"><value>Локаль</value></data>
   <data name="Feedback.SettingsHeader" xml:space="preserve"><value>Настройки:</value></data>
   <data name="Feedback.DefaultSettings" xml:space="preserve"><value>  (настройки по умолчанию)</value></data>
@@ -315,9 +312,9 @@
   <data name="Grammar.Case.Dative.Table" xml:space="preserve"><value>дат.</value></data>
   <data name="Grammar.Case.Dative.PracticeHint" xml:space="preserve"><value>кому? чему? для кого? для чего?</value></data>
   <data name="Grammar.Case.Dative.SettingsHint" xml:space="preserve"><value>кому? чему? для кого? для чего? (адресат, назначение)</value></data>
-  <data name="Grammar.Case.Ablative.Full" xml:space="preserve"><value>Аблатив</value></data>
-  <data name="Grammar.Case.Ablative.Short" xml:space="preserve"><value>Абл.</value></data>
-  <data name="Grammar.Case.Ablative.Table" xml:space="preserve"><value>абл.</value></data>
+  <data name="Grammar.Case.Ablative.Full" xml:space="preserve"><value>Отделительный</value></data>
+  <data name="Grammar.Case.Ablative.Short" xml:space="preserve"><value>Отд.</value></data>
+  <data name="Grammar.Case.Ablative.Table" xml:space="preserve"><value>отд.</value></data>
   <data name="Grammar.Case.Ablative.PracticeHint" xml:space="preserve"><value>от кого? откуда? из чего?</value></data>
   <data name="Grammar.Case.Ablative.SettingsHint" xml:space="preserve"><value>от кого? откуда? из чего? (источник, причина)</value></data>
   <data name="Grammar.Case.Genitive.Full" xml:space="preserve"><value>Родительный</value></data>
@@ -366,11 +363,11 @@
   <data name="Grammar.Tense.Present.SettingsHint" xml:space="preserve"><value>настоящие и привычные действия, общие истины</value></data>
   <data name="Grammar.Tense.Imperative.Full" xml:space="preserve"><value>Повелительное</value></data>
   <data name="Grammar.Tense.Imperative.Short" xml:space="preserve"><value>Повел.</value></data>
-  <data name="Grammar.Tense.Imperative.Table" xml:space="preserve"><value>пов.</value></data>
+  <data name="Grammar.Tense.Imperative.Table" xml:space="preserve"><value>повел.</value></data>
   <data name="Grammar.Tense.Imperative.SettingsHint" xml:space="preserve"><value>приказы, просьбы, побуждения</value></data>
-  <data name="Grammar.Tense.Optative.Full" xml:space="preserve"><value>Оптатив</value></data>
-  <data name="Grammar.Tense.Optative.Short" xml:space="preserve"><value>Опт.</value></data>
-  <data name="Grammar.Tense.Optative.Table" xml:space="preserve"><value>опт.</value></data>
+  <data name="Grammar.Tense.Optative.Full" xml:space="preserve"><value>Желательное</value></data>
+  <data name="Grammar.Tense.Optative.Short" xml:space="preserve"><value>Желат.</value></data>
+  <data name="Grammar.Tense.Optative.Table" xml:space="preserve"><value>желат.</value></data>
   <data name="Grammar.Tense.Optative.SettingsHint" xml:space="preserve"><value>желания, "пусть", "мог бы", "следовало бы"</value></data>
   <data name="Grammar.Tense.Future.Full" xml:space="preserve"><value>Будущее</value></data>
   <data name="Grammar.Tense.Future.Short" xml:space="preserve"><value>Буд.</value></data>

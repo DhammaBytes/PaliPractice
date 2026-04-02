@@ -64,7 +64,7 @@ public sealed partial class StartPage : Page
                                                     .Children(
                                                         _lotusTop,
                                                         PaliText()
-                                                            .Text(AppText.Get("App.Name"))
+                                                            .Text("Pāli Practice")
                                                             .FontSize(48)
                                                             .FontWeight(Microsoft.UI.Text.FontWeights.Bold)
                                                             .HorizontalAlignment(HorizontalAlignment.Center)

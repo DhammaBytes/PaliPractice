@@ -6,20 +6,19 @@ namespace PaliPractice.Tests.Localization;
 [TestFixture]
 public class AppTextTests
 {
-    [Test]
-    public void Get_EnglishResourceInHeadlessContext_ReturnsValue()
+    [TestCase("Settings.Row.Language", "Settings/Row.Language")]
+    [TestCase("Grammar.Case.Nominative.Full", "Grammar/Case.Nominative.Full")]
+    public void ToResourceLoaderKey_UsesCompiledResourceIdentifierShape(string key, string expected)
     {
-        using var _ = new CultureScope("en");
-
-        AppText.Get("App.Name").Should().Be("Pāli Practice");
+        AppText.ToResourceLoaderKey(key).Should().Be(expected);
     }
 
     [Test]
-    public void Get_RussianResourceInHeadlessContext_ReturnsValue()
+    public void Get_RussianResourceInHeadlessContext_DoesNotFallbackToDisk()
     {
         using var _ = new CultureScope("ru");
 
-        AppText.Get("Settings.Row.Language").Should().Be("Язык перевода");
+        AppText.Get("Settings.Row.Language").Should().Be("[Settings.Row.Language]");
     }
 
     sealed class CultureScope : IDisposable

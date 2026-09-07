@@ -1654,7 +1654,9 @@ def _dotnet_environment(gate: Gate) -> dict[str, str]:
     specification = candidate_spec()
     if specification:
         candidate, inputs = specification
-        environment["PALIPRACTICE_CANDIDATE_DB"] = str(candidate / "pali.db")
+        translation = os.environ.get("PALIPRACTICE_TRANSLATION_MANIFEST")
+        database = gate.evidence.run / "translation-repeatability/run-1/pali.db" if translation else candidate / "pali.db"
+        environment["PALIPRACTICE_CANDIDATE_DB"] = str(database)
         environment["PALIPRACTICE_INPUT_MANIFEST"] = str(inputs)
     return environment
 

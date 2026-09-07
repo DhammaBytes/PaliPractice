@@ -2,6 +2,7 @@ using PaliPractice.Services.Database.Providers;
 using PaliPractice.Services.Database.Repositories;
 using PaliPractice.Services.Practice;
 using PaliPractice.Services.UserData.Entities;
+using PaliPractice.Services.UserData;
 using SQLite;
 using System.Globalization;
 using IOPath = System.IO.Path;
@@ -102,9 +103,12 @@ public class DatabaseService : IDatabaseService
         var userDataDb = OpenWritableDatabase(DatabaseFile.UserData);
 
         // Create repositories
-        Nouns = new NounRepository(paliDb);
-        Verbs = new VerbRepository(paliDb);
         UserData = new UserDataRepository(userDataDb);
+        string Language() => TranslationLanguageResolver.ResolveEffectiveLanguageCode(
+            TranslationLanguageResolver.NormalizePreference(UserData.GetSetting(
+                SettingsKeys.AppearanceTranslationLanguage, (int)TranslationLanguageResolver.GetInitialPreference())));
+        Nouns = new NounRepository(paliDb, Language);
+        Verbs = new VerbRepository(paliDb, Language);
         Statistics = new StatisticsRepository(userDataDb, UserData,
             type => new PracticeQueueBuilder(this).GetEligibleFormIds(type).ToHashSet());
 

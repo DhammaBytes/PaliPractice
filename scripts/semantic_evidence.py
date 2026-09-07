@@ -13,7 +13,7 @@ from check_repeatability import semantic_digest
 def source_identity() -> dict:
     names = subprocess.check_output(['git', 'ls-files', '-co', '--exclude-standard', '--',
                                       'PaliPractice', 'scripts', 'quality'], cwd=ROOT, text=True).splitlines()
-    relevant = {name for name in names if Path(name).suffix in ('.cs', '.csproj', '.props', '.targets', '.py', '.gz')
+    relevant = {name for name in names if Path(name).suffix in ('.cs', '.csproj', '.props', '.targets', '.py', '.gz', '.resw')
                 or name.endswith(('packages.lock.json', 'global.json'))
                 or name.startswith('quality/config/')}
     return {name: sha256(ROOT / name) for name in sorted(relevant) if (ROOT / name).is_file()}

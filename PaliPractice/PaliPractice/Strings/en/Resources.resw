@@ -97,6 +97,7 @@
   <data name="Settings.Theme.Dark" xml:space="preserve"><value>Dark</value></data>
   <data name="Settings.LanguageOption.English" xml:space="preserve"><value>English</value></data>
   <data name="Settings.LanguageOption.Russian" xml:space="preserve"><value>Russian</value></data>
+  <data name="Settings.LanguageOption.Spanish" xml:space="preserve"><value>Spanish</value></data>
   <data name="Settings.NumberOption.Both" xml:space="preserve"><value>Singular and plural</value></data>
   <data name="Settings.NumberOption.SingularOnly" xml:space="preserve"><value>Singular only</value></data>
   <data name="Settings.NumberOption.PluralOnly" xml:space="preserve"><value>Plural only</value></data>
@@ -146,6 +147,10 @@ Free and open-source app for learning Pāli verb conjugations and noun declensio
 Maintained by [DhammaBytes](https://dhammabytes.org) contributors. We welcome feedback and help with translations.
 
 Word and grammar data sourced from the [Digital Pāli Dictionary](https://dpdict.net) project.
+
+Russian meanings come from the [Russian DPD project](https://github.com/sasanarakkha/dpd-db-sbs/tree/sbs-ru), maintained by Venerable Devamitta (Devamitta Bhikkhu) at Sāsanārakkha Buddhist Sanctuary. Some source material is automatically translated.
+
+Spanish meanings come from the [Spanish DPD project](https://github.com/DhammaBytes/dpd-dictionary-es), coordinated by the [Paññābhūmi team](https://dhamma-pb.org/), Jalisco, Mexico, with AI-assisted translation and review.
 
 This app is also available on [other platforms](https://www.dhammabytes.org/pali-practice/).
 ]]></value></data>

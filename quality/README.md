@@ -129,3 +129,9 @@ A complete successful candidate gate emits `semantic-verification.json`, binding
 the exact candidate, inputs, and producer/consumer source hashes. Promotion requires
 this receipt and rejects stale evidence. English-only production promotion remains
 blocked; M9 performs deliberate multilingual promotion using the recovery journal.
+
+With `PALIPRACTICE_TRANSLATION_MANIFEST` set, the gate also creates two isolated
+enriched copies and checks exact source mappings and unchanged English data.
+The .NET integration lane consumes that verified multilingual database, including
+every displayed noun/verb sense in all three languages. Source evidence includes
+`.resw` resources so language labels and credits are bound to the checked source.

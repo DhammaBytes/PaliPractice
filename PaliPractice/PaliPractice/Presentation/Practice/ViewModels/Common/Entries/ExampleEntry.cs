@@ -45,5 +45,5 @@ public record ExampleEntry(IWordDetails Details, int ExampleIndex)
     /// <summary>
     /// Gets the meaning from the word details with English fallback.
     /// </summary>
-    public string GetMeaning(string languageCode) => Details.GetMeaning(languageCode);
+    public string Meaning => Details.Meaning;
 }

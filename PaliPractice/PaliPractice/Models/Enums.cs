@@ -51,7 +51,8 @@ public enum Number
 public enum TranslationLanguagePreference
 {
     English = 0,
-    Russian = 1
+    Russian = 1,
+    Spanish = 2
 }
 
 /// <summary>

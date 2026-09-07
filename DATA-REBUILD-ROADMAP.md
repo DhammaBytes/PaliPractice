@@ -1,6 +1,6 @@
 # DPD rebuild and translation roadmap
 
-Created: 7 September 2026. Status: M1–M7 complete; M8 app language support is next.
+Created: 7 September 2026. Status: M1–M8 complete; M9 release validation and promotion are next.
 
 The objective is a reproducible, grammatically correct English DPD database with stable production practice identities, followed by verified Russian and Spanish meanings in the next app update. The findings and measured starting state are in [DATA-REBUILD-AUDIT.md](DATA-REBUILD-AUDIT.md).
 
@@ -152,19 +152,21 @@ Against the existing pending database, 2,328/2,384 noun rows and 1,268/1,317 ver
 
 **Purpose:** make all three meaning languages usable while preserving existing preferences and fallback behavior.
 
-- [ ] Separate stored multilingual meanings from runtime details. Keep EN/RU/ES available in the bundled SQLite database, but do not add three meaning strings to each in-memory lemma/detail object. Load meaning text only when a lemma is displayed, retaining one resolved meaning per headword/sense with its actual language. Keep language-neutral examples and grammar independent; keep schema/version checks and provisioning in sync.
-- [ ] Append Spanish to the persisted preference enum without changing existing `English=0` and `Russian=1`. Do not bind persistence to a reordered display list. Preserve explicitly selected existing preferences.
-- [ ] Add the Spanish option and required labels in the app's existing UI resource languages. Handle Spanish locale variants for new/default preferences. A full Spanish UI localization is separate from Spanish dictionary meanings and is not assumed in this roadmap.
-- [ ] Query only the selected language for the displayed lemma’s senses. If a requested meaning is absent or blank, fetch English separately for just those missing headword IDs, preferably in one batched fallback query. English selection uses only the English query. Do not materialize all language columns through `SELECT *` or preload all translations. Cache the resolved text rather than both requested and fallback strings.
-- [ ] Replace the current language-blind `HasDetails` lifetime guard for meanings with language-aware invalidation. On a language change, release cached resolved meanings and reload displayed content for the new preference; preserve language-neutral data. Ensure stale in-flight loads cannot repopulate the old language.
-- [ ] Test query projections and retained object data: a complete RU/ES result performs no English fallback query, mixed coverage fetches English only for missing senses, and repeated language switches do not accumulate language copies or show stale meanings. Verify combined senses, persistence across restart, and unsupported/corrupt preference values.
-- [ ] Test that switching translation language does not change eligible forms, practice identities, mastery, or English data. Check long meanings, Pāli diacritics, and removal of source HTML/etymology scaffolding in actual practice cards.
+- [x] Separate stored multilingual meanings from runtime details. Keep EN/RU/ES available in the bundled SQLite database, but do not add three meaning strings to each in-memory lemma/detail object. Load meaning text only when a lemma is displayed, retaining one resolved meaning per headword/sense with its actual language. Keep language-neutral examples and grammar independent; keep schema/version checks and provisioning in sync.
+- [x] Append Spanish to the persisted preference enum without changing existing `English=0` and `Russian=1`. Do not bind persistence to a reordered display list. Preserve explicitly selected existing preferences.
+- [x] Add the Spanish option and required labels in the app's existing UI resource languages. Handle Spanish locale variants for new/default preferences. A full Spanish UI localization is separate from Spanish dictionary meanings and is not assumed in this roadmap.
+- [x] Query only the selected language for the displayed lemma’s senses. If a requested meaning is absent or blank, fetch English separately for just those missing headword IDs, preferably in one batched fallback query. English selection uses only the English query. Do not materialize all language columns through `SELECT *` or preload all translations. Cache the resolved text rather than both requested and fallback strings.
+- [x] Replace the current language-blind `HasDetails` lifetime guard for meanings with language-aware invalidation. On a language change, release cached resolved meanings and reload displayed content for the new preference; preserve language-neutral data. Ensure stale in-flight loads cannot repopulate the old language.
+- [x] Test query projections and retained object data: a complete RU/ES result performs no English fallback query, mixed coverage fetches English only for missing senses, and repeated language switches do not accumulate language copies or show stale meanings. Verify combined senses, persistence across restart, and unsupported/corrupt preference values.
+- [x] Test that switching translation language does not change eligible forms, practice identities, mastery, or English data. Check long meanings, Pāli diacritics, and removal of source HTML/etymology scaffolding in actual practice cards.
 
-- [ ] Add separate Russian and Spanish source-credit paragraphs beside the existing Digital Pāḷi Dictionary credit in About (`Presentation/Main/AboutPage.cs` and its resource strings). Link each source repository, credit the verified person/team, retain upstream translation-method attribution, and check links and text in supported UI languages. This is required release attribution even though broader UI work is outside the data milestones.
+- [x] Add separate Russian and Spanish source-credit paragraphs beside the existing Digital Pāḷi Dictionary credit in About (`Presentation/Main/AboutPage.cs` and its resource strings). Link each source repository, credit the verified person/team, retain upstream translation-method attribution, and check links and text in supported UI languages. This is required release attribution even though broader UI work is outside the data milestones.
 
 **Exit:** English, Russian, and Spanish meanings work in the app, existing preference values retain their meanings, missing translations fall back correctly without retaining unused languages, About includes both source credits, and platform smoke checks cover the affected screens. Unit/integration tests and applicable gate lanes pass.
 
 ## M9 — Validate and promote the multilingual release candidate
+
+- [ ] Resolve the Android direct-touch dropdown limitation before release: on the API 37 emulator, both Theme and Translation language opened with keyboard activation but not direct taps. Spanish selection, rendering and persistence passed. Reproduce on the supported release device/runtime and fix if confirmed; do not treat keyboard-only smoke evidence as touch verification.
 
 - [ ] Build a fresh final candidate from the M5 English manifest and pinned RU/ES manifests. Repeat offline and verify reproducibility and unchanged English semantics.
 - [ ] Produce the release data diff: added/removed lemmas, eligible-combination changes, paradigm/sense changes, language coverage and mapping exceptions, and all source/output identities.
@@ -200,5 +202,5 @@ Update this table at the end of each milestone with durable evidence links.
 | M5 | Complete | [Repeatability, semantic gate, review, and desktop/iOS/Android upgrade evidence](quality/evidence/m5/README.md) |
 | M6 | Complete | [Pinned Russian source, exact meanings, English preservation, gate and review](quality/evidence/m6/README.md) |
 | M7 | Complete | [Paired Spanish mappings, gaps, terminology sample, gate and review](quality/evidence/m7/README.md) |
-| M8 | Planned | Requires verified RU/ES enrichment |
+| M8 | Complete | [Selected-language loading, credits, gate, review, and bounded native checks](quality/evidence/m8/README.md); Android direct-touch dropdown check carried into M9 |
 | M9 | Planned | Requires all previous milestones |

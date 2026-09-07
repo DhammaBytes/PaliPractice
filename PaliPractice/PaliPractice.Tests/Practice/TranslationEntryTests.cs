@@ -15,8 +15,8 @@ public class TranslationEntryTests
             {
                 Id = 1,
                 LemmaId = 10001,
-                MeaningEn = "wisdom",
-                MeaningRu = "мудрость",
+                Meaning = "мудрость",
+                MeaningLanguage = TranslationLanguagePreference.Russian,
                 Example1 = "example one",
                 Source1 = "MN",
                 Sutta1 = "1"
@@ -25,15 +25,15 @@ public class TranslationEntryTests
             {
                 Id = 2,
                 LemmaId = 10001,
-                MeaningEn = "understanding",
-                MeaningRu = "мудрость",
+                Meaning = "мудрость",
+                MeaningLanguage = TranslationLanguagePreference.Russian,
                 Example1 = "example two",
                 Source1 = "SN",
                 Sutta1 = "2"
             }
         };
 
-        var entries = TranslationEntry.BuildFromAllDetails(details, "ru");
+        var entries = TranslationEntry.BuildFromAllDetails(details);
 
         entries.Should().HaveCount(1);
         entries[0].Meaning.Should().Be("мудрость");
@@ -41,7 +41,7 @@ public class TranslationEntryTests
     }
 
     [Test]
-    public void BuildFromAllDetails_FallsBackToEnglishWhenRussianMissing()
+    public void BuildFromAllDetails_PreservesRepositoryResolvedFallback()
     {
         var details = new IWordDetails[]
         {
@@ -49,30 +49,18 @@ public class TranslationEntryTests
             {
                 Id = 1,
                 LemmaId = 10001,
-                MeaningEn = "truth",
-                MeaningRu = "",
+                Meaning = "truth",
+                MeaningLanguage = TranslationLanguagePreference.English,
                 Example1 = "example one",
                 Source1 = "MN",
                 Sutta1 = "1"
             }
         };
 
-        var entries = TranslationEntry.BuildFromAllDetails(details, "ru");
+        var entries = TranslationEntry.BuildFromAllDetails(details);
 
         entries.Should().HaveCount(1);
         entries[0].Meaning.Should().Be("truth");
-    }
-
-    [Test]
-    public void GetMeaning_UsesEnglishFallbackForUnknownLanguage()
-    {
-        var details = new TestWordDetails
-        {
-            MeaningEn = "calm",
-            MeaningRu = "спокойствие"
-        };
-
-        ((IWordDetails)details).GetMeaning("de").Should().Be("calm");
     }
 
     sealed class TestWordDetails : IWordDetails
@@ -81,8 +69,8 @@ public class TranslationEntryTests
         public int LemmaId { get; init; }
         public string Variant { get; init; } = string.Empty;
         public string Root { get; init; } = string.Empty;
-        public string MeaningEn { get; init; } = string.Empty;
-        public string MeaningRu { get; init; } = string.Empty;
+        public string Meaning { get; set; } = string.Empty;
+        public TranslationLanguagePreference MeaningLanguage { get; set; } = TranslationLanguagePreference.English;
         public string Source1 { get; init; } = string.Empty;
         public string Sutta1 { get; init; } = string.Empty;
         public string Example1 { get; init; } = string.Empty;

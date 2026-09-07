@@ -195,7 +195,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         FlashCard.DisplayWord(lemma.Primary, _provider.CurrentIndex, _provider.TotalCount, masteryLevel, root);
 
         // Initialize carousel with all word variants for this lemma
-        ExampleCarousel.Initialize(lemma.Words, GetEffectiveTranslationLanguageCode());
+        ExampleCarousel.Initialize(lemma.Words);
 
         var parameters = _provider.GetCurrentParameters();
         PrepareCardAnswer(lemma, parameters);
@@ -206,12 +206,13 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         ExampleCarousel.SetFormsToAvoid(GetAllInflectedForms());
     }
 
-    protected string GetEffectiveTranslationLanguageCode()
+    /// <summary>Refresh cached pages after a language setting changes, without advancing practice.</summary>
+    public void RefreshMeanings()
     {
-        var defaultPreference = (int)TranslationLanguageResolver.GetInitialPreference();
-        var rawValue = UserData.GetSetting(SettingsKeys.AppearanceTranslationLanguage, defaultPreference);
-        var preference = TranslationLanguageResolver.NormalizePreference(rawValue);
-        return TranslationLanguageResolver.ResolveEffectiveLanguageCode(preference);
+        var lemma = _provider.GetCurrentLemma();
+        if (lemma is null) return;
+        ExampleCarousel.Initialize(lemma.Words);
+        ExampleCarousel.SetFormsToAvoid(GetAllInflectedForms());
     }
 
     void RevealAnswer()

@@ -29,6 +29,12 @@ public interface ILemmaRepository
     /// </summary>
     void EnsureDetails(ILemma lemma);
 
+    void ClearMeaningCache()
+    {
+        foreach (var lemma in GetLemmasByRank(1, GetCount()))
+            lemma.ClearMeanings();
+    }
+
     /// <summary>
     /// Preload caches to avoid lazy loading delay on first access.
     /// </summary>

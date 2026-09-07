@@ -37,18 +37,18 @@ public partial class ExampleCarouselViewModel : ObservableObject
     /// <summary>
     /// Initialize carousel with translations from a lemma (all word variants).
     /// </summary>
-    public void Initialize(ILemma lemma, string languageCode) => Initialize(lemma.Words, languageCode);
+    public void Initialize(ILemma lemma) => Initialize(lemma.Words);
 
     /// <summary>
     /// Initialize carousel with translations from word variants (extracts Details from each).
     /// </summary>
-    public void Initialize(IEnumerable<IWord> words, string languageCode)
+    public void Initialize(IEnumerable<IWord> words)
     {
         var allDetails = words
             .Select(w => w.Details)
             .Where(d => d != null)
             .Cast<IWordDetails>();
-        InitializeEntries(TranslationEntry.BuildFromAllDetails(allDetails, languageCode));
+        InitializeEntries(TranslationEntry.BuildFromAllDetails(allDetails));
     }
 
     void InitializeEntries(IReadOnlyList<TranslationEntry> entries)

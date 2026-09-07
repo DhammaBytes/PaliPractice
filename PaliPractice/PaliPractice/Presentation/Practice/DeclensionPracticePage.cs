@@ -11,6 +11,13 @@ public sealed partial class DeclensionPracticePage : Page
 {
     DeclensionPracticeViewModel? _viewModel;
 
+    protected override void OnNavigatedTo(Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
+    {
+        base.OnNavigatedTo(e);
+        if (DataContext is DeclensionPracticeViewModel vm)
+            vm.RefreshMeanings();
+    }
+
     public DeclensionPracticePage()
     {
         var elements = new ResponsiveElements();

@@ -10,6 +10,7 @@ namespace PaliPractice.Tests.Practice.Fakes;
 /// </summary>
 public class FakeLemma : ILemma
 {
+    public TranslationLanguagePreference? MeaningsLanguage { get; set; }
     public int LemmaId { get; set; }
     public int EbtCount { get; set; }
     public string BaseForm { get; set; } = "";

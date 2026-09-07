@@ -216,7 +216,7 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
             AlternativeForms = GetAlternativeForms();
 
             // Initialize example carousel
-            ExampleCarousel.Initialize(lemma.Words, GetEffectiveTranslationLanguageCode());
+            ExampleCarousel.Initialize(lemma.Words);
             ExampleCarousel.SetFormsToAvoid(GetAllInflectedForms());
         }
         catch (Exception ex)

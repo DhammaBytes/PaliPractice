@@ -46,6 +46,20 @@ public interface ILemma
     /// </summary>
     bool HasDetails { get; }
 
+    /// <summary>Requested language for cached resolved meanings, separate from neutral details.</summary>
+    TranslationLanguagePreference? MeaningsLanguage { get; set; }
+
+    void ClearMeanings()
+    {
+        foreach (var word in Words.Concat(ExcludedWords))
+        {
+            if (word.Details is not { } details) continue;
+            details.Meaning = string.Empty;
+            details.MeaningLanguage = TranslationLanguagePreference.English;
+        }
+        MeaningsLanguage = null;
+    }
+
     /// <summary>
     /// Load details into each word's Details property.
     /// Called by database service after fetching details from DB.

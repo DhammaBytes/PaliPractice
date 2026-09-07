@@ -34,11 +34,11 @@ public class VerbDetails : IWordDetails
     [Column("trans")]
     public string Trans { get; set; } = string.Empty;
 
-    [Column("meaning")]
-    public string MeaningEn { get; set; } = string.Empty;
+    [Ignore]
+    public string Meaning { get; set; } = string.Empty;
 
-    [Column("meaning_ru")]
-    public string MeaningRu { get; set; } = string.Empty;
+    [Ignore]
+    public TranslationLanguagePreference MeaningLanguage { get; set; } = TranslationLanguagePreference.English;
 
     [Column("source_1")]
     public string Source1 { get; set; } = string.Empty;

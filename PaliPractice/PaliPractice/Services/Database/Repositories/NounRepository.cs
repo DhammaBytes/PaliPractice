@@ -18,6 +18,8 @@ public class NounRepository : INounRepository
     const int MaxNounEndings = 6;
 
     readonly SQLiteConnection _connection;
+    readonly MeaningLoader _meanings;
+    readonly Func<string> _language;
     readonly Lock _cacheLock = new();
     bool _isCacheLoaded;
 
@@ -27,9 +29,11 @@ public class NounRepository : INounRepository
     List<ILemma>? _lemmasByRank;
     HeadwordFormIndex? _irregularForms;
 
-    public NounRepository(SQLiteConnection connection)
+    public NounRepository(SQLiteConnection connection, Func<string>? language = null)
     {
         _connection = connection;
+        _meanings = new MeaningLoader(connection);
+        _language = language ?? (() => "en");
     }
 
     /// <summary>
@@ -191,13 +195,26 @@ public class NounRepository : INounRepository
     /// </summary>
     public void EnsureDetails(ILemma lemma)
     {
-        if (lemma.HasDetails) return;
+        lock (_cacheLock)
+        {
+            if (!lemma.HasDetails)
+            {
+                var details = _connection.Query<NounDetails>(
+                    "SELECT id, lemma_id, word, root, source_1, sutta_1, example_1, source_2, sutta_2, example_2 " +
+                    "FROM nouns_details WHERE lemma_id=?", lemma.LemmaId);
+                lemma.LoadDetails(details);
+            }
+            _meanings.Ensure(lemma, "nouns_details", _language());
+        }
+    }
 
-        IReadOnlyList<IWordDetails> details = _connection
-            .Table<NounDetails>()
-            .Where(d => d.LemmaId == lemma.LemmaId)
-            .ToList();
-
-        lemma.LoadDetails(details);
+    public void ClearMeaningCache()
+    {
+        lock (_cacheLock)
+        {
+            if (_lemmas is null) return;
+            foreach (var lemma in _lemmas.Values)
+                lemma.ClearMeanings();
+        }
     }
 }

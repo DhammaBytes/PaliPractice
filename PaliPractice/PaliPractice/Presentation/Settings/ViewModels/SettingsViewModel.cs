@@ -12,7 +12,8 @@ public partial class SettingsViewModel : ObservableObject
     readonly INavigator _navigator;
     readonly IFeedbackService _feedbackService;
     readonly IStoreReviewService _storeReviewService;
-    readonly IUserDataRepository _userData;
+    readonly IDatabaseService _db;
+    IUserDataRepository UserData => _db.UserData;
     bool _isLoading = true;
 
     public static string[] ThemeOptions =>
@@ -22,11 +23,12 @@ public partial class SettingsViewModel : ObservableObject
         AppText.Get("Settings.Theme.Dark")
     ];
 
-    public static string[] TranslationLanguageOptions =>
-    [
-        AppText.Get("Settings.LanguageOption.English"),
-        AppText.Get("Settings.LanguageOption.Russian")
-    ];
+    static readonly TranslationLanguagePreference[] LanguagePreferences =
+    [TranslationLanguagePreference.English, TranslationLanguagePreference.Russian, TranslationLanguagePreference.Spanish];
+
+    public static string[] TranslationLanguageOptions => LanguagePreferences
+        .Select(preference => AppText.Get($"Settings.LanguageOption.{preference}"))
+        .ToArray();
 
     public SettingsViewModel(
         INavigator navigator,
@@ -37,7 +39,7 @@ public partial class SettingsViewModel : ObservableObject
         _navigator = navigator;
         _feedbackService = feedbackService;
         _storeReviewService = storeReviewService;
-        _userData = db.UserData;
+        _db = db;
 
         LoadSettings();
         _isLoading = false;
@@ -45,11 +47,11 @@ public partial class SettingsViewModel : ObservableObject
 
     void LoadSettings()
     {
-        ThemeIndex = _userData.GetSetting(SettingsKeys.AppearanceTheme, SettingsKeys.DefaultAppearanceTheme);
+        ThemeIndex = UserData.GetSetting(SettingsKeys.AppearanceTheme, SettingsKeys.DefaultAppearanceTheme);
         var defaultTranslationLanguage = (int)TranslationLanguageResolver.GetInitialPreference();
-        TranslationLanguageIndex = (int)TranslationLanguageResolver.NormalizePreference(_userData.GetSetting(
+        TranslationLanguageIndex = Array.IndexOf(LanguagePreferences, TranslationLanguageResolver.NormalizePreference(UserData.GetSetting(
             SettingsKeys.AppearanceTranslationLanguage,
-            defaultTranslationLanguage));
+            defaultTranslationLanguage)));
     }
 
     #region Theme settings
@@ -67,7 +69,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         if (_isLoading) return;
 
-        _userData.SetSetting(SettingsKeys.AppearanceTheme, value);
+        UserData.SetSetting(SettingsKeys.AppearanceTheme, value);
 
         if (App.MainWindow?.Content is not FrameworkElement root) return;
 
@@ -89,7 +91,10 @@ public partial class SettingsViewModel : ObservableObject
     {
         if (_isLoading) return;
 
-        _userData.SetSetting(SettingsKeys.AppearanceTranslationLanguage, value);
+        if (value < 0 || value >= LanguagePreferences.Length) return;
+        UserData.SetSetting(SettingsKeys.AppearanceTranslationLanguage, (int)LanguagePreferences[value]);
+        _db.Nouns.ClearMeaningCache();
+        _db.Verbs.ClearMeaningCache();
     }
 
     #endregion

@@ -31,20 +31,60 @@ public class TranslationLanguageResolverTests
     }
 
     [Test]
-    public void InitialPreference_IsEnglishForNonRussianLocale()
+    public void InitialPreference_IsSpanishForSpanishLocale()
     {
         var preference = TranslationLanguageResolver.GetInitialPreference(new CultureInfo("es-ES"));
 
-        preference.Should().Be(TranslationLanguagePreference.English);
+        preference.Should().Be(TranslationLanguagePreference.Spanish);
     }
 
     [Test]
     public void InvalidPreference_FallsBackToInitialPreference()
     {
         var russianPreference = TranslationLanguageResolver.NormalizePreference(999, new CultureInfo("ru-RU"));
-        var englishPreference = TranslationLanguageResolver.NormalizePreference(999, new CultureInfo("es-ES"));
+        var englishPreference = TranslationLanguageResolver.NormalizePreference(999, new CultureInfo("de-DE"));
 
         russianPreference.Should().Be(TranslationLanguagePreference.Russian);
         englishPreference.Should().Be(TranslationLanguagePreference.English);
     }
+    [TestCase("es-ES")]
+    [TestCase("es-MX")]
+    [TestCase("es-AR")]
+    public void SpanishLocalesSelectSpanish(string locale) =>
+        TranslationLanguageResolver.GetInitialPreference(new CultureInfo(locale)).Should().Be(TranslationLanguagePreference.Spanish);
+
+    [Test]
+    public void StoredValuesRemainStableAndOverrideLocale()
+    {
+        ((int)TranslationLanguagePreference.English).Should().Be(0);
+        ((int)TranslationLanguagePreference.Russian).Should().Be(1);
+        ((int)TranslationLanguagePreference.Spanish).Should().Be(2);
+        TranslationLanguageResolver.NormalizePreference(0, new CultureInfo("es-MX")).Should().Be(TranslationLanguagePreference.English);
+        TranslationLanguageResolver.NormalizePreference(1, new CultureInfo("es-MX")).Should().Be(TranslationLanguagePreference.Russian);
+        TranslationLanguageResolver.ResolveEffectiveLanguageCode(TranslationLanguagePreference.Spanish).Should().Be("es");
+    }
+
+    [Test]
+    public void ExplicitLanguagePreferenceSurvivesDatabaseReopen()
+    {
+        var path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"language-{Guid.NewGuid():N}.db");
+        try
+        {
+            using (var connection = new SQLite.SQLiteConnection(path))
+            {
+                PaliPractice.Services.Database.PracticeDatabaseMigrations.Apply(connection);
+                var userData = new PaliPractice.Services.Database.Repositories.UserDataRepository(connection);
+                userData.InitializeDefaultsIfNeeded();
+                userData.SetSetting(SettingsKeys.AppearanceTranslationLanguage, (int)TranslationLanguagePreference.Spanish);
+            }
+            using (var connection = new SQLite.SQLiteConnection(path))
+            {
+                var userData = new PaliPractice.Services.Database.Repositories.UserDataRepository(connection);
+                userData.InitializeDefaultsIfNeeded();
+                userData.GetSetting(SettingsKeys.AppearanceTranslationLanguage, -1).Should().Be(2);
+            }
+        }
+        finally { File.Delete(path); }
+    }
+
 }

@@ -15,13 +15,20 @@ public static class TestPaths
         return System.IO.Path.GetFullPath(input, System.IO.Path.GetDirectoryName(System.IO.Path.GetFullPath(path))!);
     }
 
-    public static bool IsEnglishCandidate
+    public static bool HasFrozenEnglishCore
     {
         get
         {
             if (Environment.GetEnvironmentVariable("PALIPRACTICE_CANDIDATE_DB") is null) return false;
+            var directory = System.IO.Path.GetDirectoryName(PaliDbPath)!;
+            var enrichment = System.IO.Path.Combine(directory, "enrichment.json");
+            if (File.Exists(enrichment))
+            {
+                using var translated = System.Text.Json.JsonDocument.Parse(File.ReadAllText(enrichment));
+                return translated.RootElement.GetProperty("english_sha256").GetString()?.Length == 64;
+            }
             using var manifest = System.Text.Json.JsonDocument.Parse(File.ReadAllText(
-                System.IO.Path.Combine(System.IO.Path.GetDirectoryName(PaliDbPath)!, "candidate.json")));
+                System.IO.Path.Combine(directory, "candidate.json")));
             return manifest.RootElement.GetProperty("language_layer").GetString() == "en";
         }
     }

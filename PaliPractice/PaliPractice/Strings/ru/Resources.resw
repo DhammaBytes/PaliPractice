@@ -97,6 +97,7 @@
   <data name="Settings.Theme.Dark" xml:space="preserve"><value>Тёмная</value></data>
   <data name="Settings.LanguageOption.English" xml:space="preserve"><value>English</value></data>
   <data name="Settings.LanguageOption.Russian" xml:space="preserve"><value>Русский</value></data>
+  <data name="Settings.LanguageOption.Spanish" xml:space="preserve"><value>Español</value></data>
   <data name="Settings.NumberOption.Both" xml:space="preserve"><value>Единственное и множественное</value></data>
   <data name="Settings.NumberOption.SingularOnly" xml:space="preserve"><value>Только единственное</value></data>
   <data name="Settings.NumberOption.PluralOnly" xml:space="preserve"><value>Только множественное</value></data>
@@ -146,6 +147,10 @@
 Поддерживается волонтёрами [DhammaBytes](https://dhammabytes.org). Мы будем рады отзывам и помощи с переводами.
 
 Данные о словах и грамматике взяты из проекта [Digital Pāli Dictionary](https://dpdict.net).
+
+Русские значения взяты из [русской версии DPD](https://github.com/sasanarakkha/dpd-db-sbs/tree/sbs-ru), которую поддерживает достопочтенный Девамитта (Devamitta Bhikkhu) в монастыре Sāsanārakkha Buddhist Sanctuary. Часть исходных материалов переведена автоматически.
+
+Испанские значения взяты из [испанской версии DPD](https://github.com/DhammaBytes/dpd-dictionary-es). Перевод и проверку с помощью ИИ координирует [команда Paññābhūmi](https://dhamma-pb.org/), Халиско, Мексика.
 
 Приложение также доступно на [других платформах](https://www.dhammabytes.org/pali-practice/).
 ]]></value></data>

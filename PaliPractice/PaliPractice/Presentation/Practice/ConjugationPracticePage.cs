@@ -10,6 +10,13 @@ public sealed partial class ConjugationPracticePage : Page
 {
     ConjugationPracticeViewModel? _viewModel;
 
+    protected override void OnNavigatedTo(Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
+    {
+        base.OnNavigatedTo(e);
+        if (DataContext is ConjugationPracticeViewModel vm)
+            vm.RefreshMeanings();
+    }
+
     public ConjugationPracticePage()
     {
         var elements = new ResponsiveElements();

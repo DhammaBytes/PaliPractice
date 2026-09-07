@@ -17,6 +17,7 @@ public class Lemma : ILemma
     public IWord Primary => _words[0];
     public int EbtCount => Primary.EbtCount;
     public bool HasDetails { get; private set; }
+    public TranslationLanguagePreference? MeaningsLanguage { get; set; }
 
     public Lemma(string baseForm, IEnumerable<IWord> words)
     {

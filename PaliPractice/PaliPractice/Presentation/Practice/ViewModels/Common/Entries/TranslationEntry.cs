@@ -82,9 +82,9 @@ public class TranslationEntry
     /// <summary>
     /// Builds translation entry from a single word details.
     /// </summary>
-    public static IReadOnlyList<TranslationEntry> BuildFromDetails(IWordDetails details, string languageCode)
+    public static IReadOnlyList<TranslationEntry> BuildFromDetails(IWordDetails details)
     {
-        return BuildFromAllDetails([details], languageCode);
+        return BuildFromAllDetails([details]);
     }
 
     /// <summary>
@@ -92,15 +92,14 @@ public class TranslationEntry
     /// Groups by unique meaning, collecting all examples for each.
     /// </summary>
     public static IReadOnlyList<TranslationEntry> BuildFromAllDetails(
-        IEnumerable<IWordDetails> detailsCollection,
-        string languageCode)
+        IEnumerable<IWordDetails> detailsCollection)
     {
         var examplesByMeaning = new Dictionary<string, List<ExampleEntry>>();
         var firstDetailsByMeaning = new Dictionary<string, IWordDetails>();
 
         foreach (var details in detailsCollection)
         {
-            var meaning = details.GetMeaning(languageCode);
+            var meaning = details.Meaning;
             if (string.IsNullOrWhiteSpace(meaning))
                 continue;
 

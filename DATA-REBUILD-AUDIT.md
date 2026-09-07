@@ -124,15 +124,15 @@ Accept cutoff additions/removals as an audited delta; do not freeze row counts o
 
 Two handoff corrections: absolute-path test helpers have already been improved through `TestPaths` and the repository-root override. Also, the `GROUP BY` sampling criticism was too broad: SQLite's single built-in `MAX` aggregate selects bare columns from a maximizing row. Equal maxima and the ordering among tied groups still need explicit tie-breakers ([SQLite documentation](https://www.sqlite.org/lang_select.html#bareagg)). Sampling only three words remains insufficient for whole-database coverage.
 
-## Useful ConjuGato practices
+## Useful practices from another app
 
-[`ConjuGato/quality/README.md`](/Users/ivm/Sources/ConjuGato/quality/README.md) and its generator determinism lane provide useful patterns:
+Another app’s quality gate and generator determinism checks provide useful patterns:
 
 1. Run a generator twice from the same pinned inputs in isolated temporary directories; compare semantic output and, when deterministic, bytes. Use a fixed build version for this check.
 2. Make database-backed tests consume the exact verified candidate and verify the packaged artifact against its source/output identity.
 3. Keep logs/manifests outside the worktree, preserve source files, explain expensive lane selection, and continue independent checks when another lane cannot run.
 
-PaliPractice policy currently forbids running extraction in the gate. Keep that boundary until the generator supports a fully isolated, offline candidate build; do not copy ConjuGato's regeneration step into the current gate unchanged. No native-build matrix, coverage percentage, or unrelated analyzer policy needs to be copied to solve these data issues.
+PaliPractice policy currently forbids running extraction in the gate. Keep that boundary until the generator supports a fully isolated, offline candidate build; do not copy the other app’s regeneration step into the current gate unchanged. No native-build matrix, coverage percentage, or unrelated analyzer policy needs to be copied to solve these data issues.
 
 ## Suggested order
 

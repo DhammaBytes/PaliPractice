@@ -1,0 +1,16 @@
+{
+  "reference": "Previous pending rebuild; not a released artifact",
+  "reference_sha256": "e0822e1e7c21a1be5143b952420813eb7014fd2e0f0887efb286bdae246fca42",
+  "nouns": {
+    "shared_senses": 2373,
+    "previous_translated": 2371,
+    "current_translated": 2371,
+    "changed_meanings": 0
+  },
+  "verbs": {
+    "shared_senses": 1311,
+    "previous_translated": 1310,
+    "current_translated": 1310,
+    "changed_meanings": 0
+  }
+}

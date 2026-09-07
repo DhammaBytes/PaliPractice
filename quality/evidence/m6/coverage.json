@@ -1,0 +1,210 @@
+{
+  "english_sha256": "f4850fe87522595ed82fdc3abf89ae9b5aebd22d7d8d63dc60c40c087863f75f",
+  "source": {
+    "sha256": "7e1fb87986944f5dbed9769d2428b7880826e3f6b70b7aec0fade285738b605d",
+    "source": {
+      "origin": "https://github.com/sasanarakkha/dpd-db-sbs/blob/c179f0c044e3e0ca366ac47445f30a1b2ffc732c/db/backup_tsv/russian.tsv",
+      "revision": "c179f0c044e3e0ca366ac47445f30a1b2ffc732c"
+    }
+  },
+  "coverage": {
+    "nouns": {
+      "primary_lemmas": 1500,
+      "selected_senses": 2395,
+      "translated_primary_lemmas": 1498,
+      "translated_senses": 2384
+    },
+    "verbs": {
+      "primary_lemmas": 750,
+      "selected_senses": 1327,
+      "translated_primary_lemmas": 750,
+      "translated_senses": 1320
+    }
+  },
+  "unknown_source_ids": [
+    29083,
+    62523
+  ],
+  "untranslated_selected_senses": [
+    {
+      "headword_id": 85796,
+      "kind": "nouns",
+      "language": "ru",
+      "lemma_id": 10138,
+      "meaning": "",
+      "primary": false,
+      "source_key": "85796",
+      "status": "empty"
+    },
+    {
+      "headword_id": 89243,
+      "kind": "nouns",
+      "language": "ru",
+      "lemma_id": 45249,
+      "meaning": "",
+      "primary": true,
+      "source_key": "89243",
+      "status": "empty"
+    },
+    {
+      "headword_id": 89646,
+      "kind": "nouns",
+      "language": "ru",
+      "lemma_id": 11279,
+      "meaning": "",
+      "primary": false,
+      "source_key": "89646",
+      "status": "missing"
+    },
+    {
+      "headword_id": 89648,
+      "kind": "nouns",
+      "language": "ru",
+      "lemma_id": 11895,
+      "meaning": "",
+      "primary": false,
+      "source_key": "89648",
+      "status": "missing"
+    },
+    {
+      "headword_id": 89654,
+      "kind": "nouns",
+      "language": "ru",
+      "lemma_id": 11057,
+      "meaning": "",
+      "primary": false,
+      "source_key": "89654",
+      "status": "missing"
+    },
+    {
+      "headword_id": 89662,
+      "kind": "nouns",
+      "language": "ru",
+      "lemma_id": 10576,
+      "meaning": "",
+      "primary": false,
+      "source_key": "89662",
+      "status": "missing"
+    },
+    {
+      "headword_id": 89700,
+      "kind": "nouns",
+      "language": "ru",
+      "lemma_id": 10273,
+      "meaning": "",
+      "primary": false,
+      "source_key": "89700",
+      "status": "missing"
+    },
+    {
+      "headword_id": 89702,
+      "kind": "nouns",
+      "language": "ru",
+      "lemma_id": 10029,
+      "meaning": "",
+      "primary": false,
+      "source_key": "89702",
+      "status": "missing"
+    },
+    {
+      "headword_id": 89703,
+      "kind": "nouns",
+      "language": "ru",
+      "lemma_id": 10048,
+      "meaning": "",
+      "primary": false,
+      "source_key": "89703",
+      "status": "missing"
+    },
+    {
+      "headword_id": 89741,
+      "kind": "nouns",
+      "language": "ru",
+      "lemma_id": 10852,
+      "meaning": "",
+      "primary": false,
+      "source_key": "89741",
+      "status": "missing"
+    },
+    {
+      "headword_id": 89754,
+      "kind": "nouns",
+      "language": "ru",
+      "lemma_id": 10331,
+      "meaning": "",
+      "primary": true,
+      "source_key": "89754",
+      "status": "missing"
+    },
+    {
+      "headword_id": 81217,
+      "kind": "verbs",
+      "language": "ru",
+      "lemma_id": 70332,
+      "meaning": "",
+      "primary": false,
+      "source_key": "81217",
+      "status": "empty"
+    },
+    {
+      "headword_id": 89649,
+      "kind": "verbs",
+      "language": "ru",
+      "lemma_id": 70140,
+      "meaning": "",
+      "primary": false,
+      "source_key": "89649",
+      "status": "missing"
+    },
+    {
+      "headword_id": 89706,
+      "kind": "verbs",
+      "language": "ru",
+      "lemma_id": 70899,
+      "meaning": "",
+      "primary": false,
+      "source_key": "89706",
+      "status": "missing"
+    },
+    {
+      "headword_id": 89707,
+      "kind": "verbs",
+      "language": "ru",
+      "lemma_id": 71000,
+      "meaning": "",
+      "primary": false,
+      "source_key": "89707",
+      "status": "missing"
+    },
+    {
+      "headword_id": 89708,
+      "kind": "verbs",
+      "language": "ru",
+      "lemma_id": 70186,
+      "meaning": "",
+      "primary": false,
+      "source_key": "89708",
+      "status": "missing"
+    },
+    {
+      "headword_id": 89713,
+      "kind": "verbs",
+      "language": "ru",
+      "lemma_id": 70717,
+      "meaning": "",
+      "primary": false,
+      "source_key": "89713",
+      "status": "missing"
+    },
+    {
+      "headword_id": 89850,
+      "kind": "verbs",
+      "language": "ru",
+      "lemma_id": 71029,
+      "meaning": "",
+      "primary": false,
+      "source_key": "89850",
+      "status": "missing"
+    }
+  ]
+}

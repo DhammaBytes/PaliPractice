@@ -1609,6 +1609,28 @@ def regenerate_candidate(gate: Gate, groups: set[str]) -> None:
     os.environ["PALIPRACTICE_CANDIDATE_DIRECTORY"] = str(output / "run-1")
 
 
+def verify_translation_candidate(gate: Gate, *, build: bool) -> None:
+    manifest = os.environ.get("PALIPRACTICE_TRANSLATION_MANIFEST")
+    if not manifest:
+        return
+    specification = candidate_spec()
+    if not specification:
+        raise GateError("Translation verification requires a pinned English candidate")
+    english, _ = specification
+    output = gate.evidence.run / "translation-repeatability"
+    command = [str(ROOT / ".venv/bin/python"), "-B"]
+    if build:
+        command += ["scripts/check_enrichment.py", "--output", str(output)]
+    else:
+        command += ["scripts/enrich_candidate.py", "verify", "--output", str(output / "run-1")]
+    command += ["--english", str(english), "--manifest", str(Path(manifest).resolve())]
+    name = "translation-repeatability" if build else "translation-inputs-after"
+    result = gate.command(name, command)
+    if result.returncode != 0:
+        raise GateError("Translation validation failed; inspect isolated evidence")
+    gate.check(name, [])
+
+
 def verify_supplied_candidate(gate: Gate, name: str) -> None:
     specification = candidate_spec()
     if specification:
@@ -1783,6 +1805,7 @@ def run_selected(gate: Gate, groups: set[str], base: str) -> None:
                      "--capture-sources", str(gate.evidence.run / "semantic-sources.json")])
     regenerate_candidate(gate, groups)
     verify_supplied_candidate(gate, "candidate-inputs-before")
+    verify_translation_candidate(gate, build=True)
     self_test = gate.command(
         "quality-tests",
         [
@@ -1822,6 +1845,7 @@ def run_selected(gate: Gate, groups: set[str], base: str) -> None:
     if "dotnet" in groups or "desktop" in groups:
         run_dotnet_checks(gate, "desktop" in groups, base)
     verify_supplied_candidate(gate, "candidate-inputs-after")
+    verify_translation_candidate(gate, build=False)
 
 
 def _arguments() -> argparse.Namespace:

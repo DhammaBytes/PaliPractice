@@ -1,6 +1,6 @@
 # DPD rebuild and translation roadmap
 
-Created: 7 September 2026. Status: M1–M5 complete; M6 Russian enrichment is next.
+Created: 7 September 2026. Status: M1–M6 complete; M7 Spanish enrichment is next.
 
 The objective is a reproducible, grammatically correct English DPD database with stable production practice identities, followed by verified Russian and Spanish meanings in the next app update. The findings and measured starting state are in [DATA-REBUILD-AUDIT.md](DATA-REBUILD-AUDIT.md).
 
@@ -112,11 +112,11 @@ If the selected DPD inputs change later, regenerate and revalidate this checkpoi
 
 **Purpose:** add translations to a verified English core without affecting grammatical data or selection.
 
-- [ ] Introduce a small common result contract for imported meanings: language, exact DPD headword ID, plain meaning, source key/revision/checksum, and mapping/availability status in build evidence. Keep source-specific parsing in separate RU and ES adapters.
-- [ ] Make language enrichment deterministic and offline from pinned inputs. Fail on import corruption; distinguish valid missing translations from download/parse/mapping failures.
-- [ ] Harden Russian parsing and pin its TSV. Preserve the existing curated `ru_meaning` → `ru_meaning_raw` → empty rule. Report missing/unknown IDs and coverage by selected sense and primary practice lemma.
-- [ ] Compare every stored Russian meaning with the pinned source. Report coverage changes and source revisions without arbitrary frozen row counts.
-- [ ] Assert that applying, removing, or refreshing a translation layer changes no part of the frozen English core and no practice identity. A failed language import must not produce a partially promoted bundle.
+- [x] Introduce a small common result contract for imported meanings: language, exact DPD headword ID, plain meaning, source key/revision/checksum, and mapping/availability status in build evidence. Keep source-specific parsing in separate RU and ES adapters.
+- [x] Make language enrichment deterministic and offline from pinned inputs. Fail on import corruption; distinguish valid missing translations from download/parse/mapping failures.
+- [x] Harden Russian parsing and pin its TSV. Preserve the existing curated `ru_meaning` → `ru_meaning_raw` → empty rule. Report missing/unknown IDs and coverage by selected sense and primary practice lemma.
+- [x] Compare every stored Russian meaning with the pinned source. Report coverage changes and source revisions without arbitrary frozen row counts.
+- [x] Assert that applying, removing, or refreshing a translation layer changes no part of the frozen English core and no practice identity. A failed language import must not produce a partially promoted bundle.
 
 **Exit:** Russian enrichment passes parser fixtures, exact selected-ID comparisons, English-core immutability checks, and the relevant gate lanes. Existing Russian selection/fallback behavior remains compatible.
 
@@ -198,7 +198,7 @@ Update this table at the end of each milestone with durable evidence links.
 | M3 | Complete | [Identity contract, candidate, gate, and review](quality/evidence/m3/README.md) |
 | M4 | Complete | [Exact forms, attestation, candidate gate, and review](quality/evidence/m4/README.md) |
 | M5 | Complete | [Repeatability, semantic gate, review, and desktop/iOS/Android upgrade evidence](quality/evidence/m5/README.md) |
-| M6 | Planned | English checkpoint complete; translation implementation may begin |
+| M6 | Complete | [Pinned Russian source, exact meanings, English preservation, gate and review](quality/evidence/m6/README.md) |
 | M7 | Planned | Spanish source discovery complete; implementation requires M6 |
 | M8 | Planned | Requires verified RU/ES enrichment |
 | M9 | Planned | Requires all previous milestones |

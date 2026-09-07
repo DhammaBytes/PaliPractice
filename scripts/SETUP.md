@@ -113,9 +113,9 @@ Run isolated producer tests explicitly during M2–M4:
 .venv/bin/python -B -m unittest discover -s scripts/tests -v
 ```
 
-The repository gate still does not invoke extraction or acquisition. M5 changes
-that policy only after candidate isolation is proven. Run the normal gate via
-the repository quality workflow before milestone handoff.
+The repository gate permits isolated candidate extraction from pinned inputs
+(M5), but does not acquire inputs or promote the production bundle. Run the
+normal gate via the repository quality workflow before milestone handoff.
 
 ## Exact forms and attestation (M4)
 
@@ -140,3 +140,38 @@ Candidate `validate` additionally checks the scoped records and primary forms.
 `verify_candidate.py --candidate <directory> --inputs <manifest>` checks current
 code and exact input identities too. The complete candidate gate is described in
 [quality/README.md](../quality/README.md).
+
+## Russian enrichment (M6)
+
+Acquire `db/backup_tsv/russian.tsv` separately at a full commit from the `sbs-ru`
+branch of `sasanarakkha/dpd-db-sbs`. Record its SHA-256 and immutable URL in a
+translation manifest. Enrichment itself is offline and never reads the moving
+branch URL. The manifest has `schema: 1`, `english_sha256`, a `dpd` input entry
+matching the English candidate’s pinned DPD, and `sources.ru`. Each input entry
+uses the same `path`, `sha256`, `source.origin`, `source.revision` format as the
+English manifest; relative paths resolve against the translation manifest.
+
+```bash
+.venv/bin/python scripts/enrich_candidate.py build \
+  --english /absolute/verified-english-candidate \
+  --manifest /absolute/translation-inputs.json \
+  --output /absolute/new-unique-translated-candidate
+
+.venv/bin/python scripts/enrich_candidate.py verify \
+  --english /absolute/verified-english-candidate \
+  --manifest /absolute/translation-inputs.json \
+  --output /absolute/new-unique-translated-candidate
+```
+
+Output contains a new `pali.db` with `localized_meanings(headword_id, language,
+meaning)` and `enrichment.json`. Original English tables and artifacts are
+unchanged. The report carries source pins, every selected sense’s mapping and
+availability status, primary/sense coverage, and unselected/unknown source IDs.
+Empty and missing translations have no table row; runtime English fallback is
+specified in M8. This output is not a promotion receipt or a shipped bundle.
+
+Supply `PALIPRACTICE_TRANSLATION_MANIFEST` alongside
+`PALIPRACTICE_INPUT_MANIFEST` to run two isolated, byte-identical enrichments in
+the gate. Verification re-parses the pinned source, compares every stored meaning,
+and compares all original SQLite schema objects, rows, version, and artifacts.
+A failed build leaves only its incomplete candidate directory; never reuse it.

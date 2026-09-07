@@ -396,33 +396,48 @@ public class UserDataRepository : IUserDataRepository
     }
 
     // === Self-Healing Settings Getters ===
-    // These methods read settings and rewrite defaults if the value is invalid/empty.
+    // These methods read settings and rewrite defaults if the value is missing or invalid.
     // This ensures corrupted settings don't cause empty practice queues.
 
     /// <summary>
-    /// Gets an enum list setting. If empty after parsing, rewrites the default and returns it.
+    /// Gets an enum list setting. If missing or invalid, rewrites the default and returns it.
+    /// A stored empty string is returned as an empty list when <paramref name="allowEmpty"/> is true.
     /// Returns items in canonical order (sorted by enum value) for deterministic iteration.
     /// </summary>
-    public List<T> GetEnumListOrResetDefault<T>(string key, T[] defaults) where T : struct, Enum
+    public List<T> GetEnumListOrResetDefault<T>(
+        string key,
+        T[] defaults,
+        bool allowEmpty = false)
+        where T : struct, Enum
     {
-        var csv = GetSetting(key, "");
-        var parsed = SettingsHelpers.FromCsv<T>(csv);
+        var setting = _connection.Table<UserSetting>()
+            .FirstOrDefault(candidate => candidate.Key == key);
+
+        if (allowEmpty && setting?.Value == string.Empty)
+            return [];
+
+        var parsed = SettingsHelpers.FromCsv<T>(setting?.Value ?? string.Empty);
 
         if (parsed.Count > 0)
             return parsed.OrderBy(e => e).ToList();  // Canonical order for determinism
 
-        // Empty or invalid - rewrite defaults
-        System.Diagnostics.Debug.WriteLine($"[UserData] Setting '{key}' was empty/invalid, resetting to defaults");
+        // Missing, invalid, or disallowed empty value - rewrite defaults
+        System.Diagnostics.Debug.WriteLine($"[UserData] Setting '{key}' was missing/invalid, resetting to defaults");
         var defaultCsv = SettingsHelpers.ToCsv(defaults);
         SetSetting(key, defaultCsv);
         return defaults.OrderBy(e => e).ToList();  // Canonical order for determinism
     }
 
     /// <summary>
-    /// Gets an enum set setting. If empty after parsing, rewrites the default and returns it.
+    /// Gets an enum set setting. If missing or invalid, rewrites the default and returns it.
+    /// A stored empty string is returned as an empty set when <paramref name="allowEmpty"/> is true.
     /// </summary>
-    public HashSet<T> GetEnumSetOrResetDefault<T>(string key, T[] defaults) where T : struct, Enum
-        => GetEnumListOrResetDefault(key, defaults).ToHashSet();
+    public HashSet<T> GetEnumSetOrResetDefault<T>(
+        string key,
+        T[] defaults,
+        bool allowEmpty = false)
+        where T : struct, Enum
+        => GetEnumListOrResetDefault(key, defaults, allowEmpty).ToHashSet();
 
     /// <summary>
     /// Gets a validated lemma range. If invalid (min >= max, out of bounds), rewrites defaults.

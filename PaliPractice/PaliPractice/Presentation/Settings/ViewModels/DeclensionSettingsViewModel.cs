@@ -37,9 +37,7 @@ public partial class DeclensionSettingsViewModel : ObservableObject
         DailyGoal = _userData.GetSetting(SettingsKeys.NounsDailyGoal, SettingsKeys.DefaultDailyGoal);
 
         // Load enabled patterns per gender (positive list)
-        var mascEnabled = SettingsHelpers.FromCsvSet<NounPattern>(
-            _userData.GetSetting(SettingsKeys.NounsMascPatterns,
-                SettingsHelpers.ToCsv(SettingsKeys.NounsDefaultMascPatterns)));
+        var (mascEnabled, neutEnabled, femEnabled) = NounPatternSettings.Load(_userData);
         PatternMascA = mascEnabled.Contains(NounPattern.AMasc);
         PatternMascI = mascEnabled.Contains(NounPattern.IMasc);
         PatternMascILong = mascEnabled.Contains(NounPattern.ĪMasc);
@@ -49,16 +47,10 @@ public partial class DeclensionSettingsViewModel : ObservableObject
         PatternMascAr = mascEnabled.Contains(NounPattern.ArMasc);
         PatternMascAnt = mascEnabled.Contains(NounPattern.AntMasc);
         
-        var neutEnabled = SettingsHelpers.FromCsvSet<NounPattern>(
-            _userData.GetSetting(SettingsKeys.NounsNeutPatterns,
-                SettingsHelpers.ToCsv(SettingsKeys.NounsDefaultNeutPatterns)));
         PatternNtA = neutEnabled.Contains(NounPattern.ANeut);
         PatternNtI = neutEnabled.Contains(NounPattern.INeut);
         PatternNtU = neutEnabled.Contains(NounPattern.UNeut);
         
-        var femEnabled = SettingsHelpers.FromCsvSet<NounPattern>(
-            _userData.GetSetting(SettingsKeys.NounsFemPatterns,
-                SettingsHelpers.ToCsv(SettingsKeys.NounsDefaultFemPatterns)));
         PatternFemALong = femEnabled.Contains(NounPattern.ĀFem);
         PatternFemI = femEnabled.Contains(NounPattern.IFem);
         PatternFemILong = femEnabled.Contains(NounPattern.ĪFem);
@@ -102,9 +94,9 @@ public partial class DeclensionSettingsViewModel : ObservableObject
         if (PatternMascILong) mascEnabled.Add(NounPattern.ĪMasc);
         if (PatternMascU) mascEnabled.Add(NounPattern.UMasc);
         if (PatternMascULong) mascEnabled.Add(NounPattern.ŪMasc);
-        if (PatternMascAs) mascEnabled.Add(NounPattern.AsMasc);
         if (PatternMascAr) mascEnabled.Add(NounPattern.ArMasc);
         if (PatternMascAnt) mascEnabled.Add(NounPattern.AntMasc);
+        if (PatternMascAs) mascEnabled.Add(NounPattern.AsMasc);
         _userData.SetSetting(SettingsKeys.NounsMascPatterns, SettingsHelpers.ToCsv(mascEnabled));
         
         var neutEnabled = new List<NounPattern>();
@@ -163,312 +155,93 @@ public partial class DeclensionSettingsViewModel : ObservableObject
 
     // Masculine patterns
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascULong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAs))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAr))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAnt))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemU))]
     bool _patternMascA = true;
-    partial void OnPatternMascAChanged(bool value) => SaveSettings();
+    partial void OnPatternMascAChanged(bool value) => OnPatternsChanged();
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascULong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAs))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAr))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAnt))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemU))]
     bool _patternMascI = true;
-    partial void OnPatternMascIChanged(bool value) => SaveSettings();
+    partial void OnPatternMascIChanged(bool value) => OnPatternsChanged();
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascULong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAs))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAr))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAnt))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemU))]
     bool _patternMascILong = true;
-    partial void OnPatternMascILongChanged(bool value) => SaveSettings();
+    partial void OnPatternMascILongChanged(bool value) => OnPatternsChanged();
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascULong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAs))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAr))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAnt))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemU))]
     bool _patternMascU = true;
-    partial void OnPatternMascUChanged(bool value) => SaveSettings();
+    partial void OnPatternMascUChanged(bool value) => OnPatternsChanged();
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascULong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAs))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAr))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAnt))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemU))]
     bool _patternMascULong = true;
-    partial void OnPatternMascULongChanged(bool value) => SaveSettings();
+    partial void OnPatternMascULongChanged(bool value) => OnPatternsChanged();
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascULong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAs))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAr))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAnt))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemU))]
     bool _patternMascAs = true;
-    partial void OnPatternMascAsChanged(bool value) => SaveSettings();
+    partial void OnPatternMascAsChanged(bool value) => OnPatternsChanged();
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascULong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAs))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAr))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAnt))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemU))]
     bool _patternMascAr = true;
-    partial void OnPatternMascArChanged(bool value) => SaveSettings();
+    partial void OnPatternMascArChanged(bool value) => OnPatternsChanged();
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascULong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAs))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAr))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAnt))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemU))]
     bool _patternMascAnt = true;
-    partial void OnPatternMascAntChanged(bool value) => SaveSettings();
+    partial void OnPatternMascAntChanged(bool value) => OnPatternsChanged();
 
     // Neuter patterns
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascULong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAs))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAr))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAnt))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemU))]
     bool _patternNtA = true;
-    partial void OnPatternNtAChanged(bool value) => SaveSettings();
+    partial void OnPatternNtAChanged(bool value) => OnPatternsChanged();
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascULong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAs))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAr))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAnt))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemU))]
     bool _patternNtI = true;
-    partial void OnPatternNtIChanged(bool value) => SaveSettings();
+    partial void OnPatternNtIChanged(bool value) => OnPatternsChanged();
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascULong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAs))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAr))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAnt))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemU))]
     bool _patternNtU = true;
-    partial void OnPatternNtUChanged(bool value) => SaveSettings();
+    partial void OnPatternNtUChanged(bool value) => OnPatternsChanged();
 
     // Feminine patterns
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascULong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAs))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAr))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAnt))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemU))]
     bool _patternFemALong = true;
-    partial void OnPatternFemALongChanged(bool value) => SaveSettings();
+    partial void OnPatternFemALongChanged(bool value) => OnPatternsChanged();
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascULong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAs))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAr))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAnt))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemU))]
     bool _patternFemI = true;
-    partial void OnPatternFemIChanged(bool value) => SaveSettings();
+    partial void OnPatternFemIChanged(bool value) => OnPatternsChanged();
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascULong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAs))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAr))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAnt))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemU))]
     bool _patternFemILong = true;
-    partial void OnPatternFemILongChanged(bool value) => SaveSettings();
+    partial void OnPatternFemILongChanged(bool value) => OnPatternsChanged();
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascULong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAs))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAr))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAnt))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemAr))]
     bool _patternFemU = true;
-    partial void OnPatternFemUChanged(bool value) => SaveSettings();
+    partial void OnPatternFemUChanged(bool value) => OnPatternsChanged();
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascULong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAs))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAr))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternMascAnt))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternNtU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemA))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemI))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemILong))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemU))]
-    [NotifyPropertyChangedFor(nameof(CanDisablePatternFemAr))]
     bool _patternFemAr = true;
-    partial void OnPatternFemArChanged(bool value) => SaveSettings();
+    partial void OnPatternFemArChanged(bool value) => OnPatternsChanged();
+
+    void OnPatternsChanged()
+    {
+        if (_isLoading) return;
+
+        SaveSettings();
+        OnPropertyChanged(nameof(CanDisablePatternMascA));
+        OnPropertyChanged(nameof(CanDisablePatternMascI));
+        OnPropertyChanged(nameof(CanDisablePatternMascILong));
+        OnPropertyChanged(nameof(CanDisablePatternMascU));
+        OnPropertyChanged(nameof(CanDisablePatternMascULong));
+        OnPropertyChanged(nameof(CanDisablePatternMascAs));
+        OnPropertyChanged(nameof(CanDisablePatternMascAr));
+        OnPropertyChanged(nameof(CanDisablePatternMascAnt));
+        OnPropertyChanged(nameof(CanDisablePatternNtA));
+        OnPropertyChanged(nameof(CanDisablePatternNtI));
+        OnPropertyChanged(nameof(CanDisablePatternNtU));
+        OnPropertyChanged(nameof(CanDisablePatternFemA));
+        OnPropertyChanged(nameof(CanDisablePatternFemI));
+        OnPropertyChanged(nameof(CanDisablePatternFemILong));
+        OnPropertyChanged(nameof(CanDisablePatternFemU));
+        OnPropertyChanged(nameof(CanDisablePatternFemAr));
+    }
 
     // CanDisable properties - disable when this is the last enabled pattern
     public bool CanDisablePatternMascA => EnabledPatternCount > 1 || !PatternMascA;

@@ -637,7 +637,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
     List<long> GetEligibleDeclensionFormIds()
     {
-        // Load settings with self-healing (rewrites defaults if empty/invalid)
+        // Required settings self-heal to defaults when missing or invalid.
         var enabledCases = _userData.GetEnumListOrResetDefault(SettingsKeys.NounsCases, SettingsKeys.NounsDefaultCases);
         var enabledNumbers = _userData.GetEnumListOrResetDefault(SettingsKeys.NounsNumbers, SettingsKeys.DefaultNumbers);
 
@@ -647,10 +647,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
         System.Diagnostics.Debug.WriteLine($"[Queue/Decl] cases={enabledCases.Count}, numbers={enabledNumbers.Count}, rank={minRank}-{maxRank}");
 
-        // Load enabled patterns per gender with self-healing
-        var mascEnabled = _userData.GetEnumSetOrResetDefault(SettingsKeys.NounsMascPatterns, SettingsKeys.NounsDefaultMascPatterns);
-        var neutEnabled = _userData.GetEnumSetOrResetDefault(SettingsKeys.NounsNeutPatterns, SettingsKeys.NounsDefaultNeutPatterns);
-        var femEnabled = _userData.GetEnumSetOrResetDefault(SettingsKeys.NounsFemPatterns, SettingsKeys.NounsDefaultFemPatterns);
+        var (mascEnabled, neutEnabled, femEnabled) = NounPatternSettings.Load(_userData);
 
         System.Diagnostics.Debug.WriteLine($"[Queue/Decl] enabledCases: {enabledCases.Count} ({string.Join(",", enabledCases)})");
         System.Diagnostics.Debug.WriteLine($"[Queue/Decl] enabledNumbers: {enabledNumbers.Count} ({string.Join(",", enabledNumbers)})");
@@ -727,12 +724,8 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
     List<long> GetEligibleConjugationFormIds()
     {
-        // Load settings with self-healing (rewrites defaults if empty/invalid)
-        var enabledTenses = _userData.GetEnumListOrResetDefault(SettingsKeys.VerbsTenses, SettingsKeys.VerbsDefaultTenses);
-        var enabledPersons = _userData.GetEnumListOrResetDefault(SettingsKeys.VerbsPersons, SettingsKeys.VerbsDefaultPersons);
-        var enabledNumbers = _userData.GetEnumListOrResetDefault(SettingsKeys.VerbsNumbers, SettingsKeys.DefaultNumbers);
-        var enabledVoices = _userData.GetEnumListOrResetDefault(SettingsKeys.VerbsVoices, SettingsKeys.VerbsDefaultVoices);
-        var enabledPatterns = _userData.GetEnumSetOrResetDefault(SettingsKeys.VerbsPatterns, SettingsKeys.VerbsDefaultPatterns);
+        var (enabledPatterns, enabledTenses, enabledPersons, enabledNumbers, enabledVoices) =
+            VerbFilterSettings.Load(_userData);
 
         // Get total verb count for range validation
         var totalVerbs = _verbs.GetCount();
@@ -764,12 +757,13 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
                     foreach (var number in enabledNumbers)
                     {
                         // Normal (active) forms
-                        if (includeActive)
-                        {
-                            // Skip Present 3rd singular Active - used as a question itself
-                            if (tense == Tense.Present && person == Person.Third && number == Number.Singular)
-                                continue;
+                        var isActiveCitationForm =
+                            tense == Tense.Present &&
+                            person == Person.Third &&
+                            number == Number.Singular;
 
+                        if (includeActive && !isActiveCitationForm)
+                        {
                             if (_verbs.HasAttestedForm(lemma.LemmaId, tense, person, number, reflexive: false))
                             {
                                 var formId = Conjugation.ResolveId(lemma.LemmaId, tense, person, number, Voice.Active, 0);
@@ -1007,9 +1001,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         var enabledNumbers = _userData.GetEnumListOrResetDefault(SettingsKeys.NounsNumbers, SettingsKeys.DefaultNumbers);
         var totalNouns = _nouns.GetCount();
         var (minRank, maxRank) = _userData.GetLemmaRangeOrResetDefault(PracticeType.Declension, totalNouns);
-        var mascEnabled = _userData.GetEnumSetOrResetDefault(SettingsKeys.NounsMascPatterns, SettingsKeys.NounsDefaultMascPatterns);
-        var neutEnabled = _userData.GetEnumSetOrResetDefault(SettingsKeys.NounsNeutPatterns, SettingsKeys.NounsDefaultNeutPatterns);
-        var femEnabled = _userData.GetEnumSetOrResetDefault(SettingsKeys.NounsFemPatterns, SettingsKeys.NounsDefaultFemPatterns);
+        var (mascEnabled, neutEnabled, femEnabled) = NounPatternSettings.Load(_userData);
 
         sb.AppendLine("║  SETTINGS                                                                                    ║");
         sb.AppendLine($"║    Rank range: {minRank} - {maxRank}".PadRight(94) + "║");
@@ -1022,11 +1014,8 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
     void LogConjugationSettings(System.Text.StringBuilder sb)
     {
-        var enabledTenses = _userData.GetEnumListOrResetDefault(SettingsKeys.VerbsTenses, SettingsKeys.VerbsDefaultTenses);
-        var enabledPersons = _userData.GetEnumListOrResetDefault(SettingsKeys.VerbsPersons, SettingsKeys.VerbsDefaultPersons);
-        var enabledNumbers = _userData.GetEnumListOrResetDefault(SettingsKeys.VerbsNumbers, SettingsKeys.DefaultNumbers);
-        var enabledVoices = _userData.GetEnumListOrResetDefault(SettingsKeys.VerbsVoices, SettingsKeys.VerbsDefaultVoices);
-        var enabledPatterns = _userData.GetEnumSetOrResetDefault(SettingsKeys.VerbsPatterns, SettingsKeys.VerbsDefaultPatterns);
+        var (enabledPatterns, enabledTenses, enabledPersons, enabledNumbers, enabledVoices) =
+            VerbFilterSettings.Load(_userData);
         var totalVerbs = _verbs.GetCount();
         var (minRank, maxRank) = _userData.GetLemmaRangeOrResetDefault(PracticeType.Conjugation, totalVerbs);
 

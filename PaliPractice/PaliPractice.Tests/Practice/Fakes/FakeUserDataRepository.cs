@@ -226,10 +226,18 @@ public class FakeUserDataRepository : IUserDataRepository
         return GetSetting(key, SettingsKeys.DefaultDailyGoal);
     }
 
-    public List<T> GetEnumListOrResetDefault<T>(string key, T[] defaults) where T : struct, Enum
+    public List<T> GetEnumListOrResetDefault<T>(
+        string key,
+        T[] defaults,
+        bool allowEmpty = false)
+        where T : struct, Enum
     {
-        var csv = GetSetting(key, "");
-        var parsed = SettingsHelpers.FromCsv<T>(csv);
+        _settings.TryGetValue(key, out var csv);
+
+        if (allowEmpty && csv == string.Empty)
+            return [];
+
+        var parsed = SettingsHelpers.FromCsv<T>(csv ?? string.Empty);
         if (parsed.Count > 0)
             return parsed.OrderBy(e => e).ToList();  // Canonical order for determinism
 
@@ -238,8 +246,12 @@ public class FakeUserDataRepository : IUserDataRepository
         return defaults.OrderBy(e => e).ToList();  // Canonical order for determinism
     }
 
-    public HashSet<T> GetEnumSetOrResetDefault<T>(string key, T[] defaults) where T : struct, Enum =>
-        GetEnumListOrResetDefault(key, defaults).ToHashSet();
+    public HashSet<T> GetEnumSetOrResetDefault<T>(
+        string key,
+        T[] defaults,
+        bool allowEmpty = false)
+        where T : struct, Enum =>
+        GetEnumListOrResetDefault(key, defaults, allowEmpty).ToHashSet();
 
     public (int min, int max) GetLemmaRangeOrResetDefault(PracticeType type, int maxAllowed)
     {

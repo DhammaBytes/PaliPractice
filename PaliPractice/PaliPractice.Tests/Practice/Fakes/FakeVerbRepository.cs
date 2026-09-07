@@ -42,8 +42,8 @@ public class FakeVerbRepository : IVerbRepository
     }
 
     /// <summary>
-    /// Adds all standard tense/person/number combinations as attested for a verb (active voice).
-    /// Skips Present 3rd singular as it's used as the citation form.
+    /// Adds all standard tense/person/number combinations as attested for a verb.
+    /// Skips Present 3rd singular only in active voice because it is the citation form.
     /// </summary>
     public void AddAllAttestedForms(int lemmaId, bool includeReflexive = false)
     {
@@ -57,11 +57,14 @@ public class FakeVerbRepository : IVerbRepository
                 {
                     if (number == Number.None) continue;
 
-                    // Skip Present 3rd singular Active (citation form)
-                    if (tense == Tense.Present && person == Person.Third && number == Number.Singular)
-                        continue;
-
-                    AddAttestedForm(lemmaId, tense, person, number, reflexive: false);
+                    // Skip only Present 3rd singular Active (citation form).
+                    // The corresponding reflexive form is still practiceable.
+                    var isActiveCitationForm =
+                        tense == Tense.Present &&
+                        person == Person.Third &&
+                        number == Number.Singular;
+                    if (!isActiveCitationForm)
+                        AddAttestedForm(lemmaId, tense, person, number, reflexive: false);
 
                     if (includeReflexive && !_nonReflexiveLemmaIds.Contains(lemmaId))
                         AddAttestedForm(lemmaId, tense, person, number, reflexive: true);

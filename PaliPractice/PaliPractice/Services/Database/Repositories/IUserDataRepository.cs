@@ -57,14 +57,18 @@ public interface IUserDataRepository
     // === Self-Healing Settings Getters ===
 
     /// <summary>
-    /// Gets an enum list setting. If empty after parsing, rewrites the default and returns it.
+    /// Gets an enum list setting. If missing or invalid, rewrites the default and returns it.
+    /// A stored empty string is returned as an empty list when <paramref name="allowEmpty"/> is true.
     /// </summary>
-    List<T> GetEnumListOrResetDefault<T>(string key, T[] defaults) where T : struct, Enum;
+    List<T> GetEnumListOrResetDefault<T>(string key, T[] defaults, bool allowEmpty = false)
+        where T : struct, Enum;
 
     /// <summary>
-    /// Gets an enum set setting. If empty after parsing, rewrites the default and returns it.
+    /// Gets an enum set setting. If missing or invalid, rewrites the default and returns it.
+    /// A stored empty string is returned as an empty set when <paramref name="allowEmpty"/> is true.
     /// </summary>
-    HashSet<T> GetEnumSetOrResetDefault<T>(string key, T[] defaults) where T : struct, Enum;
+    HashSet<T> GetEnumSetOrResetDefault<T>(string key, T[] defaults, bool allowEmpty = false)
+        where T : struct, Enum;
 
     /// <summary>
     /// Gets a validated lemma range. If invalid, rewrites defaults.

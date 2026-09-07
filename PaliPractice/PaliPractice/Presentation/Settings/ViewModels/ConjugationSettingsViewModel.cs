@@ -32,41 +32,31 @@ public partial class ConjugationSettingsViewModel : ObservableObject
         // Load daily goal
         DailyGoal = _userData.GetSetting(SettingsKeys.VerbsDailyGoal, SettingsKeys.DefaultDailyGoal);
 
+        // Recover required filters and citation-only selections before populating controls.
+        var (enabled, tenses, persons, numbers, voices) = VerbFilterSettings.Load(_userData);
+
         // Load person settings
-        var persons = SettingsHelpers.FromCsvSet<Person>(
-            _userData.GetSetting(SettingsKeys.VerbsPersons,
-                SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultPersons)));
         FirstPerson = persons.Contains(Person.First);
         SecondPerson = persons.Contains(Person.Second);
         ThirdPerson = persons.Contains(Person.Third);
 
         // Load number setting (index-based: 0=both, 1=singular, 2=plural)
-        var numbersCsv = _userData.GetSetting(SettingsKeys.VerbsNumbers,
-            SettingsHelpers.ToCsv(SettingsKeys.DefaultNumbers));
-        NumberIndex = SettingsHelpers.NumberIndexFromCsv(numbersCsv);
+        NumberIndex = SettingsHelpers.NumberIndexFromCsv(SettingsHelpers.ToCsv(numbers));
 
         // Load enabled patterns (positive list)
-        var enabled = SettingsHelpers.FromCsvSet<VerbPattern>(
-            _userData.GetSetting(SettingsKeys.VerbsPatterns,
-                SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultPatterns)));
         PatternAti = enabled.Contains(VerbPattern.Ati);
         PatternEti = enabled.Contains(VerbPattern.Eti);
         PatternOti = enabled.Contains(VerbPattern.Oti);
         PatternAtiLong = enabled.Contains(VerbPattern.Āti);
 
         // Load tense settings
-        var tenses = SettingsHelpers.FromCsvSet<Tense>(
-            _userData.GetSetting(SettingsKeys.VerbsTenses,
-                SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultTenses)));
         Present = tenses.Contains(Tense.Present);
         Imperative = tenses.Contains(Tense.Imperative);
         Optative = tenses.Contains(Tense.Optative);
         Future = tenses.Contains(Tense.Future);
 
         // Load voice setting (index-based: 0=both, 1=normal, 2=reflexive)
-        var voicesCsv = _userData.GetSetting(SettingsKeys.VerbsVoices,
-            SettingsHelpers.ToCsv(SettingsKeys.VerbsDefaultVoices));
-        VoiceIndex = VoiceIndexFromCsv(voicesCsv);
+        VoiceIndex = VoiceIndexFromCsv(SettingsHelpers.ToCsv(voices));
 
         // Load lemma range settings
         LemmaMin = _userData.GetSetting(SettingsKeys.VerbsLemmaMin, SettingsKeys.DefaultLemmaMin);
@@ -93,9 +83,9 @@ public partial class ConjugationSettingsViewModel : ObservableObject
         // Save enabled patterns (positive list)
         var enabled = new List<VerbPattern>();
         if (PatternAti) enabled.Add(VerbPattern.Ati);
+        if (PatternAtiLong) enabled.Add(VerbPattern.Āti);
         if (PatternEti) enabled.Add(VerbPattern.Eti);
         if (PatternOti) enabled.Add(VerbPattern.Oti);
-        if (PatternAtiLong) enabled.Add(VerbPattern.Āti);
         _userData.SetSetting(SettingsKeys.VerbsPatterns, SettingsHelpers.ToCsv(enabled));
 
         // Save tenses
@@ -143,9 +133,9 @@ public partial class ConjugationSettingsViewModel : ObservableObject
     bool _thirdPerson;
     partial void OnThirdPersonChanged(bool value) { SaveSettings(); CheckCitationFormConflict(); }
 
-    public bool CanDisableFirstPerson => SecondPerson || ThirdPerson;
-    public bool CanDisableSecondPerson => FirstPerson || ThirdPerson;
-    public bool CanDisableThirdPerson => FirstPerson || SecondPerson;
+    public bool CanDisableFirstPerson => !FirstPerson || SecondPerson || ThirdPerson;
+    public bool CanDisableSecondPerson => !SecondPerson || FirstPerson || ThirdPerson;
+    public bool CanDisableThirdPerson => !ThirdPerson || FirstPerson || SecondPerson;
 
     #endregion
 

@@ -6,12 +6,11 @@ is regenerated. New lemmas are appended, but existing IDs never change.
 """
 
 import json
-import shutil
 from typing import Dict, Any
+from pathlib import Path
 
 from .config import (
     REGISTRY_PATH,
-    REGISTRY_BACKUP_PATH,
     NOUN_ID_START,
     NOUN_ID_MAX,
     VERB_ID_START,
@@ -61,31 +60,26 @@ def validate_registry(registry: Dict[str, Any]) -> None:
         raise RegistryError("Duplicate verb IDs detected!")
 
 
-def load_registry() -> Dict[str, Any]:
+def load_registry(path: Path = REGISTRY_PATH) -> Dict[str, Any]:
     """Load and validate lemma registry from JSON file."""
-    if REGISTRY_PATH.exists():
+    if path.exists():
         try:
-            registry = json.loads(REGISTRY_PATH.read_text(encoding='utf-8'))
+            registry = json.loads(path.read_text(encoding='utf-8'))
             validate_registry(registry)
             return registry
         except json.JSONDecodeError as e:
             raise RegistryError(f"Failed to parse registry JSON: {e}")
-    return {
-        "version": 1,
-        "next_noun_id": NOUN_ID_START,
-        "next_verb_id": VERB_ID_START,
-        "nouns": {},
-        "verbs": {}
-    }
+    raise RegistryError(f"Required lemma registry does not exist: {path}")
 
 
-def save_registry(registry: Dict[str, Any], original_registry: Dict[str, Any]) -> None:
+def save_registry(registry: Dict[str, Any], original_registry: Dict[str, Any],
+                  *, output_path: Path) -> None:
     """
     Save lemma registry with safety checks.
     - Validates registry before saving
-    - Creates backup of existing file
+    - Writes only the explicitly supplied candidate path
     - Ensures no existing IDs were modified or removed
-    - Uses atomic write (temp file + rename)
+    - Requires a new candidate file; incomplete builds have no completion manifest
     """
     # Validate before saving
     validate_registry(registry)
@@ -103,15 +97,9 @@ def save_registry(registry: Dict[str, Any], original_registry: Dict[str, Any]) -
         if registry["verbs"][lemma] != original_id:
             raise RegistryError(f"Verb '{lemma}' ID changed from {original_id} to {registry['verbs'][lemma]}!")
 
-    # Create backup of existing file
-    if REGISTRY_PATH.exists():
-        shutil.copy2(REGISTRY_PATH, REGISTRY_BACKUP_PATH)
-        print(f"Created registry backup: {REGISTRY_BACKUP_PATH}")
-
-    # Atomic write: write to temp file, then rename
-    temp_path = REGISTRY_PATH.with_suffix('.tmp')
-    temp_path.write_text(json.dumps(registry, indent=2, ensure_ascii=False), encoding='utf-8')
-    temp_path.rename(REGISTRY_PATH)
+    # Exclusive creation prevents overwriting any existing registry.
+    with output_path.open('x', encoding='utf-8') as stream:
+        stream.write(json.dumps(registry, indent=2, ensure_ascii=False) + "\n")
 
 
 def get_noun_lemma_id(registry: Dict[str, Any], lemma_clean: str) -> int:

@@ -16,7 +16,7 @@ import json
 import sqlite3
 import sys
 from pathlib import Path
-from typing import List, Dict, Any, Set
+from typing import List, Dict, Any
 
 # Import extraction modules
 from extraction import (
@@ -34,7 +34,6 @@ from extraction import (
     compute_declension_form_id,
     compute_conjugation_form_id,
     # Registry
-    RegistryError,
     load_registry,
     save_registry,
     get_noun_lemma_id,
@@ -46,174 +45,48 @@ from extraction import (
     parse_verb_title,
     # Plural Deduplication
     PluralOnlyDeduplicator,
-    # Russian meanings
-    load_russian_meanings,
     # Translations
     TranslationAdjustments,
 )
 from extraction.config import (
-    REGISTRY_PATH,
-    NOUN_ID_START,
-    NOUN_ID_MAX,
-    VERB_ID_START,
-    VERB_ID_MAX,
-    ALL_NOUN_POS,
-    ALL_VERB_POS,
-    TIPITAKA_FREQ_PATH,
-    TIPITAKA_WORDLIST_FILES,
     EXCLUDED_NOUN_LEMMAS,
     is_plural_only_pattern,
     MAX_LEMMA_LENGTH,
 )
 from extraction.grammar import pos_to_gender
+from extraction.inputs import load_corpus_words
 
 from extraction.validate_inflections import InflectionValidator, PluralOnlyMatch
-from configs import compute_next_database_version, read_database_version, write_database_version
 
-sys.path.append('../dpd-db')
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "dpd-db"))
 
-from db.db_helpers import get_db_session
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 from db.models import DpdHeadword
-
-
-def populate_all_lemmas_to_registry():
-    """
-    One-time operation: Populate registry with ALL lemmas from DPD.
-
-    This ensures all lemma IDs are assigned upfront, ordered by ebt_count.
-    After this, the registry should only ever have NEW lemmas appended.
-
-    Run this once, then commit lemma_registry.json to version control.
-    """
-    print("=" * 60)
-    print("POPULATING REGISTRY WITH ALL DPD LEMMAS")
-    print("=" * 60)
-
-    # Check if registry already has data
-    if REGISTRY_PATH.exists():
-        existing = json.loads(REGISTRY_PATH.read_text(encoding='utf-8'))
-        if existing.get("nouns") or existing.get("verbs"):
-            print(f"WARNING: Registry already contains {len(existing.get('nouns', {}))} nouns and {len(existing.get('verbs', {}))} verbs.")
-            response = input("This will ADD new lemmas only. Continue? (yes/no): ")
-            if response.lower() != 'yes':
-                print("Aborted.")
-                return
-
-    registry = load_registry()
-    original_registry = deep_copy_registry(registry)
-
-    db_session = get_db_session(Path("../dpd-db/dpd.db"))
-
-    # lemma_clean is a Python @property, not a DB column
-    # We need to fetch all rows and group in Python
-
-    print("\nQuerying all nouns...")
-    all_nouns = db_session.query(DpdHeadword).filter(
-        DpdHeadword.pos.in_(ALL_NOUN_POS),
-        DpdHeadword.pattern.isnot(None),
-        DpdHeadword.pattern != '',
-        DpdHeadword.stem.isnot(None),
-        DpdHeadword.stem != '-',
-    ).all()
-
-    # Group by lemma_clean and get max ebt_count for ordering
-    noun_by_lemma: Dict[str, int] = {}
-    for word in all_nouns:
-        lc = word.lemma_clean
-        ebt = word.ebt_count or 0
-        if lc not in noun_by_lemma or ebt > noun_by_lemma[lc]:
-            noun_by_lemma[lc] = ebt
-
-    # Sort by max ebt_count descending
-    noun_lemmas = sorted(noun_by_lemma.items(), key=lambda x: -x[1])
-    print(f"Found {len(noun_lemmas)} unique noun lemmas")
-
-    print("Querying all verbs...")
-    all_verbs = db_session.query(DpdHeadword).filter(
-        DpdHeadword.pos.in_(ALL_VERB_POS),
-        DpdHeadword.pattern.isnot(None),
-        DpdHeadword.pattern != '',
-        DpdHeadword.stem.isnot(None),
-        DpdHeadword.stem != '-',
-    ).all()
-
-    # Group by lemma_clean and get max ebt_count for ordering
-    verb_by_lemma: Dict[str, int] = {}
-    for word in all_verbs:
-        lc = word.lemma_clean
-        ebt = word.ebt_count or 0
-        if lc not in verb_by_lemma or ebt > verb_by_lemma[lc]:
-            verb_by_lemma[lc] = ebt
-
-    # Sort by max ebt_count descending
-    verb_lemmas = sorted(verb_by_lemma.items(), key=lambda x: -x[1])
-    print(f"Found {len(verb_lemmas)} unique verb lemmas")
-
-    # Assign IDs to all noun lemmas (in ebt_count order)
-    new_nouns = 0
-    for lemma_clean, max_ebt in noun_lemmas:
-        if lemma_clean not in registry["nouns"]:
-            get_noun_lemma_id(registry, lemma_clean)
-            new_nouns += 1
-
-    # Assign IDs to all verb lemmas (in ebt_count order)
-    new_verbs = 0
-    for lemma_clean, max_ebt in verb_lemmas:
-        if lemma_clean not in registry["verbs"]:
-            get_verb_lemma_id(registry, lemma_clean)
-            new_verbs += 1
-
-    print(f"\nAdded {new_nouns} new noun lemmas (total: {len(registry['nouns'])})")
-    print(f"Added {new_verbs} new verb lemmas (total: {len(registry['verbs'])})")
-
-    # Save with safety checks
-    save_registry(registry, original_registry)
-    print(f"\nRegistry saved to {REGISTRY_PATH}")
-    print("=" * 60)
 
 
 class NounVerbExtractor:
     """Extract nouns and verbs with grammatical categorization."""
 
-    def __init__(self, output_db_path: str | Path = "../PaliPractice/PaliPractice/Data/pali.db",
-                 noun_limit: int = 1500, verb_limit: int = 750, database_version: int | None = None):
-        self.output_db_path = Path(output_db_path)
+    def __init__(self, *, dpd_path: Path, corpus_paths: list[Path],
+                 registry_path: Path, adjustments_path: Path, output_db_path: Path,
+                 noun_limit: int, verb_limit: int, database_version: int):
+        self.output_db_path = output_db_path
+        self.registry_path = registry_path
         self.noun_limit = noun_limit
         self.verb_limit = verb_limit
         self.database_version = database_version
-        self.db_session = get_db_session(Path("../dpd-db/dpd.db"))
-
-        # Load all words found in the Pali Tipitaka corpus
-        print("Loading Tipitaka word corpus from JSON wordlists...")
-        self.all_tipitaka_words: Set[str] = self._load_tipitaka_words()
-        print(f"Loaded {len(self.all_tipitaka_words)} words from Tipitaka corpus")
-
-        # Initialize plural-only deduplicator
+        self.engine = create_engine("sqlite+pysqlite://", creator=lambda: sqlite3.connect(
+            dpd_path.resolve().as_uri() + "?mode=ro&immutable=1", uri=True
+        ))
+        self.db_session = Session(self.engine)
+        self.all_tipitaka_words = load_corpus_words(corpus_paths)
         self.plural_dedup = PluralOnlyDeduplicator(self.db_session)
+        self.translations = TranslationAdjustments(adjustments_path)
 
-        # Load Russian meanings from the SBS Russian DPD fork (fail fast on any issue)
-        print("Loading Russian meanings from SBS Russian TSV...")
-        self.russian_meanings = load_russian_meanings()
-        print(f"Loaded {len(self.russian_meanings)} Russian meanings")
-
-        # Initialize translation adjustments
-        self.translations = TranslationAdjustments()
-
-    def _load_tipitaka_words(self) -> Set[str]:
-        """Load all words from the Tipitaka corpus JSON wordlists."""
-        all_words: Set[str] = set()
-
-        for filename in TIPITAKA_WORDLIST_FILES:
-            filepath = TIPITAKA_FREQ_PATH / filename
-            if filepath.exists():
-                with open(filepath) as f:
-                    words = json.load(f)
-                    all_words.update(words)
-                    print(f"  Loaded {len(words)} words from {filename}")
-            else:
-                print(f"  Warning: {filename} not found, skipping")
-
-        return all_words
+    def close(self):
+        self.db_session.close()
+        self.engine.dispose()
 
     def extract_word_variant(self, lemma_1: str, lemma_clean: str) -> str:
         """Extract the variant identifier from DPD lemma_1.
@@ -235,10 +108,8 @@ class NounVerbExtractor:
 
     def create_schema(self):
         """Create a normalized database schema for nouns and verbs."""
-        # Delete old database if it exists
         if self.output_db_path.exists():
-            self.output_db_path.unlink()
-            print(f"Deleted old database: {self.output_db_path}")
+            raise FileExistsError(f"Candidate database already exists: {self.output_db_path}")
 
         conn = sqlite3.connect(self.output_db_path)
         cursor = conn.cursor()
@@ -417,7 +288,7 @@ class NounVerbExtractor:
             ~DpdHeadword.meaning_1.contains('name of'),
             ~DpdHeadword.meaning_1.contains('names of'),
             ~DpdHeadword.meaning_1.contains('family name')
-        ).all()
+        ).order_by(DpdHeadword.id).all()
 
         words_with_templates = self.filter_noun_templates(all_words)
 
@@ -431,7 +302,7 @@ class NounVerbExtractor:
             DpdHeadword.pattern != '',
             DpdHeadword.stem.isnot(None),
             DpdHeadword.stem != '-',
-        ).all()
+        ).order_by(DpdHeadword.id).all()
         all_dpd_nouns_with_templates = [w for w in all_dpd_nouns if w.it is not None]
         self.plural_dedup.build_singular_index(all_dpd_nouns_with_templates)
 
@@ -470,14 +341,14 @@ class NounVerbExtractor:
             lemma_words[lc].append(word)
 
         # Get top N lemmas by max ebt_count
-        top_lemmas = sorted(lemma_max_ebt.keys(), key=lambda lc: -lemma_max_ebt[lc])[:self.noun_limit]
+        top_lemmas = sorted(lemma_max_ebt.keys(), key=lambda lc: (-lemma_max_ebt[lc], lc))[:self.noun_limit]
         print(f"Selected {len(top_lemmas)} unique noun lemmas")
 
         # Collect all words from selected lemmas
         result = []
         for lc in top_lemmas:
             result.extend(lemma_words[lc])
-        result.sort(key=lambda w: -(w.ebt_count or 0))
+        result.sort(key=lambda w: (-(w.ebt_count or 0), w.lemma_clean, w.id))
 
         # Report frequency variance
         print(f"\nNoun lemmas with frequency variance across senses:")
@@ -522,7 +393,7 @@ class NounVerbExtractor:
             ~DpdHeadword.meaning_1.contains('names of'),
             ~DpdHeadword.meaning_1.contains('family name'),
             ~DpdHeadword.grammar.contains('reflx')
-        ).all()
+        ).order_by(DpdHeadword.id).all()
 
         # Filter to words with inflection templates and reasonable length
         words_with_templates = [
@@ -546,14 +417,14 @@ class NounVerbExtractor:
             lemma_words[lc].append(word)
 
         # Get top N lemmas
-        top_lemmas = sorted(lemma_max_ebt.keys(), key=lambda lc: -lemma_max_ebt[lc])[:self.verb_limit]
+        top_lemmas = sorted(lemma_max_ebt.keys(), key=lambda lc: (-lemma_max_ebt[lc], lc))[:self.verb_limit]
         print(f"Selected {len(top_lemmas)} unique verb lemmas")
 
         # Collect all words from selected lemmas
         result = []
         for lc in top_lemmas:
             result.extend(lemma_words[lc])
-        result.sort(key=lambda w: -(w.ebt_count or 0))
+        result.sort(key=lambda w: (-(w.ebt_count or 0), w.lemma_clean, w.id))
 
         # Report frequency variance
         print(f"\nVerb lemmas with frequency variance across senses:")
@@ -648,7 +519,7 @@ class NounVerbExtractor:
         print(f"Using database version: {self.database_version}")
 
         # Load lemma registry
-        registry = load_registry()
+        registry = load_registry(self.registry_path)
         original_registry = deep_copy_registry(registry)
         print(f"Loaded lemma registry: {len(registry['nouns'])} nouns, {len(registry['verbs'])} verbs")
 
@@ -656,7 +527,7 @@ class NounVerbExtractor:
         self.create_schema()
 
         # Initialize inflection validator
-        validator = InflectionValidator(log_dir=Path(__file__).parent)
+        validator = InflectionValidator(log_dir=self.output_db_path.parent)
 
         # Get words
         nouns = self.get_training_nouns()
@@ -691,7 +562,7 @@ class NounVerbExtractor:
 
             # Apply custom translation adjustments
             meaning = self.translations.apply(word.id, word.lemma_1, word.meaning_1 or '')
-            meaning_ru = self.russian_meanings.get(word.id, '')
+            meaning_ru = ''
 
             cursor.execute("""
                 INSERT INTO nouns_details (
@@ -811,7 +682,7 @@ class NounVerbExtractor:
 
             # Apply custom translation adjustments
             meaning = self.translations.apply(word.id, word.lemma_1, word.meaning_1 or '')
-            meaning_ru = self.russian_meanings.get(word.id, '')
+            meaning_ru = ''
 
             cursor.execute("""
                 INSERT INTO verbs_details (
@@ -880,14 +751,9 @@ class NounVerbExtractor:
         conn.commit()
         conn.close()
 
-        # Save updated lemma registry
-        new_nouns = len(registry['nouns']) - len(original_registry['nouns'])
-        new_verbs = len(registry['verbs']) - len(original_registry['verbs'])
-        if new_nouns > 0 or new_verbs > 0:
-            save_registry(registry, original_registry)
-            print(f"\nSaved lemma registry: {len(registry['nouns'])} nouns (+{new_nouns}), {len(registry['verbs'])} verbs (+{new_verbs})")
-        else:
-            print(f"\nNo new lemmas added to registry (unchanged)")
+        # Registry changes are proposed beside the candidate, never published here.
+        save_registry(registry, original_registry,
+                      output_path=self.output_db_path.parent / "lemma_registry.json")
 
         print(f"\n=== EXTRACTION COMPLETE ===")
         print(f"Database: {self.output_db_path}")
@@ -916,7 +782,7 @@ class NounVerbExtractor:
         self.plural_dedup.print_summary()
 
         # Write validation report
-        log_path = validator.write_report()
+        log_path = validator.write_report(build_version=self.database_version)
         print(f"\nInflection validation log: {log_path}")
         validator.print_summary()
 
@@ -997,65 +863,5 @@ class NounVerbExtractor:
 
 
 if __name__ == "__main__":
-    import argparse
-
-    parser = argparse.ArgumentParser(
-        description="Extract nouns and verbs from DPD database",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  # First time: populate registry with ALL lemmas (run once, commit result)
-  python extract_nouns_and_verbs.py --populate-registry
-
-  # Normal extraction: create pali.db with top N lemmas
-  python extract_nouns_and_verbs.py --nouns 3000 --verbs 2000
-        """
-    )
-    parser.add_argument(
-        "--populate-registry",
-        action="store_true",
-        help="Populate lemma_registry.json with ALL lemmas from DPD (one-time operation)"
-    )
-    parser.add_argument(
-        "--nouns",
-        type=int,
-        default=1500,
-        help="Number of unique noun lemmas to extract (default: 1500)"
-    )
-    parser.add_argument(
-        "--verbs",
-        type=int,
-        default=750,
-        help="Number of unique verb lemmas to extract (default: 750)"
-    )
-
-    args = parser.parse_args()
-
-    if args.populate_registry:
-        populate_all_lemmas_to_registry()
-    else:
-        output_db_path = Path("../PaliPractice/PaliPractice/Data/pali.db")
-        temp_output_db_path = output_db_path.with_suffix(output_db_path.suffix + ".tmp")
-        previous_version = read_database_version()
-        next_version = compute_next_database_version(previous_version)
-
-        if temp_output_db_path.exists():
-            temp_output_db_path.unlink()
-
-        extractor = NounVerbExtractor(
-            output_db_path=temp_output_db_path,
-            noun_limit=args.nouns,
-            verb_limit=args.verbs,
-            database_version=next_version,
-        )
-
-        try:
-            extractor.extract_and_save()
-            write_database_version(next_version)
-            temp_output_db_path.replace(output_db_path)
-            print(f"\nPromoted database build {next_version} to {output_db_path}")
-        except Exception:
-            if temp_output_db_path.exists():
-                temp_output_db_path.unlink()
-            write_database_version(previous_version)
-            raise
+    from extraction.candidate import main
+    main()

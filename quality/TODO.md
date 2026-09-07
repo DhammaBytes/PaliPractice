@@ -17,8 +17,8 @@ Milestones M1–M5 stabilize the English core before translation work begins.
     Validate the resolved graph and desktop runtime after the upgrade.
   - Keep NU1903 visible. A successful build with warnings is not release
     remediation. Review current advisories again at the M5 checkpoint.
-- Make extraction reproducible by pinning every input and making input paths,
-  output paths, and the database version injectable before gating regeneration.
+- M2 provides pinned inputs and isolated English candidates. In M5, integrate
+  repeatability and candidate-consumer checks after semantic validation is complete.
 - Add architecture enforcement after the intended layer boundaries are
   documented; do not introduce ArchUnitNET speculatively.
 - Add NUnit categories, then split a deterministic fast suite from integration

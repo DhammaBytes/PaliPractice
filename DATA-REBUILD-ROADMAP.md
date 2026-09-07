@@ -1,6 +1,6 @@
 # DPD rebuild and translation roadmap
 
-Created: 7 September 2026. Status: M1 complete; M2 is next.
+Created: 7 September 2026. Status: M1 and M2 complete; M3 is next.
 
 The objective is a reproducible, grammatically correct English DPD database with stable production practice identities, followed by verified Russian and Spanish meanings in the next app update. The findings and measured starting state are in [DATA-REBUILD-AUDIT.md](DATA-REBUILD-AUDIT.md).
 
@@ -50,13 +50,13 @@ Core English work ends at M5. Translation implementation must not begin before t
 
 **Purpose:** make correctness fixes testable against controlled inputs before touching the bundled database.
 
-- [ ] Separate acquisition of upstream inputs from extraction. Accept explicit paths for DPD, all four corpus files, registry, custom English adjustments, output directory, and a supplied database version.
-- [ ] Record immutable source revisions/releases and checksums, relevant extraction configuration, and code revision. Include configuration such as selection limits and exclusions. Verify checksums before extraction.
-- [ ] Make the core extraction path independent of the Russian importer. Preserve translation-capable application behavior and existing bundled data while the English candidate is under development.
-- [ ] Require complete, parseable, nonempty corpus inputs. Establish how the corpus files are reproduced from pinned source corpora; a DPD checkout update alone is insufficient.
-- [ ] Write all proposed outputs—including registry additions and version/manifest files—under a unique candidate directory. Do not update the production registry or bundled version during candidate generation.
-- [ ] Add a separate validation/promotion interface. A failed build must leave the existing bundle and registry unchanged. M4 expands semantic validation; M5 verifies recovery and final promotion behavior.
-- [ ] Add deterministic tie-breakers for frequency selection and new-ID allocation. Given the same input registry, candidate contents must not depend on database traversal order, working directory, or wall-clock time.
+- [x] Separate acquisition of upstream inputs from extraction. Accept explicit paths for DPD, all four corpus files, registry, custom English adjustments, output directory, and a supplied database version.
+- [x] Record immutable source revisions/releases and checksums, relevant extraction configuration, and code revision. Include configuration such as selection limits and exclusions. Verify checksums before extraction.
+- [x] Make the core extraction path independent of the Russian importer. Preserve translation-capable application behavior and existing bundled data while the English candidate is under development.
+- [x] Require complete, parseable, nonempty corpus inputs. Establish how the corpus files are reproduced from pinned source corpora; a DPD checkout update alone is insufficient.
+- [x] Write all proposed outputs—including registry additions and version/manifest files—under a unique candidate directory. Do not update the production registry or bundled version during candidate generation.
+- [x] Add a separate validation/promotion interface. A failed build must leave the existing bundle and registry unchanged. M4 expands semantic validation; M5 verifies recovery and final promotion behavior.
+- [x] Add deterministic tie-breakers for frequency selection and new-ID allocation. Given the same input registry, candidate contents must not depend on database traversal order, working directory, or wall-clock time.
 
 **Exit:** an English candidate can be built offline into a temporary directory from a manifest. Missing inputs, a wrong checksum, or interrupted generation fail without altering bundled data or the production registry.
 
@@ -190,8 +190,8 @@ Update this table at the end of each milestone with durable evidence links.
 | Milestone | Status | Evidence / remaining blockers |
 | --- | --- | --- |
 | M1 | Complete | [Baseline, gate, review, and remaining work](quality/evidence/m1/README.md) |
-| M2 | Next | M1 complete; isolate English candidate generation |
-| M3 | Planned | Requires M2 |
+| M2 | Complete | [Inputs, candidate, gate, and review](quality/evidence/m2/README.md) |
+| M3 | Next | M2 complete; protect identities and specify practice paradigms |
 | M4 | Planned | Requires M3 |
 | M5 | Planned | English stability checkpoint |
 | M6 | Planned | Blocked on M5 completion |

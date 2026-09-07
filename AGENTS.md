@@ -29,12 +29,11 @@ dotnet test PaliPractice.Tests/PaliPractice.Tests.csproj
 
 ### Database Generation
 ```bash
-# Extract training data from DPD (requires Python environment)
-cd scripts
-python3 extract_nouns_and_verbs.py
+# Build an isolated English candidate from pinned inputs (see scripts/SETUP.md)
+.venv/bin/python scripts/extract_nouns_and_verbs.py build --manifest <inputs.json> --output <new-candidate-directory>
 
-# Validate extracted data
-python3 validate_db.py
+# Validate the candidate's current structural contract
+.venv/bin/python scripts/extract_nouns_and_verbs.py validate <candidate-directory>
 
 # Full database rebuild (if needed)
 cd dpd-db

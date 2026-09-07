@@ -6,7 +6,6 @@ Validates completeness of noun declensions and verb conjugations during import,
 outputting irregularity reports to a timestamped log file.
 """
 
-from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Set, Tuple, Any, Optional
 from dataclasses import dataclass, field
@@ -57,7 +56,7 @@ class InflectionValidator:
         validator.validate_verb(lemma, pattern, forms)
 
         # At end of extraction:
-        validator.write_report()
+        validator.write_report(build_version=2026090701)
         validator.print_summary()
     """
 
@@ -265,20 +264,19 @@ class InflectionValidator:
             )
             self.verb_irregularities.append(irregularity)
 
-    def write_report(self) -> Path:
+    def write_report(self, *, build_version: int) -> Path:
         """
-        Write validation report to a timestamped log file.
+        Write a deterministic validation report for the supplied build version.
 
         Returns:
             Path to the generated log file.
         """
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        log_path = self.log_dir / f"inflection_validation_{timestamp}.log"
+        log_path = self.log_dir / "inflection_validation.log"
 
         with open(log_path, 'w', encoding='utf-8') as f:
             f.write("=" * 60 + "\n")
             f.write("INFLECTION VALIDATION REPORT\n")
-            f.write(f"Generated: {datetime.now().isoformat()}\n")
+            f.write(f"Build version: {build_version}\n")
             f.write("=" * 60 + "\n\n")
 
             # Summary

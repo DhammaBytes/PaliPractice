@@ -1,0 +1,105 @@
+{
+  "schema": 1,
+  "database_version": 2026090701,
+  "configuration": {
+    "noun_limit": 1500,
+    "verb_limit": 750,
+    "max_lemma_length": 18,
+    "excluded_noun_lemmas": [
+      "atthi"
+    ]
+  },
+  "inputs": {
+    "dpd": {
+      "path": "/Users/ivm/Sources/PaliPractice/dpd-db/dpd.db",
+      "sha256": "45a1bc7215d009a74d1162c3a668986ce79314726c437a5feee5cf258feda0db",
+      "source": {
+        "origin": "explicit local dpd",
+        "revision": "sha256:45a1bc7215d009a74d1162c3a668986ce79314726c437a5feee5cf258feda0db"
+      }
+    },
+    "registry": {
+      "path": "/Users/ivm/Sources/PaliPractice/scripts/configs/lemma_registry.json",
+      "sha256": "daa248dc5436ab1b78e336891ea2333f1759d7a2ab88f6200ed7eb16ceccaa45",
+      "source": {
+        "origin": "explicit local registry",
+        "revision": "sha256:daa248dc5436ab1b78e336891ea2333f1759d7a2ab88f6200ed7eb16ceccaa45"
+      }
+    },
+    "adjustments": {
+      "path": "/Users/ivm/Sources/PaliPractice/scripts/configs/custom_translations.json",
+      "sha256": "eb43aff156e32abcf574873eb647d31a737c939b0529c200781a9dc0c59771a2",
+      "source": {
+        "origin": "explicit local adjustments",
+        "revision": "sha256:eb43aff156e32abcf574873eb647d31a737c939b0529c200781a9dc0c59771a2"
+      }
+    },
+    "cst": {
+      "path": "/Users/ivm/Sources/PaliPractice/.local/inputs/corpora-m2-v2/cst_wordlist.json",
+      "sha256": "603bb0dd1d0f24df79bea5f50b1a7367545acfc249ee8ca3542deffefdddc3b0",
+      "source": {
+        "origin": "scripts/acquire_corpora.py: upstream CST/BJT conversion, Go frequency/setup, sorted unique UTF-8 JSON",
+        "revision": "sha256:603bb0dd1d0f24df79bea5f50b1a7367545acfc249ee8ca3542deffefdddc3b0"
+      }
+    },
+    "bjt": {
+      "path": "/Users/ivm/Sources/PaliPractice/.local/inputs/corpora-m2-v2/bjt_wordlist.json",
+      "sha256": "49b86b92856816da02d1e9fd7b6d37fd56771a6ac52a1c2f8892c4f517775c39",
+      "source": {
+        "origin": "scripts/acquire_corpora.py: upstream CST/BJT conversion, Go frequency/setup, sorted unique UTF-8 JSON",
+        "revision": "sha256:49b86b92856816da02d1e9fd7b6d37fd56771a6ac52a1c2f8892c4f517775c39"
+      }
+    },
+    "sya": {
+      "path": "/Users/ivm/Sources/PaliPractice/.local/inputs/corpora-m2-v2/sya_wordlist.json",
+      "sha256": "7fd1b759d5417a3265057f7c19ed12baae4d89517dc5965ac92948aa79127aa1",
+      "source": {
+        "origin": "scripts/acquire_corpora.py: upstream CST/BJT conversion, Go frequency/setup, sorted unique UTF-8 JSON",
+        "revision": "sha256:7fd1b759d5417a3265057f7c19ed12baae4d89517dc5965ac92948aa79127aa1"
+      }
+    },
+    "sc": {
+      "path": "/Users/ivm/Sources/PaliPractice/.local/inputs/corpora-m2-v2/sc_wordlist.json",
+      "sha256": "f87198add939d2d8c2f1c84709d6ddbbb668308d8640492358e17d30ebc0b027",
+      "source": {
+        "origin": "scripts/acquire_corpora.py: upstream CST/BJT conversion, Go frequency/setup, sorted unique UTF-8 JSON",
+        "revision": "sha256:f87198add939d2d8c2f1c84709d6ddbbb668308d8640492358e17d30ebc0b027"
+      }
+    }
+  },
+  "corpus_generation": {
+    "recipe": "scripts/acquire_corpora.py: upstream CST/BJT conversion, Go frequency/setup, sorted unique UTF-8 JSON",
+    "recipe_sha256": "4fdfdfd21e8f23e218f72b3d8163e6c97401cc0063b5efa44e0ed5af7f9e3e34",
+    "revisions": {
+      "dpd": "56fe6d1835d0f8efd1ce079d991bcfb74c423aad",
+      "texts": "7901f7aa7aae0601f7274542778b64822451f074",
+      "sc": "51529c6774a8ca31dcf5b96f89f15f36b10052a2"
+    },
+    "outputs": {
+      "cst": {
+        "file": "cst_wordlist.json",
+        "sha256": "603bb0dd1d0f24df79bea5f50b1a7367545acfc249ee8ca3542deffefdddc3b0"
+      },
+      "bjt": {
+        "file": "bjt_wordlist.json",
+        "sha256": "49b86b92856816da02d1e9fd7b6d37fd56771a6ac52a1c2f8892c4f517775c39"
+      },
+      "sya": {
+        "file": "sya_wordlist.json",
+        "sha256": "7fd1b759d5417a3265057f7c19ed12baae4d89517dc5965ac92948aa79127aa1"
+      },
+      "sc": {
+        "file": "sc_wordlist.json",
+        "sha256": "f87198add939d2d8c2f1c84709d6ddbbb668308d8640492358e17d30ebc0b027"
+      }
+    },
+    "python_packages": {
+      "beautifulsoup4": "4.13.4",
+      "lxml": "5.4.0",
+      "aksharamukha": "2.3",
+      "rich": "13.9.4"
+    },
+    "python": "Python 3.12.11",
+    "go": "go version go1.27.0 darwin/arm64"
+  }
+}

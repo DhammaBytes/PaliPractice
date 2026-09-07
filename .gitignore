@@ -50,4 +50,4 @@ scripts/config.ini
 scripts/dpd_operations.log
 config.ini
 .claude/plans/*
-*/__pycache__
+__pycache__/

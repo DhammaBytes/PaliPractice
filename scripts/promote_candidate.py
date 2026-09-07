@@ -1,7 +1,7 @@
 """Recoverable promotion of a validated candidate's database and identity files.
 
-English-only production promotion remains prohibited. A scratch repository can
-exercise the same file protocol before multilingual promotion is enabled.
+English-only production promotion remains prohibited. Multilingual promotion
+requires exact source validation and the receipt from a complete bundle gate.
 """
 
 import argparse
@@ -12,7 +12,7 @@ import os
 from pathlib import Path
 
 from extraction.candidate import ROOT, validate_candidate
-from extraction.inputs import InputError, read_json, sha256
+from extraction.inputs import InputError, load_manifest, read_json, sha256
 from semantic_evidence import verify as verify_semantics
 
 TARGETS = {
@@ -22,6 +22,7 @@ TARGETS = {
     'lemma_registry.json': 'scripts/configs/lemma_registry.json',
     'practice_registry.json': 'scripts/configs/practice_registry.json',
     'paradigm_corrections.json': 'scripts/configs/paradigm_corrections.json',
+    'primary_forms.json': 'scripts/generated/primary_forms.json',
 }
 
 
@@ -72,7 +73,8 @@ def recover_locked(repository: Path, state: Path):
     journal = read_json(path)
     if journal.get('phase') in ('committed', 'rolled_back'):
         return
-    if journal.get('phase') != 'prepared' or set(journal.get('files', {})) != set(TARGETS):
+    supported_sets = (set(TARGETS), set(TARGETS) - {'primary_forms.json'})
+    if journal.get('phase') != 'prepared' or set(journal.get('files', {})) not in supported_sets:
         raise InputError('Unrecognized promotion journal; manual investigation required')
     # Verify every backup and current target before touching any target.
     for name, entry in journal['files'].items():
@@ -94,13 +96,41 @@ def recover_locked(repository: Path, state: Path):
     journal_write(state, journal)
 
 
-def promote(candidate: Path, repository: Path, inputs: Path, evidence: Path, after_write=lambda _: None):
-    candidate, repository = candidate.resolve(), repository.resolve()
+def promotion_inputs(candidate: Path, repository: Path, inputs: Path, evidence: Path,
+                     english: Path | None, translations: Path | None):
+    if (candidate / 'bundle.json').exists():
+        from bundle_evidence import verify as verify_bundle
+        if english is None or translations is None:
+            raise InputError('Multilingual promotion requires English checkpoint and translation inputs')
+        verify_bundle(candidate, english.resolve(), inputs.resolve(), translations.resolve(), evidence.resolve())
+        manifest = read_json(candidate / 'bundle.json')
+        if set(manifest['languages']) != {'en', 'ru', 'es'}:
+            raise InputError('Database readiness requires English, Russian and Spanish layers')
+        return manifest['outputs'], 'bundle.json'
     manifest = validate_candidate(candidate)
-    expected = dict(manifest['outputs'], **{'candidate.json': sha256(candidate / 'candidate.json')})
     if repository == ROOT and manifest['language_layer'] == 'en':
         raise InputError('English-only candidates cannot replace the Russian-capable production bundle')
     verify_semantics(candidate, inputs.resolve(), evidence.resolve())
+    return manifest['outputs'], 'candidate.json'
+
+
+def protect_input_paths(repository: Path, inputs: Path, english: Path | None, translations: Path | None):
+    protected = {inputs.resolve(), *load_manifest(inputs.resolve())[1].values()}
+    if english is not None and translations is not None:
+        from extraction.enrichment import read_sources
+        protected.update(read_sources(translations.resolve(), english.resolve())[1].values())
+        protected.add(translations.resolve())
+    targets = {target_path(repository, name) for name in TARGETS}
+    if protected & targets:
+        raise InputError('Promotion inputs overlap output targets; snapshot pinned inputs first')
+
+
+def promote(candidate: Path, repository: Path, inputs: Path, evidence: Path, after_write=lambda _: None,
+            *, english: Path | None = None, translations: Path | None = None):
+    candidate, repository = candidate.resolve(), repository.resolve()
+    outputs, manifest_name = promotion_inputs(candidate, repository, inputs, evidence, english, translations)
+    protect_input_paths(repository, inputs, english, translations)
+    expected = dict(outputs, **{'candidate.json': sha256(candidate / manifest_name)})
     with locked(repository) as state:
         recover_locked(repository, state)
         files = {}
@@ -110,7 +140,8 @@ def promote(candidate: Path, repository: Path, inputs: Path, evidence: Path, aft
             old = target.read_bytes() if target.exists() else None
             if old is not None:
                 durable_write(state / ('old-' + name), old)
-            durable_write(state / ('new-' + name), (candidate / name).read_bytes())
+            source = manifest_name if name == 'candidate.json' else name
+            durable_write(state / ('new-' + name), (candidate / source).read_bytes())
             if sha256(state / ('new-' + name)) != expected[name]:
                 raise InputError(f'Candidate changed during promotion staging: {name}')
             files[name] = {'old': sha256(target) if old is not None else None,
@@ -140,10 +171,13 @@ if __name__ == '__main__':
     parser.add_argument('--candidate', type=Path)
     parser.add_argument('--inputs', type=Path)
     parser.add_argument('--evidence', type=Path)
+    parser.add_argument('--english', type=Path)
+    parser.add_argument('--translations', type=Path)
     args = parser.parse_args()
     if args.command == 'recover':
         recover(args.repository.resolve())
     elif args.candidate and args.inputs and args.evidence:
-        promote(args.candidate.resolve(), args.repository.resolve(), args.inputs, args.evidence)
+        promote(args.candidate.resolve(), args.repository.resolve(), args.inputs, args.evidence,
+                english=args.english, translations=args.translations)
     else:
         parser.error('promote requires --candidate, --inputs, and --evidence')

@@ -70,10 +70,16 @@ if __name__ == '__main__':
     parser.add_argument('--inputs', type=Path)
     parser.add_argument('--gate-run', type=Path)
     parser.add_argument('--capture-sources', type=Path)
+    parser.add_argument('--translations', type=Path)
     args = parser.parse_args()
     if args.capture_sources:
         args.capture_sources.write_text(json.dumps(source_identity(), indent=2) + '\n')
     elif args.candidate and args.inputs and args.gate_run:
         issue(args.candidate.resolve(), args.inputs.resolve(), args.gate_run.resolve())
+        if args.translations:
+            from bundle_evidence import issue as issue_bundle
+            issue_bundle(args.gate_run.resolve() / 'translation-repeatability/run-1',
+                         args.candidate.resolve(), args.inputs.resolve(), args.translations.resolve(),
+                         args.gate_run.resolve())
     else:
         parser.error('Require either --capture-sources or candidate, inputs, and gate-run')

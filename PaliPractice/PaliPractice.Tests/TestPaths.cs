@@ -19,8 +19,14 @@ public static class TestPaths
     {
         get
         {
-            if (Environment.GetEnvironmentVariable("PALIPRACTICE_CANDIDATE_DB") is null) return false;
             var directory = System.IO.Path.GetDirectoryName(PaliDbPath)!;
+            var bundledManifest = System.IO.Path.Combine(directory, "pali.manifest.json");
+            if (File.Exists(bundledManifest))
+            {
+                using var bundle = System.Text.Json.JsonDocument.Parse(File.ReadAllText(bundledManifest));
+                return bundle.RootElement.GetProperty("kind").GetString() == "multilingual-database";
+            }
+            if (Environment.GetEnvironmentVariable("PALIPRACTICE_CANDIDATE_DB") is null) return false;
             var enrichment = System.IO.Path.Combine(directory, "enrichment.json");
             if (File.Exists(enrichment))
             {
@@ -57,6 +63,11 @@ public static class TestPaths
         Environment.GetEnvironmentVariable("PALIPRACTICE_CANDIDATE_DB") ??
         System.IO.Path.Combine(
             RepositoryRoot, "PaliPractice", "PaliPractice", "Data", "pali.db");
+
+    public static string PrimaryFormsPath =>
+        Environment.GetEnvironmentVariable("PALIPRACTICE_CANDIDATE_DB") is not null
+            ? System.IO.Path.Combine(System.IO.Path.GetDirectoryName(PaliDbPath)!, "primary_forms.json")
+            : System.IO.Path.Combine(RepositoryRoot, "scripts", "generated", "primary_forms.json");
 
     /// <summary>
     /// Validates that required test databases exist. Call in OneTimeSetUp.

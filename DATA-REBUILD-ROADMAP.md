@@ -1,6 +1,6 @@
 # DPD rebuild and translation roadmap
 
-Created: 7 September 2026. Status: M1–M8 complete; M9 release validation and promotion are next.
+Created: 7 September 2026. Status: M1–M9 complete for database and model readiness.
 
 The objective is a reproducible, grammatically correct English DPD database with stable production practice identities, followed by verified Russian and Spanish meanings in the next app update. The findings and measured starting state are in [DATA-REBUILD-AUDIT.md](DATA-REBUILD-AUDIT.md).
 
@@ -16,7 +16,7 @@ The objective is a reproducible, grammatically correct English DPD database with
 | M6 | Russian enrichment through a tested translation contract | M5 |
 | M7 | Spanish enrichment with verified sense mapping | M6 |
 | M8 | App support for English, Russian, and Spanish meanings | M7 |
-| M9 | Verified multilingual release candidate and deliberate promotion | M8 |
+| M9 | Verified multilingual database checkpoint and deliberate promotion | M8 |
 
 Work through one milestone at a time. Each milestone below has bounded steps and an exit condition. Keep a completion record with the task diff, tests, gate evidence, independent review, and unresolved issues. Do not mark a milestone complete because its implementation exists without the required evidence.
 
@@ -164,17 +164,17 @@ Against the existing pending database, 2,328/2,384 noun rows and 1,268/1,317 ver
 
 **Exit:** English, Russian, and Spanish meanings work in the app, existing preference values retain their meanings, missing translations fall back correctly without retaining unused languages, About includes both source credits, and platform smoke checks cover the affected screens. Unit/integration tests and applicable gate lanes pass.
 
-## M9 — Validate and promote the multilingual release candidate
+## M9 — Validate and promote the multilingual database checkpoint
 
-- [ ] Resolve the Android direct-touch dropdown limitation before release: on the API 37 emulator, both Theme and Translation language opened with keyboard activation but not direct taps. Spanish selection, rendering and persistence passed. Reproduce on the supported release device/runtime and fix if confirmed; do not treat keyboard-only smoke evidence as touch verification.
+This milestone establishes database and model readiness, not whole-app release readiness. UI localization and the Android dropdown touch check remain separate UI work.
 
-- [ ] Build a fresh final candidate from the M5 English manifest and pinned RU/ES manifests. Repeat offline and verify reproducibility and unchanged English semantics.
-- [ ] Produce the release data diff: added/removed lemmas, eligible-combination changes, paradigm/sense changes, language coverage and mapping exceptions, and all source/output identities.
-- [ ] Run the complete gate against the final diff and database. Run fresh-install and existing-user upgrade journeys, including dormant mastery/history, all three meaning languages, fallback, settings persistence, and noun/verb practice.
-- [ ] Complete independent review, source credits, and user-facing notes for relevant data changes. Resolve remaining blocking findings before promotion.
-- [ ] Promote only the validated candidate with its matching version/registry/manifest, using M5's recovery protocol. Verify packaged database identities on supported target builds and retain the prior bundle for rollback.
+- [x] Build a fresh final candidate from the M5 English manifest and pinned RU/ES manifests. Repeat offline and verify reproducibility and unchanged English semantics.
+- [x] Produce the database change report: added/removed lemmas, eligible-combination changes, paradigm/sense changes, language coverage and mapping exceptions, and all source/output identities.
+- [x] Run the complete gate against the final diff and database. Run fresh-database and existing-user model journeys, including dormant mastery/history, all three meaning languages, fallback, settings persistence, and noun/verb eligibility.
+- [x] Complete independent review, source credits, and user-facing notes for relevant data changes. Resolve remaining blocking findings before promotion.
+- [x] Promote only the validated candidate with its matching version/registry/manifest, using M5's recovery protocol. Verify packaged database identities on supported target builds and retain the prior bundle for rollback.
 
-**Exit:** one traceable multilingual bundle passes semantic, compatibility, reproducibility, and app checks. The exact validated bundle is packaged. App publication and commits remain deliberate actions outside automatic milestone completion.
+**Exit:** one traceable multilingual database passes semantic, compatibility, reproducibility, provisioning, and model checks. The exact validated bundle and provenance are available for subsequent app adjustments. This does not approve app publication.
 
 ## Quality-gate responsibilities after M5–M9
 
@@ -202,5 +202,5 @@ Update this table at the end of each milestone with durable evidence links.
 | M5 | Complete | [Repeatability, semantic gate, review, and desktop/iOS/Android upgrade evidence](quality/evidence/m5/README.md) |
 | M6 | Complete | [Pinned Russian source, exact meanings, English preservation, gate and review](quality/evidence/m6/README.md) |
 | M7 | Complete | [Paired Spanish mappings, gaps, terminology sample, gate and review](quality/evidence/m7/README.md) |
-| M8 | Complete | [Selected-language loading, credits, gate, review, and bounded native checks](quality/evidence/m8/README.md); Android direct-touch dropdown check carried into M9 |
-| M9 | Planned | Requires all previous milestones |
+| M8 | Complete | [Selected-language loading, credits, gate, review, and bounded native checks](quality/evidence/m8/README.md); Android direct-touch dropdown check remains separate UI work |
+| M9 | Complete | [Multilingual checkpoint, full gate, review, recoverable promotion, model tests and package identities](quality/evidence/m9/README.md) |

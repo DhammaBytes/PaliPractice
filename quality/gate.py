@@ -365,7 +365,8 @@ class Gate:
         env = os.environ.copy()
         env.update(environment or {})
         command_path.write_text(
-            json.dumps({"cwd": str(cwd), "argv": list(arguments)}, indent=2),
+            json.dumps({"cwd": str(cwd), "argv": list(arguments),
+                        "candidate_database": env.get("PALIPRACTICE_CANDIDATE_DB")}, indent=2),
             encoding="utf-8",
         )
         try:
@@ -1951,7 +1952,9 @@ def main() -> int:
                 candidate, inputs = candidate_spec()
                 gate.command("semantic-verification", [str(ROOT / ".venv/bin/python"), "-B",
                              "scripts/semantic_evidence.py", "--candidate", str(candidate),
-                             "--inputs", str(inputs), "--gate-run", str(evidence.run)])
+                             "--inputs", str(inputs), "--gate-run", str(evidence.run),
+                             *(["--translations", str(Path(os.environ["PALIPRACTICE_TRANSLATION_MANIFEST"]).resolve())]
+                               if os.environ.get("PALIPRACTICE_TRANSLATION_MANIFEST") else [])])
                 if gate.failures:
                     (evidence.run / "completion.json").write_text(json.dumps(
                         {"status": "fail", "findings": len(gate.failures)}, indent=2))

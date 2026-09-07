@@ -113,6 +113,37 @@ class PromotionTests(unittest.TestCase):
             recover(repository)
         self.assertEqual(b'user edit', target.read_bytes())
 
+    def test_previous_six_file_journal_remains_recoverable(self):
+        repository = self.root / 'previous-journal'
+
+        def interrupt(_):
+            raise RuntimeError('interrupted')
+
+        with self.assertRaises(RuntimeError):
+            promote(self.candidate, repository, self.manifest, self.evidence, interrupt)
+        path = repository / '.local/promotion/journal.json'
+        journal = json.loads(path.read_text())
+        del journal['files']['primary_forms.json']
+        path.write_text(json.dumps(journal))
+        recover(repository)
+        self.assertEqual('rolled_back', json.loads(path.read_text())['phase'])
+        self.assertFalse((repository / TARGETS['pali.db']).exists())
+
+    def test_promotion_cannot_overwrite_its_pinned_registry_input(self):
+        repository = self.root / 'overlap'
+        target = repository / TARGETS['lemma_registry.json']
+        target.parent.mkdir(parents=True)
+        manifest = json.loads(self.manifest.read_text())
+        original = Path(manifest['inputs']['registry']['path']).read_bytes()
+        target.write_bytes(original)
+        manifest['inputs']['registry']['path'] = str(target)
+        inputs = self.root / 'overlap-inputs.json'
+        inputs.write_text(json.dumps(manifest))
+        with self.assertRaisesRegex(InputError, 'overlap output targets'):
+            promote(self.candidate, repository, inputs, self.evidence)
+        self.assertEqual(original, target.read_bytes())
+        self.assertFalse((repository / '.local/promotion').exists())
+
 
 if __name__ == '__main__':
     unittest.main()

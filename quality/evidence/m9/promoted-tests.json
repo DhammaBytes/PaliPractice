@@ -1,0 +1,10 @@
+{
+  "command": "dotnet test PaliPractice/PaliPractice.Tests/PaliPractice.Tests.csproj --no-restore",
+  "input_manifest": ".local/inputs/m9-frozen/english.json",
+  "candidate_database_override": null,
+  "passed": 2936,
+  "failed": 0,
+  "skipped": 0,
+  "database_sha256": "7ce322fe8064fd7ef81ca36277acace90fc219a6de58a1c4f3f5e4b260b03213",
+  "log_sha256": "ab4a04ef3e4460ae2ee43191cb6f32a684fdecb3ac09b6f281e963932b2ea8ac"
+}

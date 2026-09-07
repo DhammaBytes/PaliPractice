@@ -93,6 +93,9 @@
       <Content Include="Data\pali.version.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
+      <Content Include="Data\pali.manifest.json" Condition="Exists('Data/pali.manifest.json')">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
       <Content Remove="Assets\SVG_ICONS.md" />
     </ItemGroup>
 
@@ -103,6 +106,9 @@
       </BundleResource>
       <BundleResource Include="Data\pali.version.txt">
         <Link>Data/pali.version.txt</Link>
+      </BundleResource>
+      <BundleResource Include="Data\pali.manifest.json" Condition="Exists('Data/pali.manifest.json')">
+        <Link>Data/pali.manifest.json</Link>
       </BundleResource>
       <BundleResource Include="Platforms\iOS\LaunchScreen.storyboard" />
       <BundleResource Include="Platforms\iOS\PrivacyInfo.xcprivacy" LogicalName="PrivacyInfo.xcprivacy" />
@@ -115,6 +121,9 @@
       </AndroidAsset>
       <AndroidAsset Include="Data\pali.version.txt">
         <Link>Data/pali.version.txt</Link>
+      </AndroidAsset>
+      <AndroidAsset Include="Data\pali.manifest.json" Condition="Exists('Data/pali.manifest.json')">
+        <Link>Data/pali.manifest.json</Link>
       </AndroidAsset>
     </ItemGroup>
 

@@ -135,3 +135,9 @@ enriched copies and checks exact source mappings and unchanged English data.
 The .NET integration lane consumes that verified multilingual database, including
 every displayed noun/verb sense in all three languages. Source evidence includes
 `.resw` resources so language labels and credits are bound to the checked source.
+The gate emits `bundle-verification.json` only after the full gate passes and
+the recorded .NET database path matches the enriched candidate. This receipt
+binds its complete output hashes, English semantic receipt and source identities.
+M9 promotion requires it and all three language layers; the compact `bundle.json`
+becomes the packaged `Data/pali.manifest.json`. Database readiness does not imply
+UI or app-publication readiness.

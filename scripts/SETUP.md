@@ -164,11 +164,11 @@ English manifest; relative paths resolve against the translation manifest.
 ```
 
 Output contains a new `pali.db` with `localized_meanings(headword_id, language,
-meaning)` and `enrichment.json`. Original English tables and artifacts are
+meaning)`, `enrichment.json`, and a compact `bundle.json`. Original English tables and artifacts are
 unchanged. The report carries source pins, every selected sense’s mapping and
 availability status, primary/sense coverage, and unselected/unknown source IDs.
 Empty and missing translations have no table row; runtime English fallback is
-specified in M8. This output is not a promotion receipt or a shipped bundle.
+specified in M8. These outputs require a successful full-gate receipt before promotion.
 
 Supply `PALIPRACTICE_TRANSLATION_MANIFEST` alongside
 `PALIPRACTICE_INPUT_MANIFEST` to run two isolated, byte-identical enrichments in
@@ -199,3 +199,40 @@ needed for the accepted M7 subset; any future override requires explicit review
 and pins for source bytes, full keys, target ID, and paired English evidence.
 Mechanical correspondence does not establish translation quality: retain the
 bounded terminology/sample review and upstream AI-assisted translation credits.
+
+## Multilingual database readiness and promotion (M9)
+
+Run the complete gate with both pinned input manifests. It creates two English
+and two enriched candidates, runs real repository and provisioning/model tests
+against the multilingual database, then issues `bundle-verification.json`.
+Keep the printed external gate directory until promotion finishes; it contains
+the English checkpoint and both semantic receipts.
+Pinned configuration inputs must live in snapshot files outside promotion
+targets. Promotion rejects overlapping input/output paths; otherwise replacing
+a registry would invalidate the inputs needed to reproduce the checkpoint.
+
+```bash
+.venv/bin/python scripts/promote_candidate.py promote \
+  --repository /absolute/path/to/PaliPractice \
+  --candidate /absolute/gate-run/translation-repeatability/run-1 \
+  --english /absolute/gate-run/english-repeatability/run-1 \
+  --inputs /absolute/english-inputs.json \
+  --translations /absolute/translation-inputs.json \
+  --evidence /absolute/gate-run/bundle-verification.json
+```
+
+Promotion validates exact input and output identities before staging, requires
+EN/RU/ES layers, then journals the database, version, manifest and identity files
+as one recoverable set. `bundle.json` becomes `Data/pali.manifest.json`, carrying
+English source/configuration/code identities and translation source pins and
+coverage. Detailed sense mapping stays in the retained candidate's
+`enrichment.json` whose hash is recorded in the packaged manifest.
+The exact primary-form oracle is promoted to `scripts/generated/primary_forms.json`
+so ordinary tests against the checked-in database keep exhaustive attestation
+coverage. It is verification data and is not included in app packages.
+
+If interrupted, run `promote_candidate.py recover --repository <repository>`.
+It restores the whole prior set and refuses to overwrite unrelated external
+edits. Preserve `.local/promotion` until the checkpoint is accepted; its old-file
+copies retain the prior bundle. The gate never promotes or publishes an app.
+This checkpoint establishes data/model readiness only.

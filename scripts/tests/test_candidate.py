@@ -13,7 +13,7 @@ from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from extraction.candidate import build_candidate, validate_candidate, OUTPUTS
-from extraction.identity import BASELINE
+from extraction.identity import BASELINE, historical_practice_registry, load_baseline
 from extraction.inputs import InputError, configuration, load_manifest, sha256
 from extract_nouns_and_verbs import NounVerbExtractor
 from db.models import Base, DpdHeadword, InflectionTemplates
@@ -64,8 +64,8 @@ def fixture(root):
     engine.dispose()
     (root / 'registry.json').write_bytes((BASELINE / 'lemma_registry.json').read_bytes())
     configs = Path(__file__).resolve().parents[1] / 'configs'
-    for name in ('practice_registry', 'paradigm_corrections'):
-        (root / f'{name}.json').write_bytes((configs / f'{name}.json').read_bytes())
+    (root / 'practice_registry.json').write_text(json.dumps(historical_practice_registry(load_baseline()[1])))
+    (root / 'paradigm_corrections.json').write_bytes((configs / 'paradigm_corrections.json').read_bytes())
     (root / 'adjustments.json').write_text('{}')
     paths = {'dpd': database, 'registry': root / 'registry.json',
              'adjustments': root / 'adjustments.json',

@@ -139,6 +139,15 @@ def verify_english_unchanged(english_db: Path, enriched_db: Path):
                     raise InputError(f'English table changed during enrichment: {name}')
 
 
+def bundle_manifest(english: Path, output: Path, report: dict) -> dict:
+    return {'schema': 1, 'kind': 'multilingual-database',
+            'english': read_json(english / 'candidate.json'),
+            'languages': ['en', *sorted(report['layers'])],
+            'translations': {language: {key: layer[key] for key in ('source', 'coverage', 'reference_source') if key in layer}
+                             for language, layer in report['layers'].items()},
+            'outputs': {name: sha256(output / name) for name in (*OUTPUTS, 'enrichment.json')}}
+
+
 def validate_enrichment(english: Path, manifest_path: Path, output: Path):
     if (output / 'BUILDING').exists():
         raise InputError('Translation build is incomplete')
@@ -159,6 +168,8 @@ def validate_enrichment(english: Path, manifest_path: Path, output: Path):
     for name in OUTPUTS:
         if name != 'pali.db' and sha256(output / name) != sha256(english / name):
             raise InputError(f'English artifact changed: {name}')
+    if read_json(output / 'bundle.json') != bundle_manifest(english, output, report):
+        raise InputError('Multilingual bundle manifest differs from verified artifacts')
     return report
 
 
@@ -178,6 +189,7 @@ def build_enrichment(english: Path, manifest_path: Path, output: Path):
     verify_english_unchanged(english / 'pali.db', output / 'pali.db')
     dump_json(output / 'enrichment.json', {'schema': 1, 'english_sha256': manifest['english_sha256'],
                                          'database_sha256': sha256(output / 'pali.db'), 'layers': layers})
+    dump_json(output / 'bundle.json', bundle_manifest(english, output, read_json(output / 'enrichment.json')))
     (output / 'BUILDING').unlink()
     validate_enrichment(english, manifest_path, output)
     return output

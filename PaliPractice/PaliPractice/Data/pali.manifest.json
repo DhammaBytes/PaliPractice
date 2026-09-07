@@ -1,0 +1,238 @@
+{
+  "english": {
+    "code": {
+      "dpd_revision": "56fe6d1835d0f8efd1ce079d991bcfb74c423aad",
+      "files": {
+        "scripts/configs/__init__.py": "572c83b30cfd9715ea7cfb27096516fd0de15dc5ac9fc69b00aa136102b2e1c4",
+        "scripts/configs/pragma.py": "79949f1be21e7622c81f90fba6867a05d89f286e61edf0ceca2fac8583e66d37",
+        "scripts/extract_nouns_and_verbs.py": "8dc562012699c3c659da8aa8c23dd7ebccc335b808030105f671f65a54035d36",
+        "scripts/extraction/__init__.py": "af1c495ae5cc394661dbcb9a741d1291d0174627cc6d5a9e5deed0bff735799e",
+        "scripts/extraction/candidate.py": "cc96a715d4705b9711c114c46c6adde358eb69d91a7797ccdf3e89f60a613b08",
+        "scripts/extraction/compatibility.py": "8cb97f0e14cae13244eb5978e443f86af96e0b1358f39d4df08ba4cf68c6066b",
+        "scripts/extraction/config.py": "4e4a459cdf7d1ddec516143568bdf941dee1414168cfa6203bae83c3b1cce818",
+        "scripts/extraction/enrichment.py": "a5ad5b078cb89c6becd27552f95f8c39a50354c486e7ee7df1c4d2ec54c29fd1",
+        "scripts/extraction/form_storage.py": "53591ba42610e533f7c2b64b1f4bae791875cfd22c95177dd5a5a63310589495",
+        "scripts/extraction/forms.py": "247c7afaf5c39ba030b81bc27ed28a7bb7764f2896e5b634080f595c12ef3ef8",
+        "scripts/extraction/grammar.py": "82ede59be4c6785d2460422a468523661b3fa83636472c9a751b75409418a768",
+        "scripts/extraction/html_parser.py": "96e9239636b402ab5fc7525947f0e6aa56e9f20a7c22af1696e525b739a2f34d",
+        "scripts/extraction/identity.py": "dfcf5ae8cf39ac212d93413526193846e758b31766425eb1d9c3053143c538f4",
+        "scripts/extraction/inputs.py": "a72a93ef3e711e1dec04ae7de406e05339ddd29771dde8bcdd322a87c1a53d4c",
+        "scripts/extraction/plural_dedup.py": "1fc2e2e5ccab55205a05d6481ef81bfbee80a3e7ca61eb59c9930c7ad73dd74e",
+        "scripts/extraction/registry.py": "c0e498e52956814148eb1a7d4c948993021a449fc69413bf742cc9b62731d5a6",
+        "scripts/extraction/russian_meanings.py": "99b40dbf4867195d27cdd81a513f6b3eee87ade5042b1fb70411b115e4261d49",
+        "scripts/extraction/spanish_meanings.py": "45bdb9566946fbefc91f4a2282a3fbc7d1e81471115e4dd463bf10c60efa55f3",
+        "scripts/extraction/templates.py": "94c5e51a3a7deeef0dbd44285b73e01b4064314fbfe5a4e739c686f61c8ac310",
+        "scripts/extraction/translations.py": "8314e4140433dd689d4a0a14d03a258de807e1a0813574d812c03338203d0b1d",
+        "scripts/extraction/validate_db.py": "96daecb47abb681282e7fcb26f555cd96f6b87d96b5a759ae2625b8aa449ec03",
+        "scripts/extraction/validate_forms.py": "86938500f88d0003fa3e8a7a1d291ed609c8fcd7f55eaf09835ff83fce8db415",
+        "scripts/extraction/validate_inflections.py": "aa17918fac3e3f93266d6b0f48db6867e028ba6d6c34a6793c6974fef0c62f9e"
+      },
+      "packages": {
+        "SQLAlchemy": "2.0.41",
+        "aksharamukha": "2.3"
+      },
+      "python": "3.13.15",
+      "revision": "f4c78dbad30affa9da34183ee2cd0446ed23295c",
+      "sqlite": "3.53.4"
+    },
+    "configuration": {
+      "excluded_noun_lemmas": [
+        "atthi"
+      ],
+      "max_lemma_length": 18,
+      "noun_limit": 1500,
+      "verb_limit": 750
+    },
+    "corpus_generation": {
+      "go": "go version go1.27.0 darwin/arm64",
+      "outputs": {
+        "bjt": {
+          "file": "bjt_wordlist.json",
+          "sha256": "2f90c9330fde5339283582b19e2b90ac116fe49780c9d5dee05566ea4395e560"
+        },
+        "cst": {
+          "file": "cst_wordlist.json",
+          "sha256": "603bb0dd1d0f24df79bea5f50b1a7367545acfc249ee8ca3542deffefdddc3b0"
+        },
+        "sc": {
+          "file": "sc_wordlist.json",
+          "sha256": "7734132b44f00d60343b0a8be11eaae9051ad051c46aea67540223e8c60c3e1b"
+        },
+        "sya": {
+          "file": "sya_wordlist.json",
+          "sha256": "f3bee239843295061ceb9963dde806b167b61213c77d7c5e0ca5e2efdf6ce470"
+        }
+      },
+      "python": "Python 3.12.11",
+      "python_packages": {
+        "aksharamukha": "2.3",
+        "beautifulsoup4": "4.13.4",
+        "lxml": "5.4.0",
+        "rich": "13.9.4"
+      },
+      "recipe": "scripts/acquire_corpora.py: upstream CST/BJT conversion, Go frequency/setup, sorted unique UTF-8 JSON",
+      "recipe_sha256": "cf4f62fb88a0e328b3f552b7321150e452a087b837da66959cb7d3651c01962c",
+      "revisions": {
+        "dpd": "37912132f30f5023cb5a1c4e2dde26a24b7b3e2e",
+        "sc": "2df1161ddc30fead45f1d42de5bf90754f23b93c",
+        "texts": "515c9dce8bf3c7361ee9b630d687572d686329e4",
+        "thai": "a3d216560ed3c44ab35e2250d17c9faf7fb7d8e4"
+      }
+    },
+    "database_version": 2026090702,
+    "inputs": {
+      "adjustments": {
+        "sha256": "eb43aff156e32abcf574873eb647d31a737c939b0529c200781a9dc0c59771a2",
+        "source": {
+          "origin": "explicit local adjustments",
+          "revision": "sha256:eb43aff156e32abcf574873eb647d31a737c939b0529c200781a9dc0c59771a2"
+        }
+      },
+      "bjt": {
+        "sha256": "2f90c9330fde5339283582b19e2b90ac116fe49780c9d5dee05566ea4395e560",
+        "source": {
+          "origin": "scripts/acquire_corpora.py: upstream CST/BJT conversion, Go frequency/setup, sorted unique UTF-8 JSON",
+          "revision": "sha256:2f90c9330fde5339283582b19e2b90ac116fe49780c9d5dee05566ea4395e560"
+        }
+      },
+      "corrections": {
+        "sha256": "4ca10b2b65dbe531a7dd54b89710964381e8ad6e81d796627a8f897912297c13",
+        "source": {
+          "origin": "explicit local corrections",
+          "revision": "sha256:4ca10b2b65dbe531a7dd54b89710964381e8ad6e81d796627a8f897912297c13"
+        }
+      },
+      "cst": {
+        "sha256": "603bb0dd1d0f24df79bea5f50b1a7367545acfc249ee8ca3542deffefdddc3b0",
+        "source": {
+          "origin": "scripts/acquire_corpora.py: upstream CST/BJT conversion, Go frequency/setup, sorted unique UTF-8 JSON",
+          "revision": "sha256:603bb0dd1d0f24df79bea5f50b1a7367545acfc249ee8ca3542deffefdddc3b0"
+        }
+      },
+      "dpd": {
+        "sha256": "6982aee8a9cdce83c3c57af7f7c506f59fe07afd5673a952fb8d27d52c693a98",
+        "source": {
+          "archive_sha256": "cd746f33633c087e514e8eed1f6939d9a8debb1e9dca5d8447fcc32fd343b7fe",
+          "commit": "37912132f30f5023cb5a1c4e2dde26a24b7b3e2e",
+          "origin": "https://github.com/digitalpalidictionary/dpd-db/releases/download/v0.4.20260728/dpd.db.tar.xz",
+          "revision": "release:v0.4.20260728",
+          "verification": "Archive matches published GitHub asset digest; extracted database SHA256 matches input."
+        }
+      },
+      "practice_registry": {
+        "sha256": "1e1b908f3aea0442b0e09f19d3827f0bc20168dbecfb3617798987d169acab1c",
+        "source": {
+          "origin": "explicit local practice_registry",
+          "revision": "sha256:1e1b908f3aea0442b0e09f19d3827f0bc20168dbecfb3617798987d169acab1c"
+        }
+      },
+      "registry": {
+        "sha256": "daa248dc5436ab1b78e336891ea2333f1759d7a2ab88f6200ed7eb16ceccaa45",
+        "source": {
+          "origin": "explicit local registry",
+          "revision": "sha256:daa248dc5436ab1b78e336891ea2333f1759d7a2ab88f6200ed7eb16ceccaa45"
+        }
+      },
+      "sc": {
+        "sha256": "7734132b44f00d60343b0a8be11eaae9051ad051c46aea67540223e8c60c3e1b",
+        "source": {
+          "origin": "scripts/acquire_corpora.py: upstream CST/BJT conversion, Go frequency/setup, sorted unique UTF-8 JSON",
+          "revision": "sha256:7734132b44f00d60343b0a8be11eaae9051ad051c46aea67540223e8c60c3e1b"
+        }
+      },
+      "sya": {
+        "sha256": "f3bee239843295061ceb9963dde806b167b61213c77d7c5e0ca5e2efdf6ce470",
+        "source": {
+          "origin": "scripts/acquire_corpora.py: upstream CST/BJT conversion, Go frequency/setup, sorted unique UTF-8 JSON",
+          "revision": "sha256:f3bee239843295061ceb9963dde806b167b61213c77d7c5e0ca5e2efdf6ce470"
+        }
+      }
+    },
+    "language_layer": "en",
+    "outputs": {
+      "compatibility.json": "09e711082109700389dc54f84d578418bd4329c9e862c7dfd82964270306d86f",
+      "inflection_validation.log": "2b21d8829d13781dd72fea6309f67682435822bfaa5590ad640c1d37384bfc1a",
+      "lemma_registry.json": "60def983ff5064eecac63c33494608900fe838e6653920e8c7871c80c6ff29c8",
+      "pali.db": "f4850fe87522595ed82fdc3abf89ae9b5aebd22d7d8d63dc60c40c087863f75f",
+      "pali.version.txt": "6e15daa7f878eb20a2de31da913e23b016873f48e087fa1fdf4d16e3dcf2954f",
+      "paradigm_corrections.json": "4ca10b2b65dbe531a7dd54b89710964381e8ad6e81d796627a8f897912297c13",
+      "practice_registry.json": "74d6d7fab159270ba819be1746b74d4be88b080034fe9fd562319bf9fd587cab",
+      "primary_forms.json": "12b969c906d2a75b4d5335b7c7fe9d199894db3ccc48e83dc42851a1b9e4add9"
+    },
+    "schema": 3,
+    "validation_level": "structural"
+  },
+  "kind": "multilingual-database",
+  "languages": [
+    "en",
+    "es",
+    "ru"
+  ],
+  "outputs": {
+    "compatibility.json": "09e711082109700389dc54f84d578418bd4329c9e862c7dfd82964270306d86f",
+    "enrichment.json": "89fac2a5d3ea1e3c68238dff06b6549241bdb88d1d906b19b81d93fe96be7ca1",
+    "inflection_validation.log": "2b21d8829d13781dd72fea6309f67682435822bfaa5590ad640c1d37384bfc1a",
+    "lemma_registry.json": "60def983ff5064eecac63c33494608900fe838e6653920e8c7871c80c6ff29c8",
+    "pali.db": "7ce322fe8064fd7ef81ca36277acace90fc219a6de58a1c4f3f5e4b260b03213",
+    "pali.version.txt": "6e15daa7f878eb20a2de31da913e23b016873f48e087fa1fdf4d16e3dcf2954f",
+    "paradigm_corrections.json": "4ca10b2b65dbe531a7dd54b89710964381e8ad6e81d796627a8f897912297c13",
+    "practice_registry.json": "74d6d7fab159270ba819be1746b74d4be88b080034fe9fd562319bf9fd587cab",
+    "primary_forms.json": "12b969c906d2a75b4d5335b7c7fe9d199894db3ccc48e83dc42851a1b9e4add9"
+  },
+  "schema": 1,
+  "translations": {
+    "es": {
+      "coverage": {
+        "nouns": {
+          "primary_lemmas": 1500,
+          "selected_senses": 2395,
+          "translated_primary_lemmas": 1359,
+          "translated_senses": 2177
+        },
+        "verbs": {
+          "primary_lemmas": 750,
+          "selected_senses": 1327,
+          "translated_primary_lemmas": 683,
+          "translated_senses": 1162
+        }
+      },
+      "reference_source": {
+        "sha256": "cd09aa50bc96fa3b321afbbc185c49687bc075efbb211710de772be5aedbc191",
+        "source": {
+          "origin": "https://github.com/DhammaBytes/dpd-dictionary-es/blob/8a634e53d0605bc50f0a9913b221ebc6a40f17b2/js/dpd_ebts.js",
+          "revision": "8a634e53d0605bc50f0a9913b221ebc6a40f17b2"
+        }
+      },
+      "source": {
+        "sha256": "73c96127eb8a16921153a2d112c7f23fbf4ecd01e549867f83f49ef510c91068",
+        "source": {
+          "origin": "https://github.com/DhammaBytes/dpd-dictionary-es/blob/8a634e53d0605bc50f0a9913b221ebc6a40f17b2/js/dpd_ebts_es.js",
+          "revision": "8a634e53d0605bc50f0a9913b221ebc6a40f17b2"
+        }
+      }
+    },
+    "ru": {
+      "coverage": {
+        "nouns": {
+          "primary_lemmas": 1500,
+          "selected_senses": 2395,
+          "translated_primary_lemmas": 1498,
+          "translated_senses": 2384
+        },
+        "verbs": {
+          "primary_lemmas": 750,
+          "selected_senses": 1327,
+          "translated_primary_lemmas": 750,
+          "translated_senses": 1320
+        }
+      },
+      "source": {
+        "sha256": "7e1fb87986944f5dbed9769d2428b7880826e3f6b70b7aec0fade285738b605d",
+        "source": {
+          "origin": "https://github.com/sasanarakkha/dpd-db-sbs/blob/c179f0c044e3e0ca366ac47445f30a1b2ffc732c/db/backup_tsv/russian.tsv",
+          "revision": "c179f0c044e3e0ca366ac47445f30a1b2ffc732c"
+        }
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "next_noun_id": 45247,
+  "next_noun_id": 45252,
   "next_verb_id": 77607,
   "nouns": {
     "bhikkhu": 10001,
@@ -35248,7 +35248,12 @@
     "uddesaggahaṇa": 45243,
     "lokādhipati": 45244,
     "udahāra": 45245,
-    "saddasaññaka": 45246
+    "saddasaññaka": 45246,
+    "nissaggiya": 45247,
+    "sārathī": 45248,
+    "samudayadhamma": 45249,
+    "anāhāra": 45250,
+    "bahuka": 45251
   },
   "verbs": {
     "hoti": 70001,

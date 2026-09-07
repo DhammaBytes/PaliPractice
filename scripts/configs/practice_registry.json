@@ -1861,8 +1861,8 @@
       "lemma": "pathavī",
       "kind": "nouns",
       "anchor_headword_id": 42022,
-      "pattern": "ī fem",
-      "stem": "pathav",
+      "pattern": "vī fem",
+      "stem": "patha",
       "gender": 2
     },
     "10278": {
@@ -9525,8 +9525,8 @@
       "lemma": "mahāpathavī",
       "kind": "nouns",
       "anchor_headword_id": 51788,
-      "pattern": "ī fem",
-      "stem": "mahāpathav",
+      "pattern": "vī fem",
+      "stem": "mahāpatha",
       "gender": 2
     },
     "11438": {
@@ -17999,6 +17999,1158 @@
       "anchor_headword_id": 88140,
       "pattern": "eti pr",
       "stem": "par",
+      "gender": 0
+    },
+    "10067": {
+      "lemma": "dutiya",
+      "kind": "nouns",
+      "anchor_headword_id": 88673,
+      "pattern": "a masc",
+      "stem": "dutiy",
+      "gender": 1
+    },
+    "10127": {
+      "lemma": "samaṇabrāhmaṇa",
+      "kind": "nouns",
+      "anchor_headword_id": 59204,
+      "pattern": "a masc",
+      "stem": "samaṇabrāhmaṇ",
+      "gender": 1
+    },
+    "10136": {
+      "lemma": "saddha",
+      "kind": "nouns",
+      "anchor_headword_id": 89594,
+      "pattern": "a nt",
+      "stem": "saddh",
+      "gender": 3
+    },
+    "10331": {
+      "lemma": "cunda",
+      "kind": "nouns",
+      "anchor_headword_id": 89754,
+      "pattern": "a masc",
+      "stem": "cund",
+      "gender": 1
+    },
+    "10385": {
+      "lemma": "acchariya",
+      "kind": "nouns",
+      "anchor_headword_id": 1045,
+      "pattern": "a nt",
+      "stem": "acchariy",
+      "gender": 3
+    },
+    "10429": {
+      "lemma": "abbhuta",
+      "kind": "nouns",
+      "anchor_headword_id": 7336,
+      "pattern": "a nt",
+      "stem": "abbhut",
+      "gender": 3
+    },
+    "10431": {
+      "lemma": "kanta",
+      "kind": "nouns",
+      "anchor_headword_id": 89438,
+      "pattern": "a nt",
+      "stem": "kant",
+      "gender": 3
+    },
+    "10448": {
+      "lemma": "iṭṭha",
+      "kind": "nouns",
+      "anchor_headword_id": 13417,
+      "pattern": "a nt",
+      "stem": "iṭṭh",
+      "gender": 3
+    },
+    "10820": {
+      "lemma": "tāsa",
+      "kind": "nouns",
+      "anchor_headword_id": 30353,
+      "pattern": "a masc",
+      "stem": "tās",
+      "gender": 1
+    },
+    "10855": {
+      "lemma": "abhisambuddha",
+      "kind": "nouns",
+      "anchor_headword_id": 8236,
+      "pattern": "a masc",
+      "stem": "abhisambuddh",
+      "gender": 1
+    },
+    "10880": {
+      "lemma": "adinnādāyī",
+      "kind": "nouns",
+      "anchor_headword_id": 72827,
+      "pattern": "ī masc",
+      "stem": "adinnādāy",
+      "gender": 1
+    },
+    "10908": {
+      "lemma": "bhikkhunisaṅgha",
+      "kind": "nouns",
+      "anchor_headword_id": 49897,
+      "pattern": "a masc",
+      "stem": "bhikkhunisaṅgh",
+      "gender": 1
+    },
+    "11063": {
+      "lemma": "arūpī",
+      "kind": "nouns",
+      "anchor_headword_id": 9097,
+      "pattern": "ī masc",
+      "stem": "arūp",
+      "gender": 1
+    },
+    "11125": {
+      "lemma": "maraṇassati",
+      "kind": "nouns",
+      "anchor_headword_id": 51473,
+      "pattern": "i fem",
+      "stem": "maraṇassat",
+      "gender": 2
+    },
+    "11218": {
+      "lemma": "ariṭṭha",
+      "kind": "nouns",
+      "anchor_headword_id": 8958,
+      "pattern": "a nt",
+      "stem": "ariṭṭh",
+      "gender": 3
+    },
+    "11329": {
+      "lemma": "dehī",
+      "kind": "nouns",
+      "anchor_headword_id": 34175,
+      "pattern": "ī masc",
+      "stem": "deh",
+      "gender": 1
+    },
+    "11501": {
+      "lemma": "kāraṇā",
+      "kind": "nouns",
+      "anchor_headword_id": 21324,
+      "pattern": "ā fem",
+      "stem": "kāraṇ",
+      "gender": 2
+    },
+    "11532": {
+      "lemma": "pariyodapana",
+      "kind": "nouns",
+      "anchor_headword_id": 44039,
+      "pattern": "a nt",
+      "stem": "pariyodapan",
+      "gender": 3
+    },
+    "11682": {
+      "lemma": "yadanatta",
+      "kind": "nouns",
+      "anchor_headword_id": 53730,
+      "pattern": "a2 masc",
+      "stem": "yadanatt",
+      "gender": 1
+    },
+    "11849": {
+      "lemma": "āraññaka",
+      "kind": "nouns",
+      "anchor_headword_id": 83278,
+      "pattern": "a masc",
+      "stem": "āraññak",
+      "gender": 1
+    },
+    "11854": {
+      "lemma": "ājīva",
+      "kind": "nouns",
+      "anchor_headword_id": 11387,
+      "pattern": "a masc",
+      "stem": "ājīv",
+      "gender": 1
+    },
+    "11863": {
+      "lemma": "dāsa",
+      "kind": "nouns",
+      "anchor_headword_id": 32381,
+      "pattern": "a masc",
+      "stem": "dās",
+      "gender": 1
+    },
+    "11875": {
+      "lemma": "sekkha",
+      "kind": "nouns",
+      "anchor_headword_id": 64790,
+      "pattern": "a masc",
+      "stem": "sekkh",
+      "gender": 1
+    },
+    "11883": {
+      "lemma": "ahi",
+      "kind": "nouns",
+      "anchor_headword_id": 10884,
+      "pattern": "i masc",
+      "stem": "ah",
+      "gender": 1
+    },
+    "11895": {
+      "lemma": "gocara",
+      "kind": "nouns",
+      "anchor_headword_id": 25239,
+      "pattern": "a masc",
+      "stem": "gocar",
+      "gender": 1
+    },
+    "11903": {
+      "lemma": "pattacīvara",
+      "kind": "nouns",
+      "anchor_headword_id": 41870,
+      "pattern": "a nt",
+      "stem": "pattacīvar",
+      "gender": 3
+    },
+    "11940": {
+      "lemma": "bhūmicāla",
+      "kind": "nouns",
+      "anchor_headword_id": 50215,
+      "pattern": "a masc",
+      "stem": "bhūmicāl",
+      "gender": 1
+    },
+    "11942": {
+      "lemma": "mahāvagga",
+      "kind": "nouns",
+      "anchor_headword_id": 51994,
+      "pattern": "a masc",
+      "stem": "mahāvagg",
+      "gender": 1
+    },
+    "11944": {
+      "lemma": "sakkhi",
+      "kind": "nouns",
+      "anchor_headword_id": 56491,
+      "pattern": "i masc",
+      "stem": "sakkh",
+      "gender": 1
+    },
+    "11945": {
+      "lemma": "sakkhī",
+      "kind": "nouns",
+      "anchor_headword_id": 88041,
+      "pattern": "ī masc",
+      "stem": "sakkh",
+      "gender": 1
+    },
+    "11949": {
+      "lemma": "santhāgāra",
+      "kind": "nouns",
+      "anchor_headword_id": 58347,
+      "pattern": "a nt",
+      "stem": "santhāgār",
+      "gender": 3
+    },
+    "11954": {
+      "lemma": "sāmaṇera",
+      "kind": "nouns",
+      "anchor_headword_id": 62325,
+      "pattern": "a masc",
+      "stem": "sāmaṇer",
+      "gender": 1
+    },
+    "11957": {
+      "lemma": "vacīsamācāra",
+      "kind": "nouns",
+      "anchor_headword_id": 65637,
+      "pattern": "a masc",
+      "stem": "vacīsamācār",
+      "gender": 1
+    },
+    "11985": {
+      "lemma": "māla",
+      "kind": "nouns",
+      "anchor_headword_id": 52438,
+      "pattern": "a masc",
+      "stem": "māl",
+      "gender": 1
+    },
+    "12008": {
+      "lemma": "tiracchānakathā",
+      "kind": "nouns",
+      "anchor_headword_id": 30737,
+      "pattern": "ā fem",
+      "stem": "tiracchānakath",
+      "gender": 2
+    },
+    "12015": {
+      "lemma": "bandha",
+      "kind": "nouns",
+      "anchor_headword_id": 47890,
+      "pattern": "a masc",
+      "stem": "bandh",
+      "gender": 1
+    },
+    "12028": {
+      "lemma": "vāri",
+      "kind": "nouns",
+      "anchor_headword_id": 66921,
+      "pattern": "i nt",
+      "stem": "vār",
+      "gender": 3
+    },
+    "12044": {
+      "lemma": "kucchi",
+      "kind": "nouns",
+      "anchor_headword_id": 22157,
+      "pattern": "i masc",
+      "stem": "kucch",
+      "gender": 1
+    },
+    "12102": {
+      "lemma": "rathiyā",
+      "kind": "nouns",
+      "anchor_headword_id": 54644,
+      "pattern": "ā fem",
+      "stem": "rathiy",
+      "gender": 2
+    },
+    "12128": {
+      "lemma": "dubbhikkha",
+      "kind": "nouns",
+      "anchor_headword_id": 33722,
+      "pattern": "a nt",
+      "stem": "dubbhikkh",
+      "gender": 3
+    },
+    "12165": {
+      "lemma": "abhikkama",
+      "kind": "nouns",
+      "anchor_headword_id": 7562,
+      "pattern": "a masc",
+      "stem": "abhikkam",
+      "gender": 1
+    },
+    "12180": {
+      "lemma": "pāṭha",
+      "kind": "nouns",
+      "anchor_headword_id": 45338,
+      "pattern": "a masc",
+      "stem": "pāṭh",
+      "gender": 1
+    },
+    "12185": {
+      "lemma": "manussadhamma",
+      "kind": "nouns",
+      "anchor_headword_id": 51202,
+      "pattern": "a masc",
+      "stem": "manussadhamm",
+      "gender": 1
+    },
+    "12231": {
+      "lemma": "migāramātar",
+      "kind": "nouns",
+      "anchor_headword_id": 52563,
+      "pattern": "mātar fem",
+      "stem": "migāra",
+      "gender": 2
+    },
+    "12249": {
+      "lemma": "sokaparideva",
+      "kind": "nouns",
+      "anchor_headword_id": 65095,
+      "pattern": "a masc",
+      "stem": "sokaparidev",
+      "gender": 1
+    },
+    "12258": {
+      "lemma": "abyāpajjha",
+      "kind": "nouns",
+      "anchor_headword_id": 7414,
+      "pattern": "a masc",
+      "stem": "abyāpajjh",
+      "gender": 1
+    },
+    "12288": {
+      "lemma": "bhāga",
+      "kind": "nouns",
+      "anchor_headword_id": 49642,
+      "pattern": "a masc",
+      "stem": "bhāg",
+      "gender": 1
+    },
+    "12336": {
+      "lemma": "cīvaracetāpanna",
+      "kind": "nouns",
+      "anchor_headword_id": 26837,
+      "pattern": "a nt",
+      "stem": "cīvaracetāpann",
+      "gender": 3
+    },
+    "12461": {
+      "lemma": "thīnamiddha",
+      "kind": "nouns",
+      "anchor_headword_id": 31516,
+      "pattern": "a nt",
+      "stem": "thīnamiddh",
+      "gender": 3
+    },
+    "12556": {
+      "lemma": "mattāya",
+      "kind": "nouns",
+      "anchor_headword_id": 50962,
+      "pattern": "ā fem",
+      "stem": "matt",
+      "gender": 2
+    },
+    "12877": {
+      "lemma": "samacariyā",
+      "kind": "nouns",
+      "anchor_headword_id": 59150,
+      "pattern": "ā fem",
+      "stem": "samacariy",
+      "gender": 2
+    },
+    "12899": {
+      "lemma": "anusāsana",
+      "kind": "nouns",
+      "anchor_headword_id": 5261,
+      "pattern": "a nt",
+      "stem": "anusāsan",
+      "gender": 3
+    },
+    "12964": {
+      "lemma": "mātu",
+      "kind": "nouns",
+      "anchor_headword_id": 52209,
+      "pattern": "mātar fem",
+      "stem": "",
+      "gender": 2
+    },
+    "13126": {
+      "lemma": "nipāta",
+      "kind": "nouns",
+      "anchor_headword_id": 37387,
+      "pattern": "a masc",
+      "stem": "nipāt",
+      "gender": 1
+    },
+    "13234": {
+      "lemma": "taṇhakkhaya",
+      "kind": "nouns",
+      "anchor_headword_id": 29334,
+      "pattern": "a masc",
+      "stem": "taṇhakkhay",
+      "gender": 1
+    },
+    "13312": {
+      "lemma": "vuḍḍhi",
+      "kind": "nouns",
+      "anchor_headword_id": 70032,
+      "pattern": "i fem",
+      "stem": "vuḍḍh",
+      "gender": 2
+    },
+    "13377": {
+      "lemma": "dhammacariyā",
+      "kind": "nouns",
+      "anchor_headword_id": 34684,
+      "pattern": "ā fem",
+      "stem": "dhammacariy",
+      "gender": 2
+    },
+    "14273": {
+      "lemma": "udda",
+      "kind": "nouns",
+      "anchor_headword_id": 15078,
+      "pattern": "a masc",
+      "stem": "udd",
+      "gender": 1
+    },
+    "14585": {
+      "lemma": "nahāru",
+      "kind": "nouns",
+      "anchor_headword_id": 35994,
+      "pattern": "u masc",
+      "stem": "nahār",
+      "gender": 1
+    },
+    "14622": {
+      "lemma": "balibadda",
+      "kind": "nouns",
+      "anchor_headword_id": 48045,
+      "pattern": "a masc",
+      "stem": "balibadd",
+      "gender": 1
+    },
+    "14844": {
+      "lemma": "cātummahārājika",
+      "kind": "nouns",
+      "anchor_headword_id": 26420,
+      "pattern": "a masc",
+      "stem": "cātummahārājik",
+      "gender": 1
+    },
+    "14864": {
+      "lemma": "tikanipāta",
+      "kind": "nouns",
+      "anchor_headword_id": 77891,
+      "pattern": "a masc",
+      "stem": "tikanipāt",
+      "gender": 1
+    },
+    "14908": {
+      "lemma": "paṇṇāsaka",
+      "kind": "nouns",
+      "anchor_headword_id": 41678,
+      "pattern": "a masc",
+      "stem": "paṇṇāsak",
+      "gender": 1
+    },
+    "15013": {
+      "lemma": "suriya",
+      "kind": "nouns",
+      "anchor_headword_id": 64384,
+      "pattern": "a masc",
+      "stem": "suriy",
+      "gender": 1
+    },
+    "15036": {
+      "lemma": "viriya",
+      "kind": "nouns",
+      "anchor_headword_id": 68921,
+      "pattern": "a nt",
+      "stem": "viriy",
+      "gender": 3
+    },
+    "15114": {
+      "lemma": "uddāna",
+      "kind": "nouns",
+      "anchor_headword_id": 15091,
+      "pattern": "a nt",
+      "stem": "uddān",
+      "gender": 3
+    },
+    "15211": {
+      "lemma": "theravāda",
+      "kind": "nouns",
+      "anchor_headword_id": 31635,
+      "pattern": "a masc",
+      "stem": "theravād",
+      "gender": 1
+    },
+    "15252": {
+      "lemma": "paṭhamajjhāna",
+      "kind": "nouns",
+      "anchor_headword_id": 41235,
+      "pattern": "a nt",
+      "stem": "paṭhamajjhān",
+      "gender": 3
+    },
+    "15253": {
+      "lemma": "paṭhavī",
+      "kind": "nouns",
+      "anchor_headword_id": 41510,
+      "pattern": "vī fem",
+      "stem": "paṭha",
+      "gender": 2
+    },
+    "15805": {
+      "lemma": "vinibandha",
+      "kind": "nouns",
+      "anchor_headword_id": 68190,
+      "pattern": "a masc",
+      "stem": "vinibandh",
+      "gender": 1
+    },
+    "15856": {
+      "lemma": "adhammacariyā",
+      "kind": "nouns",
+      "anchor_headword_id": 3063,
+      "pattern": "ā fem",
+      "stem": "adhammacariy",
+      "gender": 2
+    },
+    "16190": {
+      "lemma": "balivadda",
+      "kind": "nouns",
+      "anchor_headword_id": 48049,
+      "pattern": "a masc",
+      "stem": "balivadd",
+      "gender": 1
+    },
+    "16642": {
+      "lemma": "catutthajjhāna",
+      "kind": "nouns",
+      "anchor_headword_id": 25910,
+      "pattern": "a nt",
+      "stem": "catutthajjhān",
+      "gender": 3
+    },
+    "16686": {
+      "lemma": "tatiyajjhāna",
+      "kind": "nouns",
+      "anchor_headword_id": 29465,
+      "pattern": "a nt",
+      "stem": "tatiyajjhān",
+      "gender": 3
+    },
+    "16718": {
+      "lemma": "dutiyajjhāna",
+      "kind": "nouns",
+      "anchor_headword_id": 33245,
+      "pattern": "a nt",
+      "stem": "dutiyajjhān",
+      "gender": 3
+    },
+    "16806": {
+      "lemma": "pāmujja",
+      "kind": "nouns",
+      "anchor_headword_id": 45687,
+      "pattern": "a nt",
+      "stem": "pāmujj",
+      "gender": 3
+    },
+    "16866": {
+      "lemma": "bhikkhusaṃgha",
+      "kind": "nouns",
+      "anchor_headword_id": 49938,
+      "pattern": "a masc",
+      "stem": "bhikkhusaṃgh",
+      "gender": 1
+    },
+    "17110": {
+      "lemma": "aṅguttara",
+      "kind": "nouns",
+      "anchor_headword_id": 820,
+      "pattern": "a masc",
+      "stem": "aṅguttar",
+      "gender": 1
+    },
+    "17462": {
+      "lemma": "candimasuriya",
+      "kind": "nouns",
+      "anchor_headword_id": 26199,
+      "pattern": "a masc",
+      "stem": "candimasuriy",
+      "gender": 1
+    },
+    "18238": {
+      "lemma": "atthagama",
+      "kind": "nouns",
+      "anchor_headword_id": 2621,
+      "pattern": "a masc",
+      "stem": "atthagam",
+      "gender": 1
+    },
+    "18544": {
+      "lemma": "khosadda",
+      "kind": "nouns",
+      "anchor_headword_id": 23982,
+      "pattern": "a masc",
+      "stem": "khosadd",
+      "gender": 1
+    },
+    "19165": {
+      "lemma": "saññojana",
+      "kind": "nouns",
+      "anchor_headword_id": 57480,
+      "pattern": "a nt",
+      "stem": "saññojan",
+      "gender": 3
+    },
+    "19276": {
+      "lemma": "suttanipāta",
+      "kind": "nouns",
+      "anchor_headword_id": 63834,
+      "pattern": "a masc",
+      "stem": "suttanipāt",
+      "gender": 1
+    },
+    "19446": {
+      "lemma": "ānāpānasati",
+      "kind": "nouns",
+      "anchor_headword_id": 76663,
+      "pattern": "i fem",
+      "stem": "ānāpānasat",
+      "gender": 2
+    },
+    "20682": {
+      "lemma": "theragāthā",
+      "kind": "nouns",
+      "anchor_headword_id": 31618,
+      "pattern": "ā fem",
+      "stem": "theragāth",
+      "gender": 2
+    },
+    "21066": {
+      "lemma": "pañcanīvaraṇa",
+      "kind": "nouns",
+      "anchor_headword_id": 39816,
+      "pattern": "a nt",
+      "stem": "pañcanīvaraṇ",
+      "gender": 3
+    },
+    "21386": {
+      "lemma": "pharusāvācā",
+      "kind": "nouns",
+      "anchor_headword_id": 47577,
+      "pattern": "ā fem",
+      "stem": "pharusāvāc",
+      "gender": 2
+    },
+    "21859": {
+      "lemma": "saṅkilesa",
+      "kind": "nouns",
+      "anchor_headword_id": 56677,
+      "pattern": "a masc",
+      "stem": "saṅkiles",
+      "gender": 1
+    },
+    "23307": {
+      "lemma": "assājāniya",
+      "kind": "nouns",
+      "anchor_headword_id": 10036,
+      "pattern": "a masc",
+      "stem": "assājāniy",
+      "gender": 1
+    },
+    "23553": {
+      "lemma": "itisadda",
+      "kind": "nouns",
+      "anchor_headword_id": 13483,
+      "pattern": "a masc",
+      "stem": "itisadd",
+      "gender": 1
+    },
+    "25094": {
+      "lemma": "therīgāthā",
+      "kind": "nouns",
+      "anchor_headword_id": 31646,
+      "pattern": "ā fem",
+      "stem": "therīgāth",
+      "gender": 2
+    },
+    "25720": {
+      "lemma": "nigantha",
+      "kind": "nouns",
+      "anchor_headword_id": 36862,
+      "pattern": "a masc",
+      "stem": "niganth",
+      "gender": 1
+    },
+    "26159": {
+      "lemma": "paṭhavīdhātu",
+      "kind": "nouns",
+      "anchor_headword_id": 41515,
+      "pattern": "u fem",
+      "stem": "paṭhavīdhāt",
+      "gender": 2
+    },
+    "27405": {
+      "lemma": "rūpūpādānakkhandha",
+      "kind": "nouns",
+      "anchor_headword_id": 55335,
+      "pattern": "a masc",
+      "stem": "rūpūpādānakkhandh",
+      "gender": 1
+    },
+    "28555": {
+      "lemma": "viriyabala",
+      "kind": "nouns",
+      "anchor_headword_id": 68923,
+      "pattern": "a nt",
+      "stem": "viriyabal",
+      "gender": 3
+    },
+    "35282": {
+      "lemma": "nikāya",
+      "kind": "nouns",
+      "anchor_headword_id": 36684,
+      "pattern": "a masc",
+      "stem": "nikāy",
+      "gender": 1
+    },
+    "37601": {
+      "lemma": "micchācāra",
+      "kind": "nouns",
+      "anchor_headword_id": 52584,
+      "pattern": "a masc",
+      "stem": "micchācār",
+      "gender": 1
+    },
+    "38770": {
+      "lemma": "savaṇa",
+      "kind": "nouns",
+      "anchor_headword_id": 61305,
+      "pattern": "a nt",
+      "stem": "savaṇ",
+      "gender": 3
+    },
+    "40122": {
+      "lemma": "vyāpāda",
+      "kind": "nouns",
+      "anchor_headword_id": 70737,
+      "pattern": "a masc",
+      "stem": "vyāpād",
+      "gender": 1
+    },
+    "45247": {
+      "lemma": "nissaggiya",
+      "kind": "nouns",
+      "anchor_headword_id": 88910,
+      "pattern": "a nt",
+      "stem": "nissaggiy",
+      "gender": 3
+    },
+    "45248": {
+      "lemma": "sārathī",
+      "kind": "nouns",
+      "anchor_headword_id": 89060,
+      "pattern": "ī masc",
+      "stem": "sārath",
+      "gender": 1
+    },
+    "45249": {
+      "lemma": "samudayadhamma",
+      "kind": "nouns",
+      "anchor_headword_id": 89243,
+      "pattern": "a masc",
+      "stem": "samudayadhamm",
+      "gender": 1
+    },
+    "45250": {
+      "lemma": "anāhāra",
+      "kind": "nouns",
+      "anchor_headword_id": 89254,
+      "pattern": "a masc",
+      "stem": "anāhār",
+      "gender": 1
+    },
+    "45251": {
+      "lemma": "bahuka",
+      "kind": "nouns",
+      "anchor_headword_id": 88817,
+      "pattern": "a nt",
+      "stem": "bahuk",
+      "gender": 3
+    },
+    "70056": {
+      "lemma": "kirati",
+      "kind": "verbs",
+      "anchor_headword_id": 21810,
+      "pattern": "ati pr",
+      "stem": "kir",
+      "gender": 0
+    },
+    "70141": {
+      "lemma": "tāyati",
+      "kind": "verbs",
+      "anchor_headword_id": 30288,
+      "pattern": "ati pr",
+      "stem": "tāy",
+      "gender": 0
+    },
+    "70427": {
+      "lemma": "viññāyati",
+      "kind": "verbs",
+      "anchor_headword_id": 67792,
+      "pattern": "ati pr",
+      "stem": "viññāy",
+      "gender": 0
+    },
+    "70660": {
+      "lemma": "santappeti",
+      "kind": "verbs",
+      "anchor_headword_id": 58198,
+      "pattern": "eti pr",
+      "stem": "santapp",
+      "gender": 0
+    },
+    "70945": {
+      "lemma": "saṃkīyati",
+      "kind": "verbs",
+      "anchor_headword_id": 61564,
+      "pattern": "ati pr",
+      "stem": "saṃkīy",
+      "gender": 0
+    },
+    "70986": {
+      "lemma": "okkhāyati",
+      "kind": "verbs",
+      "anchor_headword_id": 18355,
+      "pattern": "ati pr",
+      "stem": "okkhāy",
+      "gender": 0
+    },
+    "71055": {
+      "lemma": "vappati",
+      "kind": "verbs",
+      "anchor_headword_id": 66286,
+      "pattern": "ati pr",
+      "stem": "vapp",
+      "gender": 0
+    },
+    "71195": {
+      "lemma": "nāsati",
+      "kind": "verbs",
+      "anchor_headword_id": 76071,
+      "pattern": "ati pr",
+      "stem": "nās",
+      "gender": 0
+    },
+    "71204": {
+      "lemma": "abhinimmināti",
+      "kind": "verbs",
+      "anchor_headword_id": 7885,
+      "pattern": "āti pr",
+      "stem": "abhinimmin",
+      "gender": 0
+    },
+    "71218": {
+      "lemma": "oloketi",
+      "kind": "verbs",
+      "anchor_headword_id": 18952,
+      "pattern": "eti pr",
+      "stem": "olok",
+      "gender": 0
+    },
+    "71268": {
+      "lemma": "upadahati",
+      "kind": "verbs",
+      "anchor_headword_id": 15636,
+      "pattern": "ati pr",
+      "stem": "upadah",
+      "gender": 0
+    },
+    "71285": {
+      "lemma": "paṭideseti",
+      "kind": "verbs",
+      "anchor_headword_id": 40478,
+      "pattern": "eti pr",
+      "stem": "paṭides",
+      "gender": 0
+    },
+    "71313": {
+      "lemma": "ajjhosati",
+      "kind": "verbs",
+      "anchor_headword_id": 1431,
+      "pattern": "ati pr",
+      "stem": "ajjhos",
+      "gender": 0
+    },
+    "71338": {
+      "lemma": "garukaroti",
+      "kind": "verbs",
+      "anchor_headword_id": 24519,
+      "pattern": "oti pr",
+      "stem": "garukar",
+      "gender": 0
+    },
+    "71462": {
+      "lemma": "dippati",
+      "kind": "verbs",
+      "anchor_headword_id": 32603,
+      "pattern": "ati pr",
+      "stem": "dipp",
+      "gender": 0
+    },
+    "71485": {
+      "lemma": "paripūrati",
+      "kind": "verbs",
+      "anchor_headword_id": 43700,
+      "pattern": "ati pr",
+      "stem": "paripūr",
+      "gender": 0
+    },
+    "71563": {
+      "lemma": "miyyati",
+      "kind": "verbs",
+      "anchor_headword_id": 52708,
+      "pattern": "ati pr",
+      "stem": "miyy",
+      "gender": 0
+    },
+    "71590": {
+      "lemma": "adhiggaṇhāti",
+      "kind": "verbs",
+      "anchor_headword_id": 3175,
+      "pattern": "āti pr",
+      "stem": "adhiggaṇh",
+      "gender": 0
+    },
+    "71626": {
+      "lemma": "nhāyati",
+      "kind": "verbs",
+      "anchor_headword_id": 38937,
+      "pattern": "ati pr",
+      "stem": "nhāy",
+      "gender": 0
+    },
+    "71630": {
+      "lemma": "patthayati",
+      "kind": "verbs",
+      "anchor_headword_id": 41959,
+      "pattern": "ati pr",
+      "stem": "patthay",
+      "gender": 0
+    },
+    "71847": {
+      "lemma": "dakkhiti",
+      "kind": "verbs",
+      "anchor_headword_id": 31730,
+      "pattern": "dakkhati pr",
+      "stem": "",
+      "gender": 0
+    },
+    "71852": {
+      "lemma": "nadissati",
+      "kind": "verbs",
+      "anchor_headword_id": 35568,
+      "pattern": "ati pr",
+      "stem": "nadiss",
+      "gender": 0
+    },
+    "71993": {
+      "lemma": "jiyyati",
+      "kind": "verbs",
+      "anchor_headword_id": 28504,
+      "pattern": "ati pr",
+      "stem": "jiyy",
+      "gender": 0
+    },
+    "72012": {
+      "lemma": "paccāsiṃsati",
+      "kind": "verbs",
+      "anchor_headword_id": 39465,
+      "pattern": "ati pr",
+      "stem": "paccāsiṃs",
+      "gender": 0
+    },
+    "72176": {
+      "lemma": "nappaṭinissajjati",
+      "kind": "verbs",
+      "anchor_headword_id": 35718,
+      "pattern": "ati pr",
+      "stem": "nappaṭinissajj",
+      "gender": 0
+    },
+    "72200": {
+      "lemma": "paṭigaṇhati",
+      "kind": "verbs",
+      "anchor_headword_id": 40298,
+      "pattern": "ati pr",
+      "stem": "paṭigaṇh",
+      "gender": 0
+    },
+    "72239": {
+      "lemma": "samanuggāhati",
+      "kind": "verbs",
+      "anchor_headword_id": 59337,
+      "pattern": "ati pr",
+      "stem": "samanuggāh",
+      "gender": 0
+    },
+    "72396": {
+      "lemma": "paṭigaṇhāti",
+      "kind": "verbs",
+      "anchor_headword_id": 40300,
+      "pattern": "āti pr",
+      "stem": "paṭigaṇh",
+      "gender": 0
+    },
+    "72455": {
+      "lemma": "saṅkīyati",
+      "kind": "verbs",
+      "anchor_headword_id": 56682,
+      "pattern": "ati pr",
+      "stem": "saṅkīy",
+      "gender": 0
+    },
+    "72780": {
+      "lemma": "sammiñjati",
+      "kind": "verbs",
+      "anchor_headword_id": 60867,
+      "pattern": "ati pr",
+      "stem": "sammiñj",
+      "gender": 0
+    },
+    "72857": {
+      "lemma": "aṭṭiyati",
+      "kind": "verbs",
+      "anchor_headword_id": 1699,
+      "pattern": "ati pr",
+      "stem": "aṭṭiy",
+      "gender": 0
+    },
+    "72918": {
+      "lemma": "abhirūhati",
+      "kind": "verbs",
+      "anchor_headword_id": 8124,
+      "pattern": "ati pr",
+      "stem": "abhirūh",
+      "gender": 0
+    },
+    "72999": {
+      "lemma": "ekodibhoti",
+      "kind": "verbs",
+      "anchor_headword_id": 17827,
+      "pattern": "oti pr",
+      "stem": "ekodibh",
+      "gender": 0
+    },
+    "73397": {
+      "lemma": "pahiyyati",
+      "kind": "verbs",
+      "anchor_headword_id": 74466,
+      "pattern": "ati pr",
+      "stem": "pahiyy",
+      "gender": 0
+    },
+    "73625": {
+      "lemma": "irīyati",
+      "kind": "verbs",
+      "anchor_headword_id": 13848,
+      "pattern": "ati pr",
+      "stem": "irīy",
+      "gender": 0
+    },
+    "74042": {
+      "lemma": "pīneti",
+      "kind": "verbs",
+      "anchor_headword_id": 46417,
+      "pattern": "eti pr",
+      "stem": "pīn",
+      "gender": 0
+    },
+    "74406": {
+      "lemma": "paṭinissajati",
+      "kind": "verbs",
+      "anchor_headword_id": 75725,
+      "pattern": "ati pr",
+      "stem": "paṭinissaj",
+      "gender": 0
+    },
+    "75044": {
+      "lemma": "avhayati",
+      "kind": "verbs",
+      "anchor_headword_id": 10821,
+      "pattern": "ati pr",
+      "stem": "avhay",
+      "gender": 0
+    },
+    "76459": {
+      "lemma": "saṅkilissati",
+      "kind": "verbs",
+      "anchor_headword_id": 56676,
+      "pattern": "ati pr",
+      "stem": "saṅkiliss",
+      "gender": 0
+    },
+    "77004": {
+      "lemma": "vyākaroti",
+      "kind": "verbs",
+      "anchor_headword_id": 70721,
+      "pattern": "oti pr",
+      "stem": "vyākar",
       "gender": 0
     }
   }

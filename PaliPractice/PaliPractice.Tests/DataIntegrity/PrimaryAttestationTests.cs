@@ -48,7 +48,7 @@ public class PrimaryAttestationTests
         var corpus = TipitakaWordlistLoader.GetAllWords();
         var errors = new List<string>();
         using var expectedJson = JsonDocument.Parse(File.ReadAllText(
-            Path.Combine(Path.GetDirectoryName(TestPaths.PaliDbPath)!, "primary_forms.json")));
+            TestPaths.PrimaryFormsPath));
         var expected = expectedJson.RootElement.EnumerateArray().ToDictionary(
             row => (row[0].GetInt32(), row[1].GetInt64()), row => row[2].GetString()!);
         int checkedForms = CheckNouns(nouns, service, corpus, errors, expected) + CheckVerbs(verbs, service, corpus, errors, expected);

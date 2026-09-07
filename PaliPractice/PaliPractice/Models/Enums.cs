@@ -197,7 +197,7 @@ public enum NounPattern
     // ═══ Breakpoint: End of base feminine ═══
     _VariantFem = 250,
 
-    // (No variant feminines currently — reserved 251-299)
+    VīFem = 251,       // "vī fem" → ĪFem; append-only pattern ID
 
     // ═══ Breakpoint: End of feminine ═══
     _BaseNeut = 300,

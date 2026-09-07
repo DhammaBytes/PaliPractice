@@ -390,137 +390,12 @@ public class NounDataIntegrityTests
     #region InCorpus Tests
 
     [Test]
-    public void InCorpus_GrayFormsNotInWordlists()
+    public void StoredCorpusFormsExactlyMatchPinnedWordlistMembership()
     {
-        var nounsWithIssues = new HashSet<int>();
-        var formIssues = new List<string>();
-
-        foreach (var noun in _paliNouns!)
-        {
-            if (!_dpdHeadwords!.TryGetValue(noun.Id, out var dpd))
-                continue;
-
-            if (string.IsNullOrEmpty(dpd.InflectionsHtml))
-                continue;
-
-            var grayForms = InCorpusValidator.GetTheoreticalForms(dpd.InflectionsHtml, noun.Stem);
-
-            foreach (var form in grayForms)
-            {
-                if (_tipitakaWords!.Contains(form.FullForm))
-                {
-                    nounsWithIssues.Add(noun.Id);
-                    formIssues.Add($"{noun.Lemma}: '{form.FullForm}' ({form.Title}) is gray but found in wordlist");
-                }
-            }
-        }
-
-        // Report discrepancies - some are expected due to wordlist/DPD differences
-        TestContext.WriteLine($"Nouns with gray forms unexpectedly in wordlist: {nounsWithIssues.Count}");
-        TestContext.WriteLine($"Total form issues: {formIssues.Count}");
-        foreach (var msg in formIssues.Take(20))
-        {
-            TestContext.WriteLine($"  {msg}");
-        }
-
-        // Allow some discrepancy (DPD gray marking may differ from wordlist coverage)
-        // Rate is % of nouns that have at least one problematic form
-        var discrepancyRate = (double)nounsWithIssues.Count / _paliNouns!.Count;
-        discrepancyRate.Should().BeLessThan(0.02,
-            "less than 2% of nouns should have gray forms that appear in wordlists");
-    }
-
-    [Test]
-    public void InCorpus_NonGrayFormsInWordlists()
-    {
-        var nounsWithIssues = new HashSet<int>();
-        var formIssues = new List<string>();
-
-        foreach (var noun in _paliNouns!)
-        {
-            if (!_dpdHeadwords!.TryGetValue(noun.Id, out var dpd))
-                continue;
-
-            if (string.IsNullOrEmpty(dpd.InflectionsHtml))
-                continue;
-
-            var inCorpusForms = InCorpusValidator.GetInCorpusForms(dpd.InflectionsHtml, noun.Stem);
-
-            foreach (var form in inCorpusForms)
-            {
-                if (!_tipitakaWords!.Contains(form.FullForm))
-                {
-                    nounsWithIssues.Add(noun.Id);
-                    formIssues.Add($"{noun.Lemma}: '{form.FullForm}' ({form.Title}) is non-gray but missing from wordlist");
-                }
-            }
-        }
-
-        // Report discrepancies
-        TestContext.WriteLine($"Nouns with non-gray forms missing from wordlist: {nounsWithIssues.Count}");
-        TestContext.WriteLine($"Total form issues: {formIssues.Count}");
-        foreach (var msg in formIssues.Take(20))
-        {
-            TestContext.WriteLine($"  {msg}");
-        }
-
-        // Allow some discrepancy
-        // Rate is % of nouns that have at least one problematic form
-        var discrepancyRate = (double)nounsWithIssues.Count / _paliNouns!.Count;
-        discrepancyRate.Should().BeLessThan(0.05,
-            "less than 5% of nouns should have non-gray forms missing from wordlists");
-    }
-
-    [Test]
-    public void InCorpus_CrossValidateBothSources()
-    {
-        var totalForms = 0;
-        var agreementCount = 0;
-        var disagreementSamples = new List<string>();
-
-        foreach (var noun in _paliNouns!)
-        {
-            if (!_dpdHeadwords!.TryGetValue(noun.Id, out var dpd))
-                continue;
-
-            if (string.IsNullOrEmpty(dpd.InflectionsHtml))
-                continue;
-
-            var validation = InCorpusValidator.ValidateAgainstWordlist(
-                dpd.InflectionsHtml,
-                noun.Stem,
-                _tipitakaWords!);
-
-            foreach (var result in validation)
-            {
-                totalForms++;
-                if (result.SourcesAgree)
-                {
-                    agreementCount++;
-                }
-                else if (disagreementSamples.Count < 50)
-                {
-                    disagreementSamples.Add(
-                        $"{noun.Lemma} '{result.FullForm}' ({result.Title}): " +
-                        $"isGray={result.IsGrayInHtml}, inWordlist={result.InTipitakaWordlist}");
-                }
-            }
-        }
-
-        var agreementRate = totalForms > 0 ? (double)agreementCount / totalForms : 1.0;
-
-        TestContext.WriteLine($"Total forms validated: {totalForms}");
-        TestContext.WriteLine($"Agreement count: {agreementCount}");
-        TestContext.WriteLine($"Agreement rate: {agreementRate:P2}");
-        TestContext.WriteLine("Sample disagreements:");
-        foreach (var sample in disagreementSamples.Take(20))
-        {
-            TestContext.WriteLine($"  {sample}");
-        }
-
-        // Tightened from 85% to 90% - if agreement drops below this, investigate
-        agreementRate.Should().BeGreaterThan(0.90,
-            "at least 90% of forms should have agreement between HTML gray status and wordlist presence");
+        var forms = _paliDb!.GetNounCorpusForms();
+        forms.Should().NotBeEmpty();
+        forms.Where(form => !_tipitakaWords!.Contains(form.Form)).Should().BeEmpty(
+            "stored attestation must refer to the actual rendered string; upstream HTML gray status is not the corpus contract");
     }
 
     #endregion
@@ -593,12 +468,13 @@ public class NounDataIntegrityTests
     }
 
     [Test]
-    public void SomeNounDetails_HaveRussianMeaning()
+    public void RussianMeaningStorageMatchesTheDeclaredLanguageLayer()
     {
-        _paliNounDetails!
-            .Count(d => !string.IsNullOrWhiteSpace(d.MeaningRu))
-            .Should().BeGreaterThan(0,
-                "Russian meanings should be imported into nouns_details.meaning_ru");
+        var translated = _paliNounDetails!.Count(d => !string.IsNullOrWhiteSpace(d.MeaningRu));
+        if (TestPaths.IsEnglishCandidate)
+            translated.Should().Be(0, "core English extraction must not import translations");
+        else
+            translated.Should().BeGreaterThan(0, "the existing Russian-capable bundle must retain translations");
     }
 
     #endregion
@@ -677,136 +553,20 @@ public class NounDataIntegrityTests
     [Test]
     public void IrregularNouns_CorpusFormsHaveIrregularFormEntries()
     {
-        // Use DPD-sourced pattern set for authoritative classification
-        var irregularNouns = _paliNouns!
-            .Where(n => _dpdIrregularNounPatterns!.Contains(n.Pattern))
-            .ToList();
-
-        if (irregularNouns.Count == 0)
-        {
-            Assert.Inconclusive("No irregular nouns found in pali.db");
-            return;
-        }
-
-        // Get irregular noun lemma_ids
-        var irregularLemmaIds = irregularNouns
-            .Select(n => n.LemmaId)
-            .ToHashSet();
-
-        // Get irregular form_ids from the irregular_forms table
-        var irregularFormIds = _paliDb!.GetIrregularNounFormIds();
-
-        // Check that corpus forms for irregular nouns have corresponding irregular_forms entries
-        var missingIrregularForms = new List<string>();
-
-        foreach (var corpusFormId in _corpusDeclensionFormIds!)
-        {
-            // Use the authoritative ParseId method from Declension model
-            var parsed = Declension.ParseId((int)corpusFormId);
-
-            // Skip if not an irregular noun
-            if (!irregularLemmaIds.Contains(parsed.LemmaId))
-                continue;
-
-            // Check if this corpus form has an irregular form entry
-            if (!irregularFormIds.Contains((int)corpusFormId))
-            {
-                var noun = irregularNouns.FirstOrDefault(n => n.LemmaId == parsed.LemmaId);
-                missingIrregularForms.Add(
-                    $"form_id={corpusFormId} (lemma={noun?.Lemma}, pattern={noun?.Pattern})");
-            }
-        }
-
-        // Report findings
-        var irregularCorpusCount = _corpusDeclensionFormIds.Count(f =>
-            irregularLemmaIds.Contains(Declension.ParseId((int)f).LemmaId));
-
-        TestContext.WriteLine($"Irregular nouns: {irregularNouns.Count}");
-        TestContext.WriteLine($"Irregular corpus form_ids checked: {irregularCorpusCount}");
-        TestContext.WriteLine($"Irregular form entries: {irregularFormIds.Count}");
-        TestContext.WriteLine($"Missing irregular form entries: {missingIrregularForms.Count}");
-
-        foreach (var msg in missingIrregularForms.Take(20))
-        {
-            TestContext.WriteLine($"  {msg}");
-        }
-
-        // Note: Some mismatch is expected because corpus_forms uses ending indices from
-        // template parsing, while irregular_forms uses indices from HTML parsing.
-        // The forms are the same but may have different ending_index values.
-        // This is acceptable as long as the app uses the irregular_forms table for display
-        // and the corpus check is based on the form string presence in Tipitaka wordlists.
-        var mismatchRate = (double)missingIrregularForms.Count / irregularCorpusCount;
-        TestContext.WriteLine($"Mismatch rate: {mismatchRate:P1}");
-
-        // Allow up to 10% mismatch due to index ordering differences between template and HTML
-        mismatchRate.Should().BeLessThan(0.10,
-            "less than 10% of irregular corpus forms should have index misalignment with irregular_forms table");
+        var irregular = _paliDb!.GetNounIrregularForms().ToHashSet();
+        irregular.Should().NotBeEmpty();
+        var corpus = _paliDb.GetNounCorpusForms()
+            .Where(form => _dpdIrregularNounPatterns!.Contains(form.Pattern));
+        corpus.Where(form => !irregular.Contains(form)).Should().BeEmpty(
+            "every irregular corpus record must match the same headword, grammar ID, and rendered form exactly");
     }
 
     [Test]
     public void VariantNouns_ShouldNotHaveIrregularFormEntries()
     {
-        // Variant patterns (non-irregular in DPD) use templates, NOT irregular_forms table
-        // This test ensures we haven't accidentally added variant forms to irregular_forms
-        //
-        // NOTE: This test will fail if pali.db was generated before config.py split
-        // variant patterns from irregular patterns. Re-run extraction to fix.
-
-        // Get nouns with patterns that DPD marks as regular (non-irreg)
-        // but which we treat as variants (non-base)
-        var variantNouns = _paliNouns!
-            .Where(n => _dpdRegularNounPatterns!.Contains(n.Pattern))
-            .Where(n => !NounPatternHelper.TryParse(n.Pattern, out var p) || !p.IsBase())
-            .ToList();
-
-        if (variantNouns.Count == 0)
-        {
-            Assert.Inconclusive("No variant nouns found in pali.db");
-            return;
-        }
-
-        // Get variant noun lemma_ids
-        var variantLemmaIds = variantNouns
-            .Select(n => n.LemmaId)
-            .ToHashSet();
-
-        // Get irregular form_ids from the irregular_forms table
-        var irregularFormIds = _paliDb!.GetIrregularNounFormIds();
-
-        // Check if any variant nouns have entries in irregular_forms
-        var unexpectedIrregularEntries = new List<string>();
-
-        foreach (var irregularFormId in irregularFormIds)
-        {
-            var lemmaId = irregularFormId / 10_000;
-
-            if (variantLemmaIds.Contains(lemmaId))
-            {
-                var noun = variantNouns.FirstOrDefault(n => n.LemmaId == lemmaId);
-                unexpectedIrregularEntries.Add(
-                    $"form_id={irregularFormId} (lemma={noun?.Lemma}, pattern={noun?.Pattern})");
-            }
-        }
-
-        // Report findings
-        TestContext.WriteLine($"Variant nouns: {variantNouns.Count}");
-        TestContext.WriteLine($"Variant lemma_ids: {variantLemmaIds.Count}");
-        TestContext.WriteLine($"Unexpected irregular entries for variants: {unexpectedIrregularEntries.Count}");
-
-        foreach (var msg in unexpectedIrregularEntries.Take(20))
-        {
-            TestContext.WriteLine($"  {msg}");
-        }
-
-        if (unexpectedIrregularEntries.Count > 0)
-        {
-            // Data was generated before config.py split - warn but don't fail
-            // Re-running extraction with updated config.py will fix this
-            Assert.Warn(
-                $"Found {unexpectedIrregularEntries.Count} variant entries in irregular_forms table. " +
-                "Re-run extraction to regenerate pali.db with proper variant/irregular separation.");
-        }
+        _paliDb!.GetNounIrregularForms()
+            .Where(form => !_dpdIrregularNounPatterns!.Contains(form.Pattern))
+            .Should().BeEmpty("regular and variant headwords must not be stored as irregular forms");
     }
 
     [Test]

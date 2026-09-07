@@ -22,10 +22,10 @@ public class NounRepository : INounRepository
     bool _isCacheLoaded;
 
     // Caches - loaded on first access
-    HashSet<int>? _corpusFormIds;
+    HeadwordFormIndex? _corpusForms;
     Dictionary<int, ILemma>? _lemmas;
     List<ILemma>? _lemmasByRank;
-    Dictionary<int, string>? _irregularForms;
+    HeadwordFormIndex? _irregularForms;
 
     public NounRepository(SQLiteConnection connection)
     {
@@ -47,19 +47,6 @@ public class NounRepository : INounRepository
             {
                 System.Diagnostics.Debug.WriteLine("[NounRepo] Loading caches...");
 
-                // Pre-cache corpus attestation form_ids for O(1) lookup
-                _corpusFormIds = _connection
-                    .Table<NounCorpusForm>()
-                    .Select(d => d.FormId)
-                    .ToHashSet();
-                System.Diagnostics.Debug.WriteLine($"[NounRepo] Loaded {_corpusFormIds.Count} corpus form IDs");
-
-                // Pre-cache irregular noun forms for O(1) lookup
-                _irregularForms = _connection
-                    .Table<NounIrregularForm>()
-                    .ToDictionary(f => f.FormId, f => f.Form);
-                System.Diagnostics.Debug.WriteLine($"[NounRepo] Loaded {_irregularForms.Count} irregular forms");
-
                 // Build lemma objects grouping all noun variants
                 var nouns = _connection.Table<Noun>().ToList();
                 System.Diagnostics.Debug.WriteLine($"[NounRepo] Loaded {nouns.Count} noun records");
@@ -70,6 +57,12 @@ public class NounRepository : INounRepository
                         g => g.Key,
                         g => (ILemma)new Lemma(g.First().Lemma, g.Cast<IWord>()));
                 System.Diagnostics.Debug.WriteLine($"[NounRepo] Built {_lemmas.Count} lemmas");
+
+                var primaryHeadwords = _lemmas.Values.Select(l => l.Primary.Id).ToHashSet();
+                _corpusForms = new HeadwordFormIndex(_connection.Table<NounCorpusForm>()
+                    .Select(f => new StoredHeadwordForm(f.HeadwordId, f.FormId, f.Form)), primaryHeadwords);
+                _irregularForms = new HeadwordFormIndex(_connection.Table<NounIrregularForm>()
+                    .Select(f => new StoredHeadwordForm(f.HeadwordId, f.FormId, f.Form)), primaryHeadwords);
 
                 // Pre-sort for rank-based queries (tie-breaker ensures determinism)
                 _lemmasByRank = _lemmas.Values
@@ -128,7 +121,19 @@ public class NounRepository : INounRepository
     {
         EnsureCacheLoaded();
         var formId = Declension.ResolveId(lemmaId, @case, gender, number, endingIndex);
-        return _corpusFormIds!.Contains(formId);
+        return _corpusForms!.ContainsPrimary(formId);
+    }
+
+    public bool IsFormInCorpus(int lemmaId, Case @case, Gender gender, Number number, int endingIndex, int headwordId, string renderedForm)
+    {
+        EnsureCacheLoaded();
+        return _corpusForms!.Contains(headwordId, Declension.ResolveId(lemmaId, @case, gender, number, endingIndex), renderedForm);
+    }
+
+    public List<string> GetIrregularForms(int lemmaId, Case @case, Gender gender, Number number, int headwordId)
+    {
+        EnsureCacheLoaded();
+        return _irregularForms!.GetForms(headwordId, Declension.ResolveId(lemmaId, @case, gender, number, 0), MaxNounEndings);
     }
 
     /// <summary>
@@ -141,7 +146,7 @@ public class NounRepository : INounRepository
         var baseFormId = Declension.ResolveId(lemmaId, @case, gender, number, 0);
         for (int endingId = 1; endingId <= MaxNounEndings; endingId++)
         {
-            if (_corpusFormIds!.Contains(baseFormId + endingId))
+            if (_corpusForms!.ContainsPrimary(baseFormId + endingId))
                 return true;
         }
         return false;
@@ -154,14 +159,8 @@ public class NounRepository : INounRepository
     public List<string> GetIrregularForms(int lemmaId, Case @case, Gender gender, Number number)
     {
         EnsureCacheLoaded();
-        var forms = new List<string>();
         var baseFormId = Declension.ResolveId(lemmaId, @case, gender, number, 0);
-        for (int endingId = 1; endingId <= MaxNounEndings; endingId++)
-        {
-            if (_irregularForms!.TryGetValue(baseFormId + endingId, out var form))
-                forms.Add(form);
-        }
-        return forms;
+        return _irregularForms!.GetForms(_lemmas![lemmaId].Primary.Id, baseFormId, MaxNounEndings);
     }
 
     /// <summary>
@@ -174,7 +173,7 @@ public class NounRepository : INounRepository
         var baseFormId = Declension.ResolveId(lemmaId, @case, gender, number, 0);
         for (int endingId = 1; endingId <= MaxNounEndings; endingId++)
         {
-            if (_irregularForms!.ContainsKey(baseFormId + endingId))
+            if (_irregularForms!.ContainsPrimary(baseFormId + endingId))
                 return true;
         }
         return false;

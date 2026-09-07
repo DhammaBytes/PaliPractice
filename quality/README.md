@@ -101,3 +101,28 @@ otherwise non-passing TRX result. Fresh Coverlet XML must contain nonempty
 first-party coverage from the exact `PaliPractice` package and repository source
 inventory. Duplicate collector copies are accepted only when byte-identical;
 ambiguous reports fail. The percentage is reported only as an advisory metric.
+
+## Verifying an isolated data candidate
+
+During M4, the gate can consume an existing candidate without running extraction:
+
+```sh
+PALIPRACTICE_CANDIDATE_DIRECTORY=/absolute/path/to/candidate \
+PALIPRACTICE_INPUT_MANIFEST=/absolute/path/to/inputs.json \
+  /absolute/path/to/run_quality_gate.py --repo /absolute/path/to/PaliPractice \
+  --profile auto --base <milestone-base>
+```
+
+Both variables are required together. The gate verifies candidate hashes,
+identity/scoped-form contracts, pinned inputs, and current extraction code before
+and after the checks. Its structural lane and .NET integration tests consume that
+candidate and those input paths. An English candidate must have empty translation
+fields; the existing bundled database must retain Russian meanings when tested.
+The desktop lane compiles the app; it does not claim to package or provision the
+candidate. No extraction, acquisition, or promotion runs in this mode. M5 adds
+isolated generation and provisioning evidence.
+
+Without a supplied candidate the gate checks the bundled data. The preserved
+pending bundle still contains the known invalid grammar/attestation records;
+strict checks must fail for that data rather than accept `None` grammar or a
+percentage of mismatches. Use a rebuilt candidate to verify the repairs.

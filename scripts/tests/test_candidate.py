@@ -106,7 +106,7 @@ class CandidateTests(unittest.TestCase):
         for name in (*OUTPUTS, 'candidate.json'):
             self.assertEqual((first / name).read_bytes(), (second / name).read_bytes(), name)
         validate_candidate(first)
-        with sqlite3.connect(first / 'pali.db') as connection:
+        with contextlib.closing(sqlite3.connect(first / 'pali.db')) as connection:
             self.assertEqual([('buddha', 10060)], connection.execute('select lemma,lemma_id from nouns where lemma != \'addha\'').fetchall())
             self.assertEqual([('',)], connection.execute('select distinct meaning_ru from nouns_details').fetchall())
         self.assertEqual((BASELINE / 'lemma_registry.json').read_bytes(), self.paths['registry'].read_bytes())
@@ -136,12 +136,35 @@ class CandidateTests(unittest.TestCase):
 
     def test_rehashed_selection_tampering_still_fails_identity_validation(self):
         candidate = self.build('tampered')
-        with sqlite3.connect(candidate / 'pali.db') as db:
+        with contextlib.closing(sqlite3.connect(candidate / 'pali.db')) as db:
             db.execute('UPDATE nouns SET practice_primary = 0')
+            db.commit()
         manifest = json.loads((candidate / 'candidate.json').read_text())
         manifest['outputs']['pali.db'] = sha256(candidate / 'pali.db')
         (candidate / 'candidate.json').write_text(json.dumps(manifest))
         with self.assertRaisesRegex(InputError, 'Exactly one'):
+            validate_candidate(candidate)
+
+    def test_rehashed_headword_scope_corruption_is_rejected(self):
+        candidate = self.build('bad-scope')
+        with contextlib.closing(sqlite3.connect(candidate / 'pali.db')) as db:
+            db.execute('UPDATE nouns_corpus_forms SET headword_id = 999999')
+            db.commit()
+        manifest = json.loads((candidate / 'candidate.json').read_text())
+        manifest['outputs']['pali.db'] = sha256(candidate / 'pali.db')
+        (candidate / 'candidate.json').write_text(json.dumps(manifest))
+        with self.assertRaisesRegex(InputError, 'headword/grammar'):
+            validate_candidate(candidate)
+
+    def test_rehashed_primary_contract_with_invalid_ending_is_rejected(self):
+        candidate = self.build('bad-ending')
+        primary = json.loads((candidate / 'primary_forms.json').read_text())
+        primary[0][1] = primary[0][1] - primary[0][1] % 10 + 9
+        (candidate / 'primary_forms.json').write_text(json.dumps(primary))
+        manifest = json.loads((candidate / 'candidate.json').read_text())
+        manifest['outputs']['primary_forms.json'] = sha256(candidate / 'primary_forms.json')
+        (candidate / 'candidate.json').write_text(json.dumps(manifest))
+        with self.assertRaisesRegex(InputError, 'primary grammar'):
             validate_candidate(candidate)
 
     def test_bad_checksum_fails_before_candidate_directory_creation(self):

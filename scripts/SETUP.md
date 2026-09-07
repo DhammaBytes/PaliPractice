@@ -116,3 +116,27 @@ Run isolated producer tests explicitly during M2–M4:
 The repository gate still does not invoke extraction or acquisition. M5 changes
 that policy only after candidate isolation is proven. Run the normal gate via
 the repository quality workflow before milestone handoff.
+
+## Exact forms and attestation (M4)
+
+The generator skips only recognized compound rows, rejects unknown or malformed
+selected grammar, and supports at most six noun or seven verb ending variants.
+An overflow fails; indices are never silently truncated. Corpus and irregular
+records use `(headword_id, form_id)` plus rendered text. Conflicting duplicate
+keys fail. Irregular forms now come from the same pinned templates as regular
+forms, so HTML ordering cannot change their attestation indices.
+
+`primary_forms.json` records every selected primary form from those templates.
+The app test compares every rendered form and ending ID with this file, checks
+exact pinned-corpus membership, and compares repository eligibility with rendered
+attestation. All extracted raw pattern names must resolve through production
+pattern helpers. The older small HTML pattern samples remain supplemental;
+they no longer define the completeness boundary. Their sense query now chooses
+an explicit highest-frequency row with a deterministic ID tie-breaker.
+
+The standalone `validate_db.py` uses the same strict structural contract as the
+gate and accepts explicit `--database`, `--version`, and `--registry` paths.
+Candidate `validate` additionally checks the scoped records and primary forms.
+`verify_candidate.py --candidate <directory> --inputs <manifest>` checks current
+code and exact input identities too. The complete candidate gate is described in
+[quality/README.md](../quality/README.md).

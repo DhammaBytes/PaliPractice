@@ -80,14 +80,18 @@ public class DpdTestHelper : IDisposable
     {
         var words = new List<DpdWord>();
 
-        // Use GROUP BY lemma_2 to get distinct entries, taking the one with highest ebt_count
+        // Choose the exact highest-frequency sense, with an explicit ID tie-breaker.
         const string sql = """
 
                                        SELECT id, lemma_1, lemma_2, pattern, pos, ebt_count, inflections_html
-                                       FROM dpd_headwords
-                                       WHERE pattern = @pattern
-                                       GROUP BY lemma_2
-                                       ORDER BY MAX(ebt_count) DESC
+                                       FROM (
+                                           SELECT *, ROW_NUMBER() OVER (
+                                               PARTITION BY lemma_2 ORDER BY ebt_count DESC, id
+                                           ) AS sense_rank
+                                           FROM dpd_headwords WHERE pattern = @pattern
+                                       )
+                                       WHERE sense_rank = 1
+                                       ORDER BY ebt_count DESC, id
                                        LIMIT @limit
                            """;
 

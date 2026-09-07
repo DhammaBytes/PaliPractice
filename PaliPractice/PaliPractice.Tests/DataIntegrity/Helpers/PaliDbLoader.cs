@@ -70,10 +70,28 @@ public class PaliVerbDetails
 /// <summary>
 /// Helper class for loading data from pali.db for integrity testing.
 /// </summary>
+public sealed record StoredForm(int HeadwordId, long FormId, string Form, string Pattern);
+
 public class PaliDbLoader : IDisposable
 {
     readonly SqliteConnection _connection;
     bool _disposed;
+
+    public List<StoredForm> GetNounCorpusForms() => GetStoredForms("nouns_corpus_forms", "nouns");
+    public List<StoredForm> GetVerbCorpusForms() => GetStoredForms("verbs_corpus_forms", "verbs");
+    public List<StoredForm> GetNounIrregularForms() => GetStoredForms("nouns_irregular_forms", "nouns");
+    public List<StoredForm> GetVerbIrregularForms() => GetStoredForms("verbs_irregular_forms", "verbs");
+
+    List<StoredForm> GetStoredForms(string table, string words)
+    {
+        using var command = _connection.CreateCommand();
+        command.CommandText = $"SELECT f.headword_id,f.form_id,f.form,w.pattern FROM {table} f JOIN {words} w ON w.id=f.headword_id";
+        using var reader = command.ExecuteReader();
+        var forms = new List<StoredForm>();
+        while (reader.Read())
+            forms.Add(new StoredForm(reader.GetInt32(0), reader.GetInt64(1), reader.GetString(2), reader.GetString(3)));
+        return forms;
+    }
 
     public static string DefaultPaliDbPath => TestPaths.PaliDbPath;
 

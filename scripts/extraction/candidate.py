@@ -10,10 +10,11 @@ import sys
 from pathlib import Path
 
 from .compatibility import validate_identities
+from .validate_forms import validate_forms
 from .inputs import CORPORA, InputError, load_manifest, read_json, sha256
 
 ROOT = Path(__file__).resolve().parents[2]
-OUTPUTS = ("pali.db", "pali.version.txt", "lemma_registry.json", "inflection_validation.log", "practice_registry.json", "paradigm_corrections.json", "compatibility.json")
+OUTPUTS = ("pali.db", "pali.version.txt", "lemma_registry.json", "inflection_validation.log", "practice_registry.json", "paradigm_corrections.json", "compatibility.json", "primary_forms.json")
 
 
 def code_identity() -> dict:
@@ -76,6 +77,7 @@ def build_candidate(manifest_path: Path, output: Path) -> Path:
     (output / "pali.version.txt").write_text(str(manifest["database_version"]) + "\n")
     (output / "paradigm_corrections.json").write_bytes(paths["corrections"].read_bytes())
     validate_identities(output)
+    validate_forms(output)
     errors = structural_errors(output)
     if errors:
         raise InputError("Candidate structural validation failed: " + "; ".join(errors))
@@ -83,7 +85,7 @@ def build_candidate(manifest_path: Path, output: Path) -> Path:
     if load_manifest(manifest_path.resolve()) != (manifest, paths) or code_identity() != initial_code:
         raise InputError("Inputs or extraction code changed during generation")
     completed = {
-        "schema": 2, "language_layer": "en", "validation_level": "structural",
+        "schema": 3, "language_layer": "en", "validation_level": "structural",
         "database_version": manifest["database_version"],
         "configuration": manifest["configuration"],
         "inputs": {name: {key: value for key, value in entry.items() if key != "path"}
@@ -103,7 +105,7 @@ def validate_candidate(directory: Path) -> dict:
     if (directory / "BUILDING").exists():
         raise InputError("Candidate build was interrupted or failed")
     manifest = read_json(directory / "candidate.json")
-    if not isinstance(manifest, dict) or type(manifest.get("schema")) is not int or manifest["schema"] != 2:
+    if not isinstance(manifest, dict) or type(manifest.get("schema")) is not int or manifest["schema"] != 3:
         raise InputError("Invalid candidate manifest")
     if manifest.get("language_layer") != "en" or manifest.get("validation_level") != "structural":
         raise InputError("Unsupported candidate contract")
@@ -116,6 +118,7 @@ def validate_candidate(directory: Path) -> dict:
     if (directory / "pali.version.txt").read_text().strip() != str(manifest.get("database_version")):
         raise InputError("Candidate manifest/version mismatch")
     validate_identities(directory)
+    validate_forms(directory)
     errors = structural_errors(directory)
     if errors:
         raise InputError("Candidate structural validation failed: " + "; ".join(errors))

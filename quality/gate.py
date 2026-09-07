@@ -1582,8 +1582,28 @@ def ca1502_errors(
     ]
 
 
+def candidate_spec() -> tuple[Path, Path] | None:
+    candidate = os.environ.get("PALIPRACTICE_CANDIDATE_DIRECTORY")
+    inputs = os.environ.get("PALIPRACTICE_INPUT_MANIFEST")
+    if not candidate and not inputs:
+        return None
+    if not candidate or not inputs:
+        raise GateError("Candidate verification requires both PALIPRACTICE_CANDIDATE_DIRECTORY and PALIPRACTICE_INPUT_MANIFEST")
+    return Path(candidate).resolve(), Path(inputs).resolve()
+
+
+def verify_supplied_candidate(gate: Gate, name: str) -> None:
+    specification = candidate_spec()
+    if specification:
+        candidate, inputs = specification
+        result = gate.command(name, [str(ROOT / ".venv/bin/python"), "-B", "scripts/verify_candidate.py",
+                                     "--candidate", str(candidate), "--inputs", str(inputs)])
+        if result.returncode == 0:
+            gate.check(name, [])
+
+
 def _dotnet_environment(gate: Gate) -> dict[str, str]:
-    return {
+    environment = {
         "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
         "DOTNET_CLI_UI_LANGUAGE": "en",
         "DOTNET_NOLOGO": "1",
@@ -1591,6 +1611,13 @@ def _dotnet_environment(gate: Gate) -> dict[str, str]:
         "PALIPRACTICE_REPO_ROOT": str(ROOT),
         "VSLANG": "1033",
     }
+
+    specification = candidate_spec()
+    if specification:
+        candidate, inputs = specification
+        environment["PALIPRACTICE_CANDIDATE_DB"] = str(candidate / "pali.db")
+        environment["PALIPRACTICE_INPUT_MANIFEST"] = str(inputs)
+    return environment
 
 
 def _dotnet_output_arguments(gate: Gate) -> list[str]:
@@ -1734,6 +1761,7 @@ def run_dotnet_checks(gate: Gate, include_desktop: bool, base: str) -> None:
 
 
 def run_selected(gate: Gate, groups: set[str], base: str) -> None:
+    verify_supplied_candidate(gate, "candidate-inputs-before")
     self_test = gate.command(
         "quality-tests",
         [
@@ -1754,11 +1782,10 @@ def run_selected(gate: Gate, groups: set[str], base: str) -> None:
     if "python" in groups:
         run_python_checks(gate, base)
     if "data" in groups:
-        errors, metrics = validate_data(
-            APP_SOURCE / "Data" / "pali.db",
-            APP_SOURCE / "Data" / "pali.version.txt",
-            ROOT / "scripts" / "configs" / "lemma_registry.json",
-        )
+        specification = candidate_spec()
+        directory = specification[0] if specification else APP_SOURCE / "Data"
+        registry = directory / "lemma_registry.json" if specification else ROOT / "scripts/configs/lemma_registry.json"
+        errors, metrics = validate_data(directory / "pali.db", directory / "pali.version.txt", registry)
         if gate.check("data-contract", errors):
             print(
                 "INFO data "
@@ -1769,6 +1796,7 @@ def run_selected(gate: Gate, groups: set[str], base: str) -> None:
         gate.check("submodules", submodule_errors())
     if "dotnet" in groups or "desktop" in groups:
         run_dotnet_checks(gate, "desktop" in groups, base)
+    verify_supplied_candidate(gate, "candidate-inputs-after")
 
 
 def _arguments() -> argparse.Namespace:

@@ -27,12 +27,8 @@ from extraction import (
     VERB_POS_LIST,
     # Grammar
     GrammarEnums,
-    parse_noun_grammar,
-    parse_verb_grammar,
     # Forms
     clean_stem,
-    compute_declension_form_id,
-    compute_conjugation_form_id,
     # Registry
     load_registry,
     save_registry,
@@ -40,9 +36,6 @@ from extraction import (
     get_verb_lemma_id,
     deep_copy_registry,
     # HTML Parser
-    parse_inflections_html,
-    parse_noun_title,
-    parse_verb_title,
     # Plural Deduplication
     PluralOnlyDeduplicator,
     # Translations
@@ -56,6 +49,8 @@ from extraction.config import (
 from extraction.grammar import pos_to_gender
 from extraction.inputs import load_corpus_words, read_json
 from extraction.compatibility import comparison
+from extraction.templates import parse_template
+from extraction.form_storage import store_forms, public_form_id
 from extraction.identity import (load_baseline, require_historical_registry,
     historical_practice_registry, require_practice_registry, plan_practice)
 
@@ -198,35 +193,17 @@ class NounVerbExtractor:
             )
         """)
 
-        # Corpus attestation tables
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS nouns_corpus_forms (
-                form_id INTEGER PRIMARY KEY
-            )
-        """)
-
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS verbs_corpus_forms (
-                form_id INTEGER PRIMARY KEY
-            )
-        """)
-
-        # Irregular forms tables
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS nouns_irregular_forms (
-                form_id INTEGER PRIMARY KEY,
-                form TEXT NOT NULL
-            )
-        """)
-
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS verbs_irregular_forms (
-                form_id INTEGER PRIMARY KEY,
-                form TEXT NOT NULL
-            )
-        """)
-
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_nouns_gender ON nouns(gender)")
+        # Ending indices are local to a headword's paradigm, not its cleaned lemma.
+        for kind in ('nouns', 'verbs'):
+            for suffix in ('corpus_forms', 'irregular_forms'):
+                cursor.execute(f"""
+                    CREATE TABLE {kind}_{suffix} (
+                        headword_id INTEGER NOT NULL REFERENCES {kind}(id),
+                        form_id INTEGER NOT NULL,
+                        form TEXT NOT NULL,
+                        PRIMARY KEY (headword_id, form_id)
+                    )
+                """)
 
         conn.commit()
         conn.close()
@@ -458,65 +435,7 @@ class NounVerbExtractor:
 
     def parse_inflection_template(self, word: DpdHeadword, word_type: str) -> tuple[List[Dict[str, Any]], int, int]:
         """Parse inflection/conjugation template to extract individual forms with grammar info."""
-        if not word.it or not word.it.data:
-            return [], 0, 0
-
-        try:
-            template_data = json.loads(word.it.data)
-        except json.JSONDecodeError:
-            return [], 0, 0
-
-        forms = []
-        total_generated = 0
-        not_in_corpus = 0
-        stem = clean_stem(word.stem)
-
-        for row_idx, row in enumerate(template_data[1:], 1):
-            if len(row) < 2:
-                continue
-
-            grammar_label = row[0][0] if row[0] else ""
-
-            col_idx = 1
-            while col_idx < len(row):
-                if col_idx >= len(row) or not row[col_idx]:
-                    col_idx += 2
-                    continue
-
-                endings = row[col_idx]
-                if not isinstance(endings, list):
-                    endings = [endings]
-
-                grammar_info = ""
-                if col_idx + 1 < len(row) and row[col_idx + 1]:
-                    grammar_data = row[col_idx + 1]
-                    grammar_info = grammar_data[0] if isinstance(grammar_data, list) else grammar_data
-
-                for ending_index, ending in enumerate(endings):
-                    if ending:
-                        inflected_form = f"{stem}{ending}" if ending != "-" else stem
-                        total_generated += 1
-
-                        in_corpus = 1 if inflected_form in self.all_tipitaka_words else 0
-                        if in_corpus == 0:
-                            not_in_corpus += 1
-
-                        if word_type == 'noun':
-                            parsed_grammar = parse_noun_grammar(grammar_info, grammar_label, word.pos)
-                        else:
-                            parsed_grammar = parse_verb_grammar(grammar_info, grammar_label, word.pos)
-
-                        form_data = {
-                            'form': inflected_form,
-                            'in_corpus': in_corpus,
-                            'ending_index': ending_index,
-                            **parsed_grammar
-                        }
-                        forms.append(form_data)
-
-                col_idx += 2
-
-        return forms, total_generated, not_in_corpus
+        return parse_template(word, word_type, self.all_tipitaka_words)
 
     def prepare_practice(self, nouns, verbs, registry):
         historical_registry, historical_words = load_baseline()
@@ -537,6 +456,12 @@ class NounVerbExtractor:
                 'ebt_count': word.ebt_count or 0,
             } for word in selected_words]
         return plan_practice(words, choices, corrections)
+
+    @staticmethod
+    def record_primary_forms(output, kind, word, lemma_id, forms, selected):
+        if selected[lemma_id] == word.id:
+            output.extend([word.id, public_form_id(kind, lemma_id, form), form['form'], form['in_corpus']]
+                          for form in forms)
 
     def extract_and_save(self):
         """Main extraction process."""
@@ -561,6 +486,7 @@ class NounVerbExtractor:
         nouns = self.get_training_nouns()
         verbs = self.get_training_verbs()
         selected, practice_registry, practice_changes = self.prepare_practice(nouns, verbs, registry)
+        expected_forms = []
 
         conn = sqlite3.connect(self.output_db_path)
         cursor = conn.cursor()
@@ -618,6 +544,7 @@ class NounVerbExtractor:
                 ]
 
             validator.validate_noun(word.lemma_clean, word.pattern, forms, plural_matches)
+            self.record_primary_forms(expected_forms, 'nouns', word, lemma_id, forms, selected)
 
             if forms:
                 has_nom_sg = any(
@@ -631,45 +558,8 @@ class NounVerbExtractor:
                 if has_nom_sg or is_plural_only:
                     nouns_processed += 1
 
-                    for form in forms:
-                        if form.get('in_corpus', 0) == 1:
-                            form_id = compute_declension_form_id(
-                                lemma_id=lemma_id,
-                                case=form.get('case_name', GrammarEnums.CASE_NONE),
-                                gender=gender,
-                                number=form.get('number', GrammarEnums.NUMBER_NONE),
-                                ending_index=form.get('ending_index', 0) + 1
-                            )
-                            try:
-                                cursor.execute(
-                                    "INSERT INTO nouns_corpus_forms (form_id) VALUES (?)",
-                                    (form_id,)
-                                )
-                                total_declensions += 1
-                            except sqlite3.IntegrityError:
-                                pass
-
-                    if word.pattern in IRREGULAR_NOUN_PATTERNS and word.inflections_html:
-                        html_forms = parse_inflections_html(word.inflections_html)
-                        for title, form_list in html_forms.items():
-                            case_val, gender_val, number_val = parse_noun_title(title)
-                            if case_val == GrammarEnums.CASE_NONE:
-                                continue
-                            for idx, full_form in enumerate(form_list):
-                                form_id = compute_declension_form_id(
-                                    lemma_id=lemma_id,
-                                    case=case_val,
-                                    gender=gender,
-                                    number=number_val,
-                                    ending_index=idx + 1
-                                )
-                                try:
-                                    cursor.execute(
-                                        "INSERT INTO nouns_irregular_forms (form_id, form) VALUES (?, ?)",
-                                        (form_id, full_form)
-                                    )
-                                except sqlite3.IntegrityError:
-                                    pass
+                    total_declensions += store_forms(
+                        cursor, 'nouns', word, lemma_id, forms, word.pattern in IRREGULAR_NOUN_PATTERNS)
                 else:
                     nouns_discarded.append(word.lemma_1)
             else:
@@ -696,8 +586,9 @@ class NounVerbExtractor:
             total_verb_forms_filtered += filtered
 
             validator.validate_verb(word.lemma_clean, word.pattern, forms)
+            self.record_primary_forms(expected_forms, 'verbs', word, lemma_id, forms, selected)
 
-            if any(f.get('reflexive', 0) == GrammarEnums.REFLEXIVE_YES for f in forms):
+            if selected[lemma_id] == word.id and any(f.get('reflexive', 0) == GrammarEnums.REFLEXIVE_YES for f in forms):
                 reflexive_lemma_ids.add(lemma_id)
 
             word_variant = self.extract_word_variant(word.lemma_1, word.lemma_clean)
@@ -727,47 +618,8 @@ class NounVerbExtractor:
             if forms:
                 verbs_processed += 1
 
-                for form in forms:
-                    if form.get('in_corpus', 0) == 1:
-                        form_id = compute_conjugation_form_id(
-                            lemma_id=lemma_id,
-                            tense=form.get('tense', GrammarEnums.TENSE_NONE),
-                            person=form.get('person', GrammarEnums.PERSON_NONE),
-                            number=form.get('number', GrammarEnums.NUMBER_NONE),
-                            reflexive=form.get('reflexive', GrammarEnums.REFLEXIVE_NO),
-                            ending_index=form.get('ending_index', 0) + 1
-                        )
-                        try:
-                            cursor.execute(
-                                "INSERT INTO verbs_corpus_forms (form_id) VALUES (?)",
-                                (form_id,)
-                            )
-                            total_conjugations += 1
-                        except sqlite3.IntegrityError:
-                            pass
-
-                if word.pattern in IRREGULAR_VERB_PATTERNS and word.inflections_html:
-                    html_forms = parse_inflections_html(word.inflections_html)
-                    for title, form_list in html_forms.items():
-                        tense_val, person_val, number_val, reflexive_val = parse_verb_title(title)
-                        if tense_val == GrammarEnums.TENSE_NONE or person_val == GrammarEnums.PERSON_NONE:
-                            continue
-                        for idx, full_form in enumerate(form_list):
-                            form_id = compute_conjugation_form_id(
-                                lemma_id=lemma_id,
-                                tense=tense_val,
-                                person=person_val,
-                                number=number_val,
-                                reflexive=reflexive_val,
-                                ending_index=idx + 1
-                            )
-                            try:
-                                cursor.execute(
-                                    "INSERT INTO verbs_irregular_forms (form_id, form) VALUES (?, ?)",
-                                    (form_id, full_form)
-                                )
-                            except sqlite3.IntegrityError:
-                                pass
+                total_conjugations += store_forms(
+                    cursor, 'verbs', word, lemma_id, forms, word.pattern in IRREGULAR_VERB_PATTERNS)
 
         # Insert non-reflexive verb lemma_ids
         nonreflexive_lemma_ids = all_verb_lemma_ids - reflexive_lemma_ids
@@ -780,6 +632,8 @@ class NounVerbExtractor:
         conn.commit()
         conn.close()
 
+        (self.output_db_path.parent / "primary_forms.json").write_text(
+            json.dumps(sorted(expected_forms), ensure_ascii=False, separators=(',', ':')) + "\n")
         (self.output_db_path.parent / "practice_registry.json").write_text(
             json.dumps(practice_registry, indent=2, ensure_ascii=False) + "\n")
         (self.output_db_path.parent / "compatibility.json").write_text(

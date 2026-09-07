@@ -69,8 +69,12 @@ def verb_eligible(form_id, primary, nonreflexive):
 def eligible(db, kind, primary):
     nonreflexive = {row[0] for row in db.execute('SELECT lemma_id FROM verbs_nonreflexive')}
     result = set()
-    for row in db.execute(f'SELECT form_id FROM {kind}_corpus_forms'):
-        form_id = row[0]
+    columns = {row[1] for row in db.execute(f'PRAGMA table_info({kind}_corpus_forms)')}
+    scoped = 'headword_id' in columns
+    for row in db.execute(f'SELECT * FROM {kind}_corpus_forms'):
+        if scoped and row['headword_id'] not in {word['id'] for word in primary.values()}:
+            continue
+        form_id = row['form_id']
         valid = (noun_eligible(form_id, primary) if kind == 'nouns'
                  else verb_eligible(form_id, primary, nonreflexive))
         if valid:

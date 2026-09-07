@@ -59,8 +59,8 @@ class DataFixture:
             CREATE TABLE verbs_nonreflexive (lemma_id INTEGER PRIMARY KEY);
             INSERT INTO nouns VALUES (1, 2, 10001, 'n', 1, 'n', 'n');
             INSERT INTO nouns_details VALUES (1, 10001, 'n', '', '', '');
-            INSERT INTO nouns_corpus_forms VALUES (100010101);
-            INSERT INTO nouns_irregular_forms VALUES (100010101, 'n');
+            INSERT INTO nouns_corpus_forms VALUES (100011111);
+            INSERT INTO nouns_irregular_forms VALUES (100011111, 'n');
             INSERT INTO verbs VALUES (2, 3, 70001, 'v', 'v', 'v');
             INSERT INTO verbs_details
                 VALUES (2, 70001, 'v', '', '', '', '', '');
@@ -144,9 +144,9 @@ class DataContractTests(unittest.TestCase):
             )
         )
 
-    def test_zero_noun_case_and_number_remain_valid_none_values(self) -> None:
-        # The base fixture's 0101 suffix encodes case=None and number=None.
-        self.assertEqual([], self.fixture.errors())
+    def test_zero_noun_case_and_number_are_invalid(self) -> None:
+        self.fixture.execute("UPDATE nouns_corpus_forms SET form_id=100010101;")
+        self.assertTrue(any("malformed form IDs" in error for error in self.fixture.errors()))
 
     def test_accepts_documented_maximum_ids_and_form_components(self) -> None:
         registry = {
@@ -161,12 +161,12 @@ class DataContractTests(unittest.TestCase):
             """
             UPDATE nouns SET lemma_id=69999;
             UPDATE nouns_details SET lemma_id=69999;
-            UPDATE nouns_corpus_forms SET form_id=699998329;
-            UPDATE nouns_irregular_forms SET form_id=699998329;
+            UPDATE nouns_corpus_forms SET form_id=699998326;
+            UPDATE nouns_irregular_forms SET form_id=699998326;
             UPDATE verbs SET lemma_id=99999;
             UPDATE verbs_details SET lemma_id=99999;
-            UPDATE verbs_corpus_forms SET form_id=9999953229;
-            UPDATE verbs_irregular_forms SET form_id=9999953229;
+            UPDATE verbs_corpus_forms SET form_id=9999943227;
+            UPDATE verbs_irregular_forms SET form_id=9999943227;
             UPDATE verbs_nonreflexive SET lemma_id=99999;
             """
         )

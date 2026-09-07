@@ -52,6 +52,7 @@ public static class NounPatternHelper
         "ā fem" => NounPattern.ĀFem,
         "i fem" => NounPattern.IFem,
         "ī fem" => NounPattern.ĪFem,
+        "vī fem" => NounPattern.VīFem,
         "u fem" => NounPattern.UFem,
         "ar fem" => NounPattern.ArFem,
 
@@ -143,6 +144,7 @@ public static class NounPatternHelper
         NounPattern.ĀFem => "ā fem",
         NounPattern.IFem => "i fem",
         NounPattern.ĪFem => "ī fem",
+        NounPattern.VīFem => "vī fem",
         NounPattern.UFem => "u fem",
         NounPattern.ArFem => "ar fem",
 
@@ -291,6 +293,7 @@ public static class NounPatternHelper
         NounPattern.ĀFem => "vedanā",
         NounPattern.IFem => "āpatti",
         NounPattern.ĪFem => "bhikkhunī",
+        NounPattern.VīFem => "pathavī",
         NounPattern.UFem => "vāyodhātu",
         NounPattern.ArFem => "dhītar",
 
@@ -350,7 +353,7 @@ public static class NounPatternHelper
         // Irregular Feminine → base patterns
         NounPattern.JātiFem or NounPattern.RattiFem => NounPattern.IFem,
         NounPattern.MātarFem => NounPattern.ArFem,
-        NounPattern.NadīFem or NounPattern.PokkharaṇīFem => NounPattern.ĪFem,
+        NounPattern.NadīFem or NounPattern.PokkharaṇīFem or NounPattern.VīFem => NounPattern.ĪFem,
         NounPattern.ParisāFem => NounPattern.ĀFem,
 
         // Irregular Neuter → base patterns

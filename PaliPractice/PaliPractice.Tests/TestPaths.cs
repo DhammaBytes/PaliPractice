@@ -6,6 +6,26 @@ namespace PaliPractice.Tests;
 /// </summary>
 public static class TestPaths
 {
+    public static string? InputPath(string name)
+    {
+        var path = Environment.GetEnvironmentVariable("PALIPRACTICE_INPUT_MANIFEST");
+        if (path is null) return null;
+        using var manifest = System.Text.Json.JsonDocument.Parse(File.ReadAllText(path));
+        var input = manifest.RootElement.GetProperty("inputs").GetProperty(name).GetProperty("path").GetString()!;
+        return System.IO.Path.GetFullPath(input, System.IO.Path.GetDirectoryName(System.IO.Path.GetFullPath(path))!);
+    }
+
+    public static bool IsEnglishCandidate
+    {
+        get
+        {
+            if (Environment.GetEnvironmentVariable("PALIPRACTICE_CANDIDATE_DB") is null) return false;
+            using var manifest = System.Text.Json.JsonDocument.Parse(File.ReadAllText(
+                System.IO.Path.Combine(System.IO.Path.GetDirectoryName(PaliDbPath)!, "candidate.json")));
+            return manifest.RootElement.GetProperty("language_layer").GetString() == "en";
+        }
+    }
+
     /// <summary>
     /// Repository root supplied by isolated quality runs, or inferred from the
     /// conventional local test output layout.
@@ -20,13 +40,14 @@ public static class TestPaths
     /// Path to dpd.db relative to test output directory.
     /// Structure: bin/Debug/net10.0 → ../../../../../dpd-db/dpd.db
     /// </summary>
-    public static string DpdDbPath =>
+    public static string DpdDbPath => InputPath("dpd") ??
         System.IO.Path.Combine(RepositoryRoot, "dpd-db", "dpd.db");
 
     /// <summary>
     /// Path to pali.db (training database) relative to test output directory.
     /// </summary>
     public static string PaliDbPath =>
+        Environment.GetEnvironmentVariable("PALIPRACTICE_CANDIDATE_DB") ??
         System.IO.Path.Combine(
             RepositoryRoot, "PaliPractice", "PaliPractice", "Data", "pali.db");
 

@@ -25,4 +25,10 @@ public interface IVerbRepository : ILemmaRepository
     /// Get all irregular verb forms for a specific grammatical combination.
     /// </summary>
     List<string> GetIrregularForms(int lemmaId, Tense tense, Person person, Number number, bool reflexive);
+    bool IsFormInCorpus(int lemmaId, Tense tense, Person person, Number number, bool reflexive, int endingIndex, int headwordId, string renderedForm) =>
+        IsFormInCorpus(lemmaId, tense, person, number, reflexive, endingIndex);
+
+    List<string> GetIrregularForms(int lemmaId, Tense tense, Person person, Number number, bool reflexive, int headwordId) =>
+        GetIrregularForms(lemmaId, tense, person, number, reflexive);
+
 }

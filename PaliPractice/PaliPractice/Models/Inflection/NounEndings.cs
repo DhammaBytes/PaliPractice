@@ -69,6 +69,7 @@ public static class NounEndings
             NounPattern.ĀFem => GetA_Fem(nounCase, number),
             NounPattern.IFem => GetI_Fem(nounCase, number),
             NounPattern.ĪFem => GetI_Long_Fem(nounCase, number),
+            NounPattern.VīFem => GetVi_Fem(nounCase, number),
             NounPattern.UFem => GetU_Fem(nounCase, number),
             NounPattern.ArFem => GetAr_Fem(nounCase, number),
 
@@ -238,6 +239,27 @@ public static class NounEndings
         };
     }
 
+    static string[] GetVi_Fem(Case nounCase, Number number) => (nounCase, number) switch
+    {
+        (Case.Nominative, Number.Singular) => ["vī"],
+        (Case.Nominative, Number.Plural) => ["viyo", "vī"],
+        (Case.Accusative, Number.Singular) => ["viṃ"],
+        (Case.Accusative, Number.Plural) => ["viyo", "vī"],
+        (Case.Instrumental, Number.Singular) => ["byā", "viyā", "vyā"],
+        (Case.Instrumental, Number.Plural) => ["vīhi"],
+        (Case.Dative, Number.Singular) => ["byā", "viyā", "vyā"],
+        (Case.Dative, Number.Plural) => ["vīnaṃ"],
+        (Case.Ablative, Number.Singular) => ["byā", "vito", "viyā", "vīto", "vyā"],
+        (Case.Ablative, Number.Plural) => ["vīhi"],
+        (Case.Genitive, Number.Singular) => ["byā", "viyā", "vyā"],
+        (Case.Genitive, Number.Plural) => ["vīnaṃ"],
+        (Case.Locative, Number.Singular) => ["byā", "viyaṃ", "viyā", "vyā"],
+        (Case.Locative, Number.Plural) => ["vīsu"],
+        (Case.Vocative, Number.Singular) => ["vi", "vī"],
+        (Case.Vocative, Number.Plural) => ["viyo", "vī"],
+        _ => []
+    };
+
     static string[] GetI_Long_Fem(Case nounCase, Number number)
     {
         return (nounCase, number) switch
@@ -271,11 +293,11 @@ public static class NounEndings
             (Case.Accusative, Number.Singular) => ["unaṃ", "uṃ"],
             (Case.Accusative, Number.Plural) => ["avo", "ū"],
             (Case.Instrumental, Number.Singular) => ["unā"],
-            (Case.Instrumental, Number.Plural) => ["ūhi"],
+            (Case.Instrumental, Number.Plural) => ["ubhi", "uhi", "ūhi"],
             (Case.Dative, Number.Singular) => ["uno", "ussa"],
             (Case.Dative, Number.Plural) => ["unaṃ", "ūnaṃ"],
             (Case.Ablative, Number.Singular) => ["uto", "unā", "umhā", "usmā"],
-            (Case.Ablative, Number.Plural) => ["ūhi"],
+            (Case.Ablative, Number.Plural) => ["ubhi", "ūhi"],
             (Case.Genitive, Number.Singular) => ["uno", "ussa"],
             (Case.Genitive, Number.Plural) => ["unaṃ", "ūnaṃ"],
             (Case.Locative, Number.Singular) => ["umhi", "usmiṃ"],
@@ -446,7 +468,7 @@ public static class NounEndings
             (Case.Instrumental, Number.Plural) => ["ūhi"],
             (Case.Dative, Number.Singular) => ["uno"],
             (Case.Dative, Number.Plural) => ["ūna", "ūnaṃ"],
-            (Case.Ablative, Number.Singular) => ["unā", "ūto"],
+            (Case.Ablative, Number.Singular) => ["uto", "unā", "ūto"],
             (Case.Ablative, Number.Plural) => ["ūhi"],
             (Case.Genitive, Number.Singular) => ["uno", "ussa"],
             (Case.Genitive, Number.Plural) => ["unnaṃ", "ūna", "ūnaṃ"],
@@ -637,9 +659,9 @@ public static class NounEndings
         {
             Case.Nominative => ["avo", "ū"],
             Case.Accusative => ["avo", "ū"],
-            Case.Instrumental => ["ūhi"],
+            Case.Instrumental => ["ubhi", "uhi", "ūhi"],
             Case.Dative => ["unaṃ", "ūnaṃ"],
-            Case.Ablative => ["ūhi"],
+            Case.Ablative => ["ubhi", "ūhi"],
             Case.Genitive => ["unaṃ", "ūnaṃ"],
             Case.Locative => ["ūsu"],
             Case.Vocative => ["ave", "avo", "ū"],

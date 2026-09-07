@@ -34,10 +34,10 @@ public class VerbRepository : IVerbRepository
 
     // Caches - loaded on first access
     HashSet<int>? _nonReflexiveLemmaIds;
-    HashSet<long>? _corpusFormIds;
+    HeadwordFormIndex? _corpusForms;
     Dictionary<int, ILemma>? _lemmas;
     List<ILemma>? _lemmasByRank;
-    Dictionary<long, string>? _irregularForms;
+    HeadwordFormIndex? _irregularForms;
 
     public VerbRepository(SQLiteConnection connection)
     {
@@ -66,19 +66,6 @@ public class VerbRepository : IVerbRepository
                     .ToHashSet();
                 System.Diagnostics.Debug.WriteLine($"[VerbRepo] Loaded {_nonReflexiveLemmaIds.Count} non-reflexive lemma IDs");
 
-                // Pre-cache corpus attestation form_ids for O(1) lookup
-                _corpusFormIds = _connection
-                    .Table<VerbCorpusForm>()
-                    .Select(c => c.FormId)
-                    .ToHashSet();
-                System.Diagnostics.Debug.WriteLine($"[VerbRepo] Loaded {_corpusFormIds.Count} corpus form IDs");
-
-                // Pre-cache irregular verb forms for O(1) lookup
-                _irregularForms = _connection
-                    .Table<VerbIrregularForm>()
-                    .ToDictionary(f => f.FormId, f => f.Form);
-                System.Diagnostics.Debug.WriteLine($"[VerbRepo] Loaded {_irregularForms.Count} irregular forms");
-
                 // Build lemma objects grouping all verb variants
                 var verbs = _connection.Table<Verb>().ToList();
                 System.Diagnostics.Debug.WriteLine($"[VerbRepo] Loaded {verbs.Count} verb records");
@@ -88,6 +75,12 @@ public class VerbRepository : IVerbRepository
                     .ToDictionary(
                         g => g.Key, ILemma (g) => new Lemma(g.First().Lemma, g));
                 System.Diagnostics.Debug.WriteLine($"[VerbRepo] Built {_lemmas.Count} lemmas");
+
+                var primaryHeadwords = _lemmas.Values.Select(l => l.Primary.Id).ToHashSet();
+                _corpusForms = new HeadwordFormIndex(_connection.Table<VerbCorpusForm>()
+                    .Select(f => new StoredHeadwordForm(f.HeadwordId, f.FormId, f.Form)), primaryHeadwords);
+                _irregularForms = new HeadwordFormIndex(_connection.Table<VerbIrregularForm>()
+                    .Select(f => new StoredHeadwordForm(f.HeadwordId, f.FormId, f.Form)), primaryHeadwords);
 
                 // Pre-sort for rank-based queries (tie-breaker ensures determinism)
                 _lemmasByRank = _lemmas.Values
@@ -157,7 +150,19 @@ public class VerbRepository : IVerbRepository
         EnsureCacheLoaded();
         var voice = reflexive ? Voice.Reflexive : Voice.Active;
         var formId = Conjugation.ResolveId(lemmaId, tense, person, number, voice, endingIndex);
-        return _corpusFormIds!.Contains(formId);
+        return _corpusForms!.ContainsPrimary(formId);
+    }
+
+    public bool IsFormInCorpus(int lemmaId, Tense tense, Person person, Number number, bool reflexive, int endingIndex, int headwordId, string renderedForm)
+    {
+        EnsureCacheLoaded();
+        return _corpusForms!.Contains(headwordId, Conjugation.ResolveId(lemmaId, tense, person, number, reflexive ? Voice.Reflexive : Voice.Active, endingIndex), renderedForm);
+    }
+
+    public List<string> GetIrregularForms(int lemmaId, Tense tense, Person person, Number number, bool reflexive, int headwordId)
+    {
+        EnsureCacheLoaded();
+        return _irregularForms!.GetForms(headwordId, Conjugation.ResolveId(lemmaId, tense, person, number, reflexive ? Voice.Reflexive : Voice.Active, 0), MaxVerbEndings);
     }
 
     /// <summary>
@@ -171,7 +176,7 @@ public class VerbRepository : IVerbRepository
         var baseFormId = Conjugation.ResolveId(lemmaId, tense, person, number, voice, 0);
         for (int endingId = 1; endingId <= MaxVerbEndings; endingId++)
         {
-            if (_corpusFormIds!.Contains(baseFormId + endingId))
+            if (_corpusForms!.ContainsPrimary(baseFormId + endingId))
                 return true;
         }
         return false;
@@ -184,15 +189,9 @@ public class VerbRepository : IVerbRepository
     public List<string> GetIrregularForms(int lemmaId, Tense tense, Person person, Number number, bool reflexive)
     {
         EnsureCacheLoaded();
-        var forms = new List<string>();
         var voice = reflexive ? Voice.Reflexive : Voice.Active;
         var baseFormId = Conjugation.ResolveId(lemmaId, tense, person, number, voice, 0);
-        for (int endingId = 1; endingId <= MaxVerbEndings; endingId++)
-        {
-            if (_irregularForms!.TryGetValue(baseFormId + endingId, out var form))
-                forms.Add(form);
-        }
-        return forms;
+        return _irregularForms!.GetForms(_lemmas![lemmaId].Primary.Id, baseFormId, MaxVerbEndings);
     }
 
     // /// <summary>
@@ -206,7 +205,7 @@ public class VerbRepository : IVerbRepository
     //     var baseFormId = Conjugation.ResolveId(lemmaId, tense, person, number, voice, 0);
     //     for (int endingId = 1; endingId <= 9; endingId++)
     //     {
-    //         if (_irregularForms!.ContainsKey(baseFormId + endingId))
+    //         if (_irregularForms!.ContainsPrimary(baseFormId + endingId))
     //             return true;
     //     }
     //     return false;

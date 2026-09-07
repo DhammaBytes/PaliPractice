@@ -105,7 +105,7 @@ public class InflectionService : IInflectionService
                 nounCase,
                 noun.Gender,
                 number,
-                endingId
+                endingId, noun.Id, form
             );
 
             forms.Add(new DeclensionForm(
@@ -130,7 +130,7 @@ public class InflectionService : IInflectionService
     Declension GenerateIrregularNounForms(Noun noun, Case nounCase, Number number)
     {
         var irregularForms = _databaseService.Nouns.GetIrregularForms(
-            noun.LemmaId, nounCase, noun.Gender, number);
+            noun.LemmaId, nounCase, noun.Gender, number, noun.Id);
 
         var forms = new List<DeclensionForm>();
 
@@ -142,7 +142,7 @@ public class InflectionService : IInflectionService
 
             // Check corpus attestation via corpus_forms table (same as regular forms)
             var inCorpus = _databaseService.Nouns.IsFormInCorpus(
-                noun.LemmaId, nounCase, noun.Gender, number, endingId);
+                noun.LemmaId, nounCase, noun.Gender, number, endingId, noun.Id, form);
 
             forms.Add(new DeclensionForm(
                 FormId: formId,
@@ -230,7 +230,7 @@ public class InflectionService : IInflectionService
                 person,
                 number,
                 reflexive,
-                endingId
+                endingId, verb.Id, form
             );
 
             forms.Add(new ConjugationForm(
@@ -261,7 +261,7 @@ public class InflectionService : IInflectionService
         bool reflexive)
     {
         var irregularForms = _databaseService.Verbs.GetIrregularForms(
-            verb.LemmaId, tense, person, number, reflexive);
+            verb.LemmaId, tense, person, number, reflexive, verb.Id);
 
         var forms = new List<ConjugationForm>();
 
@@ -274,7 +274,7 @@ public class InflectionService : IInflectionService
 
             // Check corpus attestation via corpus_forms table (same as regular forms)
             var inCorpus = _databaseService.Verbs.IsFormInCorpus(
-                verb.LemmaId, tense, person, number, reflexive, endingId);
+                verb.LemmaId, tense, person, number, reflexive, endingId, verb.Id, form);
 
             forms.Add(new ConjugationForm(
                 FormId: formId,

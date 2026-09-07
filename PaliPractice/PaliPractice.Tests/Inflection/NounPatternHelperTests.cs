@@ -432,10 +432,11 @@ public class NounPatternHelperTests
         baseFem.All(p => p.IsBase() && p.GetGender() == Gender.Feminine)
             .Should().BeTrue("all patterns in base feminine range should be base feminine");
 
-        // Variant feminine range is reserved (251-299) - currently empty
+        // The appended vī feminine variant uses the reserved range without moving old IDs.
         var variantFem = usablePatterns.Where(p =>
             p > NounPattern._VariantFem && p < NounPattern._BaseNeut).ToList();
-        variantFem.Should().BeEmpty("variant feminine is reserved, currently empty");
+        variantFem.Should().Contain(NounPattern.VīFem);
+        variantFem.All(p => p.IsVariant() && p.GetGender() == Gender.Feminine).Should().BeTrue();
 
         // Verify base neuter patterns are bounded correctly
         var baseNeut = usablePatterns.Where(p =>

@@ -10,10 +10,14 @@ namespace PaliPractice.Services.Database.Entities;
 [Table("verbs_corpus_forms")]
 class VerbCorpusForm
 {
+    [Column("headword_id")]
+    public int HeadwordId { get; set; }
+
     /// <summary>
     /// Encoded form ID: lemma_id(5) + tense(1) + person(1) + number(1) + voice(1) + ending_index(1)
     /// </summary>
-    [PrimaryKey]
     [Column("form_id")]
     public long FormId { get; set; }
+    [Column("form")]
+    public string Form { get; set; } = "";
 }

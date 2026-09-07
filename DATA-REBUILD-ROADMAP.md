@@ -1,6 +1,6 @@
 # DPD rebuild and translation roadmap
 
-Created: 7 September 2026. Status: M1–M3 complete; M4 is next.
+Created: 7 September 2026. Status: M1–M4 complete; M5 is next.
 
 The objective is a reproducible, grammatically correct English DPD database with stable production practice identities, followed by verified Russian and Spanish meanings in the next app update. The findings and measured starting state are in [DATA-REBUILD-AUDIT.md](DATA-REBUILD-AUDIT.md).
 
@@ -80,12 +80,12 @@ Core English work ends at M5. Translation implementation must not begin before t
 
 **Purpose:** close audit points 1, 2, and 5 with behavior tests rather than percentage thresholds.
 
-- [ ] First reproduce the false attestation of `addhanesu`, `sīhanādebhi`, and `sīhanādāna` in regression tests using real repositories and `InflectionService`.
-- [ ] Scope corpus attestation and irregular forms to the selected headword/paradigm, and verify the rendered string. Queue eligibility must use the same form set. Allow deduplication of identical records but reject conflicting records instead of swallowing insert errors.
-- [ ] Skip recognized non-inflection rows such as `in comps`. Reject malformed selected templates and unknown grammatical encodings. Require valid nonzero grammatical components in corpus/irregular records.
-- [ ] Correct both validators and the gate fixture that currently accepts `Case.None`/`Number.None`. Replace 10%/5% mismatch tolerances with exact assertions.
-- [ ] Check every extracted raw pattern through production pattern helpers and every selected primary noun/verb through production form generation. Cover regular, variant, irregular, plural-only, and legitimate defective paradigms. Validate static ending order against pinned DPD templates.
-- [ ] Remove the unverified fixed ending-count assumption from lookup behavior, or enforce a documented supported bound with a failing overflow test. Never truncate an extra ending silently; keep the public ID encoding valid.
+- [x] First reproduce the false attestation of `addhanesu`, `sīhanādebhi`, and `sīhanādāna` in regression tests using real repositories and `InflectionService`.
+- [x] Scope corpus attestation and irregular forms to the selected headword/paradigm, and verify the rendered string. Queue eligibility must use the same form set. Allow deduplication of identical records but reject conflicting records instead of swallowing insert errors.
+- [x] Skip recognized non-inflection rows such as `in comps`. Reject malformed selected templates and unknown grammatical encodings. Require valid nonzero grammatical components in corpus/irregular records.
+- [x] Correct both validators and the gate fixture that currently accepts `Case.None`/`Number.None`. Replace 10%/5% mismatch tolerances with exact assertions.
+- [x] Check every extracted raw pattern through production pattern helpers and every selected primary noun/verb through production form generation. Cover regular, variant, irregular, plural-only, and legitimate defective paradigms. Validate static ending order against pinned DPD templates.
+- [x] Remove the unverified fixed ending-count assumption from lookup behavior, or enforce a documented supported bound with a failing overflow test. Never truncate an extra ending silently; keep the public ID encoding valid.
 
 **Exit:** no invalid grammatical corpus IDs, no conflicting internal form identities, and exact agreement between every generated primary form's attestation flag and the pinned corpus. Every selected pattern is supported and usable according to its legitimate paradigm. Existing SRS combination IDs remain compatible under M3's policy.
 
@@ -192,8 +192,8 @@ Update this table at the end of each milestone with durable evidence links.
 | M1 | Complete | [Baseline, gate, review, and remaining work](quality/evidence/m1/README.md) |
 | M2 | Complete | [Inputs, candidate, gate, and review](quality/evidence/m2/README.md) |
 | M3 | Complete | [Identity contract, candidate, gate, and review](quality/evidence/m3/README.md) |
-| M4 | Next | M3 complete; repair attestation and verify every primary form |
-| M5 | Planned | English stability checkpoint |
+| M4 | Complete | [Exact forms, attestation, candidate gate, and review](quality/evidence/m4/README.md) |
+| M5 | Next | Isolated repeatability, upgrade/provisioning, and final English checkpoint |
 | M6 | Planned | Blocked on M5 completion |
 | M7 | Planned | Spanish source discovery complete; implementation requires M6 |
 | M8 | Planned | Requires verified RU/ES enrichment |

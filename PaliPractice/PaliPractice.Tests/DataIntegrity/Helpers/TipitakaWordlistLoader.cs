@@ -18,7 +18,7 @@ public static class TipitakaWordlistLoader
     /// <summary>
     /// Base path to the dpd-db frequency data directory.
     /// </summary>
-    static string FrequencyPath => System.IO.Path.Combine(
+    static string FrequencyPath => Environment.GetEnvironmentVariable("PALIPRACTICE_CORPUS_DIRECTORY") ?? System.IO.Path.Combine(
         TestPaths.RepositoryRoot, "dpd-db", "shared_data", "frequency");
 
     /// <summary>
@@ -50,13 +50,13 @@ public static class TipitakaWordlistLoader
                 return _allWords;
 
             // Check for unexpected new wordlist files (DPD may add new editions)
-            ValidateWordlistFiles();
+            if (TestPaths.InputPath("cst") is null) ValidateWordlistFiles();
 
             var words = new HashSet<string>();
 
             foreach (var file in ExpectedWordlistFiles)
             {
-                var path = System.IO.Path.Combine(FrequencyPath, file);
+                var path = TestPaths.InputPath(file.Split('_')[0]) ?? System.IO.Path.Combine(FrequencyPath, file);
                 if (!File.Exists(path))
                 {
                     throw new FileNotFoundException(

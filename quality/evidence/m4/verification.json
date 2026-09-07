@@ -1,0 +1,53 @@
+{
+  "base": "c37146116839987ea3414b302952fd6ccd254d42",
+  "candidate": ".local/candidates/english-m4-final",
+  "producer_tests": 31,
+  "exact_primary_forms": 90619,
+  "regressions": {
+    "before": {
+      "addhanesu_locative_plural": "FAIL: falsely attested",
+      "sīhanādebhi_ablative_plural": "FAIL: falsely attested",
+      "sīhanādāna_genitive_plural": "FAIL: falsely attested",
+      "sīhanādebhi_instrumental_plural": "PASS: already unattested"
+    },
+    "after": "All four cases pass through actual repositories and InflectionService"
+  },
+  "gate": {
+    "profile": "auto",
+    "result": "PASS",
+    "quality_self_tests": 48,
+    "dotnet_counts": {
+      "total": "2903",
+      "executed": "2903",
+      "passed": "2903",
+      "failed": "0",
+      "error": "0",
+      "timeout": "0",
+      "aborted": "0",
+      "inconclusive": "0",
+      "passedButRunAborted": "0",
+      "notRunnable": "0",
+      "notExecuted": "0",
+      "disconnected": "0",
+      "warning": "0",
+      "completed": "0",
+      "inProgress": "0",
+      "pending": "0"
+    },
+    "groups": [
+      "data",
+      "desktop",
+      "dotnet",
+      "python",
+      "quality",
+      "submodule"
+    ],
+    "evidence_directory": "/private/var/folders/cn/1_yc26_j25v239tcn5zw3zzr0000gn/T/pali-practice-quality-837444863b1d/runs/20260907T185200.236654Z-12500-9af87e",
+    "candidate_verified_before_and_after": true
+  },
+  "review": {
+    "reviewer": "m4_review",
+    "result": "No blocking findings",
+    "verification_pass": "Not required; no code fixes requested"
+  }
+}

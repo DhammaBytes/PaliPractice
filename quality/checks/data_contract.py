@@ -213,18 +213,18 @@ def _validate_lemma_ranges(
 def _validate_form_ids(connection: sqlite3.Connection, errors: list[str]) -> None:
     noun_invalid = """
         form_id / 10000 NOT BETWEEN 10001 AND 69999
-        OR (form_id / 1000) % 10 NOT BETWEEN 0 AND 8
-        OR (form_id / 100) % 10 NOT BETWEEN 0 AND 3
-        OR (form_id / 10) % 10 NOT BETWEEN 0 AND 2
-        OR form_id % 10 NOT BETWEEN 1 AND 9
+        OR (form_id / 1000) % 10 NOT BETWEEN 1 AND 8
+        OR (form_id / 100) % 10 NOT BETWEEN 1 AND 3
+        OR (form_id / 10) % 10 NOT BETWEEN 1 AND 2
+        OR form_id % 10 NOT BETWEEN 1 AND 6
     """
     verb_invalid = """
         form_id / 100000 NOT BETWEEN 70001 AND 99999
-        OR (form_id / 10000) % 10 NOT BETWEEN 0 AND 5
-        OR (form_id / 1000) % 10 NOT BETWEEN 0 AND 3
-        OR (form_id / 100) % 10 NOT BETWEEN 0 AND 2
+        OR (form_id / 10000) % 10 NOT BETWEEN 1 AND 4
+        OR (form_id / 1000) % 10 NOT BETWEEN 1 AND 3
+        OR (form_id / 100) % 10 NOT BETWEEN 1 AND 2
         OR (form_id / 10) % 10 NOT BETWEEN 1 AND 2
-        OR form_id % 10 NOT BETWEEN 1 AND 9
+        OR form_id % 10 NOT BETWEEN 1 AND 7
     """
     specifications = (
         ("nouns_corpus_forms", "nouns", 10000, noun_invalid),

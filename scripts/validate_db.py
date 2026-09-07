@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Compatibility entry point for database validation."""
+"""Compatibility entry point for read-only structural database validation."""
 
-from extraction.validate_db import validate_database
+from extraction.validate_db import main
 
 
-if __name__ == "__main__":
-    raise SystemExit(0 if validate_database() else 1)
+if __name__ == '__main__':
+    raise SystemExit(main())

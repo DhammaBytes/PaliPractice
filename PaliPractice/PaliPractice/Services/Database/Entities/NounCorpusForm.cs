@@ -10,10 +10,14 @@ namespace PaliPractice.Services.Database.Entities;
 [Table("nouns_corpus_forms")]
 class NounCorpusForm
 {
+    [Column("headword_id")]
+    public int HeadwordId { get; set; }
+
     /// <summary>
     /// Encoded form ID: lemma_id(5) + case(1) + gender(1) + number(1) + ending_index(1)
     /// </summary>
-    [PrimaryKey]
     [Column("form_id")]
     public int FormId { get; set; }
+    [Column("form")]
+    public string Form { get; set; } = "";
 }

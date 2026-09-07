@@ -561,15 +561,17 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
     {
         if (type == PracticeType.Declension)
         {
-            return _userData.GetDueNounForms(limit: 500)
+            return _userData.GetDueNounForms(limit: int.MaxValue)
                 .Where(f => eligibleSet.Contains(f.FormId))
+                .Take(500)
                 .Select(f => new FormMasteryData(f.FormId, f.MasteryLevel, f.NextDueUtc))
                 .ToList();
         }
         else
         {
-            return _userData.GetDueVerbForms(limit: 500)
+            return _userData.GetDueVerbForms(limit: int.MaxValue)
                 .Where(f => eligibleSet.Contains(f.FormId))
+                .Take(500)
                 .Select(f => new FormMasteryData(f.FormId, f.MasteryLevel, f.NextDueUtc))
                 .ToList();
         }

@@ -71,8 +71,9 @@ def eligible(db, kind, primary):
     result = set()
     columns = {row[1] for row in db.execute(f'PRAGMA table_info({kind}_corpus_forms)')}
     scoped = 'headword_id' in columns
+    selected_headwords = {word['id'] for word in primary.values()}
     for row in db.execute(f'SELECT * FROM {kind}_corpus_forms'):
-        if scoped and row['headword_id'] not in {word['id'] for word in primary.values()}:
+        if scoped and row['headword_id'] not in selected_headwords:
             continue
         form_id = row['form_id']
         valid = (noun_eligible(form_id, primary) if kind == 'nouns'
@@ -103,7 +104,7 @@ def content_changes(old_db, new_db, kind, old_primary, new_primary):
 def comparison(directory: Path, selection_changes: list[dict]):
     result = {'schema': 1, 'baseline': 'v1.1', 'selection': selection_changes, 'kinds': {},
               'eligibility_contract': 'All ranks/patterns/grammar enabled; active verb citation excluded. '
-              'Uses stored corpus flags and repository ending bounds; M4 must verify attestation.'}
+              'Uses primary-headword corpus flags and supported ending bounds; exact app rendering is verified by the candidate integration lane.'}
     with connect(BASELINE / 'pali.db') as old_db, connect(directory / 'pali.db') as new_db:
         old_words, new_words = words_from(old_db), words_from(new_db)
         for kind in ('nouns', 'verbs'):

@@ -39,6 +39,8 @@ public interface IUserDataRepository
     // === Type-Dispatching Methods ===
 
     void RecordPracticeResult(long formId, PracticeType type, bool wasEasy);
+    void RecordPracticeResult(long formId, PracticeType type, bool wasEasy, PracticeSnapshot? snapshot)
+        => RecordPracticeResult(formId, type, wasEasy);
     List<IPracticeHistory> GetRecentHistory(PracticeType type, int limit = 50);
 
     // === Settings ===

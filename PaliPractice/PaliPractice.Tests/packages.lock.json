@@ -504,31 +504,30 @@
           "Uno.WinUI": "5.2.175"
         }
       },
-      "SQLitePCLRaw.bundle_green": {
+      "SourceGear.sqlite3": {
         "type": "Transitive",
-        "resolved": "2.1.2",
-        "contentHash": "e2FRX87YHoSer+tLFX9P/povHLK0uH7UcdimHRPnfTSam+NZChVVXjBxe1MYnyBGlwX5dSs5sTlDg/yZBM7iVw==",
+        "resolved": "3.50.4.2",
+        "contentHash": "eV9HwQ88WyoU+reGVxJz1SwME9NbYnl9h2LOY15j0LGdXN4JkTJDk8JRRg/yNgt00O3Cn5/qnska10FEZNoU5g=="
+      },
+      "SQLitePCLRaw.config.e_sqlite3": {
+        "type": "Transitive",
+        "resolved": "3.0.2",
+        "contentHash": "QPHR1Axs8YCCapb0TnmT7PxY9DX3sg4I4T9HOSKeFBiT5l482mjrOIxuyt+xOCwEQ2Enq5h0tgDOXMnJi+i0sw==",
         "dependencies": {
-          "SQLitePCLRaw.lib.e_sqlite3": "2.1.2",
-          "SQLitePCLRaw.provider.e_sqlite3": "2.1.2"
+          "SQLitePCLRaw.provider.e_sqlite3": "3.0.2"
         }
       },
       "SQLitePCLRaw.core": {
         "type": "Transitive",
-        "resolved": "2.1.11",
-        "contentHash": "PK0GLFkfhZzLQeR3PJf71FmhtHox+U3vcY6ZtswoMjrefkB9k6ErNJEnwXqc5KgXDSjige2XXrezqS39gkpQKA=="
-      },
-      "SQLitePCLRaw.lib.e_sqlite3": {
-        "type": "Transitive",
-        "resolved": "2.1.11",
-        "contentHash": "Ev2ytaXiOlWZ4b3R67GZBsemTINslLD1DCJr2xiacpn4tbapu0Q4dHEzSvZSMnVWeE5nlObU3VZN2p81q3XOYQ=="
+        "resolved": "3.0.2",
+        "contentHash": "tnbRf0muOOSJK1RLCfyYK13jynFScgL4xMj7yC3oy8lrrGKXTKmOoWjfdV+cFfBRdppm4qST31hvp8ihgIgvMQ=="
       },
       "SQLitePCLRaw.provider.e_sqlite3": {
         "type": "Transitive",
-        "resolved": "2.1.11",
-        "contentHash": "Y/0ZkR+r0Cg3DQFuCl1RBnv/tmxpIZRU3HUvelPw6MVaKHwYYR8YNvgs0vuNuXCMvlyJ+Fh88U1D4tah1tt6qw==",
+        "resolved": "3.0.2",
+        "contentHash": "RQIliDp47mQxGYNcBB6W+ezHbegkImrSZVTuWjQCSTTl3pQ37Q3rALkkkdTAMEmcIz71PEOCqNZMp7lXCnVqEQ==",
         "dependencies": {
-          "SQLitePCLRaw.core": "2.1.11"
+          "SQLitePCLRaw.core": "3.0.2"
         }
       },
       "Svg.Custom": {
@@ -1056,9 +1055,11 @@
           "CommunityToolkit.Mvvm": "[8.4.0, )",
           "Markdig": "[0.44.0, )",
           "Microsoft.Extensions.Logging.Console": "[10.0.0, )",
+          "SQLitePCLRaw.bundle_e_sqlite3": "[3.0.2, )",
           "SkiaSharp.Skottie": "[3.119.1, )",
           "SkiaSharp.Views.Uno.WinUI": "[3.119.1, )",
           "Svg.Skia": "[3.0.6, )",
+          "Tmds.DBus.Protocol": "[0.21.3, )",
           "Uno.Extensions.Configuration": "[7.0.4, )",
           "Uno.Extensions.Core.WinUI": "[7.0.4, )",
           "Uno.Extensions.Hosting.WinUI": "[7.0.4, )",
@@ -1081,7 +1082,7 @@
           "Uno.WinUI.Lottie": "[6.4.195, )",
           "Uno.WinUI.Markup": "[6.4.22, )",
           "Uno.WinUI.Svg": "[6.4.195, )",
-          "sqlite-net-pcl": "[1.9.172, )"
+          "sqlite-net-base": "[1.9.172, )"
         }
       },
       "Markdig": {
@@ -1090,24 +1091,30 @@
         "resolved": "0.44.0",
         "contentHash": "X+CYMjcUnh/yO24wOSQxVFLiGqWrrtXJ5M7toHiM1Zk4Fg9UMLN5fkaq6FSOWH+mIprsHHgDMlq3MJhmrXalhg=="
       },
-      "sqlite-net-pcl": {
+      "sqlite-net-base": {
         "type": "CentralTransitive",
         "requested": "[1.9.172, )",
         "resolved": "1.9.172",
-        "contentHash": "go533+huyvg5bOMmCpX+DyvLrcVRiEBIpqEiDHgXRijWIBBNkWnyMr/w+5ZzrUArKY+4ApucsbBnFtP3QITrJg==",
+        "contentHash": "RaWVn015OZPYHS5+vNNRy+6qY1sCZ/D3Y7yOL18Eg+AwH+3zMNKdHRcvtE7UbKjSZ2cGL9vYrVL7P44hYoD8/w==",
         "dependencies": {
-          "SQLitePCLRaw.bundle_green": "2.1.2"
+          "SQLitePCLRaw.core": "2.1.2"
         }
       },
       "SQLitePCLRaw.bundle_e_sqlite3": {
         "type": "CentralTransitive",
         "requested": "[3.0.2, )",
-        "resolved": "2.1.11",
-        "contentHash": "DC4nA7yWnf4UZdgJDF+9Mus4/cb0Y3Sfgi3gDnAoKNAIBwzkskNAbNbyu+u4atT0ruVlZNJfwZmwiEwE5oz9LQ==",
+        "resolved": "3.0.2",
+        "contentHash": "nzPPFpELY9U1scLvQpA1k1GIgR9ror83DCPmirT2/i5NCPdTBfhTDA6MZqFZonGDayye5mUQRQLOVyEiJNYr0g==",
         "dependencies": {
-          "SQLitePCLRaw.lib.e_sqlite3": "2.1.11",
-          "SQLitePCLRaw.provider.e_sqlite3": "2.1.11"
+          "SQLitePCLRaw.config.e_sqlite3": "3.0.2",
+          "SourceGear.sqlite3": "3.50.4.2"
         }
+      },
+      "Tmds.DBus.Protocol": {
+        "type": "CentralTransitive",
+        "requested": "[0.21.3, )",
+        "resolved": "0.21.3",
+        "contentHash": "hDwB8WsQoyALQKqIbwzS68UKdlnafDm4T/DkO/JrA/YIneP/rKv96SxYPVXeh3FP4i/SXfShrYftKLtciJAIlw=="
       },
       "Uno.Toolkit.Skia.WinUI": {
         "type": "CentralTransitive",

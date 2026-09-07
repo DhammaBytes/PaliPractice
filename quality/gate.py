@@ -1592,6 +1592,23 @@ def candidate_spec() -> tuple[Path, Path] | None:
     return Path(candidate).resolve(), Path(inputs).resolve()
 
 
+def regenerate_candidate(gate: Gate, groups: set[str]) -> None:
+    inputs = os.environ.get("PALIPRACTICE_INPUT_MANIFEST")
+    if not inputs or not groups.intersection({"data", "dotnet", "desktop"}):
+        return
+    output = gate.evidence.run / "english-repeatability"
+    command = [str(ROOT / ".venv/bin/python"), "-B", "scripts/check_repeatability.py",
+               "--inputs", str(Path(inputs).resolve()), "--output", str(output)]
+    supplied = os.environ.get("PALIPRACTICE_CANDIDATE_DIRECTORY")
+    if supplied:
+        command.extend(["--compare", str(Path(supplied).resolve())])
+    result = gate.command("english-repeatability", command)
+    if result.returncode != 0:
+        raise GateError("English regeneration failed; inspect the isolated build logs")
+    gate.check("english-repeatability", [])
+    os.environ["PALIPRACTICE_CANDIDATE_DIRECTORY"] = str(output / "run-1")
+
+
 def verify_supplied_candidate(gate: Gate, name: str) -> None:
     specification = candidate_spec()
     if specification:
@@ -1761,6 +1778,10 @@ def run_dotnet_checks(gate: Gate, include_desktop: bool, base: str) -> None:
 
 
 def run_selected(gate: Gate, groups: set[str], base: str) -> None:
+    if os.environ.get("PALIPRACTICE_INPUT_MANIFEST"):
+        gate.command("semantic-sources", [str(ROOT / ".venv/bin/python"), "-B", "scripts/semantic_evidence.py",
+                     "--capture-sources", str(gate.evidence.run / "semantic-sources.json")])
+    regenerate_candidate(gate, groups)
     verify_supplied_candidate(gate, "candidate-inputs-before")
     self_test = gate.command(
         "quality-tests",
@@ -1780,6 +1801,10 @@ def run_selected(gate: Gate, groups: set[str], base: str) -> None:
     if self_test.returncode == 0:
         gate.check("quality-tests", [])
     if "python" in groups:
+        producers = gate.command("producer-tests", [str(ROOT / ".venv/bin/python"), "-B",
+                                  "-m", "unittest", "discover", "-s", "scripts/tests", "-v"])
+        if producers.returncode == 0:
+            gate.check("producer-tests", [])
         run_python_checks(gate, base)
     if "data" in groups:
         specification = candidate_spec()
@@ -1896,6 +1921,14 @@ def main() -> int:
                 encoding="utf-8",
             )
             evidence.prune()
+            if not gate.failures and {"data", "dotnet", "desktop"} <= groups and candidate_spec():
+                candidate, inputs = candidate_spec()
+                gate.command("semantic-verification", [str(ROOT / ".venv/bin/python"), "-B",
+                             "scripts/semantic_evidence.py", "--candidate", str(candidate),
+                             "--inputs", str(inputs), "--gate-run", str(evidence.run)])
+                if gate.failures:
+                    (evidence.run / "completion.json").write_text(json.dumps(
+                        {"status": "fail", "findings": len(gate.failures)}, indent=2))
             if gate.failures:
                 print(f"FAIL gate ({len(gate.failures)} finding(s)); evidence {evidence.run}")
                 return 1

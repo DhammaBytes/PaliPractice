@@ -1,0 +1,36 @@
+{
+  "recipe": "scripts/acquire_corpora.py: upstream CST/BJT conversion, Go frequency/setup, sorted unique UTF-8 JSON",
+  "recipe_sha256": "cf4f62fb88a0e328b3f552b7321150e452a087b837da66959cb7d3651c01962c",
+  "revisions": {
+    "dpd": "37912132f30f5023cb5a1c4e2dde26a24b7b3e2e",
+    "texts": "515c9dce8bf3c7361ee9b630d687572d686329e4",
+    "sc": "2df1161ddc30fead45f1d42de5bf90754f23b93c",
+    "thai": "a3d216560ed3c44ab35e2250d17c9faf7fb7d8e4"
+  },
+  "outputs": {
+    "cst": {
+      "file": "cst_wordlist.json",
+      "sha256": "603bb0dd1d0f24df79bea5f50b1a7367545acfc249ee8ca3542deffefdddc3b0"
+    },
+    "bjt": {
+      "file": "bjt_wordlist.json",
+      "sha256": "2f90c9330fde5339283582b19e2b90ac116fe49780c9d5dee05566ea4395e560"
+    },
+    "sya": {
+      "file": "sya_wordlist.json",
+      "sha256": "f3bee239843295061ceb9963dde806b167b61213c77d7c5e0ca5e2efdf6ce470"
+    },
+    "sc": {
+      "file": "sc_wordlist.json",
+      "sha256": "7734132b44f00d60343b0a8be11eaae9051ad051c46aea67540223e8c60c3e1b"
+    }
+  },
+  "python_packages": {
+    "beautifulsoup4": "4.13.4",
+    "lxml": "5.4.0",
+    "aksharamukha": "2.3",
+    "rich": "13.9.4"
+  },
+  "python": "Python 3.12.11",
+  "go": "go version go1.27.0 darwin/arm64"
+}

@@ -13,11 +13,14 @@ public class StatisticsRepository : IStatisticsRepository
 {
     readonly SQLiteConnection _connection;
     readonly IUserDataRepository _userData;
+    readonly Func<PracticeType, IReadOnlySet<long>>? _eligibleForms;
 
-    public StatisticsRepository(SQLiteConnection connection, IUserDataRepository userData)
+    public StatisticsRepository(SQLiteConnection connection, IUserDataRepository userData,
+        Func<PracticeType, IReadOnlySet<long>>? eligibleForms = null)
     {
         _connection = connection;
         _userData = userData;
+        _eligibleForms = eligibleForms;
     }
 
     // === General Statistics ===
@@ -245,19 +248,17 @@ public class StatisticsRepository : IStatisticsRepository
     /// <summary>
     /// Counts all due noun forms without loading them into memory.
     /// </summary>
-    int CountDueNounForms() => CountDueForms("nouns_form_mastery");
+    int CountDueNounForms() => CountDueForms(PracticeType.Declension);
 
-    /// <summary>
-    /// Counts all due forms in a table using centralized WHERE clause.
-    /// </summary>
-    int CountDueForms(string tableName)
+    // Lifetime totals and distributions include dormant mastery. Due counts
+    // describe actionable review under the same current filters as the queue.
+    int CountDueForms(PracticeType type)
     {
-        var sql = $"SELECT COUNT(*) FROM {tableName} WHERE {CooldownCalculator.DueFormsWhereClause}";
-        var cutoffs = CooldownCalculator.GetDueCutoffParams();
-
-        return _connection.ExecuteScalar<int>(sql,
-            cutoffs[0], cutoffs[1], cutoffs[2], cutoffs[3], cutoffs[4],
-            cutoffs[5], cutoffs[6], cutoffs[7], cutoffs[8], cutoffs[9]);
+        var eligible = _eligibleForms?.Invoke(type);
+        IEnumerable<FormMasteryBase> due = type == PracticeType.Declension
+            ? _userData.GetDueNounForms(int.MaxValue)
+            : _userData.GetDueVerbForms(int.MaxValue);
+        return due.Count(form => eligible is null || eligible.Contains(form.FormId));
     }
 
     public SrsDistributionDto GetNounSrsDistribution()
@@ -391,7 +392,7 @@ public class StatisticsRepository : IStatisticsRepository
     /// <summary>
     /// Counts all due verb forms without loading them into memory.
     /// </summary>
-    int CountDueVerbForms() => CountDueForms("verbs_form_mastery");
+    int CountDueVerbForms() => CountDueForms(PracticeType.Conjugation);
 
     public SrsDistributionDto GetVerbSrsDistribution()
     {

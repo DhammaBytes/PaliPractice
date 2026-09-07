@@ -159,7 +159,7 @@ public sealed partial class MainPage : Page
 - Run `python3 quality/gate.py auto` before handing off changes.
 - Use `--profile fast` for Python/data-only iteration and `--profile full` for the complete local gate.
 - Pass `--base <commit>` when the comparison base is not the upstream merge base.
-- The gate owns no generated source or database output. Never run the extraction pipeline as part of the gate.
+- The gate may regenerate English candidates only in its external evidence directory from an explicit `PALIPRACTICE_INPUT_MANIFEST`. It compares two isolated builds and tests that exact candidate. Never acquire inputs, promote a candidate, or write production database/registry outputs from the gate.
 - Evidence and tool caches live outside the worktree; inspect the path printed by the gate.
 
 ## Composition Rules for Uno C# Markup

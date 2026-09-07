@@ -1,4 +1,3 @@
-using PaliPractice.Services.Grammar;
 using PaliPractice.Services.UserData.Entities;
 using PaliPractice.Localization;
 
@@ -23,7 +22,7 @@ public class HistoryViewModel : ObservableObject
 {
     readonly INavigator _navigator;
 
-    public HistoryViewModel(INavigator navigator, IDatabaseService db, IInflectionService inflection, HistoryNavigationData data)
+    public HistoryViewModel(INavigator navigator, IDatabaseService db, HistoryNavigationData data)
     {
         _navigator = navigator;
         CurrentPracticeType = data.PracticeType;
@@ -36,11 +35,13 @@ public class HistoryViewModel : ObservableObject
         }
 #endif
 
-        // Load history from database and resolve form text from FormId
+        // Stored snapshots survive dictionary updates. Unknown legacy records
+        // stay unresolved instead of being rewritten by the current dictionary.
         var history = db.UserData.GetRecentHistory(data.PracticeType, limit: 1000);
         foreach (var record in history)
         {
-            record.FormText = inflection.ResolveFormText(record.FormId, data.PracticeType) ?? "?";
+            if (string.IsNullOrEmpty(record.FormText))
+                record.FormText = "?";
         }
 
         // Group records by date

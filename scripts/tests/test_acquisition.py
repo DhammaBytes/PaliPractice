@@ -4,14 +4,30 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from acquire_corpora import archive, check_conversion
+from acquire_corpora import archive, check_conversion, verify_gitlinks
 from extraction.inputs import InputError
 
 
 class AcquisitionTests(unittest.TestCase):
+    def test_corpus_pins_must_match_release_gitlinks(self):
+        pins = dict(dpd="a" * 40, texts="b" * 40, sc="c" * 40, thai="d" * 40)
+        entries = [f"160000 commit {pins[name]}\tresources/{name}\n"
+                   for name in ("texts", "sc", "thai")]
+        with patch("acquire_corpora.subprocess.check_output", side_effect=entries):
+            verify_gitlinks(Path("unused"), pins)
+        with patch("acquire_corpora.subprocess.check_output", side_effect=entries):
+            with self.assertRaisesRegex(InputError, "thai revision"):
+                verify_gitlinks(Path("unused"), {k: v for k, v in pins.items() if k != "thai"})
+        with patch("acquire_corpora.subprocess.check_output", side_effect=entries[:2] + [""]):
+            verify_gitlinks(Path("unused"), {k: v for k, v in pins.items() if k != "thai"})
+        with patch("acquire_corpora.subprocess.check_output", return_value=entries[1]):
+            with self.assertRaisesRegex(InputError, "texts revision"):
+                verify_gitlinks(Path("unused"), pins)
+
     def test_archive_uses_commit_bytes_and_excludes_ignored_and_uncommitted_data(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

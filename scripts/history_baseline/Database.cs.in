@@ -1,0 +1,10 @@
+using SQLite;
+using PaliPractice.Services.Database.Repositories;
+namespace PaliPractice.Services.Database;
+public enum PracticeType { Declension, Conjugation }
+public interface IDatabaseService { INounRepository Nouns { get; } IVerbRepository Verbs { get; } }
+public sealed class BaselineDatabase(SQLiteConnection connection) : IDatabaseService
+{
+ public INounRepository Nouns { get; } = new NounRepository(connection);
+ public IVerbRepository Verbs { get; } = new VerbRepository(connection);
+}

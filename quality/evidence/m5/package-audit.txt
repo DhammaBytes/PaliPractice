@@ -1,0 +1,9 @@
+  Determining projects to restore...
+  Restored /Users/ivm/Sources/PaliPractice/PaliPractice/PaliPractice.Tests/PaliPractice.Tests.csproj (in 224 ms).
+  Restored /Users/ivm/Sources/PaliPractice/PaliPractice/PaliPractice/PaliPractice.csproj (in 585 ms).
+
+The following sources were used:
+   https://api.nuget.org/v3/index.json
+
+The given project `PaliPractice` has no vulnerable packages given the current sources.
+The given project `PaliPractice.Tests` has no vulnerable packages given the current sources.

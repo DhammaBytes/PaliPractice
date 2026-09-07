@@ -1,0 +1,29 @@
+{
+  "semantic_sha256": "6367c1bc86a1ac8fb069e3d1468dca6a636f69746676f28ab68a6e94a3ce4ad9",
+  "source_sha256": {
+    "/Users/ivm/Sources/PaliPractice/.local/inputs/corpora-july/bjt_wordlist.json": "2f90c9330fde5339283582b19e2b90ac116fe49780c9d5dee05566ea4395e560",
+    "/Users/ivm/Sources/PaliPractice/.local/inputs/corpora-july/cst_wordlist.json": "603bb0dd1d0f24df79bea5f50b1a7367545acfc249ee8ca3542deffefdddc3b0",
+    "/Users/ivm/Sources/PaliPractice/.local/inputs/corpora-july/sc_wordlist.json": "7734132b44f00d60343b0a8be11eaae9051ad051c46aea67540223e8c60c3e1b",
+    "/Users/ivm/Sources/PaliPractice/.local/inputs/corpora-july/sya_wordlist.json": "f3bee239843295061ceb9963dde806b167b61213c77d7c5e0ca5e2efdf6ce470",
+    "/Users/ivm/Sources/PaliPractice/.local/inputs/dpd-v0.4.20260728/dpd.db": "6982aee8a9cdce83c3c57af7f7c506f59fe07afd5673a952fb8d27d52c693a98",
+    "/Users/ivm/Sources/PaliPractice/.local/inputs/english-m5.json": "f77d0803760bf064591f84b234f09ff8f620bee7be410386564e7408bfb9c8e1",
+    "/Users/ivm/Sources/PaliPractice/PaliPractice/PaliPractice/Data/pali.db": "e0822e1e7c21a1be5143b952420813eb7014fd2e0f0887efb286bdae246fca42",
+    "/Users/ivm/Sources/PaliPractice/PaliPractice/PaliPractice/Data/pali.version.txt": "8ecf92277e93ccbc692907b93be8f9be0b47517479edca92b57ff6f82e886261",
+    "/Users/ivm/Sources/PaliPractice/scripts/configs/custom_translations.json": "eb43aff156e32abcf574873eb647d31a737c939b0529c200781a9dc0c59771a2",
+    "/Users/ivm/Sources/PaliPractice/scripts/configs/lemma_registry.backup.json": "098e307cbc19042a13ab59c0e237448b7444530d38be51bd54f880ccfbf9ce8f",
+    "/Users/ivm/Sources/PaliPractice/scripts/configs/lemma_registry.json": "daa248dc5436ab1b78e336891ea2333f1759d7a2ab88f6200ed7eb16ceccaa45",
+    "/Users/ivm/Sources/PaliPractice/scripts/configs/paradigm_corrections.json": "4ca10b2b65dbe531a7dd54b89710964381e8ad6e81d796627a8f897912297c13",
+    "/Users/ivm/Sources/PaliPractice/scripts/configs/practice_registry.json": "1e1b908f3aea0442b0e09f19d3827f0bc20168dbecfb3617798987d169acab1c"
+  },
+  "outputs": {
+    "pali.db": "f4850fe87522595ed82fdc3abf89ae9b5aebd22d7d8d63dc60c40c087863f75f",
+    "pali.version.txt": "6e15daa7f878eb20a2de31da913e23b016873f48e087fa1fdf4d16e3dcf2954f",
+    "lemma_registry.json": "60def983ff5064eecac63c33494608900fe838e6653920e8c7871c80c6ff29c8",
+    "inflection_validation.log": "2b21d8829d13781dd72fea6309f67682435822bfaa5590ad640c1d37384bfc1a",
+    "practice_registry.json": "74d6d7fab159270ba819be1746b74d4be88b080034fe9fd562319bf9fd587cab",
+    "paradigm_corrections.json": "4ca10b2b65dbe531a7dd54b89710964381e8ad6e81d796627a8f897912297c13",
+    "compatibility.json": "09e711082109700389dc54f84d578418bd4329c9e862c7dfd82964270306d86f",
+    "primary_forms.json": "12b969c906d2a75b4d5335b7c7fe9d199894db3ccc48e83dc42851a1b9e4add9"
+  },
+  "supplied_candidate": null
+}

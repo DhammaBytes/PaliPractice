@@ -1,0 +1,26 @@
+using System.Text.Json;
+using PaliPractice.Models.Inflection;
+using PaliPractice.Services.Grammar;
+using SQLite;
+SQLitePCL.Batteries_V2.Init();
+using var connection = new SQLiteConnection(args[0], SQLiteOpenFlags.ReadOnly);
+var db = new BaselineDatabase(connection);
+var inflection = new InflectionService(db);
+var result = new SortedDictionary<long,string[]>();
+foreach (var lemma in db.Nouns.GetLemmasByRank(1, int.MaxValue))
+for (int c=1;c<=8;c++) for (int n=1;n<=2;n++)
+{
+ var gender = ((PaliPractice.Models.Words.Noun)lemma.Primary).Gender;
+ var id = Declension.ResolveId(lemma.LemmaId,(Case)c,gender,(Number)n,0);
+ var form = inflection.ResolveFormText(id,PracticeType.Declension);
+ if (!string.IsNullOrEmpty(form)) result.Add(id,[form,lemma.BaseForm,$"{(Case)c}/{gender}/{(Number)n}"]);
+}
+foreach (var lemma in db.Verbs.GetLemmasByRank(1, int.MaxValue))
+for(int t=1;t<=4;t++) for(int p=1;p<=3;p++) for(int n=1;n<=2;n++) for(int v=1;v<=2;v++)
+{
+ var id=Conjugation.ResolveId(lemma.LemmaId,(Tense)t,(Person)p,(Number)n,(Voice)v,0);
+ var form=inflection.ResolveFormText(id,PracticeType.Conjugation);
+ if (!string.IsNullOrEmpty(form)) result.Add(id,[form,lemma.BaseForm,$"{(Tense)t}/{(Person)p}/{(Number)n}/{(Voice)v}"]);
+}
+File.WriteAllText(args[1],JsonSerializer.Serialize(result));
+Console.WriteLine($"Exported {result.Count} released history reconstructions");

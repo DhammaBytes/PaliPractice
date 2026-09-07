@@ -13,7 +13,9 @@ read-only semantic data checks, and recursive submodule checks. Data, DPD, and
 quality-infrastructure paths route through every affected consumer; unknown
 paths widen to full. `full` also restores in
 locked mode, runs all .NET tests with fresh Coverlet evidence, and builds the
-desktop target. The gate never invokes the database generator or native builds.
+desktop target. With explicit pinned inputs, the gate regenerates isolated English
+candidates in external evidence storage. It never acquires inputs, promotes data,
+or invokes native device builds.
 `--profile auto` remains equivalent to the positional form. Every external step
 has a 1200-second timeout, adjustable with `--step-timeout-seconds`.
 
@@ -104,25 +106,26 @@ ambiguous reports fail. The percentage is reported only as an advisory metric.
 
 ## Verifying an isolated data candidate
 
-During M4, the gate can consume an existing candidate without running extraction:
+M5 permits candidate-only regeneration from an explicit manifest:
 
-```sh
-PALIPRACTICE_CANDIDATE_DIRECTORY=/absolute/path/to/candidate \
-PALIPRACTICE_INPUT_MANIFEST=/absolute/path/to/inputs.json \
-  /absolute/path/to/run_quality_gate.py --repo /absolute/path/to/PaliPractice \
-  --profile auto --base <milestone-base>
+```bash
+PALIPRACTICE_INPUT_MANIFEST=/absolute/path/inputs.json \
+  /Users/ivm/.codex/skills/agentic-quality-loop/scripts/run_quality_gate.py \
+  --repo /Users/ivm/Sources/PaliPractice --profile auto --base <commit>
 ```
 
-Both variables are required together. The gate verifies candidate hashes,
-identity/scoped-form contracts, pinned inputs, and current extraction code before
-and after the checks. Its structural lane and .NET integration tests consume that
-candidate and those input paths. An English candidate must have empty translation
-fields; the existing bundled database must retain Russian meanings when tested.
-The desktop lane compiles the app; it does not claim to package or provision the
-candidate. No extraction, acquisition, or promotion runs in this mode. M5 adds
-isolated generation and provisioning evidence.
+For data and .NET lanes, the gate builds twice into separate external evidence
+folders using the same pinned inputs and version. All candidate output bytes and
+database semantic digests must match. Input and production artifact hashes must
+remain unchanged. Integration tests then consume the first verified build.
+Optionally supply `PALIPRACTICE_CANDIDATE_DIRECTORY` to also require the rebuilt
+outputs to match an existing candidate exactly. Candidate manifests, input hashes,
+and extraction source identities are verified before and after the test lanes.
+Producer fixture tests run in the Python lane. Acquisition and promotion remain
+separate actions. Desktop compilation alone does not prove candidate packaging
+or native iOS/Android operation; retain the separate provisioning smoke evidence.
 
-Without a supplied candidate the gate checks the bundled data. The preserved
-pending bundle still contains the known invalid grammar/attestation records;
-strict checks must fail for that data rather than accept `None` grammar or a
-percentage of mismatches. Use a rebuilt candidate to verify the repairs.
+A complete successful candidate gate emits `semantic-verification.json`, binding
+the exact candidate, inputs, and producer/consumer source hashes. Promotion requires
+this receipt and rejects stale evidence. English-only production promotion remains
+blocked; M9 performs deliberate multilingual promotion using the recovery journal.

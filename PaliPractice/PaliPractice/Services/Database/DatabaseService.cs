@@ -1,5 +1,6 @@
 using PaliPractice.Services.Database.Providers;
 using PaliPractice.Services.Database.Repositories;
+using PaliPractice.Services.Practice;
 using PaliPractice.Services.UserData.Entities;
 using SQLite;
 using System.Globalization;
@@ -82,6 +83,7 @@ public class DatabaseService : IDatabaseService
 
     public DatabaseService(IBundledFileProvider bundledFileProvider)
     {
+        SQLitePCL.Batteries_V2.Init();
         _bundledFileProvider = bundledFileProvider;
 
         // Provision grammar database (read-only)
@@ -103,7 +105,8 @@ public class DatabaseService : IDatabaseService
         Nouns = new NounRepository(paliDb);
         Verbs = new VerbRepository(paliDb);
         UserData = new UserDataRepository(userDataDb);
-        Statistics = new StatisticsRepository(userDataDb, UserData);
+        Statistics = new StatisticsRepository(userDataDb, UserData,
+            type => new PracticeQueueBuilder(this).GetEligibleFormIds(type).ToHashSet());
 
         // Initialize default settings if first run
         UserData.InitializeDefaultsIfNeeded();
@@ -155,6 +158,7 @@ public class DatabaseService : IDatabaseService
         {
             try
             {
+                BundledDatabaseCopy.Validate(bundlePath, GetBundledPaliVersion());
                 var connection = new SQLiteConnection(bundlePath, SQLiteOpenFlags.ReadOnly);
                 ReportProvision(new DatabaseProvisionedEvent(file, DatabaseProvisioningStatus.ReusedBundled, DateTimeOffset.UtcNow, nameof(OpenBundledDatabase)));
                 return connection;
@@ -168,24 +172,10 @@ public class DatabaseService : IDatabaseService
 
         // Need to copy (Android, WASM)
         var localPath = IOPath.Combine(_bundledFileProvider.GetUserDataDirectory(), file.Name);
-        if (NeedsCopy(file, localPath, out var isCorrupt))
+        if (NeedsCopy(file, localPath, out _))
         {
             try
             {
-                // If file is corrupt, delete it first
-                if (isCorrupt && IOFile.Exists(localPath))
-                {
-                    try
-                    {
-                        IOFile.Delete(localPath);
-                        ReportProvision(new DatabaseProvisionedEvent(file, DatabaseProvisioningStatus.DeletedCorrupt, DateTimeOffset.UtcNow, nameof(OpenBundledDatabase)));
-                    }
-                    catch (Exception deleteEx)
-                    {
-                        ReportProvision(new DatabaseProvisionedEvent(file, DatabaseProvisioningStatus.FailedToDeleteCorrupt, DateTimeOffset.UtcNow, nameof(OpenBundledDatabase), deleteEx));
-                    }
-                }
-
                 CopyBundledDatabase(file, localPath);
                 ReportProvision(new DatabaseProvisionedEvent(file, DatabaseProvisioningStatus.CopiedFromBundle, DateTimeOffset.UtcNow, nameof(CopyBundledDatabase)));
             }
@@ -217,41 +207,9 @@ public class DatabaseService : IDatabaseService
 
     void CopyBundledDatabase(DatabaseFile file, string destinationPath)
     {
-        // Atomic copy pattern: write to temp file first, then move to final location.
-        // This prevents partial writes if the operation is interrupted.
-        var tempPath = destinationPath + ".tmp";
-
-        try
-        {
-            // Synchronous copy - we block on the async stream open
-            using (var sourceStream = _bundledFileProvider.OpenReadStreamAsync($"Data/{file.Name}").GetAwaiter().GetResult())
-            using (var destinationStream = new FileStream(tempPath, FileMode.Create, FileAccess.Write))
-            {
-                var buffer = new byte[8192];
-                int bytesRead;
-                while ((bytesRead = sourceStream.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    destinationStream.Write(buffer, 0, bytesRead);
-                }
-                destinationStream.Flush();
-            }
-
-            // Only move to final location after complete success
-            if (IOFile.Exists(destinationPath))
-                IOFile.Delete(destinationPath);
-
-            IOFile.Move(tempPath, destinationPath);
-        }
-        catch
-        {
-            // Clean up temp file on failure
-            if (IOFile.Exists(tempPath))
-            {
-                try { IOFile.Delete(tempPath); }
-                catch { /* Ignore cleanup errors */ }
-            }
-            throw;
-        }
+        using var source = _bundledFileProvider.OpenReadStreamAsync($"Data/{file.Name}")
+            .GetAwaiter().GetResult();
+        BundledDatabaseCopy.Replace(source, destinationPath, GetBundledPaliVersion());
     }
 
     bool NeedsCopy(DatabaseFile file, string targetPath, out bool isCorrupt)
@@ -319,26 +277,8 @@ public class DatabaseService : IDatabaseService
         return version;
     }
 
-    static void InitializeUserDataSchema(SQLiteConnection connection)
-    {
-        // Create noun-specific tables
-        connection.CreateTable<NounsFormMastery>();
-        connection.CreateTable<NounsPracticeHistory>();
-
-        // Create verb-specific tables
-        connection.CreateTable<VerbsFormMastery>();
-        connection.CreateTable<VerbsPracticeHistory>();
-
-        // Create shared tables
-        connection.CreateTable<UserSetting>();
-        connection.CreateTable<DailyProgress>();
-
-        // Create indices for efficient querying
-        connection.Execute("CREATE INDEX IF NOT EXISTS idx_nouns_mastery_level ON nouns_form_mastery(mastery_level)");
-        connection.Execute("CREATE INDEX IF NOT EXISTS idx_verbs_mastery_level ON verbs_form_mastery(mastery_level)");
-        connection.Execute("CREATE INDEX IF NOT EXISTS idx_nouns_history_date ON nouns_practice_history(practiced_utc DESC)");
-        connection.Execute("CREATE INDEX IF NOT EXISTS idx_verbs_history_date ON verbs_practice_history(practiced_utc DESC)");
-    }
+    static void InitializeUserDataSchema(SQLiteConnection connection) =>
+        PracticeDatabaseMigrations.Apply(connection);
 
     static SQLiteConnection CreateEmptyDatabase(DatabaseFile file)
     {

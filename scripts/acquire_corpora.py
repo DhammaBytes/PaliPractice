@@ -52,14 +52,35 @@ def check_conversion(source: Path, target: Path, suffix: str, excluded: str = ""
         raise InputError(f"Incomplete upstream corpus conversion: {source}")
 
 
+def verify_gitlinks(repository: Path, revisions: dict[str, str]):
+    """Require corpus commits to match the chosen DPD source tree."""
+    paths = {"texts": "resources/dpd_submodules", "sc": "resources/sc-data",
+             "thai": "resources/tipitaka.rte"}
+    for name, path in paths.items():
+        entry = subprocess.check_output(
+            ["git", "ls-tree", revisions["dpd"], "--", path], cwd=repository, text=True).split()
+        supplied = revisions.get(name)
+        if not entry and name == "thai" and supplied is None:
+            continue  # Older releases keep SYA text in the root repository.
+        if len(entry) != 4 or entry[0] != "160000" or entry[2] != supplied:
+            raise InputError(f"Pinned {name} revision does not match DPD gitlink {path}")
+
+
 def acquire(repository: Path, output: Path, revisions: dict[str, str]) -> Path:
+    verify_gitlinks(repository, revisions)
     output.mkdir(parents=True, exist_ok=False)
     workspace = output / "workspace"
-    archive(repository, revisions["dpd"], [
+    root_paths = [
         "go.mod", "go.sum", "go_modules/tools", "go_modules/frequency",
         "scripts/build/cst4_xml_to_txt.py", "scripts/build/transliterate_bjt.py",
-        "tools", "resources/syāmaraṭṭha_1927", "pyproject.toml", "uv.lock",
-    ], workspace)
+        "tools", "pyproject.toml", "uv.lock",
+    ]
+    if "thai" not in revisions:
+        root_paths.append("resources/syāmaraṭṭha_1927")
+    archive(repository, revisions["dpd"], root_paths, workspace)
+    if "thai" in revisions:
+        archive(repository / "resources/tipitaka.rte", revisions["thai"],
+                ["Canonical", "Non-Canonical"], workspace / "resources/tipitaka.rte")
     archive(repository / "resources/dpd_submodules", revisions["texts"],
             ["cst", "bjt"], workspace / "resources/dpd_submodules")
     archive(repository / "resources/sc-data", revisions["sc"],
@@ -105,8 +126,11 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     for name in ("dpd", "texts", "sc"):
         parser.add_argument(f"--{name}-revision", required=True)
+    parser.add_argument("--thai-revision", help="Pinned BUDSIR gitlink for releases using tipitaka.rte")
     args = parser.parse_args()
     revisions = {name: getattr(args, name + "_revision") for name in ("dpd", "texts", "sc")}
+    if args.thai_revision:
+        revisions["thai"] = args.thai_revision
     print(acquire(args.repository.resolve(), args.output.resolve(), revisions))
 
 

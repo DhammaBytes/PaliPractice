@@ -1,0 +1,84 @@
+{
+  "scope": "Separate Debug app identifier and isolated test data; production app data untouched.",
+  "android": {
+    "pali.db": {
+      "sha256": "f4850fe87522595ed82fdc3abf89ae9b5aebd22d7d8d63dc60c40c087863f75f",
+      "version": 2026090702,
+      "integrity": "ok"
+    },
+    "practice.db": {
+      "sha256": "e6b7cf31a00315a31f6fa17686869b52a8da8675cfe83c956c8365adecbb71a2",
+      "version": 1,
+      "integrity": "ok",
+      "history": [
+        [
+          100502110,
+          "atthiṃ",
+          "atthi",
+          "Accusative/Masculine/Singular",
+          2
+        ]
+      ]
+    },
+    "files": "config\npali.db\npractice.db\nprofileInstalled\n"
+  },
+  "desktop": {
+    "fresh": {
+      "integrity": "ok",
+      "version": 1,
+      "history": []
+    },
+    "upgrade": {
+      "integrity": "ok",
+      "version": 1,
+      "history": [
+        [
+          100502110,
+          "atthiṃ",
+          "atthi",
+          "Accusative/Masculine/Singular",
+          2
+        ]
+      ]
+    }
+  },
+  "native_sqlite_version": "3.50.4 (3050004), Android, desktop, and iOS",
+  "limitations": [
+    "Desktop real DatabaseService console probe passed; GUI capture unavailable while macOS is locked.",
+    "Android recovery exercised Debug copy behavior; Release copy-selection behavior was not separately native-smoked."
+  ],
+  "ios": {
+    "device": "iPhone 17, iOS 26.5",
+    "fresh": {
+      "version": 1,
+      "integrity": "ok",
+      "history_count": 0,
+      "sqlite_writer_version": 3050004
+    },
+    "upgrade": {
+      "version": 1,
+      "integrity": "ok",
+      "history": [
+        [
+          100502110,
+          "atthiṃ",
+          "atthi",
+          "Accusative/Masculine/Singular",
+          2
+        ]
+      ],
+      "mastery": [
+        [
+          100502110,
+          5,
+          4,
+          638740000000000000
+        ]
+      ],
+      "sqlite_writer_version": 3050004,
+      "bundled_database_sha256": "f4850fe87522595ed82fdc3abf89ae9b5aebd22d7d8d63dc60c40c087863f75f"
+    },
+    "provisioning": "Direct read-only bundled database; writable practice schema migrated.",
+    "signing": "Simulator ad-hoc signing enabled; initial unsigned build was rejected before app startup."
+  }
+}

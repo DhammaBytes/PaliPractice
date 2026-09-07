@@ -5,6 +5,7 @@ using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Services.Database.Repositories;
 using PaliPractice.Services.Feedback;
 using PaliPractice.Services.UserData;
+using PaliPractice.Services.UserData.Entities;
 
 namespace PaliPractice.Presentation.Practice.ViewModels.Common;
 
@@ -286,8 +287,12 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         Logger.LogInformation("Marked {Result}: FormId={FormId}",
             wasEasy ? "easy" : "hard", current.FormId);
 
-        // Record to SRS system (FormText resolved on history load, not stored)
-        UserData.RecordPracticeResult(current.FormId, CurrentPracticeType, wasEasy);
+        // Capture the answer actually displayed before advancing the queue.
+        var lemma = _provider.GetCurrentLemma()
+            ?? throw new InvalidOperationException("Current practice lemma is unavailable");
+        var snapshot = PracticeSnapshot.Capture(current.FormId, CurrentPracticeType,
+            GetInflectedForm(), lemma.BaseForm);
+        UserData.RecordPracticeResult(current.FormId, CurrentPracticeType, wasEasy, snapshot);
 
         // Update daily progress
         UserData.IncrementProgress(CurrentPracticeType);

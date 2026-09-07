@@ -1,6 +1,6 @@
 # DPD rebuild and translation roadmap
 
-Created: 7 September 2026. Status: M1–M4 complete; M5 is next.
+Created: 7 September 2026. Status: M1–M5 complete; M6 Russian enrichment is next.
 
 The objective is a reproducible, grammatically correct English DPD database with stable production practice identities, followed by verified Russian and Spanish meanings in the next app update. The findings and measured starting state are in [DATA-REBUILD-AUDIT.md](DATA-REBUILD-AUDIT.md).
 
@@ -95,14 +95,14 @@ Core English work ends at M5. Translation implementation must not begin before t
 
 **Purpose:** finish audit point 4, the quality-gate improvements, and production upgrade behavior before adding translation data.
 
-- [ ] Run candidate validation before promotion: SQLite integrity, schema, detail parity, registry/identity compatibility, grammar, supported patterns, usable forms, exact attestation, and version/manifest consistency.
-- [ ] Make promotion of database, version, registry, and manifest recoverable across failure. Use an explicit staged/recovery protocol; independent file renames do not constitute a transaction. Test interrupted promotion and rollback.
-- [ ] After M2's isolation is proven, deliberately update the repository's no-extraction gate policy to permit candidate-only regeneration. Adopt ConjuGato's two isolated builds from identical inputs with a fixed version, semantic comparison, deterministic byte checks, and source-file preservation.
-- [ ] Make integration tests consume the exact verified candidate. Route changes to all affected producers/consumers, retain useful external evidence, and require a green complete local gate. Do not copy unrelated coverage targets or platform policies from ConjuGato.
-- [ ] Protect user-data upgrades with versioned transactional migrations where required. Store historical form/lemma/grammar snapshots for new history records, and preserve resolvability of existing records through baseline data where possible. Test records for removed lemmas; document any irrecoverable old records honestly.
-- [ ] Define lifetime-versus-current statistics semantics. Keep dormant mastery, exclude ineligible records from active review queues, and make displayed totals/due counts consistent with the selected semantics.
-- [ ] Complete relevant package remediation and app database-provisioning checks. Verify stale/corrupt copies, interrupted replacement, and compatibility with existing practice data.
-- [ ] Select and pin the DPD release current at implementation time. Run the English candidate through all checks and review frequency and semantic deltas. Do not assume the July snapshot remains the desired version indefinitely.
+- [x] Run candidate validation before promotion: SQLite integrity, schema, detail parity, registry/identity compatibility, grammar, supported patterns, usable forms, exact attestation, and version/manifest consistency.
+- [x] Make promotion of database, version, registry, and manifest recoverable across failure. Use an explicit staged/recovery protocol; independent file renames do not constitute a transaction. Test interrupted promotion and rollback.
+- [x] After M2's isolation is proven, deliberately update the repository's no-extraction gate policy to permit candidate-only regeneration. Adopt ConjuGato's two isolated builds from identical inputs with a fixed version, semantic comparison, deterministic byte checks, and source-file preservation.
+- [x] Make integration tests consume the exact verified candidate. Route changes to all affected producers/consumers, retain useful external evidence, and require a green complete local gate. Do not copy unrelated coverage targets or platform policies from ConjuGato.
+- [x] Protect user-data upgrades with versioned transactional migrations where required. Store historical form/lemma/grammar snapshots for new history records, and preserve resolvability of existing records through baseline data where possible. Test records for removed lemmas; document any irrecoverable old records honestly.
+- [x] Define lifetime-versus-current statistics semantics. Keep dormant mastery, exclude ineligible records from active review queues, and make displayed totals/due counts consistent with the selected semantics.
+- [x] Complete relevant package remediation and app database-provisioning checks. Verify stale/corrupt copies, interrupted replacement, and compatibility with existing practice data.
+- [x] Select and pin the DPD release current at implementation time. Run the English candidate through all checks and review frequency and semantic deltas. Do not assume the July snapshot remains the desired version indefinitely.
 
 **Exit — translation work may now begin:** the English candidate passes the full gate, isolated repeatability checks, identity/upgrade tests, and bounded desktop plus relevant iOS/Android database-provisioning smoke checks. The English manifest and semantic digest are frozen as the base for M6–M9. All five core audit points are closed with evidence.
 
@@ -193,8 +193,8 @@ Update this table at the end of each milestone with durable evidence links.
 | M2 | Complete | [Inputs, candidate, gate, and review](quality/evidence/m2/README.md) |
 | M3 | Complete | [Identity contract, candidate, gate, and review](quality/evidence/m3/README.md) |
 | M4 | Complete | [Exact forms, attestation, candidate gate, and review](quality/evidence/m4/README.md) |
-| M5 | Next | Isolated repeatability, upgrade/provisioning, and final English checkpoint |
-| M6 | Planned | Blocked on M5 completion |
+| M5 | Complete | [Repeatability, semantic gate, review, and desktop/iOS/Android upgrade evidence](quality/evidence/m5/README.md) |
+| M6 | Planned | English checkpoint complete; translation implementation may begin |
 | M7 | Planned | Spanish source discovery complete; implementation requires M6 |
 | M8 | Planned | Requires verified RU/ES enrichment |
 | M9 | Planned | Requires all previous milestones |

@@ -103,52 +103,8 @@ public class UserDataRepository : IUserDataRepository
             .ToHashSet();
     }
 
-    public void RecordNounPracticeResult(long formId, bool wasEasy)
-    {
-        var existing = GetNounFormMastery(formId);
-        var now = DateTime.UtcNow;
-
-        int oldLevel;
-        int newLevel;
-
-        if (existing == null)
-        {
-            // First practice: starts at default level (4), then adjusts based on result
-            oldLevel = CooldownCalculator.DefaultLevel;
-            newLevel = CooldownCalculator.AdjustLevel(CooldownCalculator.DefaultLevel, wasEasy);
-
-            var record = new NounsFormMastery
-            {
-                FormId = formId,
-                MasteryLevel = newLevel,
-                PreviousLevel = oldLevel,
-                LastPracticedUtc = now
-            };
-            _connection.Insert(record);
-        }
-        else
-        {
-            // Update existing record
-            oldLevel = existing.MasteryLevel;
-            newLevel = CooldownCalculator.AdjustLevel(oldLevel, wasEasy);
-
-            existing.PreviousLevel = oldLevel;
-            existing.MasteryLevel = newLevel;
-            existing.LastPracticedUtc = now;
-
-            _connection.Update(existing);
-        }
-
-        // Record to history (FormText resolved on load, not stored)
-        var history = new NounsPracticeHistory
-        {
-            FormId = formId,
-            OldLevel = oldLevel,
-            NewLevel = newLevel,
-            PracticedUtc = now
-        };
-        _connection.Insert(history);
-    }
+    public void RecordNounPracticeResult(long formId, bool wasEasy) =>
+        RecordPractice<NounsFormMastery, NounsPracticeHistory>(formId, wasEasy, null);
 
     // === Verb Form Mastery ===
 
@@ -169,51 +125,38 @@ public class UserDataRepository : IUserDataRepository
             .ToHashSet();
     }
 
-    public void RecordVerbPracticeResult(long formId, bool wasEasy)
+    public void RecordVerbPracticeResult(long formId, bool wasEasy) =>
+        RecordPractice<VerbsFormMastery, VerbsPracticeHistory>(formId, wasEasy, null);
+
+    void RecordPractice<TMastery, THistory>(long formId, bool wasEasy, PracticeSnapshot? snapshot)
+        where TMastery : FormMasteryBase, new()
+        where THistory : PracticeHistoryBase, new()
     {
-        var existing = GetVerbFormMastery(formId);
-        var now = DateTime.UtcNow;
-
-        int oldLevel;
-        int newLevel;
-
-        if (existing == null)
+        _connection.RunInTransaction(() =>
         {
-            // First practice: starts at default level (4), then adjusts based on result
-            oldLevel = CooldownCalculator.DefaultLevel;
-            newLevel = CooldownCalculator.AdjustLevel(CooldownCalculator.DefaultLevel, wasEasy);
+            var existing = _connection.Find<TMastery>(formId);
+            var oldLevel = existing?.MasteryLevel ?? CooldownCalculator.DefaultLevel;
+            var record = existing ?? new TMastery { FormId = formId };
+            record.PreviousLevel = oldLevel;
+            record.MasteryLevel = CooldownCalculator.AdjustLevel(oldLevel, wasEasy);
+            record.LastPracticedUtc = DateTime.UtcNow;
+            if (existing is null)
+                _connection.Insert(record);
+            else
+                _connection.Update(record);
 
-            var record = new VerbsFormMastery
+            _connection.Insert(new THistory
             {
                 FormId = formId,
-                MasteryLevel = newLevel,
-                PreviousLevel = oldLevel,
-                LastPracticedUtc = now
-            };
-            _connection.Insert(record);
-        }
-        else
-        {
-            // Update existing record
-            oldLevel = existing.MasteryLevel;
-            newLevel = CooldownCalculator.AdjustLevel(oldLevel, wasEasy);
-
-            existing.PreviousLevel = oldLevel;
-            existing.MasteryLevel = newLevel;
-            existing.LastPracticedUtc = now;
-
-            _connection.Update(existing);
-        }
-
-        // Record to history (FormText resolved on load, not stored)
-        var history = new VerbsPracticeHistory
-        {
-            FormId = formId,
-            OldLevel = oldLevel,
-            NewLevel = newLevel,
-            PracticedUtc = now
-        };
-        _connection.Insert(history);
+                OldLevel = oldLevel,
+                NewLevel = record.MasteryLevel,
+                PracticedUtc = record.LastPracticedUtc,
+                FormText = snapshot?.FormText ?? "",
+                LemmaText = snapshot?.LemmaText ?? "",
+                GrammarText = snapshot?.GrammarText ?? "",
+                SnapshotOrigin = snapshot is null ? HistorySnapshotOrigin.Unknown : HistorySnapshotOrigin.Practiced
+            });
+        });
     }
 
     // === Noun Practice History ===
@@ -260,12 +203,17 @@ public class UserDataRepository : IUserDataRepository
     /// <summary>
     /// Records a practice result, dispatching to type-specific methods.
     /// </summary>
-    public void RecordPracticeResult(long formId, PracticeType type, bool wasEasy)
+    public void RecordPracticeResult(long formId, PracticeType type, bool wasEasy) =>
+        RecordPracticeResult(formId, type, wasEasy, null);
+
+    public void RecordPracticeResult(long formId, PracticeType type, bool wasEasy, PracticeSnapshot? snapshot)
     {
         if (type == PracticeType.Declension)
-            RecordNounPracticeResult(formId, wasEasy);
+            RecordPractice<NounsFormMastery, NounsPracticeHistory>(formId, wasEasy, snapshot);
+        else if (type == PracticeType.Conjugation)
+            RecordPractice<VerbsFormMastery, VerbsPracticeHistory>(formId, wasEasy, snapshot);
         else
-            RecordVerbPracticeResult(formId, wasEasy);
+            throw new ArgumentOutOfRangeException(nameof(type));
     }
 
     /// <summary>

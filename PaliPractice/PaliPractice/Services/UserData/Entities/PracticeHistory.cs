@@ -2,6 +2,13 @@ using SQLite;
 
 namespace PaliPractice.Services.UserData.Entities;
 
+public enum HistorySnapshotOrigin
+{
+    Unknown = 0,
+    Practiced = 1,
+    ReconstructedV11 = 2
+}
+
 /// <summary>
 /// Common interface for practice history records.
 /// Used for type-agnostic display in HistoryPage.
@@ -11,7 +18,7 @@ public interface IPracticeHistory
     int Id { get; }
     long FormId { get; }
     /// <summary>
-    /// The inflected form text. Resolved from FormId on load, not stored in database.
+    /// The inflected form text captured at practice time, or recovered for older records.
     /// </summary>
     string FormText { get; set; }
     int OldLevel { get; }
@@ -38,10 +45,19 @@ public abstract class PracticeHistoryBase : IPracticeHistory
 
     /// <summary>
     /// The actual inflected form text (for display in history).
-    /// Resolved from FormId when loading, not stored in database.
+    /// Stored at practice time so dictionary updates cannot rewrite history.
     /// </summary>
-    [Ignore]
+    [Column("form_text")]
     public string FormText { get; set; } = "";
+
+    [Column("lemma_text")]
+    public string LemmaText { get; set; } = "";
+
+    [Column("grammar_text")]
+    public string GrammarText { get; set; } = "";
+
+    [Column("snapshot_origin")]
+    public HistorySnapshotOrigin SnapshotOrigin { get; set; }
 
     /// <summary>
     /// Mastery level before this practice.

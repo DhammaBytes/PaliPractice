@@ -20,6 +20,7 @@ scripts/
 │   ├── forms.py                  # Form ID computation
 │   ├── html_parser.py            # DPD HTML parsing
 │   ├── plural_dedup.py           # Plural-only deduplication
+│   ├── russian_meanings.py       # Fresh Russian meanings from dpd-db-sbs
 │   ├── translations.py           # Translation adjustments
 │   ├── validate_inflections.py   # Inflection validation
 │   └── validate_db.py            # Database validation
@@ -107,6 +108,7 @@ Words are included if they meet ALL of these criteria:
 - **Has meaning**: `meaning_1` is not null or empty
 - **Has example**: `sutta_1` is not null or empty
 - **Has inflection template**: DPD inflection data exists
+- **Not explicitly excluded**: `atthi` is omitted because its high count comes from the common verb form, not meaningful noun usage
 
 Words are **excluded** if meaning contains:
 - `(gram)` - grammatical terms
@@ -134,6 +136,12 @@ Words are **excluded** if meaning contains: same exclusions as nouns.
 - Words are grouped by `lemma_clean` (lemma without numeric suffix)
 - Top N lemmas are selected by highest `ebt_count` within the group
 - All headword variants of selected lemmas are included
+
+### Russian Meanings
+- Russian meanings are downloaded fresh during extraction from
+  `sasanarakkha/dpd-db-sbs`, branch `sbs-ru`, file `db/backup_tsv/russian.tsv`
+- Meanings are matched to DPD headwords by stable headword ID
+- Curated `ru_meaning` is preferred, with `ru_meaning_raw` as a fallback
 
 ---
 

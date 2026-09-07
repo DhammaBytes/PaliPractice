@@ -395,10 +395,34 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         int comboGap,
         int categoryGap)
     {
+        var index = FindIndexWithConstraints(forms.Count, i => forms[i].FormId, startIdx,
+            type, position, lastLemmaPos, lastComboPos, lastCategoryPos, categoryCache,
+            lemmaGap, comboGap, categoryGap);
+        return index < 0 ? (null, -1) : (forms[index], index);
+    }
+
+    static bool GapSatisfied<TKey>(Dictionary<TKey, int> positions, TKey key, int position, int gap)
+        where TKey : notnull =>
+        !positions.TryGetValue(key, out var previous) || position - previous >= gap;
+
+    int FindIndexWithConstraints(
+        int count,
+        Func<int, long> formIdAt,
+        int startIdx,
+        PracticeType type,
+        int position,
+        Dictionary<int, int> lastLemmaPos,
+        Dictionary<string, int> lastComboPos,
+        Dictionary<string, int> lastCategoryPos,
+        Dictionary<int, string> categoryCache,
+        int lemmaGap,
+        int comboGap,
+        int categoryGap)
+    {
         // Scan up to 100 items to find one satisfying constraints.
         // 100 is generous enough to find good candidates without being a performance issue.
         // In practice, pass 1 or 2 usually succeeds within the first few items.
-        int remaining = forms.Count - startIdx;
+        int remaining = count - startIdx;
         int scanLimit = Math.Min(100, remaining);
         int endIdx = startIdx + scanLimit;
 
@@ -406,57 +430,57 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         // "Not in dictionary" means never seen → always OK.
         // "In dictionary" means check if enough positions have passed since last use.
         bool LemmaOk(int lemmaId) =>
-            !lastLemmaPos.TryGetValue(lemmaId, out var lp) || position - lp >= lemmaGap;
+            GapSatisfied(lastLemmaPos, lemmaId, position, lemmaGap);
         bool ComboOk(string comboKey) =>
-            !lastComboPos.TryGetValue(comboKey, out var cp) || position - cp >= comboGap;
+            GapSatisfied(lastComboPos, comboKey, position, comboGap);
         bool CategoryOk(string categoryKey) =>
-            !lastCategoryPos.TryGetValue(categoryKey, out var cat) || position - cat >= categoryGap;
+            GapSatisfied(lastCategoryPos, categoryKey, position, categoryGap);
 
         // Pass 1: Ideal case - all three constraints satisfied
         for (int i = startIdx; i < endIdx; i++)
         {
-            var form = forms[i];
-            var lemmaId = ExtractLemmaId(form.FormId, type);
-            var comboKey = GetComboKey(form.FormId, type);
+            var formId = formIdAt(i);
+            var lemmaId = ExtractLemmaId(formId, type);
+            var comboKey = GetComboKey(formId, type);
             var categoryKey = GetCachedCategoryKey(lemmaId, type, categoryCache);
             if (LemmaOk(lemmaId) && ComboOk(comboKey) && CategoryOk(categoryKey))
-                return (form, i);
+                return i;
         }
 
         // Pass 2: Drop category (same pattern group is less jarring than same word/combo)
         for (int i = startIdx; i < endIdx; i++)
         {
-            var form = forms[i];
-            var lemmaId = ExtractLemmaId(form.FormId, type);
-            var comboKey = GetComboKey(form.FormId, type);
+            var formId = formIdAt(i);
+            var lemmaId = ExtractLemmaId(formId, type);
+            var comboKey = GetComboKey(formId, type);
             if (LemmaOk(lemmaId) && ComboOk(comboKey))
-                return (form, i);
+                return i;
         }
 
         // Pass 3: Combo only - important for small lemma pools (e.g., beginner with 2 words)
         // When lemmaGap is 0/1, combo diversity becomes the primary differentiation axis
         for (int i = startIdx; i < endIdx; i++)
         {
-            var form = forms[i];
-            var comboKey = GetComboKey(form.FormId, type);
+            var formId = formIdAt(i);
+            var comboKey = GetComboKey(formId, type);
             if (ComboOk(comboKey))
-                return (form, i);
+                return i;
         }
 
         // Pass 4: Lemma only - fallback when even combo diversity can't be achieved
         for (int i = startIdx; i < endIdx; i++)
         {
-            var form = forms[i];
-            var lemmaId = ExtractLemmaId(form.FormId, type);
+            var formId = formIdAt(i);
+            var lemmaId = ExtractLemmaId(formId, type);
             if (LemmaOk(lemmaId))
-                return (form, i);
+                return i;
         }
 
         // Pass 5: Any
-        if (startIdx < forms.Count)
-            return (forms[startIdx], startIdx);
+        if (startIdx < count)
+            return startIdx;
 
-        return (null, -1);
+        return -1;
     }
 
     #endregion
@@ -480,91 +504,17 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         int comboGap,
         int categoryGap)
     {
-        if (idx >= untried.Count)
+        var found = FindIndexWithConstraints(untried.Count, i => untried[i], idx,
+            type, position, lastLemmaPos, lastComboPos, lastCategoryPos, categoryCache,
+            lemmaGap, comboGap, categoryGap);
+        if (found < 0)
             return null;
 
-        // Scan up to 100 items to find one satisfying constraints
-        int remaining = untried.Count - idx;
-        int scanLimit = Math.Min(100, remaining);
-        int endIdx = idx + scanLimit;
-
-        bool LemmaOk(int lemmaId) =>
-            !lastLemmaPos.TryGetValue(lemmaId, out var lp) || position - lp >= lemmaGap;
-        bool ComboOk(string comboKey) =>
-            !lastComboPos.TryGetValue(comboKey, out var cp) || position - cp >= comboGap;
-        bool CategoryOk(string categoryKey) =>
-            !lastCategoryPos.TryGetValue(categoryKey, out var cat) || position - cat >= categoryGap;
-
-        // Pass 1: All three constraints
-        for (int i = idx; i < endIdx; i++)
-        {
-            var formId = untried[i];
-            var lemmaId = ExtractLemmaId(formId, type);
-            var comboKey = GetComboKey(formId, type);
-            var categoryKey = GetCachedCategoryKey(lemmaId, type, categoryCache);
-            if (LemmaOk(lemmaId) && ComboOk(comboKey) && CategoryOk(categoryKey))
-            {
-                if (i != idx)
-                    (untried[idx], untried[i]) = (untried[i], untried[idx]);
-                idx++;
-                return PracticeItem.NewForm(formId, type, lemmaId);
-            }
-        }
-
-        // Pass 2: Lemma + combo (drop category)
-        for (int i = idx; i < endIdx; i++)
-        {
-            var formId = untried[i];
-            var lemmaId = ExtractLemmaId(formId, type);
-            var comboKey = GetComboKey(formId, type);
-            if (LemmaOk(lemmaId) && ComboOk(comboKey))
-            {
-                if (i != idx)
-                    (untried[idx], untried[i]) = (untried[i], untried[idx]);
-                idx++;
-                return PracticeItem.NewForm(formId, type, lemmaId);
-            }
-        }
-
-        // Pass 3: Combo only (for small lemma pools)
-        for (int i = idx; i < endIdx; i++)
-        {
-            var formId = untried[i];
-            var lemmaId = ExtractLemmaId(formId, type);
-            var comboKey = GetComboKey(formId, type);
-            if (ComboOk(comboKey))
-            {
-                if (i != idx)
-                    (untried[idx], untried[i]) = (untried[i], untried[idx]);
-                idx++;
-                return PracticeItem.NewForm(formId, type, lemmaId);
-            }
-        }
-
-        // Pass 4: Lemma only
-        for (int i = idx; i < endIdx; i++)
-        {
-            var formId = untried[i];
-            var lemmaId = ExtractLemmaId(formId, type);
-            if (LemmaOk(lemmaId))
-            {
-                if (i != idx)
-                    (untried[idx], untried[i]) = (untried[i], untried[idx]);
-                idx++;
-                return PracticeItem.NewForm(formId, type, lemmaId);
-            }
-        }
-
-        // Pass 5: Any
-        if (idx < untried.Count)
-        {
-            var formId = untried[idx];
-            var lemmaId = ExtractLemmaId(formId, type);
-            idx++;
-            return PracticeItem.NewForm(formId, type, lemmaId);
-        }
-
-        return null;
+        var formId = untried[found];
+        if (found != idx)
+            (untried[idx], untried[found]) = (untried[found], untried[idx]);
+        idx++;
+        return PracticeItem.NewForm(formId, type, ExtractLemmaId(formId, type));
     }
 
     #endregion

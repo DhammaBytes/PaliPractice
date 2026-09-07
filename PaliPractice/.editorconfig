@@ -75,6 +75,9 @@ end_of_line = lf
 # EOL should be normalized by Git. See https://github.com/dotnet/format/issues/1099
 end_of_line = unset
 
+# Enforce the repository's Roslyn cyclomatic-complexity ratchet.
+dotnet_diagnostic.CA1502.severity = warning
+
 # See https://github.com/dotnet/roslyn/issues/20356#issuecomment-310143926
 trim_trailing_whitespace = false
 

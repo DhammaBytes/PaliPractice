@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "threshold": 15,
+  "anchor": "90330a40e07e399a2d1750068affe0d87e2699e5",
+  "allowed": [
+    {
+      "path": "PaliPractice/PaliPractice.Tests/DataIntegrity/Helpers/DpdWordLoader.cs",
+      "symbol": "GetAllHeadwordsById",
+      "max_complexity": 17
+    },
+    {
+      "path": "PaliPractice/PaliPractice.Tests/DataIntegrity/Helpers/DpdWordLoader.cs",
+      "symbol": "GetHeadwordById",
+      "max_complexity": 17
+    },
+    {
+      "path": "PaliPractice/PaliPractice/Models/Inflection/VerbEndings.cs",
+      "symbol": "GetAti_Long_Pr",
+      "max_complexity": 17
+    },
+    {
+      "path": "PaliPractice/PaliPractice/Models/Inflection/VerbEndings.cs",
+      "symbol": "GetAti_Pr",
+      "max_complexity": 17
+    },
+    {
+      "path": "PaliPractice/PaliPractice/Presentation/Practice/Common/TextBalancer.cs",
+      "symbol": "TryMultipleBreaksPass",
+      "max_complexity": 23
+    },
+    {
+      "path": "PaliPractice/PaliPractice/Presentation/Practice/PracticePageBuilder.cs",
+      "symbol": "ApplyResponsiveValues",
+      "max_complexity": 29
+    },
+    {
+      "path": "PaliPractice/PaliPractice/Presentation/Settings/ViewModels/DeclensionSettingsViewModel.cs",
+      "symbol": "SaveSettings",
+      "max_complexity": 26
+    },
+    {
+      "path": "PaliPractice/PaliPractice/Presentation/Settings/ViewModels/DeclensionSettingsViewModel.cs",
+      "symbol": "get_EnabledPatternCount",
+      "max_complexity": 17
+    }
+  ]
+}

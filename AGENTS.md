@@ -155,6 +155,14 @@ public sealed partial class MainPage : Page
 }
 ```
 
+## Repository Quality Gate
+
+- Run `python3 quality/gate.py auto` before handing off changes.
+- Use `--profile fast` for Python/data-only iteration and `--profile full` for the complete local gate.
+- Pass `--base <commit>` when the comparison base is not the upstream merge base.
+- The gate owns no generated source or database output. Never run the extraction pipeline as part of the gate.
+- Evidence and tool caches live outside the worktree; inspect the path printed by the gate.
+
 ## Composition Rules for Uno C# Markup
 
 When using `this.DataContext<TViewModel>((page, vm) => ...)`, the *only* legal way to access `vm` is **inside binding lambdas**. You must not pass `vm.Property` eagerly to helper/build methods.

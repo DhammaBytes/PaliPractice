@@ -61,6 +61,7 @@ from extraction.config import (
     ALL_VERB_POS,
     TIPITAKA_FREQ_PATH,
     TIPITAKA_WORDLIST_FILES,
+    EXCLUDED_NOUN_LEMMAS,
     is_plural_only_pattern,
     MAX_LEMMA_LENGTH,
 )
@@ -190,8 +191,8 @@ class NounVerbExtractor:
         # Initialize plural-only deduplicator
         self.plural_dedup = PluralOnlyDeduplicator(self.db_session)
 
-        # Load Russian meanings from the DPD fork (fail fast on any issue)
-        print("Loading Russian meanings from fork TSV...")
+        # Load Russian meanings from the SBS Russian DPD fork (fail fast on any issue)
+        print("Loading Russian meanings from SBS Russian TSV...")
         self.russian_meanings = load_russian_meanings()
         print(f"Loaded {len(self.russian_meanings)} Russian meanings")
 
@@ -369,6 +370,30 @@ class NounVerbExtractor:
 
         return True
 
+    def filter_noun_templates(self, all_words: List[DpdHeadword]) -> List[DpdHeadword]:
+        """Apply template, gender, length, and explicit noun eligibility rules."""
+        # Filter to words with inflection templates, valid pattern-pos gender match, and reasonable length
+        print("\nValidating noun pattern-pos gender matches...")
+        words_with_templates = [
+            w for w in all_words
+            if w.it is not None
+            and self.validate_noun_pattern_gender(w)
+            and len(w.lemma_clean) <= MAX_LEMMA_LENGTH
+            and w.lemma_clean not in EXCLUDED_NOUN_LEMMAS
+        ]
+        long_filtered = sum(1 for w in all_words if w.it and len(w.lemma_clean) > MAX_LEMMA_LENGTH)
+        if long_filtered:
+            print(f"  Filtered {long_filtered} nouns with lemma > {MAX_LEMMA_LENGTH} chars")
+        excluded_filtered = sum(
+            1 for w in all_words
+            if w.it is not None and w.lemma_clean in EXCLUDED_NOUN_LEMMAS
+        )
+        if excluded_filtered:
+            excluded_names = ", ".join(sorted(EXCLUDED_NOUN_LEMMAS))
+            print(f"  Filtered {excluded_filtered} explicitly excluded noun rows: {excluded_names}")
+
+        return words_with_templates
+
     def get_training_nouns(self) -> List[DpdHeadword]:
         """Get most frequent nouns suitable for training, limited by unique lemma_clean count."""
         # Fetch all candidate nouns
@@ -394,17 +419,7 @@ class NounVerbExtractor:
             ~DpdHeadword.meaning_1.contains('family name')
         ).all()
 
-        # Filter to words with inflection templates, valid pattern-pos gender match, and reasonable length
-        print("\nValidating noun pattern-pos gender matches...")
-        words_with_templates = [
-            w for w in all_words
-            if w.it is not None
-            and self.validate_noun_pattern_gender(w)
-            and len(w.lemma_clean) <= MAX_LEMMA_LENGTH
-        ]
-        long_filtered = sum(1 for w in all_words if w.it and len(w.lemma_clean) > MAX_LEMMA_LENGTH)
-        if long_filtered:
-            print(f"  Filtered {long_filtered} nouns with lemma > {MAX_LEMMA_LENGTH} chars")
+        words_with_templates = self.filter_noun_templates(all_words)
 
         # Build singular index from ALL DPD nouns (not just filtered ones)
         # This ensures plural-only deduplication finds matches even when

@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "captured_at": "2026-09-07",
+  "root_head": "90330a40e07e399a2d1750068affe0d87e2699e5",
+  "dpd_checkout": "56fe6d1835d0f8efd1ce079d991bcfb74c423aad",
+  "dpd_database_version": "v0.4.20260531",
+  "corpus_provenance": "Existing generated inputs; upstream generation revisions are unknown. Hashes preserve identity but do not establish reproducible source provenance. Resolve in M2.",
+  "pending_bundle_version": 2026071300,
+  "files": {
+    "dpd-db/dpd.db": {
+      "sha256": "45a1bc7215d009a74d1162c3a668986ce79314726c437a5feee5cf258feda0db",
+      "bytes": 2211205120
+    },
+    "PaliPractice/PaliPractice/Data/pali.db": {
+      "sha256": "e0822e1e7c21a1be5143b952420813eb7014fd2e0f0887efb286bdae246fca42",
+      "bytes": 2965504
+    },
+    "scripts/configs/lemma_registry.json": {
+      "sha256": "daa248dc5436ab1b78e336891ea2333f1759d7a2ab88f6200ed7eb16ceccaa45",
+      "bytes": 1199205
+    },
+    "scripts/configs/custom_translations.json": {
+      "sha256": "eb43aff156e32abcf574873eb647d31a737c939b0529c200781a9dc0c59771a2",
+      "bytes": 5446
+    },
+    "dpd-db/shared_data/frequency/cst_wordlist.json": {
+      "sha256": "eac3ddbb2b4dfbab8227d942ae9466ecebba6d9c830595e360863e6a2efb82f6",
+      "bytes": 23213171
+    },
+    "dpd-db/shared_data/frequency/bjt_wordlist.json": {
+      "sha256": "cf5f04a6b8f0cbdfac75b9713de419b5a72acf8ebb5c011e4830db76314b85d7",
+      "bytes": 11345063
+    },
+    "dpd-db/shared_data/frequency/sya_wordlist.json": {
+      "sha256": "5d49339307551cc562c0575086e9a9ca60a9d7333f24824430fa2a8788ff3f58",
+      "bytes": 13569760
+    },
+    "dpd-db/shared_data/frequency/sc_wordlist.json": {
+      "sha256": "249f89cf8bbbac4ab1573c2e48500ec21ef6d4e10bbf16d8a05873d3a87de01a",
+      "bytes": 3171775
+    }
+  },
+  "backup": {
+    "path": ".local/backups/m1-start/worktree.tar.gz",
+    "sha256": "630139664167ec7a2cbe949957689fbf70fc8c3db450b410bacc64efb8164626"
+  },
+  "submodule_cleanup": "User explicitly approved restoring the two archived nested submodules to pinned revisions. SQLite sidecars and Finder metadata are locally excluded from Git; a nonempty WAL must be rejected by the M2 input contract."
+}

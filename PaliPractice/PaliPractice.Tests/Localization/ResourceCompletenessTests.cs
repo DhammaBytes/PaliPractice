@@ -16,10 +16,13 @@ public class ResourceCompletenessTests
 
     static HashSet<string> LoadKeys(string languageCode)
     {
-        var path = System.IO.Path.GetFullPath(System.IO.Path.Combine(
-            TestContext.CurrentContext.TestDirectory,
-            "..", "..", "..", "..", "..",
-            "PaliPractice", "PaliPractice", "Strings", languageCode, "Resources.resw"));
+        var path = System.IO.Path.Combine(
+            TestPaths.RepositoryRoot,
+            "PaliPractice",
+            "PaliPractice",
+            "Strings",
+            languageCode,
+            "Resources.resw");
 
         File.Exists(path).Should().BeTrue($"resource file should exist: {path}");
 

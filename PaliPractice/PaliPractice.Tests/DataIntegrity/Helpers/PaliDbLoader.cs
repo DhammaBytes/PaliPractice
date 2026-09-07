@@ -75,8 +75,7 @@ public class PaliDbLoader : IDisposable
     readonly SqliteConnection _connection;
     bool _disposed;
 
-    public const string DefaultPaliDbPath =
-        "/Users/ivm/Sources/PaliPractice/PaliPractice/PaliPractice/Data/pali.db";
+    public static string DefaultPaliDbPath => TestPaths.PaliDbPath;
 
     public PaliDbLoader(string? paliDbPath = null)
     {

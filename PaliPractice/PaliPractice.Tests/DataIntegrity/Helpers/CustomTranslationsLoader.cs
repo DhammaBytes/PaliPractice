@@ -11,7 +11,8 @@ public class CustomTranslationsLoader
     readonly Dictionary<int, PrimaryAdjustment> _primary = new();
     readonly Dictionary<int, ReplaceAdjustment> _replace = new();
 
-    public const string DefaultPath = "/Users/ivm/Sources/PaliPractice/scripts/configs/custom_translations.json";
+    public static string DefaultPath => System.IO.Path.Combine(
+        TestPaths.RepositoryRoot, "scripts", "configs", "custom_translations.json");
 
     record PrimaryAdjustment(string Lemma1, string Preferred);
     record ReplaceAdjustment(string Lemma1, string Target, string Preferred);
@@ -29,41 +30,45 @@ public class CustomTranslationsLoader
         var json = File.ReadAllText(path);
         using var doc = JsonDocument.Parse(json);
 
-        // Load "primary" section
-        if (doc.RootElement.TryGetProperty("primary", out var primarySection))
+        LoadPrimary(doc.RootElement);
+        LoadReplacements(doc.RootElement);
+    }
+
+    static string OptionalString(JsonElement entry, string key) =>
+        entry.TryGetProperty(key, out var value) ? value.GetString() ?? "" : "";
+
+    void LoadPrimary(JsonElement root)
+    {
+        if (!root.TryGetProperty("primary", out var section))
+            return;
+
+        foreach (var prop in section.EnumerateObject())
         {
-            foreach (var prop in primarySection.EnumerateObject())
-            {
-                if (!int.TryParse(prop.Name, out var id))
-                    continue;
+            if (!int.TryParse(prop.Name, out var id))
+                continue;
 
-                var lemma1 = prop.Value.TryGetProperty("lemma_1", out var l) ? l.GetString() ?? "" : "";
-                var preferred = prop.Value.TryGetProperty("preferred", out var p) ? p.GetString() ?? "" : "";
-
-                if (!string.IsNullOrEmpty(lemma1) && !string.IsNullOrEmpty(preferred))
-                {
-                    _primary[id] = new PrimaryAdjustment(lemma1, preferred);
-                }
-            }
+            var lemma1 = OptionalString(prop.Value, "lemma_1");
+            var preferred = OptionalString(prop.Value, "preferred");
+            if (!string.IsNullOrEmpty(lemma1) && !string.IsNullOrEmpty(preferred))
+                _primary[id] = new PrimaryAdjustment(lemma1, preferred);
         }
+    }
 
-        // Load "replace" section
-        if (doc.RootElement.TryGetProperty("replace", out var replaceSection))
+    void LoadReplacements(JsonElement root)
+    {
+        if (!root.TryGetProperty("replace", out var section))
+            return;
+
+        foreach (var prop in section.EnumerateObject())
         {
-            foreach (var prop in replaceSection.EnumerateObject())
-            {
-                if (!int.TryParse(prop.Name, out var id))
-                    continue;
+            if (!int.TryParse(prop.Name, out var id))
+                continue;
 
-                var lemma1 = prop.Value.TryGetProperty("lemma_1", out var l) ? l.GetString() ?? "" : "";
-                var target = prop.Value.TryGetProperty("target", out var t) ? t.GetString() ?? "" : "";
-                var preferred = prop.Value.TryGetProperty("preferred", out var p) ? p.GetString() ?? "" : "";
-
-                if (!string.IsNullOrEmpty(lemma1) && !string.IsNullOrEmpty(target) && !string.IsNullOrEmpty(preferred))
-                {
-                    _replace[id] = new ReplaceAdjustment(lemma1, target, preferred);
-                }
-            }
+            var lemma1 = OptionalString(prop.Value, "lemma_1");
+            var target = OptionalString(prop.Value, "target");
+            var preferred = OptionalString(prop.Value, "preferred");
+            if (!string.IsNullOrEmpty(lemma1) && !string.IsNullOrEmpty(target) && !string.IsNullOrEmpty(preferred))
+                _replace[id] = new ReplaceAdjustment(lemma1, target, preferred);
         }
     }
 

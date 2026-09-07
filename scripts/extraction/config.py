@@ -24,6 +24,11 @@ VERB_ID_MAX = 99999
 NOUN_POS_LIST = ['masc', 'fem', 'nt']
 VERB_POS_LIST = ['pr']
 
+# Lemmas that should never be selected as nouns for training. `atthi` is
+# frequent because the same surface form is a common verb, but its noun sense
+# ("seeker; one who wants") is barely used.
+EXCLUDED_NOUN_LEMMAS = frozenset({'atthi'})
+
 # All noun POS types (for registry population)
 ALL_NOUN_POS = ['noun', 'masc', 'fem', 'neut', 'nt', 'abstr', 'act', 'agent', 'dimin']
 
@@ -86,8 +91,8 @@ TIPITAKA_WORDLIST_FILES = [
     "sc_wordlist.json",
 ]
 
-# Russian meaning import (from the DPD fork)
+# Russian meaning import (from the SBS Russian DPD fork)
 RUSSIAN_MEANINGS_URL = (
-    "https://raw.githubusercontent.com/DhammaBytes/dpd-db-sbs/sbs-ru/db/backup_tsv/russian.tsv"
+    "https://raw.githubusercontent.com/sasanarakkha/dpd-db-sbs/sbs-ru/db/backup_tsv/russian.tsv"
 )
 RUSSIAN_MEANINGS_TIMEOUT_SECONDS = 30

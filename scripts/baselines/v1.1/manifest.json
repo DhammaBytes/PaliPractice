@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "release": "v1.1",
+  "commit": "c0632db126c270b4bbde4ac43db4ca1ae6da8c6b",
+  "published_at": "2026-02-01T01:59:38Z",
+  "database_user_version": 1100,
+  "files": {
+    "pali.db": {
+      "path": "PaliPractice/PaliPractice/Data/pali.db",
+      "sha256": "332c69e71f03a0117a9b83ed92f8f32d4947c700a1650b168a527087569d0454",
+      "bytes": 2650112
+    },
+    "lemma_registry.json": {
+      "path": "scripts/configs/lemma_registry.json",
+      "sha256": "098e307cbc19042a13ab59c0e237448b7444530d38be51bd54f880ccfbf9ce8f",
+      "bytes": 1199082
+    }
+  },
+  "verified_distributed_assets": [
+    {
+      "url": "https://github.com/DhammaBytes/PaliPractice/releases/download/v1.1/PaliPractice-macos-arm64.zip",
+      "sha256": "49359ccf70daef5c1461384bd16777cb6a9df5b40be90fe8ec83eaa633d28d8a",
+      "database_member": "P─üliPractice.app/Contents/Resources/Data/pali.db",
+      "published_asset_updated_at": "2026-02-03T00:19:11Z"
+    },
+    {
+      "url": "https://github.com/DhammaBytes/PaliPractice/releases/download/v1.1/PaliPractice-windows-x64.zip",
+      "sha256": "04afc7dce11877f47c6b33d0d5944c6c317cca7cefe12bc2f41bbc624c964667",
+      "database_member": "Data/pali.db",
+      "published_asset_updated_at": "2026-02-03T00:17:22Z"
+    }
+  ],
+  "historical_source_sha256": {
+    "PaliPractice/PaliPractice/Models/Words/Lemma.cs": "8fabb9c8b68741f17fa01dee72f297ef80325b827f1d176884da06998a1a5614",
+    "PaliPractice/PaliPractice/Models/Inflection/NounEndings.cs": "ad12ad205dc586f09226d3966d539a4420c67c6a51dfd170d378e9358a0ed2a6",
+    "PaliPractice/PaliPractice/Models/Inflection/VerbEndings.cs": "f8064c8055bad726efbe3c95822538138e7f84d01e0680d143b6f8a16572fe17",
+    "PaliPractice/PaliPractice/Services/Grammar/InflectionService.cs": "49b7a8eb57e050f531304132147b896ea33b9334fd1887cf34786b2edbfcfb68"
+  },
+  "notes": [
+    "GitHub macOS and Windows artifacts match published asset checksums and contain the exact tagged database.",
+    "The App Store lists v1.1 dated 1 February 2026. Its binary was not extracted; do not claim an iOS binary checksum verification.",
+    "Local Android/Linux package hashes differ from GitHub assets; they are not used as release authenticity evidence.",
+    "HEAD has a later unshipped comparison database (2026040102), and the worktree has a pending build (2026071300)."
+  ]
+}

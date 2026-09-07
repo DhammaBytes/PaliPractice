@@ -21,6 +21,9 @@ artifacts/
 # Release staging
 release/
 
+# Local input caches and preserved worktree snapshots
+.local/
+
 # .NET artifacts
 *.dll
 *.dylib

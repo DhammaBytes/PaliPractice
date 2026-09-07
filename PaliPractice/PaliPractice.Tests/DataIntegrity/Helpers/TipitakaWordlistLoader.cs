@@ -18,7 +18,8 @@ public static class TipitakaWordlistLoader
     /// <summary>
     /// Base path to the dpd-db frequency data directory.
     /// </summary>
-    const string FrequencyPath = "/Users/ivm/Sources/PaliPractice/dpd-db/shared_data/frequency";
+    static string FrequencyPath => System.IO.Path.Combine(
+        TestPaths.RepositoryRoot, "dpd-db", "shared_data", "frequency");
 
     /// <summary>
     /// The expected Tipitaka wordlist files for corpus attestation.

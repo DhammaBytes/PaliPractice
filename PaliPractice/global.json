@@ -3,7 +3,9 @@
   "msbuild-sdks": {
     "Uno.Sdk": "6.4.42"
   },
-  "sdk":{
+  "sdk": {
+    "version": "10.0.301",
+    "rollForward": "disable",
     "allowPrerelease": false
   }
 }

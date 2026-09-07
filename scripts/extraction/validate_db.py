@@ -11,6 +11,7 @@ if str(SCRIPTS_ROOT) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_ROOT))
 
 from configs import DATABASE_VERSION
+from extraction.config import EXCLUDED_NOUN_LEMMAS
 
 
 # Enum value mappings for display (matching C# Enums.cs)
@@ -55,6 +56,43 @@ def parse_conjugation_form_id(form_id: int) -> dict:
         'voice': (form_id % 100) // 10,
         'ending_index': form_id % 10
     }
+
+
+def validate_russian_columns(cursor):
+    """Check the existing translation-capable detail schema."""
+    valid = True
+    print("\n🔍 Validating Russian meaning columns:")
+    for table_name in ("nouns_details", "verbs_details"):
+        cursor.execute(f"PRAGMA table_info({table_name})")
+        columns = [row[1] for row in cursor.fetchall()]
+        if 'meaning_ru' in columns:
+            print(f"  ✅ {table_name}.meaning_ru column exists")
+        else:
+            print(f"  ❌ {table_name}.meaning_ru column missing")
+            valid = False
+
+    return valid
+
+
+def validate_noun_exclusions(cursor):
+    """Check the noun-only exclusion policy without touching verb senses."""
+    valid = True
+    for excluded_lemma in sorted(EXCLUDED_NOUN_LEMMAS):
+        cursor.execute("SELECT COUNT(*) FROM nouns WHERE lemma = ?", (excluded_lemma,))
+        excluded_count = cursor.fetchone()[0]
+        if excluded_count:
+            print(
+                f"❌ Excluded noun '{excluded_lemma}' is present in "
+                f"{excluded_count} row(s)"
+            )
+            valid = False
+        else:
+            print(
+                f"✅ Excluded noun '{excluded_lemma}' is absent "
+                "(verb senses are unaffected)"
+            )
+
+    return valid
 
 
 def validate_database(db_path: str = "../PaliPractice/PaliPractice/Data/pali.db"):
@@ -142,15 +180,7 @@ def validate_database(db_path: str = "../PaliPractice/PaliPractice/Data/pali.db"
     else:
         print("  ❌ verbs_corpus_forms.form_id column missing")
 
-    print("\n🔍 Validating Russian meaning columns:")
-    for table_name in ("nouns_details", "verbs_details"):
-        cursor.execute(f"PRAGMA table_info({table_name})")
-        columns = [row[1] for row in cursor.fetchall()]
-        if 'meaning_ru' in columns:
-            print(f"  ✅ {table_name}.meaning_ru column exists")
-        else:
-            print(f"  ❌ {table_name}.meaning_ru column missing")
-            all_present = False
+    all_present = validate_russian_columns(cursor) and all_present
 
     # Check data counts
     cursor.execute("SELECT COUNT(*) FROM nouns")
@@ -160,6 +190,8 @@ def validate_database(db_path: str = "../PaliPractice/PaliPractice/Data/pali.db"
     cursor.execute("SELECT COUNT(*) FROM verbs")
     verb_count = cursor.fetchone()[0]
     print(f"✅ Verbs: {verb_count}")
+
+    all_present = validate_noun_exclusions(cursor) and all_present
 
     cursor.execute("SELECT COUNT(*) FROM nouns_corpus_forms")
     declension_count = cursor.fetchone()[0]
@@ -299,7 +331,7 @@ def validate_database(db_path: str = "../PaliPractice/PaliPractice/Data/pali.db"
         print(f"  {lemma} ({pos}): {form_count} forms - EN: {meaning_short} | RU: {meaning_ru_short}")
 
     conn.close()
-    return True
+    return all_present
 
 
 if __name__ == "__main__":

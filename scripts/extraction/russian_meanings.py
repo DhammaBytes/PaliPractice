@@ -1,7 +1,7 @@
 """
 Russian meaning import for PaliPractice extraction.
 
-Downloads the russian.tsv backup from the DPD fork and returns a mapping
+Downloads the russian.tsv backup from the SBS Russian DPD fork and returns a mapping
 from DPD headword ID to Russian meaning text.
 
 Prefer the curated `ru_meaning` column, but fall back to `ru_meaning_raw`

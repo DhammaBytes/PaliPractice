@@ -22,40 +22,37 @@ public class Lemma : ILemma
     {
         BaseForm = baseForm;
 
-        // All words with the same lemma share the same LemmaId
-        LemmaId = words.First().LemmaId;
-
         var allWords = words.ToList();
+        LemmaId = allWords.First().LemmaId;
+        var selected = allWords.Where(w => w.PracticePrimary).ToList();
+        if (selected.Count > 1)
+            throw new InvalidDataException($"Multiple practice senses for lemma {LemmaId}");
 
-        // Group by pattern and find the dominant one
-        var byPattern = allWords
-            .GroupBy(w => w.RawPattern)
-            .Select(g => new
-            {
-                Pattern = g.Key,
-                Words = g.ToList(),
-                Count = g.Count(),
-                MinId = g.Min(w => w.Id)
-            })
-            .OrderByDescending(g => g.Count)
-            .ThenBy(g => g.MinId)  // Tie-breaker: lowest ID wins
-            .ToList();
+        // Existing shipped bundles do not contain practice_primary. Preserve
+        // their released selection behavior until a validated bundle replaces them.
+        var primary = selected.SingleOrDefault();
+        var legacyPattern = primary is null ? LegacyPattern(allWords) : null;
+        bool Included(IWord word) => primary is null
+            ? word.RawPattern == legacyPattern
+            : SameParadigm(word, primary);
 
-        var dominantPattern = byPattern.First().Pattern;
-
-        // Separate words into the main list and excluded
-        // Order by EbtCount descending so Primary gets highest frequency variant
-        _words = allWords
-            .Where(w => w.RawPattern == dominantPattern)
-            .OrderByDescending(w => w.EbtCount)
+        _words = allWords.Where(Included)
+            .OrderByDescending(w => w.PracticePrimary)
+            .ThenByDescending(w => w.EbtCount)
             .ThenBy(w => w.Id)
             .ToList();
-
-        _excluded = allWords
-            .Where(w => w.RawPattern != dominantPattern)
-            .OrderBy(w => w.Id)
-            .ToList();
+        _excluded = allWords.Where(w => !Included(w)).OrderBy(w => w.Id).ToList();
     }
+
+    static bool SameParadigm(IWord word, IWord primary) =>
+        word.RawPattern == primary.RawPattern && word.Stem == primary.Stem &&
+        (word is not Noun noun || primary is not Noun selected || noun.Gender == selected.Gender);
+
+    static string LegacyPattern(List<IWord> words) => words
+        .GroupBy(w => w.RawPattern)
+        .OrderByDescending(g => g.Count())
+        .ThenBy(g => g.Min(w => w.Id))
+        .First().Key;
 
     public void LoadDetails(IReadOnlyList<IWordDetails> details)
     {

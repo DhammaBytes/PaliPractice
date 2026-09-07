@@ -54,7 +54,10 @@ from extraction.config import (
     MAX_LEMMA_LENGTH,
 )
 from extraction.grammar import pos_to_gender
-from extraction.inputs import load_corpus_words
+from extraction.inputs import load_corpus_words, read_json
+from extraction.compatibility import comparison
+from extraction.identity import (load_baseline, require_historical_registry,
+    historical_practice_registry, require_practice_registry, plan_practice)
 
 from extraction.validate_inflections import InflectionValidator, PluralOnlyMatch
 
@@ -69,10 +72,13 @@ class NounVerbExtractor:
     """Extract nouns and verbs with grammatical categorization."""
 
     def __init__(self, *, dpd_path: Path, corpus_paths: list[Path],
-                 registry_path: Path, adjustments_path: Path, output_db_path: Path,
+                 registry_path: Path, adjustments_path: Path, practice_registry_path: Path,
+                 corrections_path: Path, output_db_path: Path,
                  noun_limit: int, verb_limit: int, database_version: int):
         self.output_db_path = output_db_path
         self.registry_path = registry_path
+        self.practice_registry_path = practice_registry_path
+        self.corrections_path = corrections_path
         self.noun_limit = noun_limit
         self.verb_limit = verb_limit
         self.database_version = database_version
@@ -119,6 +125,7 @@ class NounVerbExtractor:
             CREATE TABLE IF NOT EXISTS nouns (
                 id INTEGER PRIMARY KEY,
                 ebt_count INTEGER DEFAULT 0,
+                practice_primary INTEGER NOT NULL DEFAULT 0,
                 lemma_id INTEGER NOT NULL,
                 lemma TEXT NOT NULL,
                 gender INTEGER NOT NULL DEFAULT 0,
@@ -153,6 +160,7 @@ class NounVerbExtractor:
             CREATE TABLE IF NOT EXISTS verbs (
                 id INTEGER PRIMARY KEY,
                 ebt_count INTEGER DEFAULT 0,
+                practice_primary INTEGER NOT NULL DEFAULT 0,
                 lemma_id INTEGER NOT NULL,
                 lemma TEXT NOT NULL,
                 stem TEXT,
@@ -510,6 +518,26 @@ class NounVerbExtractor:
 
         return forms, total_generated, not_in_corpus
 
+    def prepare_practice(self, nouns, verbs, registry):
+        historical_registry, historical_words = load_baseline()
+        require_historical_registry(registry, historical_registry)
+        choices = read_json(self.practice_registry_path)
+        corrections = read_json(self.corrections_path)
+        require_practice_registry(choices, historical_practice_registry(historical_words),
+                                  registry, corrections)
+        words = {}
+        for kind, selected_words, assign_id in (
+            ('nouns', nouns, get_noun_lemma_id), ('verbs', verbs, get_verb_lemma_id)
+        ):
+            words[kind] = [{
+                'id': word.id, 'lemma': word.lemma_clean,
+                'lemma_id': assign_id(registry, word.lemma_clean),
+                'pattern': word.pattern, 'stem': clean_stem(word.stem),
+                'gender': pos_to_gender(word.pos) if kind == 'nouns' else 0,
+                'ebt_count': word.ebt_count or 0,
+            } for word in selected_words]
+        return plan_practice(words, choices, corrections)
+
     def extract_and_save(self):
         """Main extraction process."""
         if self.database_version is None:
@@ -532,6 +560,7 @@ class NounVerbExtractor:
         # Get words
         nouns = self.get_training_nouns()
         verbs = self.get_training_verbs()
+        selected, practice_registry, practice_changes = self.prepare_practice(nouns, verbs, registry)
 
         conn = sqlite3.connect(self.output_db_path)
         cursor = conn.cursor()
@@ -553,11 +582,11 @@ class NounVerbExtractor:
             word_variant = self.extract_word_variant(word.lemma_1, word.lemma_clean)
 
             cursor.execute("""
-                INSERT INTO nouns (id, ebt_count, lemma_id, lemma, gender, stem, pattern)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO nouns (id, ebt_count, lemma_id, lemma, gender, stem, pattern, practice_primary)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 word.id, word.ebt_count or 0, lemma_id, word.lemma_clean, gender,
-                clean_stem(word.stem), word.pattern
+                clean_stem(word.stem), word.pattern, int(selected[lemma_id] == word.id)
             ))
 
             # Apply custom translation adjustments
@@ -673,11 +702,11 @@ class NounVerbExtractor:
 
             word_variant = self.extract_word_variant(word.lemma_1, word.lemma_clean)
             cursor.execute("""
-                INSERT INTO verbs (id, ebt_count, lemma_id, lemma, stem, pattern)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO verbs (id, ebt_count, lemma_id, lemma, stem, pattern, practice_primary)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             """, (
                 word.id, word.ebt_count or 0, lemma_id, word.lemma_clean,
-                clean_stem(word.stem), word.pattern
+                clean_stem(word.stem), word.pattern, int(selected[lemma_id] == word.id)
             ))
 
             # Apply custom translation adjustments
@@ -750,6 +779,11 @@ class NounVerbExtractor:
 
         conn.commit()
         conn.close()
+
+        (self.output_db_path.parent / "practice_registry.json").write_text(
+            json.dumps(practice_registry, indent=2, ensure_ascii=False) + "\n")
+        (self.output_db_path.parent / "compatibility.json").write_text(
+            json.dumps(comparison(self.output_db_path.parent, practice_changes), indent=2, ensure_ascii=False) + "\n")
 
         # Registry changes are proposed beside the candidate, never published here.
         save_registry(registry, original_registry,

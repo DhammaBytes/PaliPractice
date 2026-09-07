@@ -1,0 +1,41 @@
+{
+  "base": "214094b8b482446ab7e4f8f0afd171bade4400b0",
+  "candidate": ".local/candidates/english-m3-final",
+  "producer_tests": 22,
+  "gate": {
+    "profile": "auto",
+    "result": "PASS",
+    "dotnet_counts": {
+      "total": "2853",
+      "executed": "2853",
+      "passed": "2853",
+      "failed": "0",
+      "error": "0",
+      "timeout": "0",
+      "aborted": "0",
+      "inconclusive": "0",
+      "passedButRunAborted": "0",
+      "notRunnable": "0",
+      "notExecuted": "0",
+      "disconnected": "0",
+      "warning": "0",
+      "completed": "0",
+      "inProgress": "0",
+      "pending": "0"
+    },
+    "groups": [
+      "data",
+      "desktop",
+      "dotnet",
+      "python",
+      "quality",
+      "submodule"
+    ],
+    "evidence_directory": "/private/var/folders/cn/1_yc26_j25v239tcn5zw3zzr0000gn/T/pali-practice-quality-837444863b1d/runs/20260907T181955.911902Z-54545-0c9dad"
+  },
+  "review": {
+    "reviewer": "m3_review",
+    "result": "No blocking findings",
+    "verification_pass": "Not required; no code fixes requested"
+  }
+}

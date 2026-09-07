@@ -9,6 +9,7 @@ public interface IWord
     int Id { get; }
     int EbtCount { get; }
     int LemmaId { get; }
+    bool PracticePrimary => false;
 
     /// <summary>
     /// The lemma (dictionary form) of this word, e.g., "dhamma".

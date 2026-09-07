@@ -1,6 +1,6 @@
 # DPD rebuild and translation roadmap
 
-Created: 7 September 2026. Status: M1 and M2 complete; M3 is next.
+Created: 7 September 2026. Status: M1–M3 complete; M4 is next.
 
 The objective is a reproducible, grammatically correct English DPD database with stable production practice identities, followed by verified Russian and Spanish meanings in the next app update. The findings and measured starting state are in [DATA-REBUILD-AUDIT.md](DATA-REBUILD-AUDIT.md).
 
@@ -66,11 +66,11 @@ Core English work ends at M5. Translation implementation must not begin before t
 
 **Purpose:** prevent a rebuild from silently changing what an existing mastery ID represents.
 
-- [ ] Require the production registry for ordinary extraction. Keep registry initialization as an explicit bootstrap path. Compare every historical mapping against the released baseline, including dormant lemmas; additions are append-only.
-- [ ] Define one explicit practice-paradigm selection contract used by generation, repositories, ranking, and rendering. Persist the historical choice where necessary rather than recalculating it from changing sense counts.
-- [ ] Classify changes as source corrections within a paradigm, meaning/example changes, compatible primary-sense changes, incompatible paradigm changes, or cutoff additions/removals. Record the chosen treatment for cases such as `vassa`, `pathavī`, and `musati`.
-- [ ] Define the internal headword/paradigm identity needed by corpus and irregular-form storage. Preserve public SRS IDs. M4 implements the attestation repair against this contract.
-- [ ] Produce a comparison report for old/new eligibility and primary headword, stem, pattern, and gender. Unexplained reassignment fails; expected cutoff movement is reported.
+- [x] Require the production registry for ordinary extraction. Keep registry initialization as an explicit bootstrap path. Compare every historical mapping against the released baseline, including dormant lemmas; additions are append-only.
+- [x] Define one explicit practice-paradigm selection contract used by generation, repositories, ranking, and rendering. Persist the historical choice where necessary rather than recalculating it from changing sense counts.
+- [x] Classify changes as source corrections within a paradigm, meaning/example changes, compatible primary-sense changes, incompatible paradigm changes, or cutoff additions/removals. Record the chosen treatment for cases such as `vassa`, `pathavī`, and `musati`.
+- [x] Define the internal headword/paradigm identity needed by corpus and irregular-form storage. Preserve public SRS IDs. M4 implements the attestation repair against this contract.
+- [x] Produce a comparison report for old/new eligibility and primary headword, stem, pattern, and gender. Unexplained reassignment fails; expected cutoff movement is reported.
 
 **Exit:** historical IDs cannot be reassigned even if both candidate database and registry are regenerated together. Generation and the app select the same practice paradigm. Incompatible changes have a written policy and tests.
 
@@ -191,8 +191,8 @@ Update this table at the end of each milestone with durable evidence links.
 | --- | --- | --- |
 | M1 | Complete | [Baseline, gate, review, and remaining work](quality/evidence/m1/README.md) |
 | M2 | Complete | [Inputs, candidate, gate, and review](quality/evidence/m2/README.md) |
-| M3 | Next | M2 complete; protect identities and specify practice paradigms |
-| M4 | Planned | Requires M3 |
+| M3 | Complete | [Identity contract, candidate, gate, and review](quality/evidence/m3/README.md) |
+| M4 | Next | M3 complete; repair attestation and verify every primary form |
 | M5 | Planned | English stability checkpoint |
 | M6 | Planned | Blocked on M5 completion |
 | M7 | Planned | Spanish source discovery complete; implementation requires M6 |

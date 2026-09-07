@@ -1,0 +1,32 @@
+{
+  "10276": {
+    "lemma": "pathavī",
+    "anchor_headword_id": 42022,
+    "from": {
+      "pattern": "ī fem",
+      "stem": "pathav",
+      "gender": 2
+    },
+    "to": {
+      "pattern": "vī fem",
+      "stem": "patha",
+      "gender": 2
+    },
+    "reason": "DPD corrects the feminine vī paradigm and moves v from the stem into its endings; lemma and grammatical identity are unchanged."
+  },
+  "11437": {
+    "lemma": "mahāpathavī",
+    "anchor_headword_id": 51788,
+    "from": {
+      "pattern": "ī fem",
+      "stem": "mahāpathav",
+      "gender": 2
+    },
+    "to": {
+      "pattern": "vī fem",
+      "stem": "mahāpatha",
+      "gender": 2
+    },
+    "reason": "DPD corrects the feminine vī paradigm and moves v from the stem into its endings; lemma and grammatical identity are unchanged."
+  }
+}

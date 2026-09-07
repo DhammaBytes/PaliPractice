@@ -9,6 +9,8 @@ import json
 from typing import Dict, Any
 from pathlib import Path
 
+from .inputs import read_json, InputError
+
 from .config import (
     REGISTRY_PATH,
     NOUN_ID_START,
@@ -23,53 +25,42 @@ class RegistryError(Exception):
     pass
 
 
+def validate_mapping(mapping, next_id, start, maximum, kind):
+    if not isinstance(mapping, dict):
+        raise RegistryError(f"{kind} must be a lemma-to-ID object")
+    if type(next_id) is not int or not start <= next_id <= maximum + 1:
+        raise RegistryError(f"Invalid next {kind} ID")
+    for lemma, identifier in mapping.items():
+        if not isinstance(lemma, str) or not lemma.strip():
+            raise RegistryError(f"Invalid {kind} lemma")
+        if type(identifier) is not int or not start <= identifier <= maximum:
+            raise RegistryError(f"Invalid {kind} ID for {lemma}")
+    ids = list(mapping.values())
+    if len(ids) != len(set(ids)):
+        raise RegistryError(f"Duplicate {kind} IDs")
+    if ids and next_id <= max(ids):
+        raise RegistryError(f"Next {kind} ID must exceed all assigned IDs")
+
+
 def validate_registry(registry: Dict[str, Any]) -> None:
-    """Validate registry structure and ID ranges. Raises RegistryError on failure."""
-    required_keys = {"version", "next_noun_id", "next_verb_id", "nouns", "verbs"}
-    if not required_keys.issubset(registry.keys()):
-        raise RegistryError(f"Registry missing required keys: {required_keys - registry.keys()}")
-
-    # Validate noun IDs are in valid range
-    for lemma, lid in registry["nouns"].items():
-        if not isinstance(lid, int) or lid < NOUN_ID_START or lid > NOUN_ID_MAX:
-            raise RegistryError(f"Invalid noun ID {lid} for '{lemma}' (must be {NOUN_ID_START}-{NOUN_ID_MAX})")
-
-    # Validate verb IDs are in valid range
-    for lemma, lid in registry["verbs"].items():
-        if not isinstance(lid, int) or lid < VERB_ID_START or lid > VERB_ID_MAX:
-            raise RegistryError(f"Invalid verb ID {lid} for '{lemma}' (must be {VERB_ID_START}-{VERB_ID_MAX})")
-
-    # Validate next_*_id is greater than all existing IDs
-    if registry["nouns"]:
-        max_noun_id = max(registry["nouns"].values())
-        if registry["next_noun_id"] <= max_noun_id:
-            raise RegistryError(f"next_noun_id ({registry['next_noun_id']}) must be > max existing ({max_noun_id})")
-
-    if registry["verbs"]:
-        max_verb_id = max(registry["verbs"].values())
-        if registry["next_verb_id"] <= max_verb_id:
-            raise RegistryError(f"next_verb_id ({registry['next_verb_id']}) must be > max existing ({max_verb_id})")
-
-    # Check for ID collisions (same ID assigned to different lemmas)
-    noun_ids = list(registry["nouns"].values())
-    if len(noun_ids) != len(set(noun_ids)):
-        raise RegistryError("Duplicate noun IDs detected!")
-
-    verb_ids = list(registry["verbs"].values())
-    if len(verb_ids) != len(set(verb_ids)):
-        raise RegistryError("Duplicate verb IDs detected!")
+    """Validate registry structure, value types, unique IDs, and allocation bounds."""
+    keys = {"version", "next_noun_id", "next_verb_id", "nouns", "verbs"}
+    if not isinstance(registry, dict) or set(registry) != keys:
+        raise RegistryError("Invalid lemma registry fields")
+    if type(registry["version"]) is not int or registry["version"] != 1:
+        raise RegistryError("Unsupported lemma registry version")
+    validate_mapping(registry["nouns"], registry["next_noun_id"], NOUN_ID_START, NOUN_ID_MAX, "noun")
+    validate_mapping(registry["verbs"], registry["next_verb_id"], VERB_ID_START, VERB_ID_MAX, "verb")
 
 
 def load_registry(path: Path = REGISTRY_PATH) -> Dict[str, Any]:
-    """Load and validate lemma registry from JSON file."""
-    if path.exists():
-        try:
-            registry = json.loads(path.read_text(encoding='utf-8'))
-            validate_registry(registry)
-            return registry
-        except json.JSONDecodeError as e:
-            raise RegistryError(f"Failed to parse registry JSON: {e}")
-    raise RegistryError(f"Required lemma registry does not exist: {path}")
+    """Require and validate an existing registry; initialization is a separate operation."""
+    try:
+        registry = read_json(path)
+    except InputError as error:
+        raise RegistryError(str(error)) from error
+    validate_registry(registry)
+    return registry
 
 
 def save_registry(registry: Dict[str, Any], original_registry: Dict[str, Any],

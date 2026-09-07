@@ -11,7 +11,8 @@ Extraction never downloads translations or updates the bundled database. Supply:
 
 - An existing, checkpointed DPD SQLite database. Nonempty WAL files are rejected.
 - All four nonempty corpus wordlists: CST, BJT, SYA, and SuttaCentral.
-- The current production lemma registry and custom English adjustments.
+- The current production lemma registry, practice registry, reviewed paradigm corrections,
+  and custom English adjustments.
 - An explicit version, selection limits, and output directory.
 
 The DPD database version and the DPD source checkout revision are separate
@@ -57,6 +58,8 @@ in `scripts/requirements.txt` and the checked-out DPD model dependencies:
   --dpd dpd-db/dpd.db \
   --registry scripts/configs/lemma_registry.json \
   --adjustments scripts/configs/custom_translations.json \
+  --practice-registry scripts/configs/practice_registry.json \
+  --corrections scripts/configs/paradigm_corrections.json \
   --corpora .local/inputs/corpora-example \
   --output .local/inputs/english-example.json --version 2026090701
 
@@ -77,7 +80,8 @@ lemma length. Missing inputs, duplicate JSON keys, invalid corpus content, and
 configuration drift fail.
 
 A completed candidate contains `pali.db`, `pali.version.txt`, proposed
-`lemma_registry.json`, deterministic `inflection_validation.log`, and
+`lemma_registry.json`, `practice_registry.json`, `paradigm_corrections.json`,
+`compatibility.json`, deterministic `inflection_validation.log`, and
 `candidate.json` with input, code, environment, and output identities. The
 `BUILDING` marker remains after an interrupted or failed build; validation rejects
 that directory. The generator uses a read-only SQLite connection and writes
@@ -94,15 +98,16 @@ The default limits remain 1,500 noun lemmas and 750 verb lemmas. Selection uses
 maximum EBT frequency per cleaned lemma. Ties use cleaned lemma, then DPD ID for
 sense order. Noun `atthi` remains excluded; its verb is eligible. Existing
 pattern/POS, length, meaning/example, and plural-only deduplication rules remain.
-M3 makes historical practice-paradigm selection explicit.
+Practice selection is explicit; see [the identity contract](PRACTICE-IDENTITY.md).
 
 `validate` checks output hashes, SQLite/schema relationships, version, and
 registry agreement through the same structural contract as the gate. It does
-not yet certify the known attestation or historical-identity defects. Do not copy
+not yet certify corpus attestation. It requires every released lemma mapping,
+validates retained practice paradigms, and requires exactly one selected sense. Do not copy
 an English candidate into the app manually. M5 supplies the verified, recoverable
 promotion interface after semantic and upgrade checks exist.
 
-Run isolated producer tests explicitly during M2:
+Run isolated producer tests explicitly during M2–M4:
 
 ```sh
 .venv/bin/python -B -m unittest discover -s scripts/tests -v

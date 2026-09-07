@@ -16,6 +16,10 @@ public class Verb : IWord
     [Column("ebt_count")]
     public int EbtCount { get; set; }
 
+    /// <summary>Explicit practice sense in candidate databases; absent in legacy bundles.</summary>
+    [Column("practice_primary")]
+    public bool PracticePrimary { get; set; }
+
     [Column("lemma_id")]
     public int LemmaId { get; set; }
 

@@ -8,7 +8,7 @@ from pathlib import Path
 from .config import EXCLUDED_NOUN_LEMMAS, MAX_LEMMA_LENGTH
 
 CORPORA = ("cst", "bjt", "sya", "sc")
-INPUT_NAMES = {"dpd", "registry", "adjustments", *CORPORA}
+INPUT_NAMES = {"dpd", "registry", "adjustments", "practice_registry", "corrections", *CORPORA}
 
 
 class InputError(ValueError):
@@ -82,7 +82,7 @@ def load_manifest(path: Path) -> tuple[dict, dict[str, Path]]:
         "schema", "database_version", "configuration", "inputs", "corpus_generation"
     }:
         raise InputError("Invalid input manifest fields")
-    if type(manifest["schema"]) is not int or manifest["schema"] != 1:
+    if type(manifest["schema"]) is not int or manifest["schema"] != 2:
         raise InputError("Unsupported input manifest schema")
     positive_integer(manifest["database_version"], "database_version")
     config = manifest["configuration"]
@@ -93,7 +93,7 @@ def load_manifest(path: Path) -> tuple[dict, dict[str, Path]]:
     if config != configuration(nouns, verbs):
         raise InputError("Manifest configuration does not match extraction policy")
     if not isinstance(manifest["inputs"], dict) or set(manifest["inputs"]) != INPUT_NAMES:
-        raise InputError("DPD, registry, adjustments, and all four corpora are required")
+        raise InputError("DPD, lemma/practice registries, corrections, adjustments, and all four corpora are required")
     generation = manifest["corpus_generation"]
     if not isinstance(generation, dict) or not generation.get("recipe") or not generation.get("revisions"):
         raise InputError("Corpus generation recipe and source revisions are required")

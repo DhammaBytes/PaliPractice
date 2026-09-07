@@ -13,6 +13,7 @@ from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from extraction.candidate import build_candidate, validate_candidate, OUTPUTS
+from extraction.identity import BASELINE
 from extraction.inputs import InputError, configuration, load_manifest, sha256
 from extract_nouns_and_verbs import NounVerbExtractor
 from db.models import Base, DpdHeadword, InflectionTemplates
@@ -38,40 +39,43 @@ def fixture(root):
         session.add_all([
             InflectionTemplates(pattern='addha masc', data=json.dumps([
                 [[''], ['masc sg'], ['']],
-                [['nom'], ['ā'], ['masc nom sg']],
+                [['nom'], ['addhā'], ['masc nom sg']],
             ])),
             InflectionTemplates(pattern='atthi pr', data=json.dumps([
                 [[''], ['sg'], ['']],
                 [['pr 3rd'], ['atthi'], ['pr 3rd sg']],
             ])),
-            DpdHeadword(id=4, lemma_1='addha', stem='addh', pos='masc',
+            DpdHeadword(id=2987, lemma_1='addha', stem='!', pos='masc',
                         pattern='addha masc', meaning_1='road', sutta_1='DN1', ebt_count=200,
                         inflections_html="<td title='masc nom sg'>addh<b>ā</b></td>"),
-            DpdHeadword(id=5, lemma_1='atthi', stem='!', pos='pr',
+            DpdHeadword(id=2736, lemma_1='atthi', stem='!', pos='pr',
                         pattern='atthi pr', meaning_1='exists', sutta_1='DN1', ebt_count=200,
                         inflections_html="<td title='pr 3rd sg'><b>atthi</b></td>"),
         ])
         for identifier, lemma, stem, pos, pattern in [
-            (1, 'dhamma', 'dhamm', 'masc', 'a masc'),
-            (2, 'buddha', 'buddh', 'masc', 'a masc'),
-            (3, 'bhavati', 'bhav', 'pr', 'ati pr'),
+            (34626, 'dhamma', 'dhamm', 'masc', 'a masc'),
+            (48511, 'buddha', 'buddh', 'masc', 'a masc'),
+            (49534, 'bhavati', 'bhav', 'pr', 'ati pr'),
         ]:
             session.add(DpdHeadword(id=identifier, lemma_1=lemma, stem=stem,
                                     pos=pos, pattern=pattern, meaning_1='meaning',
                                     sutta_1='DN1', ebt_count=100))
         session.commit()
     engine.dispose()
-    registry = {'version': 1, 'next_noun_id': 10002, 'next_verb_id': 70002,
-                'nouns': {'dhamma': 10001}, 'verbs': {'bhavati': 70001}}
-    (root / 'registry.json').write_text(json.dumps(registry))
+    (root / 'registry.json').write_bytes((BASELINE / 'lemma_registry.json').read_bytes())
+    configs = Path(__file__).resolve().parents[1] / 'configs'
+    for name in ('practice_registry', 'paradigm_corrections'):
+        (root / f'{name}.json').write_bytes((configs / f'{name}.json').read_bytes())
     (root / 'adjustments.json').write_text('{}')
     paths = {'dpd': database, 'registry': root / 'registry.json',
-             'adjustments': root / 'adjustments.json'}
+             'adjustments': root / 'adjustments.json',
+             'practice_registry': root / 'practice_registry.json',
+             'corrections': root / 'paradigm_corrections.json'}
     for name in ('cst', 'bjt', 'sya', 'sc'):
         path = root / f'{name}.json'
         path.write_text(json.dumps(['buddho', 'buddhā', 'dhammo', 'bhavati', 'bhavanti', 'addhā', 'atthi']))
         paths[name] = path
-    manifest = {'schema': 1, 'database_version': 2026090701,
+    manifest = {'schema': 2, 'database_version': 2026090701,
                 'configuration': configuration(2, 2),
                 'corpus_generation': {'recipe': 'explicit test fixture', 'revisions': {'fixture': '1'}},
                 'inputs': {name: {'path': str(path), 'sha256': sha256(path),
@@ -103,9 +107,9 @@ class CandidateTests(unittest.TestCase):
             self.assertEqual((first / name).read_bytes(), (second / name).read_bytes(), name)
         validate_candidate(first)
         with sqlite3.connect(first / 'pali.db') as connection:
-            self.assertEqual([('buddha', 10003)], connection.execute('select lemma,lemma_id from nouns where lemma != \'addha\'').fetchall())
+            self.assertEqual([('buddha', 10060)], connection.execute('select lemma,lemma_id from nouns where lemma != \'addha\'').fetchall())
             self.assertEqual([('',)], connection.execute('select distinct meaning_ru from nouns_details').fetchall())
-        self.assertEqual({'dhamma': 10001}, json.loads(self.paths['registry'].read_text())['nouns'])
+        self.assertEqual((BASELINE / 'lemma_registry.json').read_bytes(), self.paths['registry'].read_bytes())
 
     def test_existing_candidate_is_never_overwritten(self):
         first = self.build('first')
@@ -129,6 +133,16 @@ class CandidateTests(unittest.TestCase):
         (first / 'pali.version.txt').write_text('1')
         with self.assertRaisesRegex(InputError, 'checksum'):
             validate_candidate(first)
+
+    def test_rehashed_selection_tampering_still_fails_identity_validation(self):
+        candidate = self.build('tampered')
+        with sqlite3.connect(candidate / 'pali.db') as db:
+            db.execute('UPDATE nouns SET practice_primary = 0')
+        manifest = json.loads((candidate / 'candidate.json').read_text())
+        manifest['outputs']['pali.db'] = sha256(candidate / 'pali.db')
+        (candidate / 'candidate.json').write_text(json.dumps(manifest))
+        with self.assertRaisesRegex(InputError, 'Exactly one'):
+            validate_candidate(candidate)
 
     def test_bad_checksum_fails_before_candidate_directory_creation(self):
         self.paths['cst'].write_text('[]')

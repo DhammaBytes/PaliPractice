@@ -175,3 +175,27 @@ Supply `PALIPRACTICE_TRANSLATION_MANIFEST` alongside
 the gate. Verification re-parses the pinned source, compares every stored meaning,
 and compares all original SQLite schema objects, rows, version, and artifacts.
 A failed build leaves only its incomplete candidate directory; never reuse it.
+
+## Spanish sense mapping (M7)
+
+Add `sources.es` (`js/dpd_ebts_es.js`) and `sources.es_english`
+(`js/dpd_ebts.js`) to the translation manifest, both at the same pinned commit.
+The same offline build/verify commands support RU, ES, or both together. The
+parser accepts the observed `let variable = {JSON};` format only and does not
+execute JavaScript. Duplicate keys, malformed JSON, and invalid value types fail
+acquisition validation; individual unsupported definitions remain explicit gaps.
+
+A full DPD headword key is accepted only when the paired English export’s POS and
+meaning equal the pinned DPD `pos` and `meaning_1` (or `meaning_2` when the former
+is empty). Comparison normalizes Unicode, entities, and whitespace, but does not
+reorder or discard meanings. The Spanish POS must match too. Parsing handles bold
+and unbold definitions and removes only recognized literal/etymology scaffolding.
+
+The report classifies meaning drift, missing keys/translations, possible renamed
+or renumbered keys, ambiguous DPD keys, unsupported definitions, and POS mismatch.
+Suggested keys are diagnostics, never automatic joins. Unresolved mappings stay
+absent from `localized_meanings` for English fallback. No mapping overrides were
+needed for the accepted M7 subset; any future override requires explicit review
+and pins for source bytes, full keys, target ID, and paired English evidence.
+Mechanical correspondence does not establish translation quality: retain the
+bounded terminology/sample review and upstream AI-assisted translation credits.

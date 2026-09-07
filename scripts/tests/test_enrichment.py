@@ -131,3 +131,28 @@ class EnrichmentTests(unittest.TestCase):
             db.execute('UPDATE nouns SET practice_primary=0')
         with self.assertRaisesRegex(InputError, 'English table'):
             verify_english_unchanged(self.english / 'pali.db', output / 'pali.db')
+
+    def test_spanish_layer_preserves_russian_and_rejects_unpaired_revisions(self):
+        dpd = Path(self.spec['dpd']['path'])
+        with closing(sqlite3.connect(dpd)) as db, db:
+            for column in ('lemma_1', 'pos', 'meaning_1', 'meaning_2'):
+                db.execute(f"ALTER TABLE dpd_headwords ADD COLUMN {column} TEXT DEFAULT ''")
+            db.execute("UPDATE dpd_headwords SET lemma_1='word ' || id, pos='nt', meaning_1='meaning ' || id")
+        self.spec['dpd']['sha256'] = sha256(dpd)
+        (self.english / 'candidate.json').write_text(json.dumps({'inputs': {'dpd': self.spec['dpd']}}))
+        for language, variable, definition in [('es', 'dpd_ebts_es', 'nt. <b>palabra</b>'),
+                                                ('es_english', 'dpd_ebts', 'nt. <b>meaning 1</b>')]:
+            path = self.root / (language + '.js')
+            path.write_text('let ' + variable + ' = ' + json.dumps({'word 1': definition}) + ';')
+            self.spec['sources'][language] = {'path': str(path), 'sha256': sha256(path),
+                                             'source': {'origin': 'https://example.invalid/export', 'revision': 'b' * 40}}
+        self.manifest.write_text(json.dumps(self.spec))
+        result = self.build()
+        with closing(sqlite3.connect(result / 'pali.db')) as db:
+            self.assertEqual([(1, 'es', 'palabra'), (1, 'ru', 'слово'), (2, 'ru', 'сырой')],
+                             db.execute('SELECT * FROM localized_meanings ORDER BY headword_id,language').fetchall())
+        self.spec['sources']['es_english']['source']['revision'] = 'c' * 40
+        self.manifest.write_text(json.dumps(self.spec))
+        with self.assertRaisesRegex(InputError, 'same revision'):
+            self.build('unpaired')
+        self.assertFalse((self.root / 'unpaired').exists())

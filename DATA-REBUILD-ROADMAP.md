@@ -1,6 +1,6 @@
 # DPD rebuild and translation roadmap
 
-Created: 7 September 2026. Status: M1–M6 complete; M7 Spanish enrichment is next.
+Created: 7 September 2026. Status: M1–M7 complete; M8 app language support is next.
 
 The objective is a reproducible, grammatically correct English DPD database with stable production practice identities, followed by verified Russian and Spanish meanings in the next app update. The findings and measured starting state are in [DATA-REBUILD-AUDIT.md](DATA-REBUILD-AUDIT.md).
 
@@ -139,12 +139,12 @@ Both inspected ES and EN maps contain 72,698 unique keys with identical key sets
 
 Against the existing pending database, 2,328/2,384 noun rows and 1,268/1,317 verb rows have exact Spanish headword keys. **These are key-availability counts, not verified translation coverage.** Numbered senses or meanings may have changed between source snapshots. Recompute against M5's selected release.
 
-- [ ] Pin and hash the paired Spanish/English files. Prefer an upstream structured source with explicit DPD IDs if one is later found; otherwise parse only the known assignment/data format without executing remote JavaScript.
-- [ ] Match complete headword keys to the pinned DPD headword records. Verify sense correspondence using the paired English definition and DPD data. Do not join by cleaned lemma, strip numeric sense suffixes, or infer an ID from iteration order.
-- [ ] Classify exact verified matches, renamed/renumbered keys, meaning drift, ambiguous matches, missing keys, and unparseable definitions. Do not accept a key-only match as proof of semantic identity. Maintain explicit reviewed mapping overrides with source fingerprints where necessary; unresolved cases use English fallback.
-- [ ] Define and test extraction of the Spanish meaning separately from POS/literal/etymological material, HTML/entity handling, Unicode, and whitespace. Use representative fixtures from the actual export, including unbolded definitions and multiple senses.
-- [ ] Validate every accepted selected mapping and report unmatched/missing/ambiguous items by primary lemma and sense. Review terminology and a risk-based sample of accepted definitions; mechanical mapping checks do not prove translation quality.
-- [ ] Carry source attribution and translation provenance into release credits. The source README states CC BY-NC-SA 4.0 and describes AI-assisted translation; preserve that provenance without treating its self-reported quality score as validation.
+- [x] Pin and hash the paired Spanish/English files. Prefer an upstream structured source with explicit DPD IDs if one is later found; otherwise parse only the known assignment/data format without executing remote JavaScript.
+- [x] Match complete headword keys to the pinned DPD headword records. Verify sense correspondence using the paired English definition and DPD data. Do not join by cleaned lemma, strip numeric sense suffixes, or infer an ID from iteration order.
+- [x] Classify exact verified matches, renamed/renumbered keys, meaning drift, ambiguous matches, missing keys, and unparseable definitions. Do not accept a key-only match as proof of semantic identity. Maintain explicit reviewed mapping overrides with source fingerprints where necessary; unresolved cases use English fallback.
+- [x] Define and test extraction of the Spanish meaning separately from POS/literal/etymological material, HTML/entity handling, Unicode, and whitespace. Use representative fixtures from the actual export, including unbolded definitions and multiple senses.
+- [x] Validate every accepted selected mapping and report unmatched/missing/ambiguous items by primary lemma and sense. Review terminology and a risk-based sample of accepted definitions; mechanical mapping checks do not prove translation quality.
+- [x] Carry source attribution and translation provenance into release credits. The source README states CC BY-NC-SA 4.0 and describes AI-assisted translation; preserve that provenance without treating its self-reported quality score as validation.
 
 **Exit:** every imported Spanish meaning has a traceable verified DPD identity; no ambiguous mapping is silently imported. Parser and mapping fixtures pass, coverage gaps are explicit, and Spanish enrichment leaves the frozen English core unchanged.
 
@@ -199,6 +199,6 @@ Update this table at the end of each milestone with durable evidence links.
 | M4 | Complete | [Exact forms, attestation, candidate gate, and review](quality/evidence/m4/README.md) |
 | M5 | Complete | [Repeatability, semantic gate, review, and desktop/iOS/Android upgrade evidence](quality/evidence/m5/README.md) |
 | M6 | Complete | [Pinned Russian source, exact meanings, English preservation, gate and review](quality/evidence/m6/README.md) |
-| M7 | Planned | Spanish source discovery complete; implementation requires M6 |
+| M7 | Complete | [Paired Spanish mappings, gaps, terminology sample, gate and review](quality/evidence/m7/README.md) |
 | M8 | Planned | Requires verified RU/ES enrichment |
 | M9 | Planned | Requires all previous milestones |

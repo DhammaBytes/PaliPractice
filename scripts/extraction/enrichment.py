@@ -9,6 +9,7 @@ import sqlite3
 from .candidate import OUTPUTS, validate_candidate
 from .inputs import InputError, read_json, sha256, verify_file
 from .russian_meanings import load_russian_meanings
+from .spanish_meanings import spanish_records
 
 TABLE = 'localized_meanings'
 SCHEMA = '''CREATE TABLE localized_meanings (
@@ -45,9 +46,13 @@ def read_sources(manifest_path: Path, english: Path):
     if manifest['english_sha256'] != sha256(english / 'pali.db'):
         raise InputError('Translation manifest belongs to another English checkpoint')
     sources = manifest['sources']
-    if not isinstance(sources, dict) or not sources or set(sources) - {'ru'}:
+    if not isinstance(sources, dict) or not sources or set(sources) - {'ru', 'es', 'es_english'}:
         raise InputError('Unsupported translation languages')
+    if ('es' in sources) != ('es_english' in sources):
+        raise InputError('Spanish requires paired English and Spanish exports')
     paths = {language: verify_file(entry, manifest_path.parent) for language, entry in sources.items()}
+    if 'es' in paths and sources['es']['source']['revision'] != sources['es_english']['source']['revision']:
+        raise InputError('Spanish paired exports must use the same revision')
     paths['_dpd'] = verify_file(manifest['dpd'], manifest_path.parent)
     if manifest['dpd']['sha256'] != read_json(english / 'candidate.json')['inputs']['dpd']['sha256']:
         raise InputError('Translation identity reference differs from the English DPD source')
@@ -79,21 +84,29 @@ def coverage(records: list[dict]) -> dict:
     return result
 
 
+def source_evidence(entry: dict) -> dict:
+    return {key: value for key, value in entry.items() if key != 'path'}
+
+
 def expected_layer(manifest: dict, paths: dict, english: Path) -> dict:
     words = selected_words(english / 'pali.db')
     selected_ids = {row['headword_id'] for row in words}
     with connect(paths['_dpd']) as dpd:
         known_ids = {row[0] for row in dpd.execute('SELECT id FROM dpd_headwords')}
+        headwords = (dpd.execute('SELECT id, lemma_1, pos, meaning_1, meaning_2 FROM dpd_headwords').fetchall()
+                     if 'es' in paths else [])
     layers = {}
-    for language in sorted(manifest['sources']):
-        meanings = load_russian_meanings(paths[language])
-        records = translation_records(words, meanings, language)
-        layers[language] = {
-            'source': {key: value for key, value in manifest['sources'][language].items() if key != 'path'},
-            'records': records, 'coverage': coverage(records),
-            'unselected_source_ids': sorted(set(meanings) & known_ids - selected_ids),
-            'unknown_source_ids': sorted(set(meanings) - known_ids),
-        }
+    for language in sorted(set(manifest['sources']) - {'es_english'}):
+        if language == 'ru':
+            meanings = load_russian_meanings(paths[language])
+            records = translation_records(words, meanings, language)
+            extra = {'unselected_source_ids': sorted(set(meanings) & known_ids - selected_ids),
+                     'unknown_source_ids': sorted(set(meanings) - known_ids)}
+        else:
+            records, extra = spanish_records(words, headwords, paths['es_english'], paths['es'])
+            extra['reference_source'] = source_evidence(manifest['sources']['es_english'])
+        layers[language] = {'source': source_evidence(manifest['sources'][language]),
+                            'records': records, 'coverage': coverage(records), **extra}
     return layers
 
 

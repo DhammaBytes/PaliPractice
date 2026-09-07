@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "english_sha256": "f4850fe87522595ed82fdc3abf89ae9b5aebd22d7d8d63dc60c40c087863f75f",
+  "dpd": {
+    "path": "/Users/ivm/Sources/PaliPractice/.local/inputs/dpd-v0.4.20260728/dpd.db",
+    "sha256": "6982aee8a9cdce83c3c57af7f7c506f59fe07afd5673a952fb8d27d52c693a98",
+    "source": {
+      "origin": "https://github.com/digitalpalidictionary/dpd-db/releases/download/v0.4.20260728/dpd.db.tar.xz",
+      "revision": "release:v0.4.20260728",
+      "commit": "37912132f30f5023cb5a1c4e2dde26a24b7b3e2e",
+      "archive_sha256": "cd746f33633c087e514e8eed1f6939d9a8debb1e9dca5d8447fcc32fd343b7fe",
+      "verification": "Archive matches published GitHub asset digest; extracted database SHA256 matches input."
+    }
+  },
+  "sources": {
+    "ru": {
+      "path": "/Users/ivm/Sources/PaliPractice/.local/inputs/russian-m6/russian.tsv",
+      "sha256": "7e1fb87986944f5dbed9769d2428b7880826e3f6b70b7aec0fade285738b605d",
+      "source": {
+        "origin": "https://github.com/sasanarakkha/dpd-db-sbs/blob/c179f0c044e3e0ca366ac47445f30a1b2ffc732c/db/backup_tsv/russian.tsv",
+        "revision": "c179f0c044e3e0ca366ac47445f30a1b2ffc732c"
+      }
+    },
+    "es": {
+      "path": "dpd_ebts_es.js",
+      "sha256": "73c96127eb8a16921153a2d112c7f23fbf4ecd01e549867f83f49ef510c91068",
+      "source": {
+        "origin": "https://github.com/DhammaBytes/dpd-dictionary-es/blob/8a634e53d0605bc50f0a9913b221ebc6a40f17b2/js/dpd_ebts_es.js",
+        "revision": "8a634e53d0605bc50f0a9913b221ebc6a40f17b2"
+      }
+    },
+    "es_english": {
+      "path": "dpd_ebts.js",
+      "sha256": "cd09aa50bc96fa3b321afbbc185c49687bc075efbb211710de772be5aedbc191",
+      "source": {
+        "origin": "https://github.com/DhammaBytes/dpd-dictionary-es/blob/8a634e53d0605bc50f0a9913b221ebc6a40f17b2/js/dpd_ebts.js",
+        "revision": "8a634e53d0605bc50f0a9913b221ebc6a40f17b2"
+      }
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "coverage": {
+    "es": {
+      "nouns": {
+        "primary_lemmas": 1500,
+        "selected_senses": 2395,
+        "translated_primary_lemmas": 1359,
+        "translated_senses": 2177
+      },
+      "verbs": {
+        "primary_lemmas": 750,
+        "selected_senses": 1327,
+        "translated_primary_lemmas": 683,
+        "translated_senses": 1162
+      }
+    },
+    "ru": {
+      "nouns": {
+        "primary_lemmas": 1500,
+        "selected_senses": 2395,
+        "translated_primary_lemmas": 1498,
+        "translated_senses": 2384
+      },
+      "verbs": {
+        "primary_lemmas": 750,
+        "selected_senses": 1327,
+        "translated_primary_lemmas": 750,
+        "translated_senses": 1320
+      }
+    }
+  },
+  "outputs": {
+    "compatibility.json": "09e711082109700389dc54f84d578418bd4329c9e862c7dfd82964270306d86f",
+    "enrichment.json": "89fac2a5d3ea1e3c68238dff06b6549241bdb88d1d906b19b81d93fe96be7ca1",
+    "inflection_validation.log": "2b21d8829d13781dd72fea6309f67682435822bfaa5590ad640c1d37384bfc1a",
+    "lemma_registry.json": "60def983ff5064eecac63c33494608900fe838e6653920e8c7871c80c6ff29c8",
+    "pali.db": "7ce322fe8064fd7ef81ca36277acace90fc219a6de58a1c4f3f5e4b260b03213",
+    "pali.version.txt": "6e15daa7f878eb20a2de31da913e23b016873f48e087fa1fdf4d16e3dcf2954f",
+    "paradigm_corrections.json": "4ca10b2b65dbe531a7dd54b89710964381e8ad6e81d796627a8f897912297c13",
+    "practice_registry.json": "74d6d7fab159270ba819be1746b74d4be88b080034fe9fd562319bf9fd587cab",
+    "primary_forms.json": "12b969c906d2a75b4d5335b7c7fe9d199894db3ccc48e83dc42851a1b9e4add9"
+  },
+  "preserved": {
+    "/Users/ivm/Sources/PaliPractice/.local/candidates/m5-repeatability-probe/run-1/candidate.json": "653d4e7f526dd0ac92b33205b46deec59fe5fd75341f58482d62fe967ef5e56c",
+    "/Users/ivm/Sources/PaliPractice/.local/candidates/m5-repeatability-probe/run-1/compatibility.json": "09e711082109700389dc54f84d578418bd4329c9e862c7dfd82964270306d86f",
+    "/Users/ivm/Sources/PaliPractice/.local/candidates/m5-repeatability-probe/run-1/inflection_validation.log": "2b21d8829d13781dd72fea6309f67682435822bfaa5590ad640c1d37384bfc1a",
+    "/Users/ivm/Sources/PaliPractice/.local/candidates/m5-repeatability-probe/run-1/lemma_registry.json": "60def983ff5064eecac63c33494608900fe838e6653920e8c7871c80c6ff29c8",
+    "/Users/ivm/Sources/PaliPractice/.local/candidates/m5-repeatability-probe/run-1/pali.db": "f4850fe87522595ed82fdc3abf89ae9b5aebd22d7d8d63dc60c40c087863f75f",
+    "/Users/ivm/Sources/PaliPractice/.local/candidates/m5-repeatability-probe/run-1/pali.version.txt": "6e15daa7f878eb20a2de31da913e23b016873f48e087fa1fdf4d16e3dcf2954f",
+    "/Users/ivm/Sources/PaliPractice/.local/candidates/m5-repeatability-probe/run-1/paradigm_corrections.json": "4ca10b2b65dbe531a7dd54b89710964381e8ad6e81d796627a8f897912297c13",
+    "/Users/ivm/Sources/PaliPractice/.local/candidates/m5-repeatability-probe/run-1/practice_registry.json": "74d6d7fab159270ba819be1746b74d4be88b080034fe9fd562319bf9fd587cab",
+    "/Users/ivm/Sources/PaliPractice/.local/candidates/m5-repeatability-probe/run-1/primary_forms.json": "12b969c906d2a75b4d5335b7c7fe9d199894db3ccc48e83dc42851a1b9e4add9",
+    "/Users/ivm/Sources/PaliPractice/.local/inputs/dpd-v0.4.20260728/dpd.db": "6982aee8a9cdce83c3c57af7f7c506f59fe07afd5673a952fb8d27d52c693a98",
+    "/Users/ivm/Sources/PaliPractice/.local/inputs/russian-m6/russian.tsv": "7e1fb87986944f5dbed9769d2428b7880826e3f6b70b7aec0fade285738b605d",
+    "/Users/ivm/Sources/PaliPractice/.local/inputs/spanish-m7/dpd_ebts.js": "cd09aa50bc96fa3b321afbbc185c49687bc075efbb211710de772be5aedbc191",
+    "/Users/ivm/Sources/PaliPractice/.local/inputs/spanish-m7/dpd_ebts_es.js": "73c96127eb8a16921153a2d112c7f23fbf4ecd01e549867f83f49ef510c91068",
+    "/Users/ivm/Sources/PaliPractice/.local/inputs/spanish-m7/manifest.json": "78025bd2b4a9604f70bd4cdef5dcd95696da5cbe7d65bad4b1d77c4e8c0f777b"
+  }
+}

@@ -1,0 +1,352 @@
+[
+  {
+    "headword_id": 9097,
+    "key": "arūpī 2",
+    "english_export": "masc. formless being [√rūp]",
+    "spanish_export": "masc. ser sin forma [√rūp]",
+    "imported_meaning": "ser sin forma"
+  },
+  {
+    "headword_id": 20233,
+    "key": "kamma 1",
+    "english_export": "nt. <b>action; deed; doing</b> [√kar + ma]",
+    "spanish_export": "nt. <b>acción; acto; hacer</b> [√kar + ma]",
+    "imported_meaning": "acción; acto; hacer"
+  },
+  {
+    "headword_id": 20234,
+    "key": "kamma 2",
+    "english_export": "nt. <b>work; job; occupation</b> [√kar + ma]",
+    "spanish_export": "nt. <b>trabajo; empleo; ocupación</b> [√kar + ma]",
+    "imported_meaning": "trabajo; empleo; ocupación"
+  },
+  {
+    "headword_id": 20235,
+    "key": "kamma 3",
+    "english_export": "nt. <b>action; deed; work (subject)</b> [√kar + ma]",
+    "spanish_export": "nt. <b>acción; acto; trabajo (sujeto)</b> [√kar + ma]",
+    "imported_meaning": "acción; acto; trabajo (sujeto)"
+  },
+  {
+    "headword_id": 20236,
+    "key": "kamma 4",
+    "english_export": "nt. <b>action; deed; work (object)</b> [√kar + ma]",
+    "spanish_export": "nt. <b>acción; acto; trabajo (objeto)</b> [√kar + ma]",
+    "imported_meaning": "acción; acto; trabajo (objeto)"
+  },
+  {
+    "headword_id": 20237,
+    "key": "kamma 5",
+    "english_export": "nt. <b>(vinaya) legal act; legal procedure; formal action</b> [√kar + ma]",
+    "spanish_export": "nt. <b>(vinaya) acto legal; procedimiento legal; acción formal</b> [√kar + ma]",
+    "imported_meaning": "(vinaya) acto legal; procedimiento legal; acción formal"
+  },
+  {
+    "headword_id": 26555,
+    "key": "citta 1.1",
+    "english_export": "nt. <b>mind; heart</b> [√cit + ta]",
+    "spanish_export": "nt. <b>mente; corazón</b> [√cit + ta]",
+    "imported_meaning": "mente; corazón"
+  },
+  {
+    "headword_id": 26556,
+    "key": "citta 1.2",
+    "english_export": "nt. <b>thought; intention; idea</b>; lit. mind [√cit + ta]",
+    "spanish_export": "nt. <b>pensamiento; intención; idea</b>; lit. mente [√cit + ta]",
+    "imported_meaning": "pensamiento; intención; idea"
+  },
+  {
+    "headword_id": 26559,
+    "key": "citta 2.3",
+    "english_export": "nt. <b>painting; picture; artwork; illusion</b> [√citt + a]",
+    "spanish_export": "nt. <b>pintura; cuadro; obra de arte; ilusión</b> [√citt + a]",
+    "imported_meaning": "pintura; cuadro; obra de arte; ilusión"
+  },
+  {
+    "headword_id": 28748,
+    "key": "jhāna 1",
+    "english_export": "nt. <b>state of deep meditative calm</b>; lit. meditating [√jhā + ana]",
+    "spanish_export": "nt. <b>estado de profunda calma meditativa</b>; lit. meditando [√jhā + ana]",
+    "imported_meaning": "estado de profunda calma meditativa"
+  },
+  {
+    "headword_id": 28749,
+    "key": "jhāna 2",
+    "english_export": "nt. <b>meditation; stage of meditation</b>; lit. meditating [√jhā + ana]",
+    "spanish_export": "nt. <b>meditación; etapa de meditación</b>; lit. meditando [√jhā + ana]",
+    "imported_meaning": "meditación; etapa de meditación"
+  },
+  {
+    "headword_id": 32877,
+    "key": "dukkha 3",
+    "english_export": "nt. <b>discomfort; suffering; unease; unpleasantness; something unsatisfactory; trouble; a bummer; stress</b> [√dukkh + a]",
+    "spanish_export": "nt. <b>incomodidad; sufrimiento; malestar; insatisfacción; algo insatisfactorio; problema; estrés</b> [√dukkh + a]",
+    "imported_meaning": "incomodidad; sufrimiento; malestar; insatisfacción; algo insatisfactorio; problema; estrés"
+  },
+  {
+    "headword_id": 32878,
+    "key": "dukkha 4",
+    "english_export": "nt. <b>pain; physical discomfort</b> [√dukkh + a]",
+    "spanish_export": "nt. <b>dolor; incomodidad física</b> [√dukkh + a]",
+    "imported_meaning": "dolor; incomodidad física"
+  },
+  {
+    "headword_id": 34626,
+    "key": "dhamma 1.01",
+    "english_export": "masc. <b>nature; character</b> [√dhar + ma]",
+    "spanish_export": "masc. <b>naturaleza; carácter</b> [√dhar + ma]",
+    "imported_meaning": "naturaleza; carácter"
+  },
+  {
+    "headword_id": 34627,
+    "key": "dhamma 1.02",
+    "english_export": "masc. <b>quality; characteristic; trait; inherent quality</b> [√dhar + ma]",
+    "spanish_export": "masc. <b>cualidad; característica; rasgo; cualidad inherente</b> [√dhar + ma]",
+    "imported_meaning": "cualidad; característica; rasgo; cualidad inherente"
+  },
+  {
+    "headword_id": 34628,
+    "key": "dhamma 1.03",
+    "english_export": "masc. <b>teaching; discourse; doctrine</b> [√dhar + ma]",
+    "spanish_export": "masc. <b>enseñanza; discurso; doctrina</b> [√dhar + ma]",
+    "imported_meaning": "enseñanza; discurso; doctrina"
+  },
+  {
+    "headword_id": 34629,
+    "key": "dhamma 1.04",
+    "english_export": "masc. <b>mental phenomena; thoughts</b> [√dhar + ma]",
+    "spanish_export": "masc. <b>fenómenos mentales; pensamientos</b> [√dhar + ma]",
+    "imported_meaning": "fenómenos mentales; pensamientos"
+  },
+  {
+    "headword_id": 34630,
+    "key": "dhamma 1.05",
+    "english_export": "masc. <b>mental states</b> [√dhar + ma]",
+    "spanish_export": "masc. <b>estados mentales</b> [√dhar + ma]",
+    "imported_meaning": "estados mentales"
+  },
+  {
+    "headword_id": 34632,
+    "key": "dhamma 1.07",
+    "english_export": "masc. <b>truth; reality; principle; truth behind the teaching</b> [√dhar + ma]",
+    "spanish_export": "masc. <b>verdad; realidad; principio; verdad detrás de la enseñanza</b> [√dhar + ma]",
+    "imported_meaning": "verdad; realidad; principio; verdad detrás de la enseñanza"
+  },
+  {
+    "headword_id": 34633,
+    "key": "dhamma 1.08",
+    "english_export": "masc. <b>virtue; moral behaviour</b> [√dhar + ma]",
+    "spanish_export": "masc. <b>virtud; comportamiento moral</b> [√dhar + ma]",
+    "imported_meaning": "virtud; comportamiento moral"
+  },
+  {
+    "headword_id": 34634,
+    "key": "dhamma 1.09",
+    "english_export": "masc. <b>law; case; rule; legal process</b> [√dhar + ma]",
+    "spanish_export": "masc. <b>ley; caso; regla; proceso legal</b> [√dhar + ma]",
+    "imported_meaning": "ley; caso; regla; proceso legal"
+  },
+  {
+    "headword_id": 34637,
+    "key": "dhamma 1.12",
+    "english_export": "nt. <b>teaching; discourse; doctrine</b> [√dhar + ma]",
+    "spanish_export": "nt. <b>enseñanza; discurso; doctrina</b> [√dhar + ma]",
+    "imported_meaning": "enseñanza; discurso; doctrina"
+  },
+  {
+    "headword_id": 34638,
+    "key": "dhamma 1.13",
+    "english_export": "masc. <b>religion</b> [√dhar + ma]",
+    "spanish_export": "masc. <b>religión</b> [√dhar + ma]",
+    "imported_meaning": "religión"
+  },
+  {
+    "headword_id": 34639,
+    "key": "dhamma 1.14",
+    "english_export": "masc. <b>act; practice</b> [√dhar + ma]",
+    "spanish_export": "masc. <b>acto; práctica</b> [√dhar + ma]",
+    "imported_meaning": "acto; práctica"
+  },
+  {
+    "headword_id": 34640,
+    "key": "dhamma 1.15",
+    "english_export": "masc. <b>duty; obligation</b> [√dhar + ma]",
+    "spanish_export": "masc. <b>deber; obligación</b> [√dhar + ma]",
+    "imported_meaning": "deber; obligación"
+  },
+  {
+    "headword_id": 37569,
+    "key": "nibbāna 1",
+    "english_export": "nt. <b>(of fire) extinguishing; quenching; going out</b>; lit. blowing away [nī + √vā + ana]",
+    "spanish_export": "nt. <b>(del fuego) extinción; apagamiento; cesación</b>; lit. soplar lejos [nī + √vā + ana]",
+    "imported_meaning": "(del fuego) extinción; apagamiento; cesación"
+  },
+  {
+    "headword_id": 37570,
+    "key": "nibbāna 2",
+    "english_export": "nt. <b>(of mental defilement) complete quenching; total emancipation; complete cooling</b>; lit. blowing away [nī + √vā + ana]",
+    "spanish_export": "nt. <b>(de la contaminación mental) extinción completa; emancipación total; enfriamiento completo</b>; lit. soplar lejos [nī + √vā + ana]",
+    "imported_meaning": "(de la contaminación mental) extinción completa; emancipación total; enfriamiento completo"
+  },
+  {
+    "headword_id": 39994,
+    "key": "paññā 1",
+    "english_export": "fem. <b>wisdom; knowledge; understanding; insight; distinctive knowledge</b> [pa + √ñā + ā]",
+    "spanish_export": "fem. <b>sabiduría; conocimiento; comprensión; discernimiento; conocimiento distintivo</b> [pa + √ñā + ā]",
+    "imported_meaning": "sabiduría; conocimiento; comprensión; discernimiento; conocimiento distintivo"
+  },
+  {
+    "headword_id": 39995,
+    "key": "paññā 2",
+    "english_export": "fem. <b>with wisdom; with intelligence; with understanding</b> [pa + √ñā + āya]",
+    "spanish_export": "fem. <b>con sabiduría; con inteligencia; con comprensión</b> [pa + √ñā + āya]",
+    "imported_meaning": "con sabiduría; con inteligencia; con comprensión"
+  },
+  {
+    "headword_id": 49885,
+    "key": "bhikkhu",
+    "english_export": "masc. <b>monk; monastic; mendicant; fully ordained monk</b>; lit. beggar [√bhikkh + u]",
+    "spanish_export": "masc. <b>monje; monástico; mendicante; monje plenamente ordenado</b>; lit. mendigo [√bhikkh + u]",
+    "imported_meaning": "monje; monástico; mendicante; monje plenamente ordenado"
+  },
+  {
+    "headword_id": 53957,
+    "key": "yāna 3",
+    "english_export": "nt. footwear, sandals [√yā]",
+    "spanish_export": "nt. calzado, sandalias [√yā]",
+    "imported_meaning": "calzado, sandalias"
+  },
+  {
+    "headword_id": 56768,
+    "key": "saṅkhāra 1",
+    "english_export": "masc. <b>intention; volitional formation; choice; karmic activity</b>; lit. making together [saṃ + √kar + *a]",
+    "spanish_export": "masc. <b>intención; formación volitiva; elección; actividad kármica</b>; lit. hacer juntos [saṃ + √kar + *a]",
+    "imported_meaning": "intención; formación volitiva; elección; actividad kármica"
+  },
+  {
+    "headword_id": 56769,
+    "key": "saṅkhāra 2",
+    "english_export": "masc. <b>function; activity; process</b>; lit. making together [saṃ + √kar + *a]",
+    "spanish_export": "masc. <b>función; actividad; proceso</b>; lit. hacer juntos [saṃ + √kar + *a]",
+    "imported_meaning": "función; actividad; proceso"
+  },
+  {
+    "headword_id": 56770,
+    "key": "saṅkhāra 3",
+    "english_export": "masc. <b>mental formation; mental activity; thought processes; fourth of the five aggregates</b>; lit. making together [saṃ + √kar + *a]",
+    "spanish_export": "masc. <b>formación mental; actividad mental; procesos del pensamiento; cuarto de los cinco agregados</b>; lit. hacer juntos [saṃ + √kar + *a]",
+    "imported_meaning": "formación mental; actividad mental; procesos del pensamiento; cuarto de los cinco agregados"
+  },
+  {
+    "headword_id": 56771,
+    "key": "saṅkhāra 4",
+    "english_export": "masc. <b>condition; conditioned thing; construction; fabrication; concoction</b>; lit. making together [saṃ + √kar + *a]",
+    "spanish_export": "masc. <b>condición; cosa condicionada; construcción; fabricación; confección</b>; lit. hacer juntos [saṃ + √kar + *a]",
+    "imported_meaning": "condición; cosa condicionada; construcción; fabricación; confección"
+  },
+  {
+    "headword_id": 57615,
+    "key": "sati 1.1",
+    "english_export": "fem. <b>memory; remembering; recollection; keeping in mind</b> [√sar + ti]",
+    "spanish_export": "fem. <b>memoria; recordar; recuerdo; mantener en mente</b> [√sar + ti]",
+    "imported_meaning": "memoria; recordar; recuerdo; mantener en mente"
+  },
+  {
+    "headword_id": 57616,
+    "key": "sati 1.2",
+    "english_export": "fem. <b>mindfulness; presence; recollection; awareness</b> [√sar + ti]",
+    "spanish_export": "fem. <b>atención plena; presencia; recuerdo; conciencia</b> [√sar + ti]",
+    "imported_meaning": "atención plena; presencia; recuerdo; conciencia"
+  },
+  {
+    "headword_id": 67692,
+    "key": "viññāṇa 1",
+    "english_export": "nt. <b>awareness; consciousness; cognition; mind; fifth of the five aggregates</b>; lit. knowing distinctly [vi + √ñā + aṇa]",
+    "spanish_export": "nt. <b>conciencia; cognición; mente; quinto de los cinco agregados</b>; lit. conocer distintamente [vi + √ñā + aṇa]",
+    "imported_meaning": "conciencia; cognición; mente; quinto de los cinco agregados"
+  },
+  {
+    "headword_id": 67693,
+    "key": "viññāṇa 2",
+    "english_export": "nt. <b>knowing; understanding</b>; lit. knowing distinctly [vi + √ñā + aṇa]",
+    "spanish_export": "nt. <b>conocer; comprender</b>; lit. conocer distintamente [vi + √ñā + aṇa]",
+    "imported_meaning": "conocer; comprender"
+  },
+  {
+    "headword_id": 80485,
+    "key": "jhāna 4",
+    "english_export": "nt. <b>thinking about; contemplating</b>; lit. meditating [√jhā + ana]",
+    "spanish_export": "nt. <b>pensando en; contemplando</b>; lit. meditando [√jhā + ana]",
+    "imported_meaning": "pensando en; contemplando"
+  },
+  {
+    "headword_id": 2736,
+    "key": "atthi 1.1",
+    "english_export": "pr. <b>there is; there exists</b> [√as + ti]",
+    "spanish_export": "pr. <b>hay; existe</b> [√as + ti]",
+    "imported_meaning": "hay; existe"
+  },
+  {
+    "headword_id": 2737,
+    "key": "atthi 1.2",
+    "english_export": "pr. <b>there are; they are</b> [√as + ti]",
+    "spanish_export": "pr. <b>hay; son</b> [√as + ti]",
+    "imported_meaning": "hay; son"
+  },
+  {
+    "headword_id": 20558,
+    "key": "karoti 1",
+    "english_export": "pr. <b>does; acts; performs</b> [√kar + o + ti]",
+    "spanish_export": "pr. <b>hace; actúa; realiza</b> [√kar + o + ti]",
+    "imported_meaning": "hace; actúa; realiza"
+  },
+  {
+    "headword_id": 20559,
+    "key": "karoti 2",
+    "english_export": "pr. <b>makes</b> [√kar + o + ti]",
+    "spanish_export": "pr. <b>hace</b> [√kar + o + ti]",
+    "imported_meaning": "hace"
+  },
+  {
+    "headword_id": 20560,
+    "key": "karoti 3",
+    "english_export": "pr. <b>builds; constructs</b> [√kar + o + ti]",
+    "spanish_export": "pr. <b>construye; edifica</b> [√kar + o + ti]",
+    "imported_meaning": "construye; edifica"
+  },
+  {
+    "headword_id": 24043,
+    "key": "gacchati 1",
+    "english_export": "pr. <b>goes; walks; moves; wanders around; travels</b> [√gam + a + ti]",
+    "spanish_export": "pr. <b>va; camina; se mueve; vaga; viaja</b> [√gam + a + ti]",
+    "imported_meaning": "va; camina; se mueve; vaga; viaja"
+  },
+  {
+    "headword_id": 24044,
+    "key": "gacchati 2",
+    "english_export": "pr. <b>becomes</b>; lit. goes [√gam + a + ti]",
+    "spanish_export": "pr. <b>se convierte en</b>; lit. va [√gam + a + ti]",
+    "imported_meaning": "se convierte en"
+  },
+  {
+    "headword_id": 26279,
+    "key": "carati 2.3",
+    "english_export": "pr. (of cattle) grazes (in) [√car]",
+    "spanish_export": "pr. (del ganado) pasta (en) [√car]",
+    "imported_meaning": "(del ganado) pasta (en)"
+  },
+  {
+    "headword_id": 49228,
+    "key": "bhaṇati 2",
+    "english_export": "pr. preaches [√bhaṇ]",
+    "spanish_export": "pr. predica [√bhaṇ]",
+    "imported_meaning": "predica"
+  },
+  {
+    "headword_id": 82806,
+    "key": "bhindeti",
+    "english_export": "pr. breaks; shatters [√bhid + ṃa *e + ti]",
+    "spanish_export": "pr. rompe; destroza [√bhid + ṃa *e + ti]",
+    "imported_meaning": "rompe; destroza"
+  }
+]

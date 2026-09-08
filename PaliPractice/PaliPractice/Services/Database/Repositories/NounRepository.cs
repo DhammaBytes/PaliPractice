@@ -24,7 +24,7 @@ public class NounRepository : INounRepository
     bool _isCacheLoaded;
 
     // Caches - loaded on first access
-    HeadwordFormIndex? _corpusForms;
+    CorpusFormIndex? _corpusForms;
     Dictionary<int, ILemma>? _lemmas;
     List<ILemma>? _lemmasByRank;
     HeadwordFormIndex? _irregularForms;
@@ -63,8 +63,8 @@ public class NounRepository : INounRepository
                 System.Diagnostics.Debug.WriteLine($"[NounRepo] Built {_lemmas.Count} lemmas");
 
                 var primaryHeadwords = _lemmas.Values.Select(l => l.Primary.Id).ToHashSet();
-                _corpusForms = new HeadwordFormIndex(_connection.Table<NounCorpusForm>()
-                    .Select(f => new StoredHeadwordForm(f.HeadwordId, f.FormId, f.Form)), primaryHeadwords);
+                _corpusForms = new CorpusFormIndex(_connection.Table<NounCorpusForm>()
+                    .Select(f => (f.HeadwordId, (long)f.FormId)), primaryHeadwords);
                 _irregularForms = new HeadwordFormIndex(_connection.Table<NounIrregularForm>()
                     .Select(f => new StoredHeadwordForm(f.HeadwordId, f.FormId, f.Form)), primaryHeadwords);
 
@@ -128,10 +128,10 @@ public class NounRepository : INounRepository
         return _corpusForms!.ContainsPrimary(formId);
     }
 
-    public bool IsFormInCorpus(int lemmaId, Case @case, Gender gender, Number number, int endingIndex, int headwordId, string renderedForm)
+    public bool IsFormInCorpus(int lemmaId, Case @case, Gender gender, Number number, int endingIndex, int headwordId)
     {
         EnsureCacheLoaded();
-        return _corpusForms!.Contains(headwordId, Declension.ResolveId(lemmaId, @case, gender, number, endingIndex), renderedForm);
+        return _corpusForms!.Contains(headwordId, Declension.ResolveId(lemmaId, @case, gender, number, endingIndex));
     }
 
     public List<string> GetIrregularForms(int lemmaId, Case @case, Gender gender, Number number, int headwordId)

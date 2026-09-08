@@ -1,0 +1,26 @@
+{
+  "ios_simulator": {
+    "artifact": ".local/m9-packaging/PaliPractice/PaliPractice/bin/Debug/net10.0-ios/iossimulator-arm64/PaliPractice.app",
+    "files": {
+      "pali.db": "55254fdebe6cb6a77d65c2ce5cbd8e58a8b961a0db3c2eb88e363bf1891a1c81",
+      "pali.version.txt": "5339e92e61b3366ddfad8cd7713614fbe4e0afd6bbbf793ddb9b8695f1f64d7e",
+      "pali.manifest.json": "b3880449d3ab14fb2f7b529938d0fdcea0806048e5860b6b0e561af2dbd391db"
+    }
+  },
+  "android_apk": {
+    "artifact": ".local/m9-packaging/PaliPractice/PaliPractice/bin/Debug/net10.0-android/org.dhammabytes.palipractice.m9checkpoint-Signed.apk",
+    "files": {
+      "pali.db": "55254fdebe6cb6a77d65c2ce5cbd8e58a8b961a0db3c2eb88e363bf1891a1c81",
+      "pali.version.txt": "5339e92e61b3366ddfad8cd7713614fbe4e0afd6bbbf793ddb9b8695f1f64d7e",
+      "pali.manifest.json": "b3880449d3ab14fb2f7b529938d0fdcea0806048e5860b6b0e561af2dbd391db"
+    }
+  },
+  "desktop": {
+    "artifact": ".local/m9-packaging/PaliPractice/PaliPractice/bin/Debug/net10.0-desktop",
+    "files": {
+      "pali.db": "55254fdebe6cb6a77d65c2ce5cbd8e58a8b961a0db3c2eb88e363bf1891a1c81",
+      "pali.version.txt": "5339e92e61b3366ddfad8cd7713614fbe4e0afd6bbbf793ddb9b8695f1f64d7e",
+      "pali.manifest.json": "b3880449d3ab14fb2f7b529938d0fdcea0806048e5860b6b0e561af2dbd391db"
+    }
+  }
+}

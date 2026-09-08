@@ -9,12 +9,14 @@ import subprocess
 import sys
 from pathlib import Path
 
+from contextlib import closing
+from .compact import compact
 from .compatibility import validate_identities
 from .validate_forms import validate_forms
 from .inputs import CORPORA, InputError, load_manifest, read_json, sha256
 
 ROOT = Path(__file__).resolve().parents[2]
-OUTPUTS = ("pali.db", "pali.version.txt", "lemma_registry.json", "inflection_validation.log", "practice_registry.json", "paradigm_corrections.json", "compatibility.json", "primary_forms.json")
+OUTPUTS = ("pali.db", "pali.version.txt", "lemma_registry.json", "inflection_validation.log", "practice_registry.json", "paradigm_corrections.json", "compatibility.json", "primary_forms.json", "corpus_forms.json")
 
 
 def code_identity() -> dict:
@@ -81,6 +83,13 @@ def build_candidate(manifest_path: Path, output: Path) -> Path:
     errors = structural_errors(output)
     if errors:
         raise InputError("Candidate structural validation failed: " + "; ".join(errors))
+    with closing(sqlite3.connect(output / 'pali.db')) as db:
+        corpus = {kind: db.execute(f'SELECT headword_id, form_id, form FROM {kind}_corpus_forms ORDER BY headword_id, form_id').fetchall()
+                  for kind in ('nouns', 'verbs')}
+    (output / 'corpus_forms.json').write_text(json.dumps(corpus, ensure_ascii=False, sort_keys=True) + '\n')
+    compact(output / 'pali.db', output / 'compact.db')
+    (output / 'compact.db').replace(output / 'pali.db')
+    validate_forms(output)
     # Detect changes during extraction before issuing a completed manifest.
     if load_manifest(manifest_path.resolve()) != (manifest, paths) or code_identity() != initial_code:
         raise InputError("Inputs or extraction code changed during generation")

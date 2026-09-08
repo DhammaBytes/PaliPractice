@@ -36,7 +36,7 @@ public class VerbRepository : IVerbRepository
 
     // Caches - loaded on first access
     HashSet<int>? _nonReflexiveLemmaIds;
-    HeadwordFormIndex? _corpusForms;
+    CorpusFormIndex? _corpusForms;
     Dictionary<int, ILemma>? _lemmas;
     List<ILemma>? _lemmasByRank;
     HeadwordFormIndex? _irregularForms;
@@ -81,8 +81,8 @@ public class VerbRepository : IVerbRepository
                 System.Diagnostics.Debug.WriteLine($"[VerbRepo] Built {_lemmas.Count} lemmas");
 
                 var primaryHeadwords = _lemmas.Values.Select(l => l.Primary.Id).ToHashSet();
-                _corpusForms = new HeadwordFormIndex(_connection.Table<VerbCorpusForm>()
-                    .Select(f => new StoredHeadwordForm(f.HeadwordId, f.FormId, f.Form)), primaryHeadwords);
+                _corpusForms = new CorpusFormIndex(_connection.Table<VerbCorpusForm>()
+                    .Select(f => (f.HeadwordId, (long)f.FormId)), primaryHeadwords);
                 _irregularForms = new HeadwordFormIndex(_connection.Table<VerbIrregularForm>()
                     .Select(f => new StoredHeadwordForm(f.HeadwordId, f.FormId, f.Form)), primaryHeadwords);
 
@@ -157,10 +157,10 @@ public class VerbRepository : IVerbRepository
         return _corpusForms!.ContainsPrimary(formId);
     }
 
-    public bool IsFormInCorpus(int lemmaId, Tense tense, Person person, Number number, bool reflexive, int endingIndex, int headwordId, string renderedForm)
+    public bool IsFormInCorpus(int lemmaId, Tense tense, Person person, Number number, bool reflexive, int endingIndex, int headwordId)
     {
         EnsureCacheLoaded();
-        return _corpusForms!.Contains(headwordId, Conjugation.ResolveId(lemmaId, tense, person, number, reflexive ? Voice.Reflexive : Voice.Active, endingIndex), renderedForm);
+        return _corpusForms!.Contains(headwordId, Conjugation.ResolveId(lemmaId, tense, person, number, reflexive ? Voice.Reflexive : Voice.Active, endingIndex));
     }
 
     public List<string> GetIrregularForms(int lemmaId, Tense tense, Person person, Number number, bool reflexive, int headwordId)

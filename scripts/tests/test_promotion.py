@@ -87,9 +87,15 @@ class PromotionTests(unittest.TestCase):
         forms[0][2] = 'incorrect' + form
         (candidate / 'primary_forms.json').write_text(json.dumps(forms))
         with sqlite3.connect(candidate / 'pali.db') as db:
-            for table in ('nouns_corpus_forms', 'nouns_irregular_forms', 'verbs_corpus_forms', 'verbs_irregular_forms'):
+            for table in ('nouns_irregular_forms', 'verbs_irregular_forms'):
                 db.execute(f'UPDATE {table} SET form=? WHERE headword_id=? AND form_id=?',
                            (forms[0][2], headword, identifier))
+        corpus = json.loads((candidate / 'corpus_forms.json').read_text())
+        for rows in corpus.values():
+            for row in rows:
+                if row[:2] == [headword, identifier]:
+                    row[2] = forms[0][2]
+        (candidate / 'corpus_forms.json').write_text(json.dumps(corpus))
         manifest = json.loads((candidate / 'candidate.json').read_text())
         for name in manifest['outputs']:
             manifest['outputs'][name] = sha256(candidate / name)
@@ -124,6 +130,7 @@ class PromotionTests(unittest.TestCase):
         path = repository / '.local/promotion/journal.json'
         journal = json.loads(path.read_text())
         del journal['files']['primary_forms.json']
+        del journal['files']['corpus_forms.json']
         path.write_text(json.dumps(journal))
         recover(repository)
         self.assertEqual('rolled_back', json.loads(path.read_text())['phase'])

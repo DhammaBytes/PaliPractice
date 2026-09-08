@@ -85,11 +85,33 @@ public class PaliDbLoader : IDisposable
     List<StoredForm> GetStoredForms(string table, string words)
     {
         using var command = _connection.CreateCommand();
+        command.CommandText = $"SELECT COUNT(*) FROM pragma_table_info('{table}') WHERE name='form'";
+        var compact = Convert.ToInt64(command.ExecuteScalar()) == 0;
+        if (compact) return GetCompactCorpusForms(table, words);
         command.CommandText = $"SELECT f.headword_id,f.form_id,f.form,w.pattern FROM {table} f JOIN {words} w ON w.id=f.headword_id";
         using var reader = command.ExecuteReader();
         var forms = new List<StoredForm>();
         while (reader.Read())
             forms.Add(new StoredForm(reader.GetInt32(0), reader.GetInt64(1), reader.GetString(2), reader.GetString(3)));
+        return forms;
+    }
+
+    List<StoredForm> GetCompactCorpusForms(string table, string words)
+    {
+        using var evidence = System.Text.Json.JsonDocument.Parse(File.ReadAllText(TestPaths.CorpusFormsPath));
+        var spellings = evidence.RootElement.GetProperty(words).EnumerateArray().ToDictionary(
+            row => (row[0].GetInt32(), row[1].GetInt64()), row => row[2].GetString()!);
+        using var command = _connection.CreateCommand();
+        command.CommandText = $"SELECT f.headword_id,f.form_id,w.pattern FROM {table} f JOIN {words} w ON w.id=f.headword_id";
+        using var reader = command.ExecuteReader();
+        var forms = new List<StoredForm>();
+        while (reader.Read())
+        {
+            var key = (reader.GetInt32(0), reader.GetInt64(1));
+            if (!spellings.Remove(key, out var form)) throw new InvalidDataException("Missing corpus spelling evidence");
+            forms.Add(new StoredForm(key.Item1, key.Item2, form, reader.GetString(2)));
+        }
+        if (spellings.Count != 0) throw new InvalidDataException("Extra corpus spelling evidence");
         return forms;
     }
 

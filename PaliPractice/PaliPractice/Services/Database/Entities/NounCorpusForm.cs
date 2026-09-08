@@ -18,6 +18,4 @@ class NounCorpusForm
     /// </summary>
     [Column("form_id")]
     public int FormId { get; set; }
-    [Column("form")]
-    public string Form { get; set; } = "";
 }

@@ -18,8 +18,7 @@ public static class PracticeDatabaseMigrations
         connection.RunInTransaction(() =>
         {
             CreateVersionOne(connection);
-            LegacyHistorySnapshots.Backfill<NounsPracticeHistory>(connection);
-            LegacyHistorySnapshots.Backfill<VerbsPracticeHistory>(connection);
+            LegacyHistorySnapshots.Backfill(connection);
             connection.Execute($"PRAGMA user_version = {CurrentVersion}");
         });
     }

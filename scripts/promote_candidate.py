@@ -22,6 +22,7 @@ TARGETS = {
     'lemma_registry.json': 'scripts/configs/lemma_registry.json',
     'practice_registry.json': 'scripts/configs/practice_registry.json',
     'paradigm_corrections.json': 'scripts/configs/paradigm_corrections.json',
+    'corpus_forms.json': 'scripts/generated/corpus_forms.json',
     'primary_forms.json': 'scripts/generated/primary_forms.json',
 }
 
@@ -73,7 +74,7 @@ def recover_locked(repository: Path, state: Path):
     journal = read_json(path)
     if journal.get('phase') in ('committed', 'rolled_back'):
         return
-    supported_sets = (set(TARGETS), set(TARGETS) - {'primary_forms.json'})
+    supported_sets = (set(TARGETS), set(TARGETS) - {'corpus_forms.json'}, set(TARGETS) - {'primary_forms.json', 'corpus_forms.json'})
     if journal.get('phase') != 'prepared' or set(journal.get('files', {})) not in supported_sets:
         raise InputError('Unrecognized promotion journal; manual investigation required')
     # Verify every backup and current target before touching any target.

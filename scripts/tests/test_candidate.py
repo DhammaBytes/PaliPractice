@@ -167,6 +167,32 @@ class CandidateTests(unittest.TestCase):
         with self.assertRaisesRegex(InputError, 'primary grammar'):
             validate_candidate(candidate)
 
+    def test_compact_evidence_and_database_must_have_identical_keys(self):
+        candidate = self.build('missing-corpus-evidence')
+        path = candidate / 'corpus_forms.json'
+        corpus = json.loads(path.read_text())
+        corpus['nouns'].pop()
+        path.write_text(json.dumps(corpus))
+        manifest = json.loads((candidate / 'candidate.json').read_text())
+        manifest['outputs']['corpus_forms.json'] = sha256(path)
+        (candidate / 'candidate.json').write_text(json.dumps(manifest))
+        with self.assertRaisesRegex(InputError, 'differs from spelling evidence'):
+            validate_candidate(candidate)
+
+    def test_compact_evidence_spelling_must_match_primary_template(self):
+        candidate = self.build('wrong-corpus-spelling')
+        path = candidate / 'corpus_forms.json'
+        corpus = json.loads(path.read_text())
+        primary = {(row[0], row[1]) for row in json.loads((candidate / 'primary_forms.json').read_text())}
+        row = next(row for rows in corpus.values() for row in rows if tuple(row[:2]) in primary)
+        row[2] += 'wrong'
+        path.write_text(json.dumps(corpus))
+        manifest = json.loads((candidate / 'candidate.json').read_text())
+        manifest['outputs']['corpus_forms.json'] = sha256(path)
+        (candidate / 'candidate.json').write_text(json.dumps(manifest))
+        with self.assertRaisesRegex(InputError, 'disagree with template contract'):
+            validate_candidate(candidate)
+
     def test_bad_checksum_fails_before_candidate_directory_creation(self):
         self.paths['cst'].write_text('[]')
         with self.assertRaisesRegex(InputError, 'Checksum'):

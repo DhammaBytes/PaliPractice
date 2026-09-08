@@ -19,12 +19,27 @@ def valid_id(identifier, word, kind):
     return 1 <= ending <= 7 and voice in (1, 2) and number in (1, 2) and 1 <= person <= 3 and 1 <= tense <= 4
 
 
-def read_scoped(db, table, words, kind):
+def scoped_rows(db, table, evidence):
     columns = {row[1] for row in db.execute(f'PRAGMA table_info({table})')}
-    if not {'headword_id', 'form_id', 'form'} <= columns:
-        raise InputError(f'Missing scoped form columns: {table}')
+    if evidence is None:
+        if not {'headword_id', 'form_id', 'form'} <= columns:
+            raise InputError(f'Missing scoped form columns: {table}')
+        rows = db.execute(f'SELECT headword_id, form_id, form FROM {table}')
+    else:
+        if columns != {'headword_id', 'form_id'}:
+            raise InputError(f'Invalid compact corpus columns: {table}')
+        if not isinstance(evidence, list):
+            raise InputError(f'Invalid corpus evidence: {table}')
+        rows = evidence
+    return rows
+
+
+def read_scoped(db, table, words, kind, evidence=None):
+    rows = scoped_rows(db, table, evidence)
     result = {}
-    for row in db.execute(f'SELECT headword_id, form_id, form FROM {table}'):
+    for row in rows:
+        if evidence is not None and (not isinstance(row, list) or len(row) != 3):
+            raise InputError(f'Malformed corpus evidence: {table}')
         headword, identifier, form = row
         word = words.get(headword)
         if word is None or not valid_id(identifier, word, kind):
@@ -35,7 +50,17 @@ def read_scoped(db, table, words, kind):
         if key in result:
             raise InputError(f'Duplicate scoped form identity in {table}: {key}')
         result[key] = form
+    if evidence is not None:
+        validate_compact_keys(db, table, words, kind, result)
     return result
+
+
+def validate_compact_keys(db, table, words, kind, result):
+    stored = [tuple(row) for row in db.execute(f'SELECT headword_id, form_id FROM {table}')]
+    if any(headword not in words or not valid_id(identifier, words[headword], kind) for headword, identifier in stored):
+        raise InputError(f'Invalid headword/grammar in {table}')
+    if len(stored) != len(result) or set(stored) != set(result):
+        raise InputError(f'Compact corpus differs from spelling evidence: {table}')
 
 
 def primary_row(row, words):
@@ -72,8 +97,8 @@ def primary_records(records, words):
     return {key: value for key, value in records.items() if words[key[0]]['practice_primary']}
 
 
-def validate_kind(db, kind, patterns, kind_words, expected):
-    corpus = read_scoped(db, kind + '_corpus_forms', kind_words, kind)
+def validate_kind(db, kind, patterns, kind_words, expected, evidence=None):
+    corpus = read_scoped(db, kind + '_corpus_forms', kind_words, kind, evidence)
     irregular = read_scoped(db, kind + '_irregular_forms', kind_words, kind)
     primary = {key: value for key, value in expected.items() if key[0] in kind_words}
     required = {key: form for key, (form, attested) in primary.items() if attested}
@@ -87,10 +112,14 @@ def validate_kind(db, kind, patterns, kind_words, expected):
 
 
 def validate_forms(directory):
+    evidence_path = directory / 'corpus_forms.json'
+    evidence = read_json(evidence_path) if evidence_path.exists() else None
+    if evidence is not None and (not isinstance(evidence, dict) or set(evidence) != {'nouns', 'verbs'}):
+        raise InputError('Invalid corpus spelling evidence')
     with connect(directory / 'pali.db') as db:
         by_kind = words_from(db)
         words = {word['id']: word for rows in by_kind.values() for word in rows}
         expected = read_primary(directory, words)
         for kind, patterns in (('nouns', IRREGULAR_NOUN_PATTERNS), ('verbs', IRREGULAR_VERB_PATTERNS)):
             kind_words = {word['id']: word for word in by_kind[kind]}
-            validate_kind(db, kind, patterns, kind_words, expected)
+            validate_kind(db, kind, patterns, kind_words, expected, evidence[kind] if evidence is not None else None)

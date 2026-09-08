@@ -64,6 +64,11 @@ public static class TestPaths
         System.IO.Path.Combine(
             RepositoryRoot, "PaliPractice", "PaliPractice", "Data", "pali.db");
 
+    public static string CorpusFormsPath =>
+        !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("PALIPRACTICE_CANDIDATE_DB"))
+            ? System.IO.Path.Combine(System.IO.Path.GetDirectoryName(PaliDbPath)!, "corpus_forms.json")
+            : System.IO.Path.Combine(RepositoryRoot, "scripts", "generated", "corpus_forms.json");
+
     public static string PrimaryFormsPath =>
         Environment.GetEnvironmentVariable("PALIPRACTICE_CANDIDATE_DB") is not null
             ? System.IO.Path.Combine(System.IO.Path.GetDirectoryName(PaliDbPath)!, "primary_forms.json")

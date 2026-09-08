@@ -1,0 +1,20 @@
+{
+  "base_commit": "c3a8deb469bb9066d21599e6700b4b481c62b009",
+  "version_before": 2026090702,
+  "version_after": 2026090703,
+  "bytes_before": 6176768,
+  "bytes_after": 3457024,
+  "reduction_percent": 44.03,
+  "logical_comparison": "All table rows match after projecting corpus tables to headword_id and form_id; version is the only other data change.",
+  "promoted_dotnet_tests": {
+    "passed": 2937,
+    "failed": 0,
+    "skipped": 0
+  },
+  "producer_tests_passed": 64,
+  "gate_profile": "auto",
+  "gate_seconds": 233.75,
+  "review": "Independent read-only review found no blocking findings.",
+  "gate_log": "/tmp/agentic-quality-loop-501/runner-logs/run-20260907T234237.023646Z-48537-8d57f8da/gate.log",
+  "backup": ".local/backups/before-compact-production"
+}

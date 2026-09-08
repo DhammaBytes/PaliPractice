@@ -236,3 +236,18 @@ It restores the whole prior set and refuses to overwrite unrelated external
 edits. Preserve `.local/promotion` until the checkpoint is accepted; its old-file
 copies retain the prior bundle. The gate never promotes or publishes an app.
 This checkpoint establishes data/model readiness only.
+
+### Compact corpus storage
+
+Candidate generation validates full rendered records before projecting corpus
+attestation into `(headword_id, form_id)` keys. Both corpus and irregular tables
+use `WITHOUT ROWID`; irregular tables keep their `form` strings. Exact projection
+checks preserve all other table contents. `corpus_forms.json` retains every
+attested spelling as hashed build evidence, alongside `primary_forms.json`.
+Neither evidence file is an app asset. Promotion places them in `scripts/generated`
+for ordinary repository tests. Compact keys must exactly match the evidence;
+all primary reconstructions and corpus membership are checked by the .NET gate.
+
+Bump the pinned input manifest's database version for a changed shipped bundle.
+The existing copied-database version check installs the new compact bundle on
+upgrade. Keep the matching app reader, version and output manifest together.

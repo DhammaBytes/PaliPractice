@@ -24,10 +24,6 @@ internal sealed class HeadwordFormIndex
 
     public bool ContainsPrimary(long formId) => _primaryIds.Contains(formId);
 
-    public bool Contains(int headwordId, long formId, string renderedForm) =>
-        _forms.TryGetValue((headwordId, formId), out var stored) ? stored == renderedForm :
-        _forms.ContainsKey((0, formId));
-
     public List<string> GetForms(int headwordId, long baseFormId, int maximumEndings)
     {
         var forms = new List<string>();

@@ -38,10 +38,42 @@ public class PrimaryAttestationTests
             VerbPatternHelper.Parse(pattern).IsMarkerOrNone().Should().BeFalse();
     }
 
-    [Test]
-    public void EveryPrimaryRenderedFormHasExactCorpusAttestationAndEligibility()
+    [TestCase(false)]
+    [TestCase(true)]
+    public void EveryPrimaryRenderedFormHasExactCorpusAttestationAndEligibility(bool compact)
     {
-        using var connection = new SQLiteConnection(TestPaths.PaliDbPath, SQLiteOpenFlags.ReadOnly);
+        var temporary = compact ? Path.Combine(Path.GetTempPath(), $"pali-compact-{Guid.NewGuid():N}.db") : null;
+        try
+        {
+            if (temporary != null) CreateCompactCopy(temporary);
+            CheckEveryPrimaryForm(temporary ?? TestPaths.PaliDbPath);
+        }
+        finally
+        {
+            if (temporary != null) File.Delete(temporary);
+        }
+    }
+
+    static void CreateCompactCopy(string path)
+    {
+        File.Copy(TestPaths.PaliDbPath, path);
+        using var db = new SQLiteConnection(path);
+        foreach (var kind in new[] { "nouns", "verbs" })
+        foreach (var suffix in new[] { "corpus_forms", "irregular_forms" })
+        {
+            var table = $"{kind}_{suffix}";
+            var columns = suffix == "corpus_forms" ? "headword_id, form_id" : "headword_id, form_id, form";
+            var spelling = suffix == "corpus_forms" ? "" : "form TEXT NOT NULL,";
+            db.Execute($"ALTER TABLE {table} RENAME TO old_{table}");
+            db.Execute($"CREATE TABLE {table} (headword_id INTEGER NOT NULL REFERENCES {kind}(id), form_id INTEGER NOT NULL, {spelling} PRIMARY KEY(headword_id, form_id)) WITHOUT ROWID");
+            db.Execute($"INSERT INTO {table} SELECT {columns} FROM old_{table}");
+            db.Execute($"DROP TABLE old_{table}");
+        }
+    }
+
+    static void CheckEveryPrimaryForm(string databasePath)
+    {
+        using var connection = new SQLiteConnection(databasePath, SQLiteOpenFlags.ReadOnly);
         var nouns = new NounRepository(connection);
         var verbs = new VerbRepository(connection);
         var service = new InflectionService(new RepositoryBackedTestDatabaseService(nouns, verbs, new FakeUserDataRepository()));

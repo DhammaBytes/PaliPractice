@@ -141,3 +141,9 @@ binds its complete output hashes, English semantic receipt and source identities
 M9 promotion requires it and all three language layers; the compact `bundle.json`
 becomes the packaged `Data/pali.manifest.json`. Database readiness does not imply
 UI or app-publication readiness.
+
+Compact corpus candidates retain full spellings in the hashed `corpus_forms.json`
+build artifact, not in the app asset. Candidate validation checks exact key parity
+with that artifact, and the .NET lane independently checks corpus membership and
+all primary reconstructed strings. Full spelling validation precedes compaction;
+the compact projection and its evidence are repeated, hashed, and promoted together.

@@ -105,7 +105,7 @@ public class InflectionService : IInflectionService
                 nounCase,
                 noun.Gender,
                 number,
-                endingId, noun.Id, form
+                endingId, noun.Id
             );
 
             forms.Add(new DeclensionForm(
@@ -142,7 +142,7 @@ public class InflectionService : IInflectionService
 
             // Check corpus attestation via corpus_forms table (same as regular forms)
             var inCorpus = _databaseService.Nouns.IsFormInCorpus(
-                noun.LemmaId, nounCase, noun.Gender, number, endingId, noun.Id, form);
+                noun.LemmaId, nounCase, noun.Gender, number, endingId, noun.Id);
 
             forms.Add(new DeclensionForm(
                 FormId: formId,
@@ -230,7 +230,7 @@ public class InflectionService : IInflectionService
                 person,
                 number,
                 reflexive,
-                endingId, verb.Id, form
+                endingId, verb.Id
             );
 
             forms.Add(new ConjugationForm(
@@ -274,7 +274,7 @@ public class InflectionService : IInflectionService
 
             // Check corpus attestation via corpus_forms table (same as regular forms)
             var inCorpus = _databaseService.Verbs.IsFormInCorpus(
-                verb.LemmaId, tense, person, number, reflexive, endingId, verb.Id, form);
+                verb.LemmaId, tense, person, number, reflexive, endingId, verb.Id);
 
             forms.Add(new ConjugationForm(
                 FormId: formId,

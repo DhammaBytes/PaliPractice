@@ -18,6 +18,4 @@ class VerbCorpusForm
     /// </summary>
     [Column("form_id")]
     public long FormId { get; set; }
-    [Column("form")]
-    public string Form { get; set; } = "";
 }

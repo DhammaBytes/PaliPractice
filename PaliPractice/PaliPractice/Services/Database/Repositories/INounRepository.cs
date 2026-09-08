@@ -21,10 +21,6 @@ public interface INounRepository : ILemmaRepository
     /// </summary>
     List<string> GetIrregularForms(int lemmaId, Case @case, Gender gender, Number number);
 
-    /// <summary>
-    /// Check if irregular forms exist for this noun grammatical combination.
-    /// </summary>
-    bool HasIrregularForm(int lemmaId, Case @case, Gender gender, Number number);
     bool IsFormInCorpus(int lemmaId, Case @case, Gender gender, Number number, int endingIndex, int headwordId) =>
         IsFormInCorpus(lemmaId, @case, gender, number, endingIndex);
 

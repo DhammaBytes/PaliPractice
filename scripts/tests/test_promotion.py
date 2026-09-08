@@ -65,7 +65,7 @@ class PromotionTests(unittest.TestCase):
             self.assertEqual((self.candidate / name).read_bytes(), (repository / relative).read_bytes())
 
     def test_english_production_promotion_is_rejected_before_writes(self):
-        with self.assertRaisesRegex(InputError, 'English-only'):
+        with self.assertRaisesRegex(InputError, 'complete multilingual bundle'):
             promote(self.candidate, ROOT, self.manifest, self.evidence)
 
     def test_missing_or_stale_evidence_prevents_staging(self):

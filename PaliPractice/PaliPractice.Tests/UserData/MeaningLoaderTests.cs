@@ -22,13 +22,12 @@ public class MeaningLoaderTests
         _connection.CreateTable<NounCorpusForm>();
         _connection.CreateTable<NounIrregularForm>();
         _connection.Execute("ALTER TABLE nouns_details ADD COLUMN meaning TEXT");
-        _connection.Execute("ALTER TABLE nouns_details ADD COLUMN meaning_ru TEXT");
         for (var id = 1; id <= 3; id++)
         {
             _connection.Insert(new Noun { Id = id, LemmaId = 10001, Lemma = "dhamma", Stem = "dhamm",
                 Gender = Gender.Masculine, RawPattern = "a masc", PracticePrimary = id == 1 });
             _connection.Insert(new NounDetails { Id = id, LemmaId = 10001, Example1 = "unchanged example" });
-            _connection.Execute("UPDATE nouns_details SET meaning=?, meaning_ru=? WHERE id=?", $"English {id}", $"Legacy Russian {id}", id);
+            _connection.Execute("UPDATE nouns_details SET meaning=? WHERE id=?", $"English {id}", id);
         }
         _queries.Clear();
         _language = "en";
@@ -110,21 +109,16 @@ public class MeaningLoaderTests
         }
     }
 
-    [Test]
-    public void LegacyBundleLoadsOnlyRussianColumnAndSpanishFallsBackToEnglish()
+    [TestCase("ru")]
+    [TestCase("es")]
+    public void MissingTranslationTableIsAnInvalidBundle(string language)
     {
         var repository = Repository();
         var lemma = repository.GetLemma(10001)!;
-        _language = "ru";
-        _queries.Clear();
-        repository.EnsureDetails(lemma);
-        Meanings(lemma).Should().Equal("Legacy Russian 1", "Legacy Russian 2", "Legacy Russian 3");
-        MeaningQueries().Should().ContainSingle().Which.Should().Contain("meaning_ru AS meaning");
-        _language = "es";
-        _queries.Clear();
-        repository.EnsureDetails(lemma);
-        Meanings(lemma).Should().Equal("English 1", "English 2", "English 3");
-        MeaningQueries().Should().ContainSingle().Which.Should().Contain("meaning AS meaning");
+        _language = language;
+        Action load = () => repository.EnsureDetails(lemma);
+        load.Should().Throw<SQLiteException>();
+        lemma.MeaningsLanguage.Should().BeNull();
     }
 
     [TestCase("en")]

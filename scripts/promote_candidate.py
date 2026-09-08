@@ -74,6 +74,8 @@ def recover_locked(repository: Path, state: Path):
     journal = read_json(path)
     if journal.get('phase') in ('committed', 'rolled_back'):
         return
+    # Interrupted older promotions predate one or both build-evidence sidecars.
+    # Accept only these exact historical sets, not arbitrary partial journals.
     supported_sets = (set(TARGETS), set(TARGETS) - {'corpus_forms.json'}, set(TARGETS) - {'primary_forms.json', 'corpus_forms.json'})
     if journal.get('phase') != 'prepared' or set(journal.get('files', {})) not in supported_sets:
         raise InputError('Unrecognized promotion journal; manual investigation required')
@@ -110,12 +112,14 @@ def promotion_inputs(candidate: Path, repository: Path, inputs: Path, evidence: 
         return manifest['outputs'], 'bundle.json'
     manifest = validate_candidate(candidate)
     if repository == ROOT and manifest['language_layer'] == 'en':
-        raise InputError('English-only candidates cannot replace the Russian-capable production bundle')
+        raise InputError('Production promotion requires the complete multilingual bundle')
     verify_semantics(candidate, inputs.resolve(), evidence.resolve())
     return manifest['outputs'], 'candidate.json'
 
 
 def protect_input_paths(repository: Path, inputs: Path, english: Path | None, translations: Path | None):
+    # Promotion writes registries too. Pinning those same paths would invalidate
+    # the inputs immediately after a successful build and prevent reproduction.
     protected = {inputs.resolve(), *load_manifest(inputs.resolve())[1].values()}
     if english is not None and translations is not None:
         from extraction.enrichment import read_sources

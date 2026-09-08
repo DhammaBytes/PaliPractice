@@ -38,7 +38,7 @@ class DataFixture:
             );
             CREATE TABLE nouns_details (
                 id INTEGER PRIMARY KEY, lemma_id INTEGER, word TEXT, root TEXT,
-                meaning TEXT, meaning_ru TEXT
+                meaning TEXT
             );
             CREATE TABLE nouns_corpus_forms (form_id INTEGER PRIMARY KEY);
             CREATE TABLE nouns_irregular_forms (
@@ -50,7 +50,7 @@ class DataFixture:
             );
             CREATE TABLE verbs_details (
                 id INTEGER PRIMARY KEY, lemma_id INTEGER, word TEXT, root TEXT,
-                type TEXT, trans TEXT, meaning TEXT, meaning_ru TEXT
+                type TEXT, trans TEXT, meaning TEXT
             );
             CREATE TABLE verbs_corpus_forms (form_id INTEGER PRIMARY KEY);
             CREATE TABLE verbs_irregular_forms (
@@ -58,12 +58,12 @@ class DataFixture:
             );
             CREATE TABLE verbs_nonreflexive (lemma_id INTEGER PRIMARY KEY);
             INSERT INTO nouns VALUES (1, 2, 10001, 'n', 1, 'n', 'n');
-            INSERT INTO nouns_details VALUES (1, 10001, 'n', '', '', '');
+            INSERT INTO nouns_details VALUES (1, 10001, 'n', '', '');
             INSERT INTO nouns_corpus_forms VALUES (100011111);
             INSERT INTO nouns_irregular_forms VALUES (100011111, 'n');
             INSERT INTO verbs VALUES (2, 3, 70001, 'v', 'v', 'v');
             INSERT INTO verbs_details
-                VALUES (2, 70001, 'v', '', '', '', '', '');
+                VALUES (2, 70001, 'v', '', '', '', '');
             INSERT INTO verbs_corpus_forms VALUES (7000111111);
             INSERT INTO verbs_irregular_forms VALUES (7000111111, 'v');
             INSERT INTO verbs_nonreflexive VALUES (70001);

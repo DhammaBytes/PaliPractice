@@ -8,7 +8,7 @@ This script uses modular components from the extraction/ package:
 - registry.py: Stable lemma ID management
 - grammar.py: Grammar enum definitions and parsing
 - forms.py: Form ID computation and stem cleaning
-- html_parser.py: DPD HTML parsing for irregular forms
+- templates.py: Shared DPD templates for regular and irregular forms
 - plural_dedup.py: Redundant plural-only lemma detection
 """
 
@@ -35,7 +35,6 @@ from extraction import (
     get_noun_lemma_id,
     get_verb_lemma_id,
     deep_copy_registry,
-    # HTML Parser
     # Plural Deduplication
     PluralOnlyDeduplicator,
     # Translations
@@ -139,7 +138,6 @@ class NounVerbExtractor:
                 word TEXT NOT NULL DEFAULT '',
                 root TEXT DEFAULT '',
                 meaning TEXT,
-                meaning_ru TEXT DEFAULT '',
                 source_1 TEXT DEFAULT '',
                 sutta_1 TEXT DEFAULT '',
                 example_1 TEXT DEFAULT '',
@@ -175,7 +173,6 @@ class NounVerbExtractor:
                 type TEXT DEFAULT '',
                 trans TEXT DEFAULT '',
                 meaning TEXT,
-                meaning_ru TEXT DEFAULT '',
                 source_1 TEXT DEFAULT '',
                 sutta_1 TEXT DEFAULT '',
                 example_1 TEXT DEFAULT '',
@@ -517,15 +514,14 @@ class NounVerbExtractor:
 
             # Apply custom translation adjustments
             meaning = self.translations.apply(word.id, word.lemma_1, word.meaning_1 or '')
-            meaning_ru = ''
 
             cursor.execute("""
                 INSERT INTO nouns_details (
-                    id, lemma_id, word, root, meaning, meaning_ru,
+                    id, lemma_id, word, root, meaning,
                     source_1, sutta_1, example_1, source_2, sutta_2, example_2
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
-                word.id, lemma_id, word_variant, word.family_root or '', meaning, meaning_ru,
+                word.id, lemma_id, word_variant, word.family_root or '', meaning,
                 word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
                 word.source_2 or '', word.sutta_2 or '', word.example_2 or ''
             ))
@@ -602,15 +598,14 @@ class NounVerbExtractor:
 
             # Apply custom translation adjustments
             meaning = self.translations.apply(word.id, word.lemma_1, word.meaning_1 or '')
-            meaning_ru = ''
 
             cursor.execute("""
                 INSERT INTO verbs_details (
-                    id, lemma_id, word, root, type, trans, meaning, meaning_ru,
+                    id, lemma_id, word, root, type, trans, meaning,
                     source_1, sutta_1, example_1, source_2, sutta_2, example_2
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
-                word.id, lemma_id, word_variant, word.family_root or '', word.verb or '', word.trans or '', meaning, meaning_ru,
+                word.id, lemma_id, word_variant, word.family_root or '', word.verb or '', word.trans or '', meaning,
                 word.source_1 or '', word.sutta_1 or '', word.example_1 or '',
                 word.source_2 or '', word.sutta_2 or '', word.example_2 or ''
             ))

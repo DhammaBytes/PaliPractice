@@ -15,30 +15,6 @@ public static class TestPaths
         return System.IO.Path.GetFullPath(input, System.IO.Path.GetDirectoryName(System.IO.Path.GetFullPath(path))!);
     }
 
-    public static bool HasFrozenEnglishCore
-    {
-        get
-        {
-            var directory = System.IO.Path.GetDirectoryName(PaliDbPath)!;
-            var bundledManifest = System.IO.Path.Combine(directory, "pali.manifest.json");
-            if (File.Exists(bundledManifest))
-            {
-                using var bundle = System.Text.Json.JsonDocument.Parse(File.ReadAllText(bundledManifest));
-                return bundle.RootElement.GetProperty("kind").GetString() == "multilingual-database";
-            }
-            if (Environment.GetEnvironmentVariable("PALIPRACTICE_CANDIDATE_DB") is null) return false;
-            var enrichment = System.IO.Path.Combine(directory, "enrichment.json");
-            if (File.Exists(enrichment))
-            {
-                using var translated = System.Text.Json.JsonDocument.Parse(File.ReadAllText(enrichment));
-                return translated.RootElement.GetProperty("english_sha256").GetString()?.Length == 64;
-            }
-            using var manifest = System.Text.Json.JsonDocument.Parse(File.ReadAllText(
-                System.IO.Path.Combine(directory, "candidate.json")));
-            return manifest.RootElement.GetProperty("language_layer").GetString() == "en";
-        }
-    }
-
     /// <summary>
     /// Repository root supplied by isolated quality runs, or inferred from the
     /// conventional local test output layout.

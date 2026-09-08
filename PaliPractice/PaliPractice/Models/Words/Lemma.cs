@@ -2,7 +2,7 @@ namespace PaliPractice.Models.Words;
 
 /// <summary>
 /// Implementation of ILemma that groups words by lemma.
-/// Filters out words with minority inflection patterns into ExcludedWords.
+/// Keeps senses matching the explicit practice paradigm; other senses are ExcludedWords.
 /// Manages lazy-loading of details.
 /// </summary>
 public class Lemma : ILemma
@@ -26,16 +26,11 @@ public class Lemma : ILemma
         var allWords = words.ToList();
         LemmaId = allWords.First().LemmaId;
         var selected = allWords.Where(w => w.PracticePrimary).ToList();
-        if (selected.Count > 1)
-            throw new InvalidDataException($"Multiple practice senses for lemma {LemmaId}");
+        if (selected.Count != 1)
+            throw new InvalidDataException($"Expected one practice sense for lemma {LemmaId}, found {selected.Count}");
 
-        // Existing shipped bundles do not contain practice_primary. Preserve
-        // their released selection behavior until a validated bundle replaces them.
-        var primary = selected.SingleOrDefault();
-        var legacyPattern = primary is null ? LegacyPattern(allWords) : null;
-        bool Included(IWord word) => primary is null
-            ? word.RawPattern == legacyPattern
-            : SameParadigm(word, primary);
+        var primary = selected[0];
+        bool Included(IWord word) => SameParadigm(word, primary);
 
         _words = allWords.Where(Included)
             .OrderByDescending(w => w.PracticePrimary)
@@ -48,12 +43,6 @@ public class Lemma : ILemma
     static bool SameParadigm(IWord word, IWord primary) =>
         word.RawPattern == primary.RawPattern && word.Stem == primary.Stem &&
         (word is not Noun noun || primary is not Noun selected || noun.Gender == selected.Gender);
-
-    static string LegacyPattern(List<IWord> words) => words
-        .GroupBy(w => w.RawPattern)
-        .OrderByDescending(g => g.Count())
-        .ThenBy(g => g.Min(w => w.Id))
-        .First().Key;
 
     public void LoadDetails(IReadOnlyList<IWordDetails> details)
     {

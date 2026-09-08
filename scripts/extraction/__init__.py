@@ -32,11 +32,6 @@ from .registry import (
     get_verb_lemma_id,
     deep_copy_registry,
 )
-from .html_parser import (
-    parse_inflections_html,
-    parse_noun_title,
-    parse_verb_title,
-)
 from .plural_dedup import PluralOnlyDeduplicator
 from .translations import TranslationAdjustments
 from .validate_inflections import InflectionValidator, PluralOnlyMatch
@@ -69,10 +64,6 @@ __all__ = [
     'get_noun_lemma_id',
     'get_verb_lemma_id',
     'deep_copy_registry',
-    # HTML Parser
-    'parse_inflections_html',
-    'parse_noun_title',
-    'parse_verb_title',
     # Plural Deduplication
     'PluralOnlyDeduplicator',
     # Translations

@@ -106,7 +106,7 @@ ambiguous reports fail. The percentage is reported only as an advisory metric.
 
 ## Verifying an isolated data candidate
 
-M5 permits candidate-only regeneration from an explicit manifest:
+The gate permits candidate-only regeneration from an explicit manifest:
 
 ```bash
 PALIPRACTICE_INPUT_MANIFEST=/absolute/path/inputs.json \
@@ -128,7 +128,7 @@ or native iOS/Android operation; retain the separate provisioning smoke evidence
 A complete successful candidate gate emits `semantic-verification.json`, binding
 the exact candidate, inputs, and producer/consumer source hashes. Promotion requires
 this receipt and rejects stale evidence. English-only production promotion remains
-blocked; M9 performs deliberate multilingual promotion using the recovery journal.
+blocked; multilingual promotion uses the recovery journal.
 
 With `PALIPRACTICE_TRANSLATION_MANIFEST` set, the gate also creates two isolated
 enriched copies and checks exact source mappings and unchanged English data.
@@ -138,7 +138,7 @@ every displayed noun/verb sense in all three languages. Source evidence includes
 The gate emits `bundle-verification.json` only after the full gate passes and
 the recorded .NET database path matches the enriched candidate. This receipt
 binds its complete output hashes, English semantic receipt and source identities.
-M9 promotion requires it and all three language layers; the compact `bundle.json`
+Multilingual promotion requires it and all three language layers; the compact `bundle.json`
 becomes the packaged `Data/pali.manifest.json`. Database readiness does not imply
 UI or app-publication readiness.
 

@@ -18,7 +18,9 @@ public static class PracticeDatabaseMigrations
         connection.RunInTransaction(() =>
         {
             CreateVersionOne(connection);
+            // v1.1 is the released user-data baseline; dictionary translations are not migrated.
             LegacyHistorySnapshots.Backfill(connection);
+            // Version advances only with both backfills; interruption retries the whole transaction.
             connection.Execute($"PRAGMA user_version = {CurrentVersion}");
         });
     }

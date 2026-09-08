@@ -56,7 +56,7 @@ and after testing. [Verification details](verification.json) retain the exact
 external evidence path and counts.
 
 Candidate consumption was added to the gate in M4 to prove the repaired data
-without replacing the Russian-capable bundle. It does not generate or promote
+without replacing the development bundle. It does not generate or promote
 outputs. M5 adds automatic isolated builds and upgrade/provisioning evidence.
 Without an explicitly supplied candidate, the gate checks the pending bundle and
 correctly rejects its known invalid data. No acceptance threshold was weakened.

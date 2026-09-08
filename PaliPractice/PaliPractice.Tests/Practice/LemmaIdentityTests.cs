@@ -46,12 +46,11 @@ public class LemmaIdentityTests
     }
 
     [Test]
-    public void OldBundlesKeepReleasedSenseCountSelection()
+    public void MissingExplicitChoiceFails()
     {
-        var lemma = new Lemma("vassa", [Sense(3, pattern: "a nt", frequency: 500),
+        Action construct = () => _ = new Lemma("vassa", [Sense(3, pattern: "a nt", frequency: 500),
             Sense(2), Sense(1)]);
-        lemma.Primary.Id.Should().Be(1);
-        lemma.ExcludedWords.Select(w => w.Id).Should().Equal(3);
+        construct.Should().Throw<InvalidDataException>();
     }
 
     [Test]

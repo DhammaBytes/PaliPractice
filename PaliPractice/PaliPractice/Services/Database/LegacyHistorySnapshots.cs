@@ -9,6 +9,8 @@ internal static class LegacyHistorySnapshots
 {
     static Dictionary<long, string[]> Load()
     {
+        // Frozen released grammar is deliberate: current DPD forms cannot reconstruct
+        // history for removed lemmas or preserve the old display after paradigm changes.
         using var resource = typeof(LegacyHistorySnapshots).Assembly
             .GetManifestResourceStream("PaliPractice.HistoryV11")
             ?? throw new InvalidDataException("Released history reconstruction resource is missing");

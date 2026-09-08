@@ -11,7 +11,7 @@ from urllib.parse import quote
 
 SCHEMA = {
     "nouns": {"id", "ebt_count", "lemma_id", "lemma", "gender", "stem", "pattern"},
-    "nouns_details": {"id", "lemma_id", "word", "root", "meaning", "meaning_ru"},
+    "nouns_details": {"id", "lemma_id", "word", "root", "meaning"},
     "nouns_corpus_forms": {"form_id"},
     "nouns_irregular_forms": {"form_id", "form"},
     "verbs": {"id", "ebt_count", "lemma_id", "lemma", "stem", "pattern"},
@@ -23,7 +23,6 @@ SCHEMA = {
         "type",
         "trans",
         "meaning",
-        "meaning_ru",
     },
     "verbs_corpus_forms": {"form_id"},
     "verbs_irregular_forms": {"form_id", "form"},

@@ -95,7 +95,7 @@ def content_changes(old_db, new_db, kind, old_primary, new_primary):
         old = old_details[old_primary[identifier]['id']]
         new = new_details[new_primary[identifier]['id']]
         changes = {key: {'old': old[key], 'new': new[key]} for key in sorted(old.keys() & new.keys())
-                   if key not in ('id', 'meaning_ru') and old[key] != new[key]}
+                   if key != 'id' and old[key] != new[key]}
         if changes:
             result.append({'lemma_id': identifier, 'fields': changes})
     return result

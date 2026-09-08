@@ -36,12 +36,9 @@ public class LocalizedCandidateTests
     static void CheckRepository(SQLiteConnection connection, ILemmaRepository repository, string table, string language)
     {
         var english = connection.Query<MeaningLoader.MeaningRow>($"SELECT id, meaning FROM {table}").ToDictionary(row => row.Id, row => row.Meaning);
-        var hasLocalized = connection.ExecuteScalar<int>("SELECT count(*) FROM sqlite_master WHERE name='localized_meanings'") == 1;
         var localized = new Dictionary<int, string>();
-        if (language != "en" && hasLocalized)
+        if (language != "en")
             localized = connection.Query<MeaningLoader.MeaningRow>("SELECT headword_id AS id, meaning FROM localized_meanings WHERE language=?", language).ToDictionary(row => row.Id, row => row.Meaning);
-        else if (language == "ru")
-            localized = connection.Query<MeaningLoader.MeaningRow>($"SELECT id, meaning_ru AS meaning FROM {table}").ToDictionary(row => row.Id, row => row.Meaning);
         var failures = new List<string>();
         var checkedSenses = 0;
         foreach (var lemma in repository.GetLemmasByRank(1, repository.GetCount()))

@@ -101,17 +101,6 @@ public class FakeNounRepository : INounRepository
         return forms;
     }
 
-    public bool HasIrregularForm(int lemmaId, Case @case, Gender gender, Number number)
-    {
-        var baseFormId = Declension.ResolveId(lemmaId, @case, gender, number, 0);
-        for (int endingId = 1; endingId <= 6; endingId++)
-        {
-            if (_irregularForms.ContainsKey(baseFormId + endingId))
-                return true;
-        }
-        return false;
-    }
-
     public void EnsureDetails(ILemma lemma)
     {
         // No-op for tests - details are pre-loaded

@@ -66,7 +66,7 @@ public class NounRepository : INounRepository
                 _corpusForms = new CorpusFormIndex(_connection.Table<NounCorpusForm>()
                     .Select(f => (f.HeadwordId, (long)f.FormId)), primaryHeadwords);
                 _irregularForms = new HeadwordFormIndex(_connection.Table<NounIrregularForm>()
-                    .Select(f => new StoredHeadwordForm(f.HeadwordId, f.FormId, f.Form)), primaryHeadwords);
+                    .Select(f => new StoredHeadwordForm(f.HeadwordId, f.FormId, f.Form)));
 
                 // Pre-sort for rank-based queries (tie-breaker ensures determinism)
                 _lemmasByRank = _lemmas.Values
@@ -165,22 +165,6 @@ public class NounRepository : INounRepository
         EnsureCacheLoaded();
         var baseFormId = Declension.ResolveId(lemmaId, @case, gender, number, 0);
         return _irregularForms!.GetForms(_lemmas![lemmaId].Primary.Id, baseFormId, MaxNounEndings);
-    }
-
-    /// <summary>
-    /// Check if irregular forms exist for this noun grammatical combination.
-    /// Used to determine if a form exists for plural-only nouns, etc.
-    /// </summary>
-    public bool HasIrregularForm(int lemmaId, Case @case, Gender gender, Number number)
-    {
-        EnsureCacheLoaded();
-        var baseFormId = Declension.ResolveId(lemmaId, @case, gender, number, 0);
-        for (int endingId = 1; endingId <= MaxNounEndings; endingId++)
-        {
-            if (_irregularForms!.ContainsPrimary(baseFormId + endingId))
-                return true;
-        }
-        return false;
     }
 
     /// <summary>

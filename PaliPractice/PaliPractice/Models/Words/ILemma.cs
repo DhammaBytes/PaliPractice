@@ -24,7 +24,7 @@ public interface ILemma
     string BaseForm { get; }
 
     /// <summary>
-    /// Words sharing this lemma with the dominant inflection pattern.
+    /// Words sharing the selected practice sense’s pattern, stem, and gender.
     /// Multiple entries may exist for different meanings.
     /// </summary>
     IReadOnlyList<IWord> Words { get; }
@@ -36,7 +36,7 @@ public interface ILemma
     IWord Primary { get; }
 
     /// <summary>
-    /// Words with minority inflection patterns, excluded from the main practice.
+    /// Words outside the selected practice paradigm, excluded from the main practice.
     /// These have the same lemma but different Pattern values.
     /// </summary>
     IReadOnlyList<IWord> ExcludedWords { get; }

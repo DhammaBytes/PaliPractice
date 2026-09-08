@@ -49,5 +49,5 @@ still uses global TestPaths for evidence (current callers use the default), and
 the compact-copy test repeats compaction when given an already compact candidate.
 Neither changes the verified production flow.
 
-This change remains uncommitted. Native checks concern package assets, not a
+This checkpoint was committed in `a3fcf5b`. Native checks concern package assets, not a
 whole-app UI release review.

@@ -1,9 +1,9 @@
 # DPD inputs and English candidates
 
-The active sequence is in [DATA-REBUILD-ROADMAP.md](../DATA-REBUILD-ROADMAP.md).
-M1 preserves the released baseline. M2 isolates English extraction. M3–M5 add
-identity, grammatical, upgrade, and promotion guarantees. A structural candidate
-pass is not a release approval. Russian and Spanish enrichment starts after M5.
+The completed hardening milestones are recorded in [DATA-REBUILD-ROADMAP.md](../DATA-REBUILD-ROADMAP.md).
+The current pipeline builds a pinned English candidate, verifies it, then adds
+Russian and Spanish meanings without changing the English core. A structural
+candidate pass alone is not approval to promote or release it.
 
 ## Inputs and acquisition
 
@@ -53,15 +53,24 @@ acquisition directory. Failure never changes the source submodules.
 Run from the repository root, using the Python environment with the dependencies
 in `scripts/requirements.txt` and the checked-out DPD model dependencies:
 
+Create a new configuration snapshot before pinning: production config files are
+promotion targets and cannot also be immutable build inputs. Choose a database
+version greater than the current `pali.version.txt`; the value below is an example.
+
 ```sh
+mkdir .local/inputs/config-example
+cp scripts/configs/lemma_registry.json scripts/configs/practice_registry.json \
+  scripts/configs/paradigm_corrections.json scripts/configs/custom_translations.json \
+  .local/inputs/config-example/
+
 .venv/bin/python scripts/pin_inputs.py \
   --dpd dpd-db/dpd.db \
-  --registry scripts/configs/lemma_registry.json \
-  --adjustments scripts/configs/custom_translations.json \
-  --practice-registry scripts/configs/practice_registry.json \
-  --corrections scripts/configs/paradigm_corrections.json \
+  --registry .local/inputs/config-example/lemma_registry.json \
+  --adjustments .local/inputs/config-example/custom_translations.json \
+  --practice-registry .local/inputs/config-example/practice_registry.json \
+  --corrections .local/inputs/config-example/paradigm_corrections.json \
   --corpora .local/inputs/corpora-example \
-  --output .local/inputs/english-example.json --version 2026090701
+  --output .local/inputs/english-example.json --version 2026090801
 
 .venv/bin/python scripts/extract_nouns_and_verbs.py build \
   --manifest .local/inputs/english-example.json \
@@ -81,16 +90,16 @@ configuration drift fail.
 
 A completed candidate contains `pali.db`, `pali.version.txt`, proposed
 `lemma_registry.json`, `practice_registry.json`, `paradigm_corrections.json`,
-`compatibility.json`, deterministic `inflection_validation.log`, and
+`compatibility.json`, `primary_forms.json`, `corpus_forms.json`,
+deterministic `inflection_validation.log`, and
 `candidate.json` with input, code, environment, and output identities. The
 `BUILDING` marker remains after an interrupted or failed build; validation rejects
 that directory. The generator uses a read-only SQLite connection and writes
 proposed registry additions beside the candidate. It does not initialize a
 missing production registry.
 
-The schema retains Russian columns, empty in an English candidate, so current
-application language support is preserved. The existing Russian importer is
-outside this build path. The bundled Russian-capable database is not replaced.
+Russian and Spanish values are added to `localized_meanings` during enrichment; they are
+not populated by English extraction or loaded as fields on each lemma.
 
 ## Selection and validation
 
@@ -101,20 +110,20 @@ pattern/POS, length, meaning/example, and plural-only deduplication rules remain
 Practice selection is explicit; see [the identity contract](PRACTICE-IDENTITY.md).
 
 `validate` checks output hashes, SQLite/schema relationships, version, and
-registry agreement through the same structural contract as the gate. It does
-not yet certify corpus attestation. It requires every released lemma mapping,
-validates retained practice paradigms, and requires exactly one selected sense. Do not copy
-an English candidate into the app manually. M5 supplies the verified, recoverable
-promotion interface after semantic and upgrade checks exist.
+registry agreement through the same structural contract as the gate. It does not
+replace the independent app reconstruction/corpus checks in the full gate. It
+checks scoped corpus evidence, requires every released lemma mapping, validates
+retained practice paradigms, and requires exactly one selected sense. Use the
+verified promotion interface below; do not copy an English candidate into the app.
 
-Run isolated producer tests explicitly during M2–M4:
+Run isolated producer tests:
 
 ```sh
 .venv/bin/python -B -m unittest discover -s scripts/tests -v
 ```
 
-The repository gate permits isolated candidate extraction from pinned inputs
-(M5), but does not acquire inputs or promote the production bundle. Run the
+The repository gate permits isolated candidate extraction from pinned inputs,
+but does not acquire inputs or promote the production bundle. Run the
 normal gate via the repository quality workflow before milestone handoff.
 
 ## Exact forms and attestation (M4)
@@ -122,8 +131,10 @@ normal gate via the repository quality workflow before milestone handoff.
 The generator skips only recognized compound rows, rejects unknown or malformed
 selected grammar, and supports at most six noun or seven verb ending variants.
 An overflow fails; indices are never silently truncated. Corpus and irregular
-records use `(headword_id, form_id)` plus rendered text. Conflicting duplicate
-keys fail. Irregular forms now come from the same pinned templates as regular
+build records use `(headword_id, form_id)` plus rendered text. Conflicting
+duplicate keys fail. Compaction removes only the corpus spelling column after
+validation and retains those spellings in `corpus_forms.json` as build evidence.
+Irregular forms come from the same pinned templates as regular
 forms, so HTML ordering cannot change their attestation indices.
 
 `primary_forms.json` records every selected primary form from those templates.
@@ -168,7 +179,7 @@ meaning)`, `enrichment.json`, and a compact `bundle.json`. Original English tabl
 unchanged. The report carries source pins, every selected sense’s mapping and
 availability status, primary/sense coverage, and unselected/unknown source IDs.
 Empty and missing translations have no table row; runtime English fallback is
-specified in M8. These outputs require a successful full-gate receipt before promotion.
+implemented by the app’s selected-language meaning loader. These outputs require a successful full-gate receipt before promotion.
 
 Supply `PALIPRACTICE_TRANSLATION_MANIFEST` alongside
 `PALIPRACTICE_INPUT_MANIFEST` to run two isolated, byte-identical enrichments in
@@ -227,9 +238,9 @@ as one recoverable set. `bundle.json` becomes `Data/pali.manifest.json`, carryin
 English source/configuration/code identities and translation source pins and
 coverage. Detailed sense mapping stays in the retained candidate's
 `enrichment.json` whose hash is recorded in the packaged manifest.
-The exact primary-form oracle is promoted to `scripts/generated/primary_forms.json`
-so ordinary tests against the checked-in database keep exhaustive attestation
-coverage. It is verification data and is not included in app packages.
+The exact primary-form oracle and full corpus spelling evidence are promoted to
+`scripts/generated/primary_forms.json` and `scripts/generated/corpus_forms.json`.
+Ordinary tests use them to verify the checked-in database. Neither is an app asset.
 
 If interrupted, run `promote_candidate.py recover --repository <repository>`.
 It restores the whole prior set and refuses to overwrite unrelated external

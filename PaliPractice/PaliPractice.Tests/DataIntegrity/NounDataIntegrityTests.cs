@@ -467,15 +467,6 @@ public class NounDataIntegrityTests
             "all noun details should have a non-empty meaning (filtered during extraction)");
     }
 
-    [Test]
-    public void RussianMeaningStorageMatchesTheDeclaredLanguageLayer()
-    {
-        var translated = _paliNounDetails!.Count(d => !string.IsNullOrWhiteSpace(d.MeaningRu));
-        if (TestPaths.HasFrozenEnglishCore)
-            translated.Should().Be(0, "core English extraction must not import translations");
-        else
-            translated.Should().BeGreaterThan(0, "the existing Russian-capable bundle must retain translations");
-    }
 
     #endregion
 

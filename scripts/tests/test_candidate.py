@@ -108,7 +108,8 @@ class CandidateTests(unittest.TestCase):
         validate_candidate(first)
         with contextlib.closing(sqlite3.connect(first / 'pali.db')) as connection:
             self.assertEqual([('buddha', 10060)], connection.execute('select lemma,lemma_id from nouns where lemma != \'addha\'').fetchall())
-            self.assertEqual([('',)], connection.execute('select distinct meaning_ru from nouns_details').fetchall())
+            for table in ('nouns_details', 'verbs_details'):
+                self.assertNotIn('meaning_ru', {row[1] for row in connection.execute(f'PRAGMA table_info({table})')})
         self.assertEqual((BASELINE / 'lemma_registry.json').read_bytes(), self.paths['registry'].read_bytes())
 
     def test_existing_candidate_is_never_overwritten(self):

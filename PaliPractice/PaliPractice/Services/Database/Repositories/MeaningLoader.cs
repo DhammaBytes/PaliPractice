@@ -7,9 +7,6 @@ namespace PaliPractice.Services.Database.Repositories;
 /// <summary>Queries only requested meanings, then English for missing senses.</summary>
 public sealed class MeaningLoader(SQLiteConnection connection)
 {
-    readonly bool _hasLocalizedTable = connection.ExecuteScalar<int>(
-        "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='localized_meanings'") == 1;
-
     public void Ensure(ILemma lemma, string detailsTable, string requestedLanguage)
     {
         var preference = TranslationLanguageResolver.PreferenceFromLanguageCode(requestedLanguage);
@@ -26,6 +23,7 @@ public sealed class MeaningLoader(SQLiteConnection connection)
             detail.Meaning = translated ? meaning! : fallback.GetValueOrDefault(detail.Id, string.Empty);
             detail.MeaningLanguage = translated ? preference : TranslationLanguagePreference.English;
         }
+        // Cache the request, not the fallback language: mixed-coverage lemmas must not reload forever.
         lemma.MeaningsLanguage = preference;
     }
 
@@ -37,17 +35,14 @@ public sealed class MeaningLoader(SQLiteConnection connection)
         var placeholders = string.Join(",", ids.Select(_ => "?"));
         object[] parameters = ids.Cast<object>().ToArray();
         string sql;
-        if (language != "en" && _hasLocalizedTable)
+        if (language != "en")
         {
             sql = $"SELECT headword_id AS id, meaning FROM localized_meanings WHERE headword_id IN ({placeholders}) AND language=?";
             parameters = [.. parameters, language];
         }
         else
         {
-            // The current shipped bundle has Russian in its legacy details column.
-            if (language == "es") return [];
-            var column = language == "ru" ? "meaning_ru" : "meaning";
-            sql = $"SELECT id, {column} AS meaning FROM {detailsTable} WHERE id IN ({placeholders})";
+            sql = $"SELECT id, meaning AS meaning FROM {detailsTable} WHERE id IN ({placeholders})";
         }
         return connection.Query<MeaningRow>(sql, parameters)
             .Where(row => !string.IsNullOrWhiteSpace(row.Meaning))

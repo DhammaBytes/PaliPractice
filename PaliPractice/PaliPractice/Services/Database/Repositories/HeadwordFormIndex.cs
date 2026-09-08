@@ -1,14 +1,13 @@
 namespace PaliPractice.Services.Database.Repositories;
 
-/// <summary>Internal form identity includes its source headword and rendered text.</summary>
+/// <summary>Irregular spelling for one headword-scoped ending slot.</summary>
 internal readonly record struct StoredHeadwordForm(int HeadwordId, long FormId, string Form);
 
 internal sealed class HeadwordFormIndex
 {
     readonly Dictionary<(int HeadwordId, long FormId), string> _forms = new();
-    readonly HashSet<long> _primaryIds = new();
 
-    public HeadwordFormIndex(IEnumerable<StoredHeadwordForm> forms, IReadOnlySet<int> primaryHeadwords)
+    public HeadwordFormIndex(IEnumerable<StoredHeadwordForm> forms)
     {
         foreach (var form in forms)
         {
@@ -16,21 +15,16 @@ internal sealed class HeadwordFormIndex
             if (_forms.TryGetValue(key, out var previous) && previous != form.Form)
                 throw new InvalidDataException($"Conflicting headword form {key}");
             _forms[key] = form.Form;
-            // HeadwordId=0 exists only in legacy bundles lacking this column.
-            if (form.HeadwordId == 0 || primaryHeadwords.Contains(form.HeadwordId))
-                _primaryIds.Add(form.FormId);
         }
     }
 
-    public bool ContainsPrimary(long formId) => _primaryIds.Contains(formId);
-
+    // Read explicit ending slots: SQLite row order is not a grammatical ordering.
     public List<string> GetForms(int headwordId, long baseFormId, int maximumEndings)
     {
         var forms = new List<string>();
         for (int ending = 1; ending <= maximumEndings; ending++)
         {
-            if (_forms.TryGetValue((headwordId, baseFormId + ending), out var form) ||
-                _forms.TryGetValue((0, baseFormId + ending), out form))
+            if (_forms.TryGetValue((headwordId, baseFormId + ending), out var form))
                 forms.Add(form);
         }
         return forms;

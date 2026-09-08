@@ -52,10 +52,10 @@ uv run python db/inflections/generate_inflection_tables.py
 
 ### Project Structure
 - `/PaliPractice/PaliPractice/` - Main app code
-  - `Models/` - Entity classes (Headword, Declension, Conjugation, Pattern)
+  - `Models/` - Lemma, noun/verb, detail, and inflection models
   - `Presentation/` - Pages and ViewModels
   - `Services/` - DatabaseService for SQLite access
-  - `Data/training.db` - Embedded SQLite database
+  - `Data/pali.db` - Bundled dictionary; version and provenance sidecars are adjacent
   - `Platforms/` - Platform-specific implementations
 
 - `/scripts/` - Python extraction pipeline
@@ -65,17 +65,22 @@ uv run python db/inflections/generate_inflection_tables.py
 - `/dpd-db/` - DPD submodule with dictionary data
 
 ### Database Schema
-The app uses a normalized SQLite database:
-- **headwords**: Core word info (id, lemma_1, pos, type, meaning_1, ebt_count)
-- **declensions**: Noun forms (headword_id, form, case_name, number, gender)
-- **conjugations**: Verb forms (headword_id, form, person, tense, mood, voice)
-- **patterns**: Inflection templates
+The bundled dictionary uses these tables:
+- **nouns / verbs**: DPD headwords, stable lemma IDs, EBT counts, stems/paradigms, and explicit practice-primary selection
+- **nouns_details / verbs_details**: English meanings and language-neutral examples
+- **localized_meanings**: Russian/Spanish meanings keyed by DPD headword and language
+- **nouns_corpus_forms / verbs_corpus_forms**: Attested `(headword_id, form_id)` pairs
+- **nouns_irregular_forms / verbs_irregular_forms**: Scoped form IDs plus spellings needed for reconstruction
+
+Regular endings live in C# grammar tables. Full corpus spellings and primary-form
+contracts live in `scripts/generated` as build/test evidence, not app assets.
+User mastery, settings, and history live separately in `practice.db`.
 
 ### Key Implementation Details
 
-1. **Data Selection**: Uses EBT frequency counts to select 1000 most common nouns and verbs
+1. **Data Selection**: Uses EBT frequency to select 1,500 noun lemmas and 750 verb lemmas; practice paradigms follow the append-only identity registry
 2. **Navigation**: Route-based navigation with Shell pattern
-3. **Database Access**: Async SQLite operations via DatabaseService
+3. **Database Access**: SQLite access through DatabaseService and repositories
 4. **UI Construction**: C# Markup fluent API instead of XAML
 
 ### State Management
@@ -93,7 +98,8 @@ When modifying code:
 - Maintain MVVM separation (ViewModels handle logic)
 - Database models are in Models/ directory
 - Platform-specific code goes in Platforms/ subdirectories
-- The training.db is embedded as a resource and copied on first run
+- `pali.db` is a packaged asset. Platforms may read it directly or copy it into app storage; the existing version check replaces older copies.
+- `history-v1.1.json.gz` is an immutable embedded resource for legacy history backfill, loaded only during migration when needed.
 
 **UI Text Guidelines:**
 - Never use raw `new TextBlock()` - always use the font helpers from `TextHelpers`:

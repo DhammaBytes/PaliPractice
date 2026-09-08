@@ -84,7 +84,7 @@ public class VerbRepository : IVerbRepository
                 _corpusForms = new CorpusFormIndex(_connection.Table<VerbCorpusForm>()
                     .Select(f => (f.HeadwordId, (long)f.FormId)), primaryHeadwords);
                 _irregularForms = new HeadwordFormIndex(_connection.Table<VerbIrregularForm>()
-                    .Select(f => new StoredHeadwordForm(f.HeadwordId, f.FormId, f.Form)), primaryHeadwords);
+                    .Select(f => new StoredHeadwordForm(f.HeadwordId, f.FormId, f.Form)));
 
                 // Pre-sort for rank-based queries (tie-breaker ensures determinism)
                 _lemmasByRank = _lemmas.Values
@@ -197,23 +197,6 @@ public class VerbRepository : IVerbRepository
         var baseFormId = Conjugation.ResolveId(lemmaId, tense, person, number, voice, 0);
         return _irregularForms!.GetForms(_lemmas![lemmaId].Primary.Id, baseFormId, MaxVerbEndings);
     }
-
-    // /// <summary>
-    // /// Check if irregular forms exist for this verb grammatical combination.
-    // /// Used to determine if a form exists for defective verbs.
-    // /// </summary>
-    // public bool HasIrregularForm(int lemmaId, Tense tense, Person person, Number number, bool reflexive)
-    // {
-    //     EnsureCacheLoaded();
-    //     var voice = reflexive ? Voice.Reflexive : Voice.Active;
-    //     var baseFormId = Conjugation.ResolveId(lemmaId, tense, person, number, voice, 0);
-    //     for (int endingId = 1; endingId <= 9; endingId++)
-    //     {
-    //         if (_irregularForms!.ContainsPrimary(baseFormId + endingId))
-    //             return true;
-    //     }
-    //     return false;
-    // }
 
     /// <summary>
     /// Preload caches to avoid lazy loading delay on first access.

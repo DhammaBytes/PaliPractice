@@ -42,8 +42,8 @@ def code_identity() -> dict:
 
 
 def structural_errors(directory: Path) -> list[str]:
-    # Use the same structural contract as the gate. M4 expands this contract;
-    # a structural pass is deliberately not a release/promotion approval.
+    # A structural pass is not a promotion receipt: app reconstruction and corpus
+    # checks run independently in the full gate.
     sys.path.insert(0, str(ROOT))
     from quality.checks.data_contract import validate_data
     errors, _ = validate_data(
@@ -83,6 +83,8 @@ def build_candidate(manifest_path: Path, output: Path) -> Path:
     errors = structural_errors(output)
     if errors:
         raise InputError("Candidate structural validation failed: " + "; ".join(errors))
+    # Keep spelling evidence before projection: runtime IDs cannot detect a stale
+    # reconstruction rule, so independent consumer tests need these exact strings.
     with closing(sqlite3.connect(output / 'pali.db')) as db:
         corpus = {kind: db.execute(f'SELECT headword_id, form_id, form FROM {kind}_corpus_forms ORDER BY headword_id, form_id').fetchall()
                   for kind in ('nouns', 'verbs')}

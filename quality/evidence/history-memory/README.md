@@ -26,4 +26,5 @@ The preceding run passed its tests/builds but failed worktree stability because
 an external English About-text edit occurred during execution. That edit was
 preserved; the successful rerun includes the updated worktree.
 
-Prior uncommitted compact-database work is preserved. No commit was made.
+The compact-database and migration-memory checkpoint was subsequently committed
+in `a3fcf5b`.

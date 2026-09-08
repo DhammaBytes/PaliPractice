@@ -20,6 +20,8 @@ def compact(source: Path, destination: Path):
                     columns = 'headword_id, form_id' + (', form' if suffix == 'irregular_forms' else '')
                     spelling = 'form TEXT NOT NULL,' if suffix == 'irregular_forms' else ''
                     output.execute(f'ALTER TABLE {table} RENAME TO old_{table}')
+                    # A composite primary key in a rowid table duplicates keys in a
+                    # separate index. WITHOUT ROWID stores the records by that pair.
                     output.execute(f'''CREATE TABLE {table} (
                         headword_id INTEGER NOT NULL REFERENCES {kind}(id),
                         form_id INTEGER NOT NULL, {spelling}

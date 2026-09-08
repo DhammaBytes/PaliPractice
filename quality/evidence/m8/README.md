@@ -12,7 +12,7 @@ coordination credit, and upstream AI/automatic-translation provenance.
 
 Focused tests passed 26/26 against the M7 multilingual candidate. They cover
 query projections, missing-only fallback, cache replacement and in-flight
-invalidation, legacy Russian bundles, preferences, and every displayed sense
+invalidation, the then-supported development Russian format (removed during final cleanup; never released), preferences, and every displayed sense
 through real noun/verb repositories in all three languages. Eligible practice
 IDs remain unchanged across language switches.
 

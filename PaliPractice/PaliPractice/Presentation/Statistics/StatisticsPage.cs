@@ -137,6 +137,7 @@ public sealed partial class StatisticsPage : Page
                                 new Grid()
                                     .HorizontalAlignment(HorizontalAlignment.Stretch)
                                     .ColumnDefinitions("*,*")
+                                    .ColumnSpacing(12)
                                     .Children(
                                         BuildStreakCard(BadgeIcons.CaseAccusative, AppText.Get("Statistics.Streak.Current"),
                                             tb => tb.Text(() => vm.General.CurrentPracticeStreak, value => AppTextFormatter.FormatDayCount(value)), 0),
@@ -184,6 +185,7 @@ public sealed partial class StatisticsPage : Page
                                 // Stats row
                                 new Grid()
                                     .ColumnDefinitions("*,*,*")
+                                    .ColumnSpacing(12)
                                     .Children(
                                         BuildStatItem(AppText.Get("Statistics.Label.AllTime"),
                                             isNouns
@@ -216,7 +218,7 @@ public sealed partial class StatisticsPage : Page
                                             .Grid(column: 0)
                                             .Spacing(8)
                                             .Children(
-                                                RegularText().Text(AppText.Get("Statistics.Label.Strongest")).FontSize(13)
+                                                RegularText().Text(AppText.Get("Statistics.Label.Strongest")).FontSize(13).TextWrapping(TextWrapping.Wrap)
                                                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
                                                     .Foreground(StrongBrush),
                                                 strongestPanel
@@ -225,7 +227,7 @@ public sealed partial class StatisticsPage : Page
                                             .Grid(column: 1)
                                             .Spacing(8)
                                             .Children(
-                                                RegularText().Text(AppText.Get("Statistics.Label.NeedWork")).FontSize(13)
+                                                RegularText().Text(AppText.Get("Statistics.Label.NeedWork")).FontSize(13).TextWrapping(TextWrapping.Wrap)
                                                     .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
                                                     .Foreground(StrugglingBrush),
                                                 weakestPanel
@@ -306,10 +308,10 @@ public sealed partial class StatisticsPage : Page
             text.Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"));
         }
 
-        return new StackPanel()
-            .Orientation(Orientation.Horizontal)
-            .Spacing(6)
-            .Children(bullet, text);
+        return new Grid()
+            .ColumnDefinitions("Auto,*")
+            .ColumnSpacing(6)
+            .Children(bullet, text.Grid(column: 1));
     }
 
     // === UI Builders ===
@@ -333,12 +335,12 @@ public sealed partial class StatisticsPage : Page
 
         return new StackPanel()
             .Grid(column: column)
-            .HorizontalAlignment(HorizontalAlignment.Left)
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Spacing(4)
             .Children(
-                new StackPanel()
-                    .Orientation(Orientation.Horizontal)
-                    .Spacing(6)
+                new Grid()
+                    .ColumnDefinitions("Auto,*")
+                    .ColumnSpacing(6)
                     .Children(
                         new BitmapIcon()
                             .ShowAsMonochrome(true)
@@ -347,6 +349,8 @@ public sealed partial class StatisticsPage : Page
                             .Width(16)
                             .UriSource(new Uri(iconPath)),
                         RegularText().Text(label).FontSize(15)
+                            .Grid(column: 1)
+                            .TextWrapping(TextWrapping.Wrap)
                             .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
                     ),
                 valueText
@@ -373,9 +377,10 @@ public sealed partial class StatisticsPage : Page
 
         return new StackPanel()
             .Grid(column: column)
-            .HorizontalAlignment(HorizontalAlignment.Left)
+            .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Children(
                 RegularText().Text(label).FontSize(12)
+                    .TextWrapping(TextWrapping.Wrap)
                     .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush")),
                 valueText
             );
@@ -455,14 +460,16 @@ public sealed partial class StatisticsPage : Page
 
     static FrameworkElement BuildLegendItem(string label, Brush brush, int column)
     {
-        return new StackPanel()
+        return new Grid()
             .Grid(column: column)
-            .Orientation(Orientation.Horizontal)
-            .HorizontalAlignment(HorizontalAlignment.Center)
-            .Spacing(4)
+            .ColumnDefinitions("Auto,*")
+            .ColumnSpacing(4)
+            .Margin(2, 0)
             .Children(
                 new Ellipse().Width(8).Height(8).Fill(brush),
                 RegularText().Text(label).FontSize(10)
+                    .Grid(column: 1)
+                    .TextWrapping(TextWrapping.Wrap)
                     .Foreground(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
             );
     }

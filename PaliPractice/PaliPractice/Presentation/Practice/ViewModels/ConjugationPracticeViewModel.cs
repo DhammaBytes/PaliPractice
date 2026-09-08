@@ -102,8 +102,10 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
 
     void UpdateBadges(Conjugation c)
     {
-        // Person badge (always full - already short in both languages)
-        PersonLabel = GrammarText.GetPerson(c.Person);
+        // Use the locale's compact labels when the row cannot fit full labels.
+        PersonLabel = UseAbbreviatedLabels
+            ? GrammarText.GetPersonShort(c.Person)
+            : GrammarText.GetPerson(c.Person);
         PersonColor = BadgePresentation.GetChipColor(c.Person);
         PersonIconPath = BadgeIcons.GetIconPath(c.Person);
 
@@ -114,8 +116,10 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
         NumberColor = BadgePresentation.GetChipColor(c.Number);
         NumberIconPath = BadgeIcons.GetIconPath(c.Number);
 
-        // Tense badge (always full - never abbreviated)
-        TenseLabel = GrammarText.GetTense(c.Tense);
+        // Tense badge
+        TenseLabel = UseAbbreviatedLabels
+            ? GrammarText.GetTenseShort(c.Tense)
+            : GrammarText.GetTense(c.Tense);
         TenseColor = BadgePresentation.GetChipColor(c.Tense);
         TenseIconPath = BadgeIcons.GetIconPath(c.Tense);
 

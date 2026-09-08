@@ -174,15 +174,14 @@ public sealed partial class StartPage : Page
     {
         return new SquircleButton()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .HorizontalContentAlignment(HorizontalAlignment.Left)
+            .HorizontalContentAlignment(HorizontalAlignment.Stretch)
             .RadiusMode(SquircleRadiusMode.ButtonLarge)
             .Fill(ThemeResource.Get<Brush>("NavigationButtonVariantBrush"))
             .Stroke(ThemeResource.Get<Brush>("NavigationButtonVariantOutlineBrush"))
             .StrokeThickness(LayoutConstants.Sizes.StartPageStrokeThickness)
             .Padding(20, 20) // 4pt extra vertical padding
-            .Child(new StackPanel()
-                .Orientation(Orientation.Horizontal)
-                .Spacing(20) // 20pt between icon and text
+            .Child(new Grid()
+                .ColumnDefinitions("Auto,20,*")
                 .Children(
                     new BitmapIcon()
                         .UriSource(new Uri(iconPath))
@@ -190,15 +189,18 @@ public sealed partial class StartPage : Page
                         .Height(30) // 25% larger than 24
                         .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush")),
                     new StackPanel()
+                        .Grid(column: 2)
                         .Spacing(0)
                         .Children(
                             RegularText()
                                 .Text(title)
+                                .TextWrapping(TextWrapping.Wrap)
                                 .FontSize(22)
                                 .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
                                 .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush")),
                             RegularText()
                                 .Text(subtitle)
+                                .TextWrapping(TextWrapping.Wrap)
                                 .FontSize(16)
                                 .Opacity(0.6)
                                 .FontWeight(Microsoft.UI.Text.FontWeights.Medium)

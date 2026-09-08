@@ -108,8 +108,10 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
         NumberColor = BadgePresentation.GetChipColor(d.Number);
         NumberIconPath = BadgeIcons.GetIconPath(d.Number);
 
-        // Case badge (always full - never abbreviated)
-        CaseLabel = GrammarText.GetCase(d.Case);
+        // Case badge
+        CaseLabel = UseAbbreviatedLabels
+            ? GrammarText.GetCaseShort(d.Case)
+            : GrammarText.GetCase(d.Case);
         CaseColor = BadgePresentation.GetChipColor(d.Case);
         CaseIconPath = BadgeIcons.GetIconPath(d.Case);
         CaseHint = GrammarText.GetCasePracticeHint(d.Case);

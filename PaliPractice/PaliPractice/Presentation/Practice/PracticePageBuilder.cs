@@ -39,7 +39,7 @@ public record PracticePageConfig<TVM>(
 /// Badge set with elements for responsive sizing.
 /// </summary>
 public record BadgeSet(
-    StackPanel Panel,
+    BadgePanel Panel,
     SquircleBorder[] Borders,
     TextBlock[] TextBlocks,
     BufferedBitmapIcon[] Icons,
@@ -522,11 +522,13 @@ public static class PracticePageBuilder
         HeightClass heightClass,
         params (BufferedBitmapIcon icon, TextBlock text, SquircleBorder badge, StackPanel contentPanel)[] badges)
     {
-        var panel = new StackPanel()
-            .Orientation(Orientation.Horizontal)
-            .HorizontalAlignment(HorizontalAlignment.Center)
-            .Spacing(LayoutConstants.Gaps.BadgeRowSpacing(heightClass))
-            .Children(badges.Select(b => b.badge).ToArray());
+        var panel = new BadgePanel
+        {
+            Spacing = LayoutConstants.Gaps.BadgeRowSpacing(heightClass),
+            HorizontalAlignment = HorizontalAlignment.Stretch
+        };
+        foreach (var badge in badges)
+            panel.Children.Add(badge.badge);
 
         return new BadgeSet(
             panel,
@@ -1121,7 +1123,7 @@ public class ResponsiveElements
     public Grid? ContentArea { get; set; }
     public SquircleBorder? CardBorder { get; set; }
     public StackPanel? CardStackPanel { get; set; }
-    public StackPanel? BadgesPanel { get; set; }
+    public BadgePanel? BadgesPanel { get; set; }
     public Viewbox? WordViewbox { get; set; }
     public Viewbox? AnswerViewbox { get; set; }
     public Viewbox? AnswerSecondaryViewbox { get; set; }

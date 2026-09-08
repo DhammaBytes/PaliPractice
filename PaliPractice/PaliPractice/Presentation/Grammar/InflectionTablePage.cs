@@ -31,6 +31,7 @@ public sealed partial class InflectionTablePage : Page
             .TextWrapping(TextWrapping.Wrap)
             .Foreground(ThemeResource.Get<Brush>("OnSurfaceBrush"));
         _hintTextBlock = RegularText()
+            .TextWrapping(TextWrapping.Wrap)
             .FontSize(12)
             .Foreground(ThemeResource.Get<Brush>("OnSurfaceSecondaryBrush"))
             .Visibility(Visibility.Collapsed); // Hidden by default, shown if table has non-corpus forms
@@ -88,9 +89,11 @@ public sealed partial class InflectionTablePage : Page
             _headerTextBlock.Inlines.Clear();
             _headerTextBlock.Inlines.Add(new Run
             {
-                Text = vm.PatternName,
+                Text = vm.PatternName.Split(' ')[0],
+                FontFamily = PaliFont,
                 FontWeight = Microsoft.UI.Text.FontWeights.SemiBold
             });
+            _headerTextBlock.Inlines.Add(new Run { Text = GrammarText.GetPatternQualifier(vm.PatternName) });
             _headerTextBlock.Inlines.Add(new Run { Text = $" {vm.TypeName}" });
 
             if (!string.Equals(vm.LikeExample, vm.LemmaName, StringComparison.OrdinalIgnoreCase))

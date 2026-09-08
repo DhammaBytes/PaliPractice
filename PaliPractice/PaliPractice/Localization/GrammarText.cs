@@ -184,6 +184,23 @@ public static class GrammarText
         _ => GetVoiceShort(value)
     };
 
+    // Raw DPD identifiers stay unchanged in models and storage. Only their UI qualifiers are translated.
+    public static string GetPatternQualifier(string rawPattern)
+    {
+        var qualifiers = rawPattern.Split(' ').Skip(1).Select(token => token switch
+        {
+            "masc" => AppText.Get("Grammar.Pattern.Masculine"),
+            "fem" => AppText.Get("Grammar.Pattern.Feminine"),
+            "nt" => AppText.Get("Grammar.Pattern.Neuter"),
+            "pl" => AppText.Get("Grammar.Pattern.Plural"),
+            "pr" => AppText.Get("Grammar.Pattern.Present"),
+            "east" => AppText.Get("Grammar.Pattern.Eastern"),
+            _ => token
+        });
+        var text = string.Join(" ", qualifiers);
+        return text.Length == 0 ? string.Empty : $" {text}";
+    }
+
     public static string GetPatternTypeName(bool isNoun, bool isIrregular, bool isVariantPattern)
     {
         if (isNoun)

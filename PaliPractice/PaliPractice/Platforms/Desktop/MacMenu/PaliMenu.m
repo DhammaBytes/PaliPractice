@@ -81,23 +81,23 @@ static NSMenuItem *stdItem(NSString *title, SEL action, NSString *key, NSEventMo
 // ---------------------------------------------------------------------------
 // Build the complete menu bar and assign it to NSApp.
 // ---------------------------------------------------------------------------
-static void buildMenuBar(void) {
+static void buildMenuBar(NSDictionary<NSString *, NSString *> *labels) {
     NSMenu *mainMenu = [[NSMenu alloc] init];
 
     // ---- App menu (bold app name in menu bar) ----
     {
         NSMenu *appMenu = [[NSMenu alloc] initWithTitle:@"Pāli Practice"];
 
-        [appMenu addItem:customItem(@"About Pāli Practice", @"", 0, @"about")];
+        [appMenu addItem:customItem(labels[@"About"], @"", 0, @"about")];
         [appMenu addItem:[NSMenuItem separatorItem]];
-        [appMenu addItem:customItem(@"Settings\u2026", @",", NSEventModifierFlagCommand, @"settings")];
+        [appMenu addItem:customItem(labels[@"Settings"], @",", NSEventModifierFlagCommand, @"settings")];
         [appMenu addItem:[NSMenuItem separatorItem]];
-        [appMenu addItem:stdItem(@"Hide Pāli Practice", @selector(hide:), @"h", NSEventModifierFlagCommand)];
-        [appMenu addItem:stdItem(@"Hide Others", @selector(hideOtherApplications:), @"h",
+        [appMenu addItem:stdItem(labels[@"Hide"], @selector(hide:), @"h", NSEventModifierFlagCommand)];
+        [appMenu addItem:stdItem(labels[@"HideOthers"], @selector(hideOtherApplications:), @"h",
                                  NSEventModifierFlagCommand | NSEventModifierFlagOption)];
-        [appMenu addItem:stdItem(@"Show All", @selector(unhideAllApplications:), @"", 0)];
+        [appMenu addItem:stdItem(labels[@"ShowAll"], @selector(unhideAllApplications:), @"", 0)];
         [appMenu addItem:[NSMenuItem separatorItem]];
-        [appMenu addItem:stdItem(@"Quit Pāli Practice", @selector(terminate:), @"q", NSEventModifierFlagCommand)];
+        [appMenu addItem:stdItem(labels[@"Quit"], @selector(terminate:), @"q", NSEventModifierFlagCommand)];
 
         NSMenuItem *appMenuItem = [[NSMenuItem alloc] init];
         appMenuItem.submenu = appMenu;
@@ -106,18 +106,18 @@ static void buildMenuBar(void) {
 
     // ---- Edit menu (responder chain — works with Uno's text input) ----
     {
-        NSMenu *editMenu = [[NSMenu alloc] initWithTitle:@"Edit"];
+        NSMenu *editMenu = [[NSMenu alloc] initWithTitle:labels[@"Edit"]];
 
-        [editMenu addItem:stdItem(@"Undo", @selector(undo:), @"z", NSEventModifierFlagCommand)];
-        [editMenu addItem:stdItem(@"Redo", @selector(redo:), @"z",
+        [editMenu addItem:stdItem(labels[@"Undo"], @selector(undo:), @"z", NSEventModifierFlagCommand)];
+        [editMenu addItem:stdItem(labels[@"Redo"], @selector(redo:), @"z",
                                   NSEventModifierFlagCommand | NSEventModifierFlagShift)];
         [editMenu addItem:[NSMenuItem separatorItem]];
-        [editMenu addItem:stdItem(@"Cut", @selector(cut:), @"x", NSEventModifierFlagCommand)];
-        [editMenu addItem:stdItem(@"Copy", @selector(copy:), @"c", NSEventModifierFlagCommand)];
-        [editMenu addItem:stdItem(@"Paste", @selector(paste:), @"v", NSEventModifierFlagCommand)];
-        [editMenu addItem:stdItem(@"Delete", @selector(delete:), @"", 0)];
+        [editMenu addItem:stdItem(labels[@"Cut"], @selector(cut:), @"x", NSEventModifierFlagCommand)];
+        [editMenu addItem:stdItem(labels[@"Copy"], @selector(copy:), @"c", NSEventModifierFlagCommand)];
+        [editMenu addItem:stdItem(labels[@"Paste"], @selector(paste:), @"v", NSEventModifierFlagCommand)];
+        [editMenu addItem:stdItem(labels[@"Delete"], @selector(delete:), @"", 0)];
         [editMenu addItem:[NSMenuItem separatorItem]];
-        [editMenu addItem:stdItem(@"Select All", @selector(selectAll:), @"a", NSEventModifierFlagCommand)];
+        [editMenu addItem:stdItem(labels[@"SelectAll"], @selector(selectAll:), @"a", NSEventModifierFlagCommand)];
 
         NSMenuItem *editMenuItem = [[NSMenuItem alloc] init];
         editMenuItem.submenu = editMenu;
@@ -126,9 +126,9 @@ static void buildMenuBar(void) {
 
     // ---- View menu ----
     {
-        NSMenu *viewMenu = [[NSMenu alloc] initWithTitle:@"View"];
+        NSMenu *viewMenu = [[NSMenu alloc] initWithTitle:labels[@"View"]];
 
-        [viewMenu addItem:stdItem(@"Enter Full Screen", @selector(toggleFullScreen:), @"f",
+        [viewMenu addItem:stdItem(labels[@"FullScreen"], @selector(toggleFullScreen:), @"f",
                                   NSEventModifierFlagCommand | NSEventModifierFlagControl)];
 
         NSMenuItem *viewMenuItem = [[NSMenuItem alloc] init];
@@ -138,12 +138,12 @@ static void buildMenuBar(void) {
 
     // ---- Window menu (setWindowsMenu: lets macOS auto-add open window names) ----
     {
-        NSMenu *windowMenu = [[NSMenu alloc] initWithTitle:@"Window"];
+        NSMenu *windowMenu = [[NSMenu alloc] initWithTitle:labels[@"Window"]];
 
-        [windowMenu addItem:stdItem(@"Minimize", @selector(performMiniaturize:), @"m", NSEventModifierFlagCommand)];
-        [windowMenu addItem:stdItem(@"Zoom", @selector(performZoom:), @"", 0)];
+        [windowMenu addItem:stdItem(labels[@"Minimize"], @selector(performMiniaturize:), @"m", NSEventModifierFlagCommand)];
+        [windowMenu addItem:stdItem(labels[@"Zoom"], @selector(performZoom:), @"", 0)];
         [windowMenu addItem:[NSMenuItem separatorItem]];
-        [windowMenu addItem:stdItem(@"Bring All to Front", @selector(arrangeInFront:), @"", 0)];
+        [windowMenu addItem:stdItem(labels[@"BringAllToFront"], @selector(arrangeInFront:), @"", 0)];
 
         NSMenuItem *windowMenuItem = [[NSMenuItem alloc] init];
         windowMenuItem.submenu = windowMenu;
@@ -154,9 +154,9 @@ static void buildMenuBar(void) {
 
     // ---- Help menu (setHelpMenu: enables macOS help search field) ----
     {
-        NSMenu *helpMenu = [[NSMenu alloc] initWithTitle:@"Help"];
+        NSMenu *helpMenu = [[NSMenu alloc] initWithTitle:labels[@"Help"]];
 
-        [helpMenu addItem:customItem(@"Pāli Practice Help", @"", 0, @"help")];
+        [helpMenu addItem:customItem(labels[@"AppHelp"], @"", 0, @"help")];
 
         NSMenuItem *helpMenuItem = [[NSMenuItem alloc] init];
         helpMenuItem.submenu = helpMenu;
@@ -172,7 +172,9 @@ static void buildMenuBar(void) {
 // Public C API — called once from MacMenuBridge.cs via P/Invoke at startup.
 // ---------------------------------------------------------------------------
 __attribute__((visibility("default")))
-void pali_menu_install(MenuCallback callback) {
+void pali_menu_install(MenuCallback callback, const char *labelsJson) {
+    NSData *data = [[NSString stringWithUTF8String:labelsJson] dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary<NSString *, NSString *> *labels = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
     g_callback = callback;
     g_target = [[PaliMenuTarget alloc] init];
 
@@ -184,10 +186,10 @@ void pali_menu_install(MenuCallback callback) {
 
     // Menu must be built on the main thread.
     if ([NSThread isMainThread]) {
-        buildMenuBar();
+        buildMenuBar(labels);
     } else {
         dispatch_sync(dispatch_get_main_queue(), ^{
-            buildMenuBar();
+            buildMenuBar(labels);
         });
     }
 }

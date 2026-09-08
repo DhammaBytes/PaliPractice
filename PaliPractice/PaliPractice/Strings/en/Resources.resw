@@ -112,7 +112,7 @@
   <data name="Settings.ReviewExplanation" xml:space="preserve"><value>If you have a minute, please leave a review for Pāli Practice. Even a one-sentence review provides valuable feedback and helps other Pāli learners discover the app in the store.</value></data>
   <data name="Settings.Declension.Title" xml:space="preserve"><value>Declension Settings</value></data>
   <data name="Settings.Conjugation.Title" xml:space="preserve"><value>Conjugation Settings</value></data>
-  <data name="Settings.Tenses.AoristFooter" xml:space="preserve"><value>The aorist (past narrative tense) is not included: its forms vary a lot across verbs and often need to be learned verb by verb. A dedicated aorist trainer may be added later.</value></data>
+  <data name="Settings.Tenses.AoristFooter" xml:space="preserve"><value>The aorist (past narrative tense) is not included: its forms vary a lot across verbs and often need to be learned verb by verb.</value></data>
   <data name="Settings.CitationFormWarning.Title" xml:space="preserve"><value>Settings adjusted</value></data>
   <data name="Settings.CitationFormWarning.Content" xml:space="preserve"><value>The third-person singular form of the present tense is used as the citation form in questions because Pāli does not commonly use infinitives. To ensure you have forms to practice, first- and second-person forms have been re-enabled.</value></data>
   <data name="Settings.Range.Title.Declension" xml:space="preserve"><value>Noun Practice Range</value></data>
@@ -148,7 +148,7 @@ Maintained by [DhammaBytes](https://dhammabytes.org) contributors. We welcome fe
 
 Word and grammar data come from the [Digital Pāli Dictionary](https://dpdict.net), maintained primarily by Ven. Bodhirasa Bhikkhu and supported by other contributors.
 
-Russian meanings come from the [Russian DPD project](https://github.com/sasanarakkha/dpd-db-sbs/tree/sbs-ru), maintained by Ven. Devamitta Bhikkhu at Sāsanārakkha Buddhist Sanctuary. Spanish meanings come from the [Spanish DPD project](https://github.com/DhammaBytes/dpd-dictionary-es), coordinated by the [Paññābhūmi team](https://dhamma-pb.org/) in Jalisco, Mexico. Both projects use automated tools to assist translation from English.
+Russian meanings come from the [Russian DPD project](https://ru.dpdict.net), maintained by Ven. Devamitta Bhikkhu at Sāsanārakkha Buddhist Sanctuary. Spanish meanings come from the [Spanish DPD project](https://dhamma-pb.org/dpd-espanol/), coordinated by the [Paññābhūmi team](https://dhamma-pb.org/) in Jalisco, Mexico.
 
 This app is also available on [other platforms](https://www.dhammabytes.org/pali-practice/).
 ]]></value></data>
@@ -388,4 +388,90 @@ Verbs: {2}</value></data>
   <data name="Grammar.Type.IrregularDeclension" xml:space="preserve"><value>irregular declension</value></data>
   <data name="Grammar.Type.NonStandardDeclension" xml:space="preserve"><value>non-standard declension</value></data>
   <data name="Grammar.Type.IrregularConjugation" xml:space="preserve"><value>irregular conjugation</value></data>
+  <!-- Native macOS menu labels -->
+  <data name="MacMenu.About" xml:space="preserve">
+    <value>About Pāli Practice</value>
+  </data>
+  <data name="MacMenu.Settings" xml:space="preserve">
+    <value>Settings…</value>
+  </data>
+  <data name="MacMenu.Hide" xml:space="preserve">
+    <value>Hide Pāli Practice</value>
+  </data>
+  <data name="MacMenu.HideOthers" xml:space="preserve">
+    <value>Hide Others</value>
+  </data>
+  <data name="MacMenu.ShowAll" xml:space="preserve">
+    <value>Show All</value>
+  </data>
+  <data name="MacMenu.Quit" xml:space="preserve">
+    <value>Quit Pāli Practice</value>
+  </data>
+  <data name="MacMenu.Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="MacMenu.Undo" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="MacMenu.Redo" xml:space="preserve">
+    <value>Redo</value>
+  </data>
+  <data name="MacMenu.Cut" xml:space="preserve">
+    <value>Cut</value>
+  </data>
+  <data name="MacMenu.Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="MacMenu.Paste" xml:space="preserve">
+    <value>Paste</value>
+  </data>
+  <data name="MacMenu.Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="MacMenu.SelectAll" xml:space="preserve">
+    <value>Select All</value>
+  </data>
+  <data name="MacMenu.View" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="MacMenu.FullScreen" xml:space="preserve">
+    <value>Enter Full Screen</value>
+  </data>
+  <data name="MacMenu.Window" xml:space="preserve">
+    <value>Window</value>
+  </data>
+  <data name="MacMenu.Minimize" xml:space="preserve">
+    <value>Minimize</value>
+  </data>
+  <data name="MacMenu.Zoom" xml:space="preserve">
+    <value>Zoom</value>
+  </data>
+  <data name="MacMenu.BringAllToFront" xml:space="preserve">
+    <value>Bring All to Front</value>
+  </data>
+  <data name="MacMenu.Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="MacMenu.AppHelp" xml:space="preserve">
+    <value>Pāli Practice Help</value>
+  </data>
+  <!-- Display-only qualifiers extracted from DPD pattern identifiers -->
+  <data name="Grammar.Pattern.Masculine" xml:space="preserve">
+    <value>masc</value>
+  </data>
+  <data name="Grammar.Pattern.Feminine" xml:space="preserve">
+    <value>fem</value>
+  </data>
+  <data name="Grammar.Pattern.Neuter" xml:space="preserve">
+    <value>nt</value>
+  </data>
+  <data name="Grammar.Pattern.Plural" xml:space="preserve">
+    <value>pl</value>
+  </data>
+  <data name="Grammar.Pattern.Present" xml:space="preserve">
+    <value>pr</value>
+  </data>
+  <data name="Grammar.Pattern.Eastern" xml:space="preserve">
+    <value>east</value>
+  </data>
 </root>

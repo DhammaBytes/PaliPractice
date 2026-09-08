@@ -1,4 +1,6 @@
 using System.Runtime.InteropServices;
+using System.Text.Json;
+using PaliPractice.Localization;
 using Shell = PaliPractice.Presentation.Main.Shell;
 
 namespace PaliPractice.Services.MacMenu;
@@ -33,7 +35,7 @@ static class MacMenuBridge
     delegate void MenuCallback(IntPtr actionUtf8);
 
     [DllImport("libPaliMenu", CallingConvention = CallingConvention.Cdecl)]
-    static extern void pali_menu_install(IntPtr callback);
+    static extern void pali_menu_install(IntPtr callback, [MarshalAs(UnmanagedType.LPUTF8Str)] string labelsJson);
 
     // Must be stored in a static field to prevent the GC from collecting the delegate
     // while the native code still holds a pointer to it.
@@ -42,7 +44,16 @@ static class MacMenuBridge
     public static void Initialize()
     {
         s_callback = OnMenuAction;
-        pali_menu_install(Marshal.GetFunctionPointerForDelegate(s_callback));
+        string[] labelNames =
+        [
+            "About", "Settings", "Hide", "HideOthers", "ShowAll",
+            "Quit", "Edit", "Undo", "Redo", "Cut",
+            "Copy", "Paste", "Delete", "SelectAll", "View",
+            "FullScreen", "Window", "Minimize", "Zoom", "BringAllToFront",
+            "Help", "AppHelp",
+        ];
+        var labels = labelNames.ToDictionary(name => name, name => AppText.Get($"MacMenu.{name}"));
+        pali_menu_install(Marshal.GetFunctionPointerForDelegate(s_callback), JsonSerializer.Serialize(labels));
     }
 
     /// <summary>

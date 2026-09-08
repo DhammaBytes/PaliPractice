@@ -30,12 +30,14 @@ public static class FrozenHeaderTable
         IReadOnlyList<string> rowHeaders,
         IReadOnlyList<IReadOnlyList<TableCell>> cells)
     {
+        var rowHeaderWidth = MeasureRowHeaderWidth(rowHeaders);
+
         // Build cloned (visible) row headers first - we'll sync their heights later
         var clonedRowHeaders = new List<Border>();
-        var clonedRowHeadersPanel = BuildClonedRowHeaders(rowHeaders, clonedRowHeaders);
+        var clonedRowHeadersPanel = BuildClonedRowHeaders(rowHeaders, clonedRowHeaders, rowHeaderWidth);
 
         // Build the body grid with ghost row headers and content cells
-        var (bodyGrid, rowHeaderWidth, hasNonCorpusForms) = BuildBodyGrid(rowHeaders, cells, columnHeaders.Count, clonedRowHeaders);
+        var (bodyGrid, hasNonCorpusForms) = BuildBodyGrid(rowHeaders, cells, columnHeaders.Count, clonedRowHeaders, rowHeaderWidth);
 
         // Build column headers panel
         var columnHeadersPanel = BuildColumnHeaders(columnHeaders);
@@ -114,7 +116,7 @@ public static class FrozenHeaderTable
     /// Builds cloned (visible) row headers in a StackPanel.
     /// Populates the clonedCells list for height synchronization.
     /// </summary>
-    static StackPanel BuildClonedRowHeaders(IReadOnlyList<string> headers, List<Border> clonedCells)
+    static StackPanel BuildClonedRowHeaders(IReadOnlyList<string> headers, List<Border> clonedCells, double rowHeaderWidth)
     {
         var panel = new StackPanel()
             .Orientation(Orientation.Vertical);
@@ -122,7 +124,7 @@ public static class FrozenHeaderTable
         for (int row = 0; row < headers.Count; row++)
         {
             bool isLastRow = row == headers.Count - 1;
-            var cell = BuildRowHeaderCell(headers[row], isGhost: false, isLastRow: isLastRow);
+            var cell = BuildRowHeaderCell(headers[row], rowHeaderWidth, isGhost: false, isLastRow: isLastRow);
             clonedCells.Add(cell);
             panel.Children.Add(cell);
         }
@@ -134,11 +136,12 @@ public static class FrozenHeaderTable
     /// Builds the body grid with ghost row headers (transparent) in column 0 and data cells in columns 1-N.
     /// Ghost cells sync their heights to cloned cells via SizeChanged.
     /// </summary>
-    static (Grid grid, double rowHeaderWidth, bool hasNonCorpusForms) BuildBodyGrid(
+    static (Grid grid, bool hasNonCorpusForms) BuildBodyGrid(
         IReadOnlyList<string> rowHeaders,
         IReadOnlyList<IReadOnlyList<TableCell>> cells,
         int columnCount,
-        List<Border> clonedCells)
+        List<Border> clonedCells,
+        double rowHeaderWidth)
     {
         int rowCount = rowHeaders.Count;
         bool hasNonCorpusForms = false;
@@ -147,7 +150,7 @@ public static class FrozenHeaderTable
         var rowDefs = string.Join(",", Enumerable.Repeat("Auto", rowCount));
 
         // Column definitions: fixed width for ghost row header, then fixed width for each data column
-        var colDefs = $"{RowHeaderWidth}," + string.Join(",", Enumerable.Repeat($"{CellWidth}", columnCount));
+        var colDefs = $"{rowHeaderWidth}," + string.Join(",", Enumerable.Repeat($"{CellWidth}", columnCount));
 
         var grid = new Grid()
             .RowDefinitions(rowDefs)
@@ -157,7 +160,7 @@ public static class FrozenHeaderTable
         for (int row = 0; row < rowCount; row++)
         {
             bool isLastRow = row == rowCount - 1;
-            var ghostCell = BuildRowHeaderCell(rowHeaders[row], isGhost: true, isLastRow: isLastRow);
+            var ghostCell = BuildRowHeaderCell(rowHeaders[row], rowHeaderWidth, isGhost: true, isLastRow: isLastRow);
             ghostCell.Grid(row: row, column: 0);
             grid.Children.Add(ghostCell);
 
@@ -191,7 +194,7 @@ public static class FrozenHeaderTable
             }
         }
 
-        return (grid, RowHeaderWidth, hasNonCorpusForms);
+        return (grid, hasNonCorpusForms);
     }
 
     static StackPanel BuildColumnHeaders(IReadOnlyList<string> headers)
@@ -212,6 +215,7 @@ public static class FrozenHeaderTable
                 .Child(
                     RegularText()
                         .Text(headers[col])
+                        .TextWrapping(TextWrapping.Wrap)
                         .FontWeight(Microsoft.UI.Text.FontWeights.SemiBold)
                         .Foreground(ThemeResource.Get<Brush>("AccentBrush"))
                         .TextAlignment(TextAlignment.Center)
@@ -223,10 +227,24 @@ public static class FrozenHeaderTable
         return panel;
     }
 
-    static Border BuildRowHeaderCell(string header, bool isGhost, bool isLastRow)
+    static double MeasureRowHeaderWidth(IReadOnlyList<string> headers)
+    {
+        var text = RegularText().FontWeight(Microsoft.UI.Text.FontWeights.SemiBold);
+        var width = RowHeaderWidth;
+        foreach (var header in headers)
+        {
+            text.Text = header;
+            text.Measure(new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity));
+            // Match the row cell's two 8-point insets and one-point border.
+            width = Math.Max(width, Math.Ceiling(text.DesiredSize.Width) + 17);
+        }
+        return width;
+    }
+
+    static Border BuildRowHeaderCell(string header, double rowHeaderWidth, bool isGhost, bool isLastRow)
     {
         var border = new Border()
-            .Width(RowHeaderWidth)
+            .Width(rowHeaderWidth)
             .MinHeight(CellMinHeight)
             .Padding(8, 6);
 

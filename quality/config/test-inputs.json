@@ -1,0 +1,10 @@
+{
+  "inputs": {
+    "dpd": {"path": "../../.local/inputs/dpd-v0.4.20260728/dpd.db"},
+    "cst": {"path": "../../.local/inputs/corpora-july/cst_wordlist.json"},
+    "bjt": {"path": "../../.local/inputs/corpora-july/bjt_wordlist.json"},
+    "sya": {"path": "../../.local/inputs/corpora-july/sya_wordlist.json"},
+    "sc": {"path": "../../.local/inputs/corpora-july/sc_wordlist.json"},
+    "adjustments": {"path": "../../scripts/configs/custom_translations.json"}
+  }
+}

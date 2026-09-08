@@ -104,6 +104,24 @@ first-party coverage from the exact `PaliPractice` package and repository source
 inventory. Duplicate collector copies are accepted only when byte-identical;
 ambiguous reports fail. The percentage is reported only as an advisory metric.
 
+## Bundled-data comparison inputs
+
+Ordinary .NET tests and the gate resolve DPD, all four corpus wordlists, and
+English adjustments through `quality/config/test-inputs.json`. Its paths are
+relative to that file. Expected SHA-256 values come from the bundled
+`Data/pali.manifest.json`; the location map does not duplicate source identities.
+Tests verify the inputs once per process before comparison and reject missing
+files, mismatched hashes, and a nonempty DPD WAL. They never fall back to
+`dpd-db/dpd.db` or the checkout's generated corpus files.
+
+Provision the sources described in [scripts/SETUP.md](../scripts/SETUP.md) before
+running tests. No download or regeneration occurs during ordinary bundled tests.
+For direct `dotnet test` runs, `PALIPRACTICE_INPUT_MANIFEST` can supply alternate
+locations, but their hashes and bytes must still match the bundle. The gate
+reserves that variable for the candidate workflow below. Candidate tests consume
+their explicit pinned inputs, including English adjustments, instead of the
+bundled location map. `PALIPRACTICE_CORPUS_DIRECTORY` is no longer used.
+
 ## Verifying an isolated data candidate
 
 The gate permits candidate-only regeneration from an explicit manifest:

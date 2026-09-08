@@ -6,13 +6,21 @@ namespace PaliPractice.Tests;
 /// </summary>
 public static class TestPaths
 {
-    public static string? InputPath(string name)
+    // Inputs are immutable for a test process. Hash the large DPD database once.
+    static readonly Lazy<IReadOnlyDictionary<string, string>> Inputs = new(LoadInputs);
+
+    public static string InputPath(string name) => Inputs.Value[name];
+
+    static IReadOnlyDictionary<string, string> LoadInputs()
     {
-        var path = Environment.GetEnvironmentVariable("PALIPRACTICE_INPUT_MANIFEST");
-        if (path is null) return null;
-        using var manifest = System.Text.Json.JsonDocument.Parse(File.ReadAllText(path));
-        var input = manifest.RootElement.GetProperty("inputs").GetProperty(name).GetProperty("path").GetString()!;
-        return System.IO.Path.GetFullPath(input, System.IO.Path.GetDirectoryName(System.IO.Path.GetFullPath(path))!);
+        var manifest = Environment.GetEnvironmentVariable("PALIPRACTICE_INPUT_MANIFEST");
+        var candidate = Environment.GetEnvironmentVariable("PALIPRACTICE_CANDIDATE_DB");
+        if (candidate is not null && manifest is null)
+            throw new InvalidOperationException("Candidate comparisons require PALIPRACTICE_INPUT_MANIFEST.");
+        var paths = manifest ?? System.IO.Path.Combine(RepositoryRoot, "quality", "config", "test-inputs.json");
+        var provenance = candidate is not null ? manifest! : System.IO.Path.Combine(
+            RepositoryRoot, "PaliPractice", "PaliPractice", "Data", "pali.manifest.json");
+        return PinnedTestInputs.Load(paths, provenance);
     }
 
     /// <summary>
@@ -26,11 +34,9 @@ public static class TestPaths
             "..", "..", "..", "..", ".."));
 
     /// <summary>
-    /// Path to dpd.db relative to test output directory.
-    /// Structure: bin/Debug/net10.0 → ../../../../../dpd-db/dpd.db
+    /// DPD release input verified against the bundle or candidate provenance.
     /// </summary>
-    public static string DpdDbPath => InputPath("dpd") ??
-        System.IO.Path.Combine(RepositoryRoot, "dpd-db", "dpd.db");
+    public static string DpdDbPath => InputPath("dpd");
 
     /// <summary>
     /// Path to pali.db (training database) relative to test output directory.
@@ -59,7 +65,7 @@ public static class TestPaths
         {
             throw new FileNotFoundException(
                 $"DPD database not found at: {DpdDbPath}. " +
-                $"Ensure dpd-db submodule is initialized: git submodule update --init");
+                "Provision the pinned source described in scripts/SETUP.md.");
         }
     }
 }

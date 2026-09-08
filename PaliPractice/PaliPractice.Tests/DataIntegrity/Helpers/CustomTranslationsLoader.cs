@@ -11,8 +11,7 @@ public class CustomTranslationsLoader
     readonly Dictionary<int, PrimaryAdjustment> _primary = new();
     readonly Dictionary<int, ReplaceAdjustment> _replace = new();
 
-    public static string DefaultPath => System.IO.Path.Combine(
-        TestPaths.RepositoryRoot, "scripts", "configs", "custom_translations.json");
+    public static string DefaultPath => TestPaths.InputPath("adjustments");
 
     record PrimaryAdjustment(string Lemma1, string Preferred);
     record ReplaceAdjustment(string Lemma1, string Target, string Preferred);

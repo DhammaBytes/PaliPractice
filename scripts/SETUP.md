@@ -21,6 +21,27 @@ local database bytes. `pin_inputs.py` records content identity; it does not clai
 that a locally supplied database has been authenticated against a release asset.
 M5 records the chosen release and its published download checksum.
 
+### Sources for the current bundled-data tests
+
+The ordinary quality gate and `dotnet test` use
+[`quality/config/test-inputs.json`](../quality/config/test-inputs.json) to locate:
+
+- DPD release `v0.4.20260728` at `.local/inputs/dpd-v0.4.20260728/dpd.db`.
+- The four pinned wordlists under `.local/inputs/corpora-july/`.
+- English adjustments at `scripts/configs/custom_translations.json`.
+
+The bundled `PaliPractice/PaliPractice/Data/pali.manifest.json` supplies the
+authoritative hashes, DPD release URL and archive digest, and corpus generation
+recipe and revisions. Provision these inputs separately, then run the gate.
+Tests hash the inputs before querying them and reject a different snapshot.
+Updating the DPD Git checkout does not update or provision the release database.
+The gate never downloads inputs or replaces the bundled database to resolve a
+comparison mismatch. If source locations change, update the location map;
+when promoting a new source snapshot, provision its inputs and update the map
+alongside the normal bundle promotion.
+
+### Acquiring corpus sources
+
 Existing corpus JSON files do not establish source provenance. Reproduce them
 from explicit Git commits in an isolated acquisition directory. The following
 commits are the M1 local source baseline, not a claim about the latest DPD source:
@@ -64,7 +85,7 @@ cp scripts/configs/lemma_registry.json scripts/configs/practice_registry.json \
   .local/inputs/config-example/
 
 .venv/bin/python scripts/pin_inputs.py \
-  --dpd dpd-db/dpd.db \
+  --dpd .local/inputs/dpd-v0.4.20260728/dpd.db \
   --registry .local/inputs/config-example/lemma_registry.json \
   --adjustments .local/inputs/config-example/custom_translations.json \
   --practice-registry .local/inputs/config-example/practice_registry.json \

@@ -1,6 +1,6 @@
 # AGENTS.md
 
-This file provides guidance to Codex (Codex.ai/code) when working with code in this repository.
+Shared instructions for contributors and coding agents working in this repository.
 
 ## Project Overview
 
@@ -28,6 +28,10 @@ dotnet test PaliPractice.Tests/PaliPractice.Tests.csproj
 ```
 
 ### Database Generation
+
+Run from the repository root. See [scripts/SETUP.md](scripts/SETUP.md) for
+pinned input acquisition; ordinary app builds use the bundled database.
+
 ```bash
 # Build an isolated English candidate from pinned inputs (see scripts/SETUP.md)
 .venv/bin/python scripts/extract_nouns_and_verbs.py build --manifest <inputs.json> --output <new-candidate-directory>
@@ -47,7 +51,7 @@ uv run python db/inflections/generate_inflection_tables.py
 ### Technology Stack
 - **Framework**: Uno Platform 6 with .NET 10
 - **UI Pattern**: MVVM with C# Markup (fluent API)
-- **Database**: SQLite via sqlite-net-pcl
+- **Database**: SQLite via sqlite-net-base and SQLitePCLRaw.bundle_e_sqlite3
 - **Data Source**: Digital Pāḷi Dictionary (DPD) as git submodule
 
 ### Project Structure
@@ -115,7 +119,7 @@ When modifying code:
 
 For database changes:
 - Modify extraction script in scripts/extract_nouns_and_verbs.py
-- Run validation with scripts/validate_db.py
+- Validate the isolated candidate with `scripts/extract_nouns_and_verbs.py validate <candidate-directory>`
 - Regenerate C# models if schema changes
 
 Example of Uno Fluent C# Markup for building UIs:
@@ -143,7 +147,7 @@ public sealed partial class MainPage : Page
                             .TextAlignment(Microsoft.UI.Xaml.TextAlignment.Center)
                             .PlaceholderText("Step Size")
                             .Text(x => x.Binding(() => vm.Step).TwoWay()),
-                        new TextBlock()
+                        RegularText()
                             .Margin(12)
                             .HorizontalAlignment(HorizontalAlignment.Center)
                             .TextAlignment(Microsoft.UI.Xaml.TextAlignment.Center)
@@ -182,24 +186,25 @@ Uno's compiled C# Markup bindings rely on source generators that must "see" the 
 public static class WordCard
 {
     public static Border Build(
-        Func<bool> isLoading,  // OK - Visibility accepts Func<bool> directly
+        Action<Border> bindVisibility,
         Action<TextBlock> bindCurrentWord,
         Action<TextBlock> bindUsageExample)
     {
-        var wordTextBlock = new TextBlock();
+        var wordTextBlock = PaliText();
         bindCurrentWord(wordTextBlock);  // Binding happens at call site where generator can see it
         
-        var exampleTextBlock = new TextBlock();
+        var exampleTextBlock = RegularText();
         bindUsageExample(exampleTextBlock);
         
-        return new Border()
-            .Visibility(isLoading, l => !l ? Visibility.Visible : Visibility.Collapsed)
+        var card = new Border()
             .Child(
                 new StackPanel().Children(
                     wordTextBlock.FontSize(48),
                     exampleTextBlock.FontSize(16)
                 )
             );
+        bindVisibility(card);
+        return card;
     }
 }
 
@@ -211,7 +216,8 @@ public sealed partial class PracticePage : Page
         this.DataContext<MyViewModel>((page, vm) => page
             .Content(
                 WordCard.Build(
-                    isLoading: () => vm.Card.IsLoading,
+                    bindVisibility: card => card.Visibility(() => vm.Card.IsLoading,
+                        loading => loading ? Visibility.Collapsed : Visibility.Visible),
                     bindCurrentWord: tb => tb.Text(() => vm.Card.CurrentWord),  // Generator sees this!
                     bindUsageExample: tb => tb.Text(() => vm.Card.UsageExample)
                 )

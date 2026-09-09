@@ -664,6 +664,9 @@ class ResultParserTests(unittest.TestCase):
                 ["dotnet-restore", "dotnet-test", "dotnet-desktop"],
                 [call.args[0] for call in runner.command.call_args_list],
             )
+            # Restore and --no-restore consumers must select the same dependency graph.
+            for call in runner.command.call_args_list:
+                self.assertIn("-p:Configuration=Release", call.args[1])
             runner.check.assert_any_call("ca1502-policy", ["disabled analyzer"])
             runner.check.assert_any_call("ca1502-baseline", ["bad anchor"])
             runner.check.assert_any_call("ca1502", ["Cannot evaluate allowances: analyzer baseline is invalid"])

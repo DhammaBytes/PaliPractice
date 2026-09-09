@@ -38,7 +38,7 @@ location. The evidence base, runs, tool caches, and build candidate must be
 current-user-owned private directories; pre-existing symlinks or shared
 directories are rejected before the gate writes or prunes anything.
 
-Python tooling is pinned to Ruff 0.15.22 and Lizard 1.23.0. Ruff blocks only
+Python tooling is pinned to Ruff 0.16.6 and Lizard 1.24.0. Ruff blocks only
 `E9,F63,F7,F82`. Lizard blocks a function above CCN 15 only when it is new or
 worse than `--base`; existing debt remains visible without being broadened.
 Fresh Lizard CSV is schema-checked and its per-file function inventory is
@@ -89,14 +89,25 @@ implementing a C# parser. Every .NET invocation also receives the same
 command-line analyzer properties; `CodeMetricsConfig.txt` remains pinned to
 threshold 15.
 
-The first setup must create NuGet lock files once, from `PaliPractice/`:
+After a dependency update, regenerate and verify the lock files in both
+configurations from `PaliPractice/`:
 
 ```text
 dotnet restore PaliPractice.sln --use-lock-file --force-evaluate
+dotnet restore PaliPractice.sln --use-lock-file --force-evaluate -p:Configuration=Release
 ```
 
-The reviewed `packages.lock.json` files are repository inputs. The gate uses
-`dotnet restore --locked-mode`; it never refreshes locks itself.
+The reviewed `packages.lock.json` files are repository inputs. Uno resolves the
+same package versions in Debug and Release but excludes development-only assets
+in Release. The gate restores in Release with `--locked-mode` and uses that same
+configuration for tests and builds; it never refreshes locks itself. A Debug
+restore cannot be reused for a Release `--no-restore` build. When updating
+packages, update `Directory.Packages.props` and the Uno SDK in `global.json`,
+regenerate both configurations for each project, then run the full gate. Keep Uno-managed package
+families aligned with the SDK defaults. Check current advisories for the app and
+test projects with `dotnet list package --vulnerable --include-transitive` from
+the solution directory. Keep NuGet security warnings visible and verify native
+SQLite loading on release platforms after bundle updates.
 
 The test contract rejects zero tests and every failed, skipped, inconclusive, or
 otherwise non-passing TRX result. Fresh Coverlet XML must contain nonempty
@@ -128,8 +139,7 @@ The gate permits candidate-only regeneration from an explicit manifest:
 
 ```bash
 PALIPRACTICE_INPUT_MANIFEST=/absolute/path/inputs.json \
-  /Users/ivm/.codex/skills/agentic-quality-loop/scripts/run_quality_gate.py \
-  --repo /Users/ivm/Sources/PaliPractice --profile auto --base <commit>
+  python3 quality/gate.py auto --base <commit>
 ```
 
 For data and .NET lanes, the gate builds twice into separate external evidence

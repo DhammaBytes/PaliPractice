@@ -80,7 +80,7 @@
       <EmbeddedResource Include="Data\history-v1.1.json.gz" LogicalName="PaliPractice.HistoryV11" />
     </ItemGroup>
 
-    <!-- Security backport for the desktop D-Bus dependency used by Uno.Skia.X11. -->
+    <!-- Current D-Bus protocol library used by the Uno X11 desktop backend. -->
     <ItemGroup Condition="$(TargetFramework.Contains('-desktop')) OR '$(TargetFramework)' == 'net10.0'">
       <PackageReference Include="Tmds.DBus.Protocol" />
     </ItemGroup>

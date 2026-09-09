@@ -17,23 +17,23 @@
     the file doesn't exist until CompilePaliMenu runs; a static ItemGroup would
     fail on the first build when the file is missing.
 
-    Both targets are conditioned on macOS host + desktop TFM. On Windows/Linux
-    hosts or non-desktop TFMs, these targets are completely skipped — there is
-    no clang invocation and no dylib in the output.
+    Only macOS desktop outputs built on a macOS host include the library.
+    Cross-publishing Windows/Linux must not ship this macOS-only binary.
   -->
 
-  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX')) AND $(TargetFramework.Contains('-desktop'))">
+  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX')) AND $(TargetFramework.Contains('-desktop')) AND ('$(RuntimeIdentifier)' == '' OR $(RuntimeIdentifier.StartsWith('osx-')))">
+    <_BuildPaliMenu>true</_BuildPaliMenu>
     <_PaliMenuSource>$(MSBuildThisFileDirectory)PaliMenu.m</_PaliMenuSource>
     <!-- Use an absolute path under obj/ to avoid MSBuild's backslash issues on macOS -->
     <_PaliMenuObjDir>$(MSBuildProjectDirectory)/obj/MacMenu/</_PaliMenuObjDir>
     <_PaliMenuDylib>$(_PaliMenuObjDir)libPaliMenu.dylib</_PaliMenuDylib>
   </PropertyGroup>
 
-  <!-- Incremental: only recompiles when PaliMenu.m changes -->
+  <!-- Recompile when the source or compiler command changes. -->
   <Target Name="CompilePaliMenu"
           BeforeTargets="AssignTargetPaths"
-          Condition="$([MSBuild]::IsOSPlatform('OSX')) AND $(TargetFramework.Contains('-desktop'))"
-          Inputs="$(_PaliMenuSource)"
+          Condition="'$(_BuildPaliMenu)' == 'true'"
+          Inputs="$(_PaliMenuSource);$(MSBuildThisFileFullPath)"
           Outputs="$(_PaliMenuDylib)">
 
     <MakeDir Directories="$(_PaliMenuObjDir)" />
@@ -44,7 +44,7 @@
   <Target Name="IncludePaliMenuDylib"
           BeforeTargets="AssignTargetPaths"
           AfterTargets="CompilePaliMenu"
-          Condition="$([MSBuild]::IsOSPlatform('OSX')) AND $(TargetFramework.Contains('-desktop'))">
+          Condition="'$(_BuildPaliMenu)' == 'true'">
 
     <ItemGroup>
       <Content Include="$(_PaliMenuDylib)"

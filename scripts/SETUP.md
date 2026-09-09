@@ -71,8 +71,18 @@ acquisition directory. Failure never changes the source submodules.
 
 ## Pin and build
 
-Run from the repository root, using the Python environment with the dependencies
-in `scripts/requirements.txt` and the checked-out DPD model dependencies:
+Run from the repository root with Python 3.11 or later. Install the reviewed
+extraction and test dependencies into a virtual environment:
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r scripts/requirements.txt
+```
+
+The DPD source checkout and its model dependencies are also required for
+extraction. Corpus acquisition uses the separate upstream DPD environment
+as described above; do not replace its dependency constraints with this app's
+requirements.
 
 Create a new configuration snapshot before pinning: production config files are
 promotion targets and cannot also be immutable build inputs. Choose a database

@@ -1,194 +1,195 @@
-# Publishing PaliPractice
+# Publishing Pāli Practice
 
-Reference for building and distributing PaliPractice. The `/release` skill automates
-the build + package steps — this document explains the why and the manual steps.
+This is the authoritative release procedure, also used by the `/release`
+command. Shell examples use Bash on macOS and start from the repository
+root unless stated otherwise. iOS builds and macOS signing require macOS/Xcode.
 
-All commands run from the `PaliPractice/` solution directory.
+## Prepare
 
-## Platforms and Formats
+Install the SDK pinned in `PaliPractice/global.json` and its Android/iOS workloads.
+Use the matching Xcode and Android SDK versions required by those workloads.
+Run `dotnet workload restore PaliPractice/PaliPractice.csproj` from the
+`PaliPractice/` solution directory when setting up a release machine.
 
-| Platform | Format | Signing |
-|----------|--------|---------|
-| macOS arm64 | .app in .zip | Developer ID + notarization (required) |
-| Windows x64 | .zip | None (SmartScreen warning is acceptable) |
-| Linux x64 | .tar.gz | None |
-| Android | .apk | Debug keystore (fine for sideloading) |
+Check `ApplicationDisplayVersion` and `ApplicationVersion` in
+`PaliPractice/PaliPractice/PaliPractice.csproj`. The display version is `1.2`;
+the build number must increase for each store upload. Check the final manifests,
+not just the source properties. App Store uploads require the current Apple SDK;
+Google Play uploads require the current target Android API. See
+[Apple's submission requirements](https://developer.apple.com/news/upcoming-requirements/)
+and [Google's target API policy](https://support.google.com/googleplay/android-developer/answer/11926878).
 
-macOS builds require a Mac. All other platforms cross-compile from any OS.
+From the repository root, run `python3 quality/gate.py full`. Provision the
+pinned comparison inputs described in [scripts/SETUP.md](scripts/SETUP.md) first.
+Also test fresh installation and upgrade from v1.1, preserved practice history,
+EN/ES/RU resources, dictionary-language fallback, and layouts on each release
+platform. The local gate covers tests and desktop compilation; it does not
+certify signed native packages or store acceptance.
 
-When specifying a runtime identifier (`-r`) for desktop, you must also pass
-`-p:TargetFrameworks=net10.0-desktop` due to a .NET SDK requirement.
+Create a new staging directory; do not reuse or delete a previous release:
 
-## Build Commands
-
-**macOS:**
-```bash
-dotnet publish PaliPractice/PaliPractice.csproj -f net10.0-desktop -r osx-arm64 \
-  -p:TargetFrameworks=net10.0-desktop -p:PackageFormat=app -c Release
+```sh
+set -e
+release_version=1.2
+release_dir="$PWD/release/v$release_version"
+mkdir -p "$PWD/release"
+mkdir "$release_dir"
+cd PaliPractice
+app_project=PaliPractice/PaliPractice.csproj
 ```
 
-**Windows:**
-```bash
-dotnet publish PaliPractice/PaliPractice.csproj -f net10.0-desktop -r win-x64 \
-  -p:TargetFrameworks=net10.0-desktop -p:SelfContained=true -c Release
+All remaining commands run from this solution directory in the same shell.
+`release_dir` is absolute, so packaging commands can safely change directory.
+Build sequentially. A runtime-specific desktop publish overrides
+`TargetFrameworks` to prevent that runtime from applying to mobile targets.
+
+## Desktop builds
+
+These commands produce self-contained releases; users do not need to install .NET.
+Fresh output directories avoid mixing old artifacts into a new archive.
+
+```sh
+dotnet publish "$app_project" -f net10.0-desktop -r osx-arm64 -c Release \
+  -p:TargetFrameworks=net10.0-desktop -p:SelfContained=true \
+  -p:PackageFormat=app -o "$release_dir/macos"
+
+dotnet publish "$app_project" -f net10.0-desktop -r win-x64 -c Release \
+  -p:TargetFrameworks=net10.0-desktop -p:SelfContained=true \
+  -o "$release_dir/windows"
+
+dotnet publish "$app_project" -f net10.0-desktop -r linux-x64 -c Release \
+  -p:TargetFrameworks=net10.0-desktop -p:SelfContained=true \
+  -o "$release_dir/linux"
 ```
 
-**Linux:**
-```bash
-dotnet publish PaliPractice/PaliPractice.csproj -f net10.0-desktop -r linux-x64 \
-  -p:TargetFrameworks=net10.0-desktop -p:SelfContained=true -c Release
+### macOS signing and notarization
+
+The entitlement file is `PaliPractice/Platforms/macOS/Entitlements.plist`.
+It permits the .NET JIT and bundled native libraries. This is a Developer ID
+release, not a sandboxed Mac App Store app.
+
+Sign nested Mach-O files before the outer bundle, using the same Developer ID
+Application identity. Replace the example identity below. Avoid `codesign --deep`
+for signing; use it for verification. Keep archives outside the `.app` bundle.
+
+```sh
+mac_app="$release_dir/macos/PāliPractice.app"
+signing_identity='Developer ID Application: YOUR NAME (YOUR_TEAM_ID)'
+find "$mac_app" -type f -print0 | while IFS= read -r -d '' binary; do
+  if file -b "$binary" | grep -q 'Mach-O'; then
+    codesign --force --options runtime --timestamp \
+      --entitlements PaliPractice/Platforms/macOS/Entitlements.plist \
+      --sign "$signing_identity" "$binary" || exit 1
+  fi
+done
+codesign --force --options runtime --timestamp \
+  --entitlements PaliPractice/Platforms/macOS/Entitlements.plist \
+  --sign "$signing_identity" "$mac_app"
+codesign --verify --deep --strict --verbose=2 "$mac_app"
 ```
 
-**Android:**
-```bash
-dotnet publish PaliPractice/PaliPractice.csproj -f net10.0-android -c Release
+Inspect the bundle for nested framework/app bundles before signing; if present,
+sign their containers from the inside out before signing the outer `.app`.
+The earlier Uno 6.4 release workflow encountered `UNOB0018` during integrated
+signing. Manual signing avoids that step; this historical workaround is not a
+claim that every later Uno SDK has the same defect.
+
+Store notarization credentials once with the interactive command (it prompts for
+Apple ID, team ID, and an app-specific password):
+
+```sh
+xcrun notarytool store-credentials pali-notary
 ```
 
-Run builds sequentially — concurrent `dotnet restore` causes NuGet lock contention.
+Then notarize and staple:
 
-## macOS Signing and Notarization
-
-### Entitlements
-
-`PaliPractice/Platforms/macOS/Entitlements.plist` declares entitlements required by
-any .NET app distributed with Developer ID:
-
-| Entitlement | Purpose |
-|-------------|---------|
-| `com.apple.security.cs.allow-jit` | .NET JIT compilation |
-| `com.apple.security.cs.allow-unsigned-executable-memory` | .NET runtime memory management |
-| `com.apple.security.cs.disable-library-validation` | Loading bundled native libraries (SkiaSharp, SQLite) |
-
-Not sandboxed (no `com.apple.security.app-sandbox`) — distributed directly, not via
-Mac App Store.
-
-### Why Two-Step Signing (UNOB0018)
-
-Uno's `GenerateAppBundle` task (in `Uno.Sdk.Extras`) pre-checks files for extended
-attributes before signing. On macOS 15 (Sequoia), the system applies
-`com.apple.provenance` xattrs to NuGet-extracted files. This triggers error `UNOB0018`
-when passing `-p:CodesignKey` to `dotnet publish`.
-
-Apple's `codesign` handles these xattrs without issue — the bug is in Uno's pre-check.
-
-**Workaround:** publish unsigned, then sign manually.
-
-If a future Uno SDK fixes this, the correct MSBuild properties are:
-
-| Property | Purpose |
-|----------|---------|
-| `CodesignKey` | Signing identity for the .app |
-| `UnoMacOSEntitlements` | Path to entitlements plist |
-| `UnoMacOSHardenedRuntime` | Enable hardened runtime |
-| `UnoMacOSNotarizeKeychainProfile` | Keychain profile for notarization |
-
-### Sign
-
-```bash
-codesign --deep --force --options runtime \
-  --entitlements PaliPractice/PaliPractice/Platforms/macOS/Entitlements.plist \
-  --sign "Developer ID Application: YOUR NAME (YOUR_TEAM_ID)" \
-  "PaliPractice/PaliPractice/bin/Release/net10.0-desktop/osx-arm64/publish/PāliPractice.app"
-```
-
-- `--deep` — signs all nested code (dylibs, executables)
-- `--options runtime` — hardened runtime (required for notarization)
-- `--entitlements` — JIT/memory/library entitlements .NET needs
-
-### Verify
-
-```bash
-codesign --verify --deep --strict --verbose=2 \
-  "PaliPractice/PaliPractice/bin/Release/net10.0-desktop/osx-arm64/publish/PāliPractice.app"
-```
-
-Must end with "valid on disk" and "satisfies its Designated Requirement".
-
-### Notarize
-
-**One-time credential setup:**
-
-```bash
-xcrun notarytool store-credentials pali-notary \
-  --apple-id YOUR_APPLE_ID \
-  --team-id YOUR_TEAM_ID \
-  --password YOUR_APP_SPECIFIC_PASSWORD
-```
-
-The app-specific password is generated at appleid.apple.com > Sign-In and Security >
-App-Specific Passwords. This is not your Apple ID password.
-
-**Submit and staple:**
-
-```bash
-ditto -c -k --keepParent \
-  "PaliPractice/PaliPractice/bin/Release/net10.0-desktop/osx-arm64/publish/PāliPractice.app" \
-  "/tmp/PaliPractice-notarize.zip"
-
-xcrun notarytool submit /tmp/PaliPractice-notarize.zip \
+```sh
+ditto -c -k --keepParent "$mac_app" "$release_dir/notarization.zip"
+xcrun notarytool submit "$release_dir/notarization.zip" \
   --keychain-profile pali-notary --wait
-
-xcrun stapler staple \
-  "PaliPractice/PaliPractice/bin/Release/net10.0-desktop/osx-arm64/publish/PāliPractice.app"
+xcrun stapler staple "$mac_app"
+xcrun stapler validate "$mac_app"
+spctl --assess --type execute --verbose=2 "$mac_app"
 ```
 
-If notarization fails, check the log:
-```bash
-xcrun notarytool log SUBMISSION_ID --keychain-profile pali-notary
+If submission fails, inspect `xcrun notarytool log SUBMISSION_ID
+--keychain-profile pali-notary` and resolve the errors before packaging.
+
+## Android
+
+Use a persistent signing key for each distribution channel so users can upgrade
+without uninstalling. A debug key is unsuitable as a reproducible public release
+identity. For Google Play, use the registered upload key; Play App Signing
+controls the certificate installed on users' devices. A sideloaded APK can
+replace a Play installation only when the installed signing certificates match.
+
+Provide the existing keystore path and alias in `android_keystore` and
+`android_key_alias`. Put passwords in private files outside the repository,
+referenced by `android_store_password_file` and `android_key_password_file`.
+Do not put passwords in command history or committed project files.
+
+```sh
+dotnet publish "$app_project" -f net10.0-android -c Release \
+  -p:TargetFrameworks=net10.0-android -p:AndroidPackageFormats=apk \
+  -p:AndroidKeyStore=true -p:AndroidSigningKeyStore="$android_keystore" \
+  -p:AndroidSigningKeyAlias="$android_key_alias" \
+  -p:AndroidSigningStorePass="file:$android_store_password_file" \
+  -p:AndroidSigningKeyPass="file:$android_key_password_file" \
+  -o "$release_dir/android"
 ```
 
-## Packaging
+For Play Console, repeat with `-p:AndroidPackageFormats=aab` and
+`-o "$release_dir/play"`, using the Play upload key. Verify the signed artifact,
+version code, target API, supported ABIs, and native library page alignment.
+Upload the signed AAB to an internal test track, verify installation and upgrade,
+then complete the store listing and rollout in Play Console.
 
-**macOS** — use `ditto` (preserves code signatures; `zip` does not):
-```bash
-ditto -c -k --keepParent \
-  "PaliPractice/PaliPractice/bin/Release/net10.0-desktop/osx-arm64/publish/PāliPractice.app" \
-  release/PaliPractice-macos-arm64.zip
+## iOS / App Store
+
+Use the existing Apple Distribution identity and App Store provisioning profile
+for `org.dhammabytes.palipractice`. Set `ios_signing_identity` and
+`ios_provisioning_profile` to their installed names or identifiers.
+
+```sh
+dotnet publish "$app_project" -f net10.0-ios -r ios-arm64 -c Release \
+  -p:TargetFrameworks=net10.0-ios -p:ArchiveOnBuild=true -p:BuildIpa=true \
+  -p:CodesignKey="$ios_signing_identity" \
+  -p:CodesignProvision="$ios_provisioning_profile" \
+  -p:IpaPackageDir="$release_dir/ios"
 ```
 
-**Windows:**
-```bash
-cd PaliPractice/PaliPractice/bin/Release/net10.0-desktop/win-x64/publish
-zip -r release/PaliPractice-windows-x64.zip . -x '*.pdb'
+Verify bundle ID, version/build number, localizations, privacy manifest, and
+signing. Upload the IPA using Transporter or the Xcode archive workflow, test
+through TestFlight, and complete screenshots, localized metadata, and review
+information in App Store Connect before submitting for review.
+
+## Package and publish
+
+Package the stapled macOS bundle with `ditto`. Use subshells for the other
+archives so the working directory remains unchanged:
+
+```sh
+ditto -c -k --keepParent "$mac_app" "$release_dir/PaliPractice-macos-arm64.zip"
+(cd "$release_dir/windows" && zip -r "$release_dir/PaliPractice-windows-x64.zip" . -x '*.pdb')
+COPYFILE_DISABLE=1 tar -czf "$release_dir/PaliPractice-linux-x64.tar.gz" \
+  --exclude='*.pdb' -C "$release_dir/linux" .
+cp "$release_dir/android/org.dhammabytes.palipractice-Signed.apk" \
+  "$release_dir/PaliPractice-android.apk"
 ```
 
-**Linux:**
-```bash
-cd PaliPractice/PaliPractice/bin/Release/net10.0-desktop/linux-x64/publish
-tar -czf release/PaliPractice-linux-x64.tar.gz --exclude='*.pdb' *
+Inspect each archive and launch the extracted app on its target OS. Keep release
+notes in `$release_dir/notes.md`, including user-visible changes and compatibility
+information. Create a draft after the release commit is pushed:
+
+```sh
+gh release create "v$release_version" --draft --target RELEASE_COMMIT \
+  "$release_dir/PaliPractice-macos-arm64.zip" \
+  "$release_dir/PaliPractice-windows-x64.zip" \
+  "$release_dir/PaliPractice-linux-x64.tar.gz" \
+  "$release_dir/PaliPractice-android.apk" \
+  --title "v$release_version" --notes-file "$release_dir/notes.md"
 ```
 
-**Android:**
-```bash
-cp PaliPractice/PaliPractice/bin/Release/net10.0-android/org.dhammabytes.palipractice-Signed.apk \
-   release/PaliPractice-android.apk
-```
-
-The Android `-Signed.apk` uses the debug keystore, which is fine for sideloading.
-Users cannot upgrade from this APK to the Play Store version without uninstalling
-(different signing keys).
-
-## GitHub Release
-
-Requires `gh` CLI (`brew install gh && gh auth login`).
-
-```bash
-gh release create v1.1 \
-  release/PaliPractice-macos-arm64.zip \
-  release/PaliPractice-windows-x64.zip \
-  release/PaliPractice-linux-x64.tar.gz \
-  release/PaliPractice-android.apk \
-  --title "v1.1" \
-  --notes "Release notes here"
-```
-
-The version tag should match `ApplicationDisplayVersion` in the csproj.
-
-## Icons
-
-`Assets/Icons/icon.png` is used by Uno.Resizetizer to generate platform-native icons:
-
-- **macOS**: `.icns` embedded in `.app` bundle
-- **Windows**: PNGs bundled with the app
-
-Android and iOS use their own platform-native icons (excluded from Resizetizer).
+Replace `RELEASE_COMMIT` with the verified commit SHA. Review the draft and
+artifacts before publishing. Store uploads and public release publication are
+separate actions from preparing the binaries.

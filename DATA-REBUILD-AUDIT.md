@@ -1,6 +1,12 @@
 # Database rebuild audit — 7 September 2026
 
-The current rebuild is not ready to release. Ordinary frequency-cutoff churn is expected, but corpus-attestation collisions and invalid grammatical IDs are confirmed defects. A newer published DPD database is available; the Russian TSV used by the importer has not changed since the July rebuild.
+> Historical audit of the pre-hardening database. Its findings were addressed by
+> [milestones M1–M9](DATA-REBUILD-ROADMAP.md); see the
+> [M9 verification checkpoint](quality/evidence/m9/README.md) for the resulting
+> data and model evidence. This report preserves the state observed at audit time,
+> not the current release status. UI and publication checks remain separate.
+
+At the time of this audit, the rebuild was not ready to release. Ordinary frequency-cutoff churn is expected, but corpus-attestation collisions and invalid grammatical IDs are confirmed defects. A newer published DPD database is available; the Russian TSV used by the importer has not changed since the July rebuild.
 
 This was a read-only audit of application data and source code. No extraction, source-input replacement, registry update, commit, or production migration was performed. The only repository addition is this report. Existing worktree changes were preserved.
 

@@ -61,6 +61,39 @@ public class AppTextFormatterTests
             .Should().Be(expected);
     }
 
+    [TestCase("es-ES")]
+    [TestCase("es-MX")]
+    public void SelectPluralForm_UsesSpanishSingularOnlyForOne(string locale)
+    {
+        var culture = CultureInfo.GetCultureInfo(locale);
+        foreach (var count in new[] { 0, 1, 2, 11, 21, 101 })
+        {
+            AppTextFormatter.SelectPluralForm(count, $"{count} día", "unused", $"{count} días", culture)
+                .Should().Be(count == 1 ? "1 día" : $"{count} días");
+        }
+    }
+
+    [TestCase("es-ES")]
+    [TestCase("es-MX")]
+    public void HistoryDateUsesSpanishMonthWithIndependentDeviceRegion(string locale)
+    {
+        var originalUi = CultureInfo.CurrentUICulture;
+        var originalRegion = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(locale);
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+            var date = new DateTime(2026, 5, 2);
+            AppTextFormatter.FormatHistoryHeader(date, date.AddDays(2), date.AddDays(1))
+                .Should().Be("2 may");
+        }
+        finally
+        {
+            CultureInfo.CurrentUICulture = originalUi;
+            CultureInfo.CurrentCulture = originalRegion;
+        }
+    }
+
     [TestCase("ru-RU")]
     [TestCase("ru-BY")]
     public void HistoryDateUsesRussianMonthWithIndependentDeviceRegion(string locale)

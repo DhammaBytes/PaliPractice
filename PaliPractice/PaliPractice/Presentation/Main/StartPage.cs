@@ -100,7 +100,7 @@ public sealed partial class StartPage : Page
 
                                                         // Stats and Help row (side by side)
                                                         new Grid()
-                                                            .ColumnDefinitions("*,16,*")
+                                                            .ColumnDefinitions("*,16,Auto")
                                                             .Children(
                                                                 // Stats Button
                                                                 StartSecondaryButtonShadow(

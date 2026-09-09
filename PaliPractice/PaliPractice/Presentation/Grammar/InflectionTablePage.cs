@@ -82,11 +82,18 @@ public sealed partial class InflectionTablePage : Page
         if (_titleTextBlock != null)
             _titleTextBlock.Text = vm.LemmaName;
 
-        // Update formatted header: <pattern> <type> (like <example>)
+        // Localize the pattern/type order while retaining the Pāli font run.
         // Skip "(like ...)" if the example is the same as the current lemma
         if (_headerTextBlock != null)
         {
             _headerTextBlock.Inlines.Clear();
+            var headingParts = AppText.Get("Grammar.Table.PatternHeadingFormat")
+                .Split("{0}", StringSplitOptions.None);
+            _headerTextBlock.Inlines.Add(new Run
+            {
+                Text = string.Format(System.Globalization.CultureInfo.CurrentUICulture,
+                    headingParts[0], string.Empty, vm.TypeName)
+            });
             _headerTextBlock.Inlines.Add(new Run
             {
                 Text = vm.PatternName.Split(' ')[0],
@@ -94,7 +101,11 @@ public sealed partial class InflectionTablePage : Page
                 FontWeight = Microsoft.UI.Text.FontWeights.SemiBold
             });
             _headerTextBlock.Inlines.Add(new Run { Text = GrammarText.GetPatternQualifier(vm.PatternName) });
-            _headerTextBlock.Inlines.Add(new Run { Text = $" {vm.TypeName}" });
+            _headerTextBlock.Inlines.Add(new Run
+            {
+                Text = string.Format(System.Globalization.CultureInfo.CurrentUICulture,
+                    headingParts[1], string.Empty, vm.TypeName)
+            });
 
             if (!string.Equals(vm.LikeExample, vm.LemmaName, StringComparison.OrdinalIgnoreCase))
             {

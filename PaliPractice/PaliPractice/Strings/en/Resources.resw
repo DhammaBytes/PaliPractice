@@ -148,7 +148,7 @@ Maintained by [DhammaBytes](https://dhammabytes.org) contributors. We welcome fe
 
 Word and grammar data come from the [Digital Pāli Dictionary](https://dpdict.net), maintained primarily by Ven. Bodhirasa Bhikkhu and supported by other contributors.
 
-Russian meanings come from the [Russian DPD project](https://ru.dpdict.net), maintained by Ven. Devamitta Bhikkhu at Sāsanārakkha Buddhist Sanctuary. Spanish meanings come from the [Spanish DPD project](https://dhamma-pb.org/dpd-espanol/), coordinated by the [Paññābhūmi team](https://dhamma-pb.org/) in Jalisco, Mexico.
+Russian meanings come from the [Russian DPD project](https://ru.dpdict.net), maintained by Ven. Devamitta Bhikkhu at Sāsanārakkha Buddhist Sanctuary in Perak, Malaysia. Spanish meanings come from the [Spanish DPD project](https://dhamma-pb.org/dpd-espanol/), coordinated by the [Paññābhūmi team](https://dhamma-pb.org/) from Jalisco, Mexico.
 
 This app is also available on [other platforms](https://www.dhammabytes.org/pali-practice/).
 ]]></value></data>
@@ -473,5 +473,9 @@ Verbs: {2}</value></data>
   </data>
   <data name="Grammar.Pattern.Eastern" xml:space="preserve">
     <value>east</value>
+  </data>
+  <data name="Grammar.Table.PatternHeadingFormat" xml:space="preserve">
+    <value>{0} {1}</value>
+    <comment>{0}: styled Pāli pattern and qualifier (exactly once); {1}: pattern type.</comment>
   </data>
 </root>

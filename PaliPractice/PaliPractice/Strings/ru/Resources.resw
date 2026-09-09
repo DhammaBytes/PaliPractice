@@ -146,9 +146,9 @@
 
 Над приложением работают участники [DhammaBytes](https://dhammabytes.org). Мы будем рады отзывам и помощи с переводами.
 
-Данные о словах и грамматике взяты из [Digital Pāli Dictionary](https://dpdict.net). Основную работу над словарём ведёт досточтимый Bodhirasa Bhikkhu при помощи других участников.
+Данные о словах и грамматике взяты из [Digital Pāli Dictionary](https://dpdict.net). Основную работу над словарём ведёт досточтимый Бодхираса Бхиккху при помощи других участников.
 
-Русские переводы значений взяты из [русской версии DPD](https://ru.dpdict.net), над которой работает досточтимый Devamitta Bhikkhu в буддийском монастыре Sāsanārakkha Buddhist Sanctuary. Испанские переводы значений взяты из [испанской версии DPD](https://dhamma-pb.org/dpd-espanol/). Работой над ней руководит [команда Paññābhūmi](https://dhamma-pb.org/) из Халиско, Мексика.
+Русские переводы значений взяты из [русской версии DPD](https://ru.dpdict.net), над которой работает досточтимый Девамитта Бхиккху в монастыре Sāsanārakkha Buddhist Sanctuary (Перак, Малайзия). Испанские переводы значений взяты из [испанской версии DPD](https://dhamma-pb.org/dpd-espanol/). Работой над ней руководит [команда Paññābhūmi](https://dhamma-pb.org/) из Халиско, Мексика.
 
 Приложение также доступно на [других платформах](https://www.dhammabytes.org/pali-practice/).
 </value></data>
@@ -158,7 +158,7 @@
 
 *«Странствуйте, монахи, в пределах надлежащего вам удела, на вашей собственной исконной территории. В том, кто странствует в пределах надлежащего ему удела, на своей исконной территории, Мара не находит лазейки, Мара не находит опоры. И что же для монаха является надлежащим ему уделом, его собственной исконной территорией? Четыре установления осознанности.».*
 
-Иллюстрация для иконки и дизайн приложения — [Irina Mir](https://www.instagram.com/irmirx)
+Иллюстрация для иконки и дизайн приложения — [Ирина Мир](https://www.instagram.com/irmirx)
 </value></data>
   <data name="About.LicenseTitle" xml:space="preserve"><value>Лицензия приложения</value></data>
   <data name="About.LicenseText" xml:space="preserve"><value>
@@ -416,4 +416,8 @@
   <data name="Grammar.Pattern.Plural" xml:space="preserve"><value>мн</value></data>
   <data name="Grammar.Pattern.Present" xml:space="preserve"><value>наст</value></data>
   <data name="Grammar.Pattern.Eastern" xml:space="preserve"><value>вост.</value></data>
+  <data name="Grammar.Table.PatternHeadingFormat" xml:space="preserve">
+    <value>{0} {1}</value>
+    <comment>{0}: styled Pāli pattern and qualifier (exactly once); {1}: pattern type.</comment>
+  </data>
 </root>

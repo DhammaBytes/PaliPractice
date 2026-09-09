@@ -14,10 +14,11 @@ public class ResourceCompletenessTests
     static readonly string[] SharedRussianValues =
     [
         "Common.Ok", "About.AppNameFormat",
-        "Grammar.Table.LikeSuffix"
+        "Grammar.Table.LikeSuffix", "Grammar.Table.PatternHeadingFormat"
     ];
 
     [TestCase("en")]
+    [TestCase("es")]
     [TestCase("ru")]
     public void ResourcesHaveUniqueKeysAndNonemptyValues(string languageCode)
     {
@@ -31,6 +32,7 @@ public class ResourceCompletenessTests
     }
 
     [TestCase("ru")]
+    [TestCase("es")]
     public void TranslationsPreserveKeysPlaceholdersAndMarkdown(string languageCode)
     {
         var english = LoadValues("en");
@@ -60,6 +62,31 @@ public class ResourceCompletenessTests
         var russian = LoadValues("ru");
         english.Where(entry => russian[entry.Key] == entry.Value).Select(entry => entry.Key)
             .Should().BeEquivalentTo(SharedRussianValues);
+    }
+
+    [Test]
+    public void SpanishOnlySharesReviewedEnglishValues()
+    {
+        var english = LoadValues("en");
+        var spanish = LoadValues("es");
+        english.Where(entry => spanish[entry.Key] == entry.Value).Select(entry => entry.Key)
+            .Should().BeEquivalentTo("About.AppNameFormat", "Grammar.Table.LikeSuffix",
+                "Statistics.Streak.Total", "Grammar.Case.Instrumental.Full",
+                "Grammar.Number.Singular.Full", "Grammar.Number.Plural.Full",
+                "Settings.Section.General", "Feedback.Label.App", "MacMenu.Zoom");
+    }
+
+    [TestCase("en", "ati conjugation")]
+    [TestCase("ru", "ati conjugation")]
+    [TestCase("es", "conjugation: ati")]
+    public void PatternHeadingPreservesOneStyledPatternSlot(string languageCode, string expected)
+    {
+        var template = LoadValues(languageCode)["Grammar.Table.PatternHeadingFormat"];
+        var parts = template.Split("{0}", StringSplitOptions.None);
+        parts.Should().HaveCount(2, "the Pāli pattern is inserted once with its own font");
+        var before = string.Format(CultureInfo.InvariantCulture, parts[0], string.Empty, "conjugation");
+        var after = string.Format(CultureInfo.InvariantCulture, parts[1], string.Empty, "conjugation");
+        (before + "ati" + after).Should().Be(expected);
     }
 
     static IReadOnlyList<(int Index, string? Format)> FormatArguments(string value)

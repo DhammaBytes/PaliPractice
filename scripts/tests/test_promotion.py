@@ -17,6 +17,13 @@ from semantic_evidence import identity
 from check_repeatability import semantic_digest
 
 
+def database_at_version(candidate, output, version):
+    shutil.copy2(candidate / 'pali.db', output)
+    with contextlib.closing(sqlite3.connect(output)) as db:
+        db.execute(f'PRAGMA user_version = {version}')
+    return output.read_bytes()
+
+
 class PromotionTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -44,6 +51,9 @@ class PromotionTests(unittest.TestCase):
                     before[name] = f'old {name}'.encode() if number % 2 == 0 else None
                     if name in ('lemma_registry.json', 'practice_registry.json') and before[name] is not None:
                         before[name] = (self.candidate / name).read_bytes()
+                    if name == 'pali.db' and before[name] is not None:
+                        previous = int((self.candidate / 'pali.version.txt').read_text()) - 1
+                        before[name] = database_at_version(self.candidate, self.root / f'old-db-{index}', previous)
                     if before[name] is not None:
                         path.write_bytes(before[name])
 
@@ -105,6 +115,44 @@ class PromotionTests(unittest.TestCase):
         path.write_text(json.dumps(practice))
 
         self.assert_identity_rejection_preserves_destination(repository, 'practice paradigm removed or reassigned')
+
+    def test_changed_database_requires_strictly_newer_version(self):
+        proposed = int((self.candidate / 'pali.version.txt').read_text())
+        for offset in (0, 1):
+            with self.subTest(destination_offset=offset):
+                repository = self.destination_with_current_identities(f'version-rejected-{offset}')
+                path = repository / TARGETS['pali.db']
+                with contextlib.closing(sqlite3.connect(path)) as db:
+                    db.execute(f'PRAGMA user_version = {proposed + offset}')
+                    db.execute('UPDATE nouns_details SET meaning = ?', ('previous meaning',))
+                    db.commit()
+                # The database is authoritative: a stale sidecar cannot bypass the guard.
+                (repository / TARGETS['pali.version.txt']).write_text(str(proposed - 1))
+                self.assert_identity_rejection_preserves_destination(repository, 'requires a newer version')
+
+    def test_identical_database_at_same_version_is_an_allowed_noop(self):
+        repository = self.destination_with_current_identities('same-version-noop')
+        before = {relative: (repository / relative).read_bytes() for relative in TARGETS.values()}
+
+        promote(self.candidate, repository, self.manifest, self.evidence)
+        recover(repository)
+
+        self.assertEqual(before, {relative: (repository / relative).read_bytes() for relative in TARGETS.values()})
+
+    def test_newer_database_can_replace_existing_bundle(self):
+        repository = self.destination_with_current_identities('newer-version')
+        previous = int((self.candidate / 'pali.version.txt').read_text()) - 1
+        database_at_version(self.candidate, repository / TARGETS['pali.db'], previous)
+        (repository / TARGETS['pali.version.txt']).write_text(str(previous))
+
+        promote(self.candidate, repository, self.manifest, self.evidence)
+
+        self.assertEqual((self.candidate / 'pali.db').read_bytes(), (repository / TARGETS['pali.db']).read_bytes())
+
+    def test_unreadable_destination_version_rejects_before_staging(self):
+        repository = self.destination_with_current_identities('invalid-destination-db')
+        (repository / TARGETS['pali.db']).write_bytes(b'not a database')
+        self.assert_identity_rejection_preserves_destination(repository, 'Cannot read destination database version')
 
     def test_committed_set_is_retained_on_recovery(self):
         repository = self.root / 'committed'

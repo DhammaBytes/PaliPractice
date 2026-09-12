@@ -9,10 +9,11 @@ import contextlib
 import fcntl
 import json
 import os
+import sqlite3
 from pathlib import Path
 
 from extraction.candidate import ROOT, validate_candidate
-from extraction.inputs import InputError, load_manifest, read_json, sha256
+from extraction.inputs import InputError, load_manifest, positive_integer, read_json, sha256
 from extraction.identity import require_historical_registry, require_practice_registry
 from semantic_evidence import verify as verify_semantics
 
@@ -144,6 +145,21 @@ def protect_destination_identities(candidate: Path, repository: Path):
                                   read_json(candidate / 'paradigm_corrections.json'))
 
 
+def protect_destination_version(candidate: Path, repository: Path):
+    """Match the installed app's PRAGMA user_version upgrade contract."""
+    database = target_path(repository, 'pali.db')
+    if not database.exists():
+        return
+    try:
+        with contextlib.closing(sqlite3.connect(database.as_uri() + '?mode=ro&immutable=1', uri=True)) as db:
+            current = positive_integer(db.execute('PRAGMA user_version').fetchone()[0], 'destination database version')
+    except sqlite3.Error as error:
+        raise InputError(f'Cannot read destination database version: {error}') from error
+    proposed = int((candidate / 'pali.version.txt').read_text().strip())
+    if proposed < current or (proposed == current and sha256(database) != sha256(candidate / 'pali.db')):
+        raise InputError(f'Changed database requires a newer version: candidate {proposed}, destination {current}')
+
+
 def promote(candidate: Path, repository: Path, inputs: Path, evidence: Path, after_write=lambda _: None,
             *, english: Path | None = None, translations: Path | None = None):
     candidate, repository = candidate.resolve(), repository.resolve()
@@ -153,6 +169,7 @@ def promote(candidate: Path, repository: Path, inputs: Path, evidence: Path, aft
     with locked(repository) as state:
         recover_locked(repository, state)
         protect_destination_identities(candidate, repository)
+        protect_destination_version(candidate, repository)
         files = {}
         for name in TARGETS:
             target = target_path(repository, name)

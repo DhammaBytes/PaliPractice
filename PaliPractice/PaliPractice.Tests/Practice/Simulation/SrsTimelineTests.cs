@@ -27,7 +27,7 @@ public class SrsTimelineTests
     public Task ExtendedTimeline(
         [Values(PracticeType.Declension, PracticeType.Conjugation)] PracticeType type,
         [Values(SrsStudentProfile.AlwaysEasy, SrsStudentProfile.WeakPlural)] SrsStudentProfile profile,
-        [Values(17, 83)] int seed) => RunTimeline(type, "daily", seed, profile, 365);
+        [Values(17, 83, 211, 397)] int seed) => RunTimeline(type, "daily", seed, profile, 365);
 
     static async Task RunTimeline(PracticeType type, string name, int seed, SrsStudentProfile profile, int? days = null)
     {
@@ -132,8 +132,7 @@ public class SrsTimelineTests
         {
             Scenario = name, Type = type.ToString(), Seed = seed,
             ReportVersion = 2, LearnerProfile = profile.ToString(),
-            SchedulerSha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(Path.Combine(TestPaths.RepositoryRoot,
-                "PaliPractice", "PaliPractice", "Services", "Practice", "PracticeQueueBuilder.cs")))),
+            SchedulerSha256 = SrsSourceIdentity.SchedulerHash(),
             DictionarySha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(TestPaths.PaliDbPath))),
             TraceSha256 = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(trace))),
             Summary = new { Sessions = points.Count, Answers = answers.Count,

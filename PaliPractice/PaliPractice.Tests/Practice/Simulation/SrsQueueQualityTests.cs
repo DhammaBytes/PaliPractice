@@ -12,6 +12,24 @@ namespace PaliPractice.Tests.Practice.Simulation;
 [TestFixture]
 public class SrsQueueQualityTests
 {
+    [Test]
+    public void MixedQueueIncludesTheDominantNewNounPattern()
+    {
+        using var corpus = new BundledSrsCorpus();
+        using var sim = new SrsSimulation(corpus.Nouns, corpus.Verbs, new(SrsSimulationTests.Start));
+        var filter = Filter(PracticeType.Declension, "one-combo");
+        filter.Apply(sim.UserData, PracticeType.Declension);
+        var eligible = corpus.Eligible(PracticeType.Declension, filter);
+        SeedState(sim, PracticeType.Declension, "mixed", eligible);
+        var newDominant = eligible.Where(id => sim.Mastery(PracticeType.Declension, id) == null &&
+            Pattern(corpus, PracticeType.Declension, id) == "AMasc").ToHashSet();
+        Assert.That(newDominant.Count, Is.GreaterThan(100));
+        var shown = Enumerable.Range(0, 24).SelectMany(i => sim.BuildQueue(PracticeType.Declension, 60,
+            SrsSimulationTests.Start.UtcDateTime.AddDays(i * 17)).Take(50));
+        Assert.That(shown.Count(item => newDominant.Contains(item.FormId)), Is.GreaterThan(0),
+            "Slot cadence must not exclude the dominant available new pattern across all date seeds");
+    }
+
     static IEnumerable<TestCaseData> Scenarios()
     {
         foreach (var type in new[] { PracticeType.Declension, PracticeType.Conjugation })
@@ -115,8 +133,7 @@ public class SrsQueueQualityTests
             Type = type.ToString(), Profile = profile, State = state, Filter = filter,
             Corpus = profile == "restarted" ? "synthetic-20-lemmas" : "bundled",
             DictionarySha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(TestPaths.PaliDbPath))),
-            SchedulerSha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(Path.Combine(TestPaths.RepositoryRoot,
-                "PaliPractice", "PaliPractice", "Services", "Practice", "PracticeQueueBuilder.cs")))),
+            SchedulerSha256 = SrsSourceIdentity.SchedulerHash(),
             Inventory = inventory, Seeds = seeds, Queues = queues, Sessions = sessions
         };
         var directory = Environment.GetEnvironmentVariable("PALIPRACTICE_SRS_REPORT_DIR")

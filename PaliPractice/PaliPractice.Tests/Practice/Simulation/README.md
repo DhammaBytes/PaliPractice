@@ -126,3 +126,22 @@ identical selected sets with different orders.
 The pre-refactor comparison and the isolated slot-plan experiment are documented
 in `Specs/SRS-pre-refactor-comparison.md`. Historical queue variants remain in
 external evidence; the app has no runtime scheduler switch.
+
+## Continuous variable cadence
+
+New-card positions now use a separate deterministic schedule. Each 30-answer
+block shuffles gaps of 5, 6, 6, 6, and 7 positions, preserving five new slots per
+block while breaking the fixed six-position rhythm. The first recorded answer's
+UTC date seeds the schedule; before any history exists, the build's seed date is
+used. Completed answers determine the position, so queues can be abandoned or
+rebuilt without resetting it. Bucket rotation uses the corresponding scheduled
+review ordinal. As before, an exhausted source falls back to the other source;
+the cadence is not an absolute daily introduction limit.
+
+The year-long cases now include seeds 211 and 397 in addition to 17 and 83
+(16 year-long cases total). The schedule tests check variable-gap bounds,
+balanced admission, arbitrary split/restart equivalence, persisted seed lookup,
+and database reopening. A real-corpus regression protects against exclusion of
+the dominant new noun pattern. Scheduler fingerprints include both queue and
+cadence source files. See `Specs/SRS-variable-cadence.md` for paired measurements
+and explicitly retained regressions.

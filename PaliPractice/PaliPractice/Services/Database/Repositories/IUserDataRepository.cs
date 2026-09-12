@@ -43,6 +43,7 @@ public interface IUserDataRepository
         => RecordPracticeResult(formId, type, wasEasy);
     List<IPracticeHistory> GetRecentHistory(PracticeType type, int limit = 50);
     long GetPracticeCount(PracticeType type);
+    DateTime? GetFirstPracticeUtc(PracticeType type);
 
     // === Settings ===
 

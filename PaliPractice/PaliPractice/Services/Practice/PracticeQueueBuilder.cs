@@ -14,7 +14,7 @@ record FormMasteryData(long FormId, int MasteryLevel, DateTime NextDueUtc);
 /// <summary>
 /// Builds a practice queue using a prebuilt slot-based approach:
 ///
-/// 1. SLOT PLAN: Pre-determine new vs review pattern (1 new every 5 reviews).
+/// 1. SLOT PLAN: Pre-determine new vs review pattern (1 new every 4–6 reviews).
 /// 2. LEVEL BUCKETS: Rotate through mastery levels (1-2, 3-4, 5-6, 7-8, 9-10)
 ///    to mix difficulty instead of always showing hardest items first.
 /// 3. SPACING CONSTRAINTS: Enforce lemma, combo, and category gaps with graceful degradation.
@@ -38,10 +38,6 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
     readonly IVerbRepository _verbs;
     readonly TimeProvider _timeProvider;
     Random _random = new();  // Re-seeded per build for determinism
-
-    // Advance from completed answers, so leaving a buffered queue does not
-    // restart the new/review schedule. No additional persisted state is needed.
-    const int NewFormPeriod = 6;
 
     // Ideal spacing gaps (scaled down when pool is small via EffectiveGap).
     // Gaps are position distances; with 2 lemmas, distance 2 allows ABAB.
@@ -115,7 +111,8 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
         // 3. Build slot plan: determines new vs review for each position
         var completed = _userData.GetPracticeCount(type);
-        var slotPlan = BuildSlotPlan(count, untriedIds.Count, dueForReview.Count, completed);
+        var cadence = NewFormSchedule.Build(completed, count, type, _userData.GetFirstPracticeUtc(type) ?? today);
+        var slotPlan = BuildSlotPlan(count, untriedIds.Count, dueForReview.Count, cadence.Slots);
         var newSlotCount = slotPlan.Count(isNew => isNew);
         var reviewSlotCount = slotPlan.Count - newSlotCount;
         System.Diagnostics.Debug.WriteLine($"[Queue] Slot plan: {newSlotCount} new, {reviewSlotCount} review");
@@ -164,7 +161,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
         // 7. Fill slots according to plan
         int newIdx = 0;
-        int bucketRound = InitialBucket(levelBuckets, completed, untriedIds.Count > 0);
+        int bucketRound = InitialBucket(levelBuckets, untriedIds.Count > 0 ? cadence.ReviewsBefore : completed);
         var bucketIndices = new int[LevelBuckets.Length];  // Current index in each bucket
 
         for (int pos = 0; pos < slotPlan.Count; pos++)
@@ -216,10 +213,10 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
     /// <summary>
     /// Builds a deterministic slot plan: true = new form, false = review.
-    /// Reserves every sixth completed-answer position for a new form when both
-    /// pools are available. Only answered cards advance the phase across builds.
+    /// Uses the variable completed-answer cadence when both pools are available.
+    /// Only answered cards advance the phase across builds.
     /// </summary>
-    static List<bool> BuildSlotPlan(int count, int totalNew, int totalReviews, long completed)
+    static List<bool> BuildSlotPlan(int count, int totalNew, int totalReviews, bool[] plannedSlots)
     {
         var slots = new List<bool>(count);
         if (totalNew == 0 && totalReviews == 0)
@@ -244,7 +241,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
             }
             else
             {
-                placeNew = (completed + i) % NewFormPeriod == NewFormPeriod - 1;
+                placeNew = plannedSlots[i];
             }
 
             slots.Add(placeNew);
@@ -270,10 +267,9 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
     #region Level Bucket Management
 
-    static int InitialBucket(List<List<FormMasteryData>> buckets, long completed, bool hasNew)
+    static int InitialBucket(List<List<FormMasteryData>> buckets, long reviewOrdinal)
     {
         var active = Enumerable.Range(0, buckets.Count).Where(i => buckets[i].Count > 0).ToArray();
-        var reviewOrdinal = hasNew ? completed - completed / NewFormPeriod : completed;
         return active.Length == 0 ? 0 : active[reviewOrdinal % active.Length];
     }
 

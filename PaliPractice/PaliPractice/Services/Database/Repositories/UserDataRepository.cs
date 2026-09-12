@@ -233,6 +233,11 @@ public class UserDataRepository : IUserDataRepository
         ? _connection.ExecuteScalar<long>("SELECT COUNT(*) FROM nouns_practice_history")
         : _connection.ExecuteScalar<long>("SELECT COUNT(*) FROM verbs_practice_history");
 
+    /// <summary>Stable seed date from the first recorded answer, without new stored state.</summary>
+    public DateTime? GetFirstPracticeUtc(PracticeType type) => type == PracticeType.Declension
+        ? _connection.Table<NounsPracticeHistory>().OrderBy(h => h.Id).FirstOrDefault()?.PracticedUtc
+        : _connection.Table<VerbsPracticeHistory>().OrderBy(h => h.Id).FirstOrDefault()?.PracticedUtc;
+
     // === Settings ===
 
     public T GetSetting<T>(string key, T defaultValue)

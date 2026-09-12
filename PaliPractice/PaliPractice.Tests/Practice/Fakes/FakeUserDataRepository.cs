@@ -13,6 +13,8 @@ public class FakeUserDataRepository : IUserDataRepository
 {
     public long GetPracticeCount(PracticeType type) => type == PracticeType.Declension
         ? _nounHistory.Count : _verbHistory.Count;
+    public DateTime? GetFirstPracticeUtc(PracticeType type) => type == PracticeType.Declension
+        ? _nounHistory.FirstOrDefault()?.PracticedUtc : _verbHistory.FirstOrDefault()?.PracticedUtc;
     readonly Dictionary<string, string> _settings = [];
     readonly Dictionary<long, NounsFormMastery> _nounMastery = [];
     readonly Dictionary<long, VerbsFormMastery> _verbMastery = [];

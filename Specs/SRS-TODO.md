@@ -84,7 +84,12 @@ or changing project configuration.
   two-item spacing. Sparse mastery buckets also alternate across restarts.
   Larger-pool spacing retains its existing slack: tightening it regressed the
   existing three-lemma test. No assertions were weakened.
-- M3: 935 focused tests passed; independent review found no blockers. The auto
-  gate passed build/Roslyn checks with only the existing Spanish resource
-  failure (3,032 passed, one failed). Evidence:
+- M3: 935 focused tests passed; independent review found no blockers. The first
+  auto gate passed the desktop build, but reported queue-method complexity 17
+  against limit 15, plus the existing Spanish resource test failure (3,032
+  passed, one failed). The bucket-start calculation was then extracted into a
+  small pure helper to address the complexity finding. First gate evidence:
   `20260912T001540.363871Z-66460-953643`; `m3-before.trx` and `m3-after.trx`.
+- M3 verification after helper extraction: desktop and all Roslyn/complexity
+  checks passed, 3,032 tests passed, and only the pre-existing Spanish resource
+  test failed. Evidence: `20260912T002042.863180Z-12749-33daf3`.

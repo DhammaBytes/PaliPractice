@@ -164,10 +164,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
         // 7. Fill slots according to plan
         int newIdx = 0;
-        var activeBuckets = Enumerable.Range(0, levelBuckets.Count)
-            .Where(i => levelBuckets[i].Count > 0).ToArray();
-        var reviewOrdinal = untriedIds.Count > 0 ? completed - completed / NewFormPeriod : completed;
-        int bucketRound = activeBuckets.Length == 0 ? 0 : activeBuckets[reviewOrdinal % activeBuckets.Length];
+        int bucketRound = InitialBucket(levelBuckets, completed, untriedIds.Count > 0);
         var bucketIndices = new int[LevelBuckets.Length];  // Current index in each bucket
 
         for (int pos = 0; pos < slotPlan.Count; pos++)
@@ -272,6 +269,13 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
     #endregion
 
     #region Level Bucket Management
+
+    static int InitialBucket(List<List<FormMasteryData>> buckets, long completed, bool hasNew)
+    {
+        var active = Enumerable.Range(0, buckets.Count).Where(i => buckets[i].Count > 0).ToArray();
+        var reviewOrdinal = hasNew ? completed - completed / NewFormPeriod : completed;
+        return active.Length == 0 ? 0 : active[reviewOrdinal % active.Length];
+    }
 
     /// <summary>
     /// Groups due forms into 5 level buckets for round-robin selection.

@@ -14,7 +14,7 @@ record FormMasteryData(long FormId, int MasteryLevel, DateTime NextDueUtc);
 /// <summary>
 /// Builds a practice queue using a prebuilt slot-based approach:
 ///
-/// 1. SLOT PLAN: Pre-determine new vs review pattern (1 new every 4-6 reviews).
+/// 1. SLOT PLAN: Pre-determine new vs review pattern (1 new every 5 reviews).
 /// 2. LEVEL BUCKETS: Rotate through mastery levels (1-2, 3-4, 5-6, 7-8, 9-10)
 ///    to mix difficulty instead of always showing hardest items first.
 /// 3. SPACING CONSTRAINTS: Enforce lemma, combo, and category gaps with graceful degradation.
@@ -39,13 +39,12 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
     readonly TimeProvider _timeProvider;
     Random _random = new();  // Re-seeded per build for determinism
 
-    // Introduce new forms gradually: 1 new form every 4-6 reviews.
-    // Variable interval prevents predictable patterns (vs fixed "every 5th").
-    const int NewFormIntervalMin = 4;
-    const int NewFormIntervalMax = 6;
+    // Advance from completed answers, so leaving a buffered queue does not
+    // restart the new/review schedule. No additional persisted state is needed.
+    const int NewFormPeriod = 6;
 
     // Ideal spacing gaps (scaled down when pool is small via EffectiveGap).
-    // These values assume a reasonably diverse pool; with 2 lemmas, gap becomes 1 (ABAB pattern).
+    // Gaps are position distances; with 2 lemmas, distance 2 allows ABAB.
     const int IdealLemmaGap = 8;   // Don't show same word within 8 items
     const int IdealComboGap = 6;   // Don't show same case/number or tense/person within 6 items
     const int IdealCategoryGap = 3; // Don't show same inflection pattern within 3 items
@@ -115,7 +114,8 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         System.Diagnostics.Debug.WriteLine($"[Queue] Due: {dueForReview.Count}, Untried: {untriedIds.Count}");
 
         // 3. Build slot plan: determines new vs review for each position
-        var slotPlan = BuildSlotPlan(count, untriedIds.Count, dueForReview.Count);
+        var completed = _userData.GetPracticeCount(type);
+        var slotPlan = BuildSlotPlan(count, untriedIds.Count, dueForReview.Count, completed);
         var newSlotCount = slotPlan.Count(isNew => isNew);
         var reviewSlotCount = slotPlan.Count - newSlotCount;
         System.Diagnostics.Debug.WriteLine($"[Queue] Slot plan: {newSlotCount} new, {reviewSlotCount} review");
@@ -164,7 +164,10 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
         // 7. Fill slots according to plan
         int newIdx = 0;
-        int bucketRound = 0;  // Which level bucket to try next
+        var activeBuckets = Enumerable.Range(0, levelBuckets.Count)
+            .Where(i => levelBuckets[i].Count > 0).ToArray();
+        var reviewOrdinal = untriedIds.Count > 0 ? completed - completed / NewFormPeriod : completed;
+        int bucketRound = activeBuckets.Length == 0 ? 0 : activeBuckets[reviewOrdinal % activeBuckets.Length];
         var bucketIndices = new int[LevelBuckets.Length];  // Current index in each bucket
 
         for (int pos = 0; pos < slotPlan.Count; pos++)
@@ -216,9 +219,10 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
     /// <summary>
     /// Builds a deterministic slot plan: true = new form, false = review.
-    /// Places new forms every 4-6 reviews (variable but deterministic via seeded random).
+    /// Reserves every sixth completed-answer position for a new form when both
+    /// pools are available. Only answered cards advance the phase across builds.
     /// </summary>
-    List<bool> BuildSlotPlan(int count, int totalNew, int totalReviews)
+    static List<bool> BuildSlotPlan(int count, int totalNew, int totalReviews, long completed)
     {
         var slots = new List<bool>(count);
         if (totalNew == 0 && totalReviews == 0)
@@ -226,8 +230,6 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
         int newPlaced = 0;
         int reviewPlaced = 0;
-        int reviewsSinceNew = 0;
-        int nextInterval = _random.Next(NewFormIntervalMin, NewFormIntervalMax + 1);
 
         for (int i = 0; i < count; i++)
         {
@@ -245,8 +247,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
             }
             else
             {
-                // Both available: use interval logic
-                placeNew = reviewsSinceNew >= nextInterval;
+                placeNew = (completed + i) % NewFormPeriod == NewFormPeriod - 1;
             }
 
             slots.Add(placeNew);
@@ -254,13 +255,10 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
             if (placeNew)
             {
                 newPlaced++;
-                reviewsSinceNew = 0;
-                nextInterval = _random.Next(NewFormIntervalMin, NewFormIntervalMax + 1);
             }
             else
             {
                 reviewPlaced++;
-                reviewsSinceNew++;
             }
 
             // Stop if we've exhausted both pools
@@ -379,7 +377,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
     ///
     /// WHY THIS ORDER:
     /// Consider a beginner practicing only "deva" and "dhamma" (2 lemmas, 16 combos).
-    /// - lemmaGap becomes 1 (ABAB pattern) via EffectiveGap
+    /// - lemmaGap becomes 2 (ABAB pattern) via EffectiveGap
     /// - comboGap stays at 6 (enough combos)
     /// If we prioritized lemma-only over combo-only, we'd get "nom_sg, nom_sg, nom_sg..."
     /// By checking combo-only first, we maintain grammatical variety even when lemma pool is tiny.
@@ -528,17 +526,17 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
     ///
     /// You can't space items farther apart than the pool allows. Examples:
     /// - 1 unique item → gap=0 (can't avoid repeating the only item)
-    /// - 2 unique items → gap=1 achieves ABAB pattern (best possible)
-    /// - 3 unique items → gap=2 achieves ABCABC pattern
+    /// - 2 unique items → distance=2 achieves ABAB pattern (best possible)
+    /// - 3 unique items → distance=2 leaves slack for other spacing axes
     /// - 10+ unique items → can use full idealGap
     ///
-    /// The formula uniqueCount-1 represents the maximum gap achievable:
-    /// with N items, you can have at most N-1 different items between repetitions.
+    /// Leave one position of slack when combining spacing axes, but never count
+    /// adjacent items as spaced when at least two choices exist.
     /// </summary>
     static int EffectiveGap(int idealGap, int uniqueCount)
     {
         if (uniqueCount <= 1) return 0;  // No spacing possible with 0 or 1 items
-        return Math.Min(idealGap, uniqueCount - 1);
+        return Math.Min(idealGap, Math.Max(2, uniqueCount - 1));
     }
 
     /// <summary>
@@ -565,7 +563,6 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         {
             return _userData.GetDueNounForms(limit: int.MaxValue)
                 .Where(f => eligibleSet.Contains(f.FormId))
-                .Take(500)
                 .Select(f => new FormMasteryData(f.FormId, f.MasteryLevel, f.NextDueUtc))
                 .ToList();
         }
@@ -573,7 +570,6 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         {
             return _userData.GetDueVerbForms(limit: int.MaxValue)
                 .Where(f => eligibleSet.Contains(f.FormId))
-                .Take(500)
                 .Select(f => new FormMasteryData(f.FormId, f.MasteryLevel, f.NextDueUtc))
                 .ToList();
         }

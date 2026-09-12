@@ -1,0 +1,74 @@
+using PaliPractice.Presentation.Practice.ViewModels.Common;
+using PaliPractice.Services.Practice;
+using PaliPractice.Services.UserData;
+
+namespace PaliPractice.Tests.Practice.Simulation;
+
+[TestFixture]
+public class SrsSchedulingTests
+{
+    [TestCase(PracticeType.Declension)]
+    [TestCase(PracticeType.Conjugation)]
+    public async Task SparseBuckets_ReceiveEqualServiceAcrossRestarts(PracticeType type)
+    {
+        var corpus = SrsSimulationTests.SyntheticCorpus(20);
+        using var sim = new SrsSimulation(corpus.Nouns, corpus.Verbs, new(SrsSimulationTests.Start));
+        var eligible = SrsSimulationTests.SyntheticEligible(type, 20);
+        foreach (var (id, i) in eligible.Order().Select((id, i) => (id, i)))
+            sim.SeedMastery(type, id, i % 2 == 0 ? 1 : 9, SrsSimulationTests.Start.UtcDateTime.AddYears(-2));
+        var levels = new List<int>();
+        for (int i = 0; i < 10; i++)
+            levels.Add((await sim.RunSession(type, 50, 1, eligible, (_, _) => true)).Answers.Single().BeforeLevel);
+        Assert.That(levels, Is.EqualTo(Enumerable.Range(0, 10).Select(i => i % 2 == 0 ? 1 : 9)));
+    }
+
+    [TestCase(PracticeType.Declension)]
+    [TestCase(PracticeType.Conjugation)]
+    public async Task OneCardRestarts_ServiceNewCardsAndEveryMasteryBucket(PracticeType type)
+    {
+        var corpus = SrsSimulationTests.SyntheticCorpus(20);
+        using var sim = new SrsSimulation(corpus.Nouns, corpus.Verbs, new(SrsSimulationTests.Start));
+        var eligible = SrsSimulationTests.SyntheticEligible(type, 20);
+        foreach (var (id, i) in eligible.Order().Take(60).Select((id, i) => (id, i)))
+            sim.SeedMastery(type, id, i % 5 * 2 + 1, SrsSimulationTests.Start.UtcDateTime.AddYears(-2));
+        var answers = new List<SrsAnswer>();
+        for (int session = 0; session < 30; session++)
+            answers.AddRange((await sim.RunSession(type, 50, 1, eligible, (_, _) => true)).Answers);
+        Assert.That(answers.Count(a => a.Source == PracticeItemSource.NewForm), Is.EqualTo(5));
+        var reviews = answers.Where(a => a.Source == PracticeItemSource.DueForReview).ToList();
+        Assert.That(reviews.GroupBy(a => (a.BeforeLevel - 1) / 2).Select(g => g.Count()),
+            Is.EquivalentTo(new[] { 5, 5, 5, 5, 5 }));
+    }
+
+    [TestCase(PracticeType.Declension)]
+    [TestCase(PracticeType.Conjugation)]
+    public async Task DueAdmission_ConsidersUrgencyBeyondFiveHundredEligibleRows(PracticeType type)
+    {
+        var corpus = SrsSimulationTests.SyntheticCorpus(150);
+        using var sim = new SrsSimulation(corpus.Nouns, corpus.Verbs, new(SrsSimulationTests.Start));
+        sim.UserData.SetSetting(type == PracticeType.Declension ? SettingsKeys.NounsLemmaMax : SettingsKeys.VerbsLemmaMax, 150);
+        var eligible = SrsSimulationTests.SyntheticEligible(type, 150);
+        var urgent = eligible.Max();
+        foreach (var id in eligible)
+            sim.SeedMastery(type, id, id == urgent ? 1 : 2,
+                SrsSimulationTests.Start.UtcDateTime.AddDays(id == urgent ? -2.5 : -3));
+        var session = await sim.RunSession(type, 50, 1, eligible, (_, _) => true);
+        Assert.That(session.DueBefore, Is.GreaterThan(500));
+        Assert.That(session.Answers.Single().FormId, Is.EqualTo(urgent));
+    }
+
+    [TestCase(PracticeType.Declension)]
+    [TestCase(PracticeType.Conjugation)]
+    public async Task TwoLemmas_AlternateWhileBothHaveCompatibleDueCards(PracticeType type)
+    {
+        var corpus = SrsSimulationTests.SyntheticCorpus(2);
+        using var sim = new SrsSimulation(corpus.Nouns, corpus.Verbs, new(SrsSimulationTests.Start));
+        var eligible = SrsSimulationTests.SyntheticEligible(type, 2);
+        foreach (var (id, i) in eligible.Order().Select((id, i) => (id, i)))
+            sim.SeedMastery(type, id, 1, SrsSimulationTests.Start.UtcDateTime.AddDays(-10).AddSeconds(i));
+        var session = await sim.RunSession(type, 50, 4, eligible, (_, _) => true);
+        var divisor = type == PracticeType.Declension ? 10000 : 100000;
+        var lemmas = session.Answers.Select(a => a.FormId / divisor).ToArray();
+        Assert.That(lemmas, Is.EqualTo(new[] { lemmas[0], lemmas[0] + 1, lemmas[0], lemmas[0] + 1 }));
+    }
+}

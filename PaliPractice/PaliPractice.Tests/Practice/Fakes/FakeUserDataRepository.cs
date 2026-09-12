@@ -11,6 +11,8 @@ namespace PaliPractice.Tests.Practice.Fakes;
 /// </summary>
 public class FakeUserDataRepository : IUserDataRepository
 {
+    public long GetPracticeCount(PracticeType type) => type == PracticeType.Declension
+        ? _nounHistory.Count : _verbHistory.Count;
     readonly Dictionary<string, string> _settings = [];
     readonly Dictionary<long, NounsFormMastery> _nounMastery = [];
     readonly Dictionary<long, VerbsFormMastery> _verbMastery = [];

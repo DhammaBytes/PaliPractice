@@ -88,6 +88,7 @@ public class DeclensionPatternFilterContractTests
         _connection = new SQLiteConnection(":memory:");
         _connection.CreateTable<UserSetting>();
         _connection.CreateTable<NounsFormMastery>();
+        _connection.CreateTable<NounsPracticeHistory>();
 
         _userData = new UserDataRepository(_connection);
         _userData.InitializeDefaultsIfNeeded();

@@ -25,7 +25,7 @@ Pre-existing Spanish/Russian resource edits are outside this task.
   SQLite repositories, a synthetic corpus and the read-only bundled dictionary.
   Exercise actual completed-card budgets, silent rebuilds, and persisted
   answers; verify replay, abandoned cards, and file-backed reopen behavior.
-- [ ] M3: Reproduce and fix bounded scheduling defects with before/after tests:
+- [x] M3: Reproduce and fix bounded scheduling defects with before/after tests:
   short-session new/review and mastery-bucket service, due admission above 500,
   and small-pool spacing/urgency. Change only policies supported by the evidence.
 - [ ] M4: Add representative noun/verb filter timelines and daily, weekly,
@@ -76,3 +76,15 @@ or changing project configuration.
   no blockers. The auto gate passed desktop/Roslyn checks, with the same
   pre-existing Spanish resource failure (3,024 passed, one failed).
   Evidence: `20260912T000853.928101Z-5462-ec88b5`; focused `m2-simulation.trx`.
+- M3: Six adversarial noun/verb tests failed against the prior scheduler:
+  zero new cards in 30 one-card sessions, urgent due cards excluded beyond 500,
+  and adjacent repeats with two compatible lemmas. They pass after deriving
+  scheduling phase from the existing history count, reserving one in six slots
+  for new cards, removing the eligible-review cap, and using distance two for
+  two-item spacing. Sparse mastery buckets also alternate across restarts.
+  Larger-pool spacing retains its existing slack: tightening it regressed the
+  existing three-lemma test. No assertions were weakened.
+- M3: 935 focused tests passed; independent review found no blockers. The auto
+  gate passed build/Roslyn checks with only the existing Spanish resource
+  failure (3,032 passed, one failed). Evidence:
+  `20260912T001540.363871Z-66460-953643`; `m3-before.trx` and `m3-after.trx`.

@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Path = System.IO.Path;
 using PaliPractice.Presentation.Practice.ViewModels.Common;
+using PaliPractice.Services.UserData.Entities;
 using PaliPractice.Tests.Practice.Builders;
 using PaliPractice.Tests.Practice.Fakes;
 
@@ -32,10 +33,14 @@ public class SrsSimulationTests
         Assert.That(abandoned.PendingFormId, Is.Not.Null);
         Assert.That(sim.AllMastery(type), Is.Empty);
         Assert.That(sim.UserData.GetRecentHistory(type), Is.Empty);
+        Assert.That(sim.UserData.GetPracticeCount(type), Is.Zero);
         var partial = await sim.RunSession(type, 50, 3, eligible, (_, _) => true);
         Assert.That(partial.Answers, Has.Count.EqualTo(3));
         Assert.That(sim.AllMastery(type), Has.Count.EqualTo(3));
         Assert.That(sim.UserData.GetRecentHistory(type), Has.Count.EqualTo(3));
+        Assert.That(sim.UserData.GetPracticeCount(type), Is.EqualTo(3));
+        var progress = sim.UserData.GetTodayProgress();
+        Assert.That(type == PracticeType.Declension ? progress.DeclensionsCompleted : progress.ConjugationsCompleted, Is.EqualTo(3));
         Assert.That(sim.Mastery(type, partial.PendingFormId!.Value), Is.Null);
     }
 
@@ -75,16 +80,16 @@ public class SrsSimulationTests
                 {
                     var eligible = SyntheticEligible(type);
                     var first = await sim.RunSession(type, 50, 3, eligible, (_, i) => i % 2 == 0);
-                    var history = JsonSerializer.Serialize(sim.UserData.GetRecentHistory(type));
+                    var history = JsonSerializer.Serialize(sim.UserData.GetRecentHistory(type).Cast<PracticeHistoryBase>());
                     if (reopen)
                     {
                         sim.Dispose();
                         sim = new SrsSimulation(corpus.Nouns, corpus.Verbs, clock, path);
                     }
-                    Assert.That(JsonSerializer.Serialize(sim.UserData.GetRecentHistory(type)), Is.EqualTo(history));
+                    Assert.That(JsonSerializer.Serialize(sim.UserData.GetRecentHistory(type).Cast<PracticeHistoryBase>()), Is.EqualTo(history));
                     clock.UtcNow = Start.AddDays(30);
                     var second = await sim.RunSession(type, 5, 8, eligible, (_, i) => i % 3 == 0);
-                    var saved = sim.UserData.GetRecentHistory(type, 100);
+                    var saved = sim.UserData.GetRecentHistory(type, 100).Cast<PracticeHistoryBase>().ToList();
                     Assert.That(saved, Has.Count.EqualTo(11));
                     Assert.That(JsonSerializer.Serialize(saved.TakeLast(3)), Is.EqualTo(history));
                     return JsonSerializer.Serialize(new { first, second, saved });

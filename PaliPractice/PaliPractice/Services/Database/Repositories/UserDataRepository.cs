@@ -228,6 +228,11 @@ public class UserDataRepository : IUserDataRepository
             : GetRecentVerbHistory(limit).Cast<IPracticeHistory>().ToList();
     }
 
+    /// <summary>Completed answers, independent of queue builds and the current filters.</summary>
+    public long GetPracticeCount(PracticeType type) => type == PracticeType.Declension
+        ? _connection.ExecuteScalar<long>("SELECT COUNT(*) FROM nouns_practice_history")
+        : _connection.ExecuteScalar<long>("SELECT COUNT(*) FROM verbs_practice_history");
+
     // === Settings ===
 
     public T GetSetting<T>(string key, T defaultValue)

@@ -42,6 +42,7 @@ public interface IUserDataRepository
     void RecordPracticeResult(long formId, PracticeType type, bool wasEasy, PracticeSnapshot? snapshot)
         => RecordPracticeResult(formId, type, wasEasy);
     List<IPracticeHistory> GetRecentHistory(PracticeType type, int limit = 50);
+    long GetPracticeCount(PracticeType type);
 
     // === Settings ===
 

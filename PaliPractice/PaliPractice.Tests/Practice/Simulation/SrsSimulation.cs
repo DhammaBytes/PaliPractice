@@ -140,6 +140,8 @@ internal sealed class SrsSimulation : IDisposable
     public FormMasteryBase? Mastery(PracticeType type, long formId) => type == PracticeType.Declension
         ? UserData.GetNounFormMastery(formId) : UserData.GetVerbFormMastery(formId);
 
+    public HashSet<long> EligibleForms(PracticeType type) => _queue.GetEligibleFormIds(type).ToHashSet();
+
     public IReadOnlyList<FormMasteryBase> AllMastery(PracticeType type) => type == PracticeType.Declension
         ? _connection.Table<NounsFormMastery>().OrderBy(f => f.FormId).ToList()
         : _connection.Table<VerbsFormMastery>().OrderBy(f => f.FormId).ToList();

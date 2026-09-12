@@ -28,7 +28,7 @@ Pre-existing Spanish/Russian resource edits are outside this task.
 - [x] M3: Reproduce and fix bounded scheduling defects with before/after tests:
   short-session new/review and mastery-bucket service, due admission above 500,
   and small-pool spacing/urgency. Change only policies supported by the evidence.
-- [ ] M4: Add representative noun/verb filter timelines and daily, weekly,
+- [x] M4: Add representative noun/verb filter timelines and daily, weekly,
   irregular, and long-return scenarios. Report actual eligible pool sizes,
   backlog/service (including unselected due cards), and repetition. Keep exact
   invariants separate from descriptive metrics and distinguish overload from
@@ -93,3 +93,17 @@ or changing project configuration.
 - M3 verification after helper extraction: desktop and all Roslyn/complexity
   checks passed, 3,032 tests passed, and only the pre-existing Spanish resource
   test failed. Evidence: `20260912T002042.863180Z-12749-33daf3`.
+- M4: All 47 simulation tests passed twice in separate processes; the 24 JSON
+  timeline reports match byte for byte. Broad sets contain 19,907 noun and
+  10,678 verb cards; defaults contain 394 and 389. Pattern/rank/grammar filters
+  exercise much smaller sparse sets. The app requires a two-rank minimum
+  window, so one-lemma scenarios use a valid window plus a pattern filter.
+  Independent review found no blockers. Replay/report instructions live in
+  `PaliPractice/PaliPractice.Tests/Practice/Simulation/README.md`; external
+  summary: `/private/tmp/pali-srs-task/simulation-report.md`.
+- M4 final verification initially passed all 3,063 tests, coverage checks,
+  Roslyn checks, and desktop build in an isolated checkout. The overall gate
+  also routes the task documentation to Python/data checks; those found that
+  the new checkout lacked its Python environment and DPD submodule. Both were
+  provisioned from existing local copies before rerunning the gate. This does
+  not change the original worktree or its pre-existing localization edits.

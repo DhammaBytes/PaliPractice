@@ -42,6 +42,8 @@ class PromotionTests(unittest.TestCase):
                     path = repository / relative
                     path.parent.mkdir(parents=True, exist_ok=True)
                     before[name] = f'old {name}'.encode() if number % 2 == 0 else None
+                    if name in ('lemma_registry.json', 'practice_registry.json') and before[name] is not None:
+                        before[name] = (self.candidate / name).read_bytes()
                     if before[name] is not None:
                         path.write_bytes(before[name])
 
@@ -56,6 +58,53 @@ class PromotionTests(unittest.TestCase):
                 for name, relative in TARGETS.items():
                     path = repository / relative
                     self.assertEqual(before[name], path.read_bytes() if path.exists() else None)
+
+    def destination_with_current_identities(self, name):
+        repository = self.root / name
+        for artifact, relative in TARGETS.items():
+            target = repository / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes((self.candidate / artifact).read_bytes())
+        return repository
+
+    def assert_identity_rejection_preserves_destination(self, repository, message):
+        before = {relative: (repository / relative).read_bytes() for relative in TARGETS.values()}
+        with self.assertRaisesRegex(InputError, message):
+            promote(self.candidate, repository, self.manifest, self.evidence)
+        self.assertEqual(before, {relative: (repository / relative).read_bytes() for relative in TARGETS.values()})
+        self.assertEqual(['lock'], sorted(path.name for path in (repository / '.local/promotion').iterdir()))
+
+    def test_promotion_cannot_remove_an_identity_allocated_after_the_baseline(self):
+        repository = self.destination_with_current_identities('newer-lemma')
+        path = repository / TARGETS['lemma_registry.json']
+        registry = json.loads(path.read_text())
+        registry['nouns']['post-release-lemma'] = registry['next_noun_id']
+        registry['next_noun_id'] += 1
+        path.write_text(json.dumps(registry))
+
+        self.assert_identity_rejection_preserves_destination(repository, 'mapping removed or reassigned')
+
+    def test_promotion_cannot_rewind_current_allocation_counters(self):
+        repository = self.destination_with_current_identities('newer-counter')
+        path = repository / TARGETS['lemma_registry.json']
+        registry = json.loads(path.read_text())
+        registry['next_noun_id'] += 1
+        path.write_text(json.dumps(registry))
+
+        self.assert_identity_rejection_preserves_destination(repository, 'allocation counter decreased')
+
+    def test_promotion_cannot_remove_a_newly_practiced_existing_lemma(self):
+        repository = self.destination_with_current_identities('newer-practice')
+        registry = json.loads((repository / TARGETS['lemma_registry.json']).read_text())
+        path = repository / TARGETS['practice_registry.json']
+        practice = json.loads(path.read_text())
+        lemma, identifier = next((lemma, identifier) for lemma, identifier in registry['nouns'].items()
+                                 if str(identifier) not in practice['choices'])
+        practice['choices'][str(identifier)] = dict(lemma=lemma, kind='nouns', anchor_headword_id=999999,
+                                                    pattern='a masc', stem='test', gender=1)
+        path.write_text(json.dumps(practice))
+
+        self.assert_identity_rejection_preserves_destination(repository, 'practice paradigm removed or reassigned')
 
     def test_committed_set_is_retained_on_recovery(self):
         repository = self.root / 'committed'

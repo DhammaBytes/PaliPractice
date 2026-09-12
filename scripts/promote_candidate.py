@@ -13,6 +13,7 @@ from pathlib import Path
 
 from extraction.candidate import ROOT, validate_candidate
 from extraction.inputs import InputError, load_manifest, read_json, sha256
+from extraction.identity import require_historical_registry, require_practice_registry
 from semantic_evidence import verify as verify_semantics
 
 TARGETS = {
@@ -130,6 +131,19 @@ def protect_input_paths(repository: Path, inputs: Path, english: Path | None, tr
         raise InputError('Promotion inputs overlap output targets; snapshot pinned inputs first')
 
 
+def protect_destination_identities(candidate: Path, repository: Path):
+    """Preserve identities allocated after the frozen compatibility baseline too."""
+    registry = read_json(candidate / 'lemma_registry.json')
+    current_registry = target_path(repository, 'lemma_registry.json')
+    if current_registry.exists():
+        require_historical_registry(registry, read_json(current_registry))
+    current_practice = target_path(repository, 'practice_registry.json')
+    if current_practice.exists():
+        require_practice_registry(read_json(candidate / 'practice_registry.json'),
+                                  read_json(current_practice), registry,
+                                  read_json(candidate / 'paradigm_corrections.json'))
+
+
 def promote(candidate: Path, repository: Path, inputs: Path, evidence: Path, after_write=lambda _: None,
             *, english: Path | None = None, translations: Path | None = None):
     candidate, repository = candidate.resolve(), repository.resolve()
@@ -138,6 +152,7 @@ def promote(candidate: Path, repository: Path, inputs: Path, evidence: Path, aft
     expected = dict(outputs, **{'candidate.json': sha256(candidate / manifest_name)})
     with locked(repository) as state:
         recover_locked(repository, state)
+        protect_destination_identities(candidate, repository)
         files = {}
         for name in TARGETS:
             target = target_path(repository, name)

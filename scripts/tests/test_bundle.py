@@ -79,6 +79,8 @@ class BundleTests(unittest.TestCase):
                 for number, (name, path) in enumerate(TARGETS.items()):
                     (target / path).parent.mkdir(parents=True, exist_ok=True)
                     before[path] = f'original {name}'.encode() if number % 2 else None
+                    if name in ('lemma_registry.json', 'practice_registry.json') and before[path] is not None:
+                        before[path] = (self.candidate / name).read_bytes()
                     if before[path] is not None:
                         (target / path).write_bytes(before[path])
                 def interrupt(name):

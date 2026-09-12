@@ -142,6 +142,9 @@ internal sealed class SrsSimulation : IDisposable
 
     public HashSet<long> EligibleForms(PracticeType type) => _queue.GetEligibleFormIds(type).ToHashSet();
 
+    public IReadOnlyList<PracticeItem> BuildQueue(PracticeType type, int count, DateTime seedDate) =>
+        _queue.BuildQueue(type, count, seedDate);
+
     public IReadOnlyList<FormMasteryBase> AllMastery(PracticeType type) => type == PracticeType.Declension
         ? _connection.Table<NounsFormMastery>().OrderBy(f => f.FormId).ToList()
         : _connection.Table<VerbsFormMastery>().OrderBy(f => f.FormId).ToList();

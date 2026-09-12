@@ -102,3 +102,27 @@ The first eligible-review cap was removed, but this is not a new global urgency
 policy: mastery buckets still share review turns, with due order within buckets
 subject to spacing. No per-ending mastery, adaptive workload forecast, latent
 memory model, general event framework, or nightly service is introduced.
+
+## Compare queue quality and randomization
+
+`FullyQualifiedName~SrsQueueQualityTests` runs 42 real-corpus fixed-state cases
+(two practice types, seven filters, three mastery states) across 24 explicit date
+seeds, plus four persisted short-session cases on a synthetic corpus. The clock
+and mastery remain fixed while the date seed changes. Every queue must replay
+exactly for the same seed and contain eligible, distinct forms. Reports include
+eligible inventories, initial mastery/due times, parent-pattern labels, and full
+60-card queues. Inspect the first 50 cards for a completed goal, and shorter
+prefixes for abandonment. The one-combo noun filter selects masculine nominative
+singular; the verb filter selects active present first-person singular.
+
+Use source mix, actual gaps, lemma/combo/pattern repetition, new-card cohort
+exposure, and cross-seed set overlap as separate measurements. Parent-pattern
+labels use production grammar helpers only for reporting, while eligibility is
+checked by the existing independent corpus oracle. Pattern balancing and review
+urgency deliberately prevent uniform random selection. An unchanged due-only
+queue across seeds is expected; it is not a failed shuffle. Small pools can have
+identical selected sets with different orders.
+
+The pre-refactor comparison and the isolated slot-plan experiment are documented
+in `Specs/SRS-pre-refactor-comparison.md`. Historical queue variants remain in
+external evidence; the app has no runtime scheduler switch.

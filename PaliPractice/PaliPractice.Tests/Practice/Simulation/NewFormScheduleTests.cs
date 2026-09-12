@@ -7,6 +7,25 @@ namespace PaliPractice.Tests.Practice.Simulation;
 public class NewFormScheduleTests
 {
     [Test]
+    public void CadenceDoesNotReuseTheWordShuffleStream(
+        [Values(PracticeType.Declension, PracticeType.Conjugation)] PracticeType type)
+    {
+        var matches = 0;
+        for (int day = 0; day < 24; day++)
+        {
+            var date = SrsSimulationTests.Start.UtcDateTime.AddDays(day);
+            var days = (int)(date.Date - DateTime.UnixEpoch).TotalDays;
+            int[] gaps = [5, 6, 6, 6, 7];
+            new Random(unchecked(days * 397 ^ (int)type)).Shuffle(gaps);
+            var positions = NewFormSchedule.Build(0, 30, type, date).Slots
+                .Select((isNew, i) => (isNew, i)).Where(x => x.isNew).Select(x => x.i).ToArray();
+            if (positions.Prepend(-1).Zip(positions, (a, b) => b - a).SequenceEqual(gaps))
+                matches++;
+        }
+        Assert.That(matches, Is.LessThan(24), "Cadence must not reuse the word RNG prefix for every date");
+    }
+
+    [Test]
     public async Task FirstAnswerSeedRemainsStableAcrossTimeFiltersAndReopening(
         [Values(PracticeType.Declension, PracticeType.Conjugation)] PracticeType type)
     {

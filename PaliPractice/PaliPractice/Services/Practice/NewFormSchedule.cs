@@ -36,7 +36,9 @@ internal static class NewFormSchedule
         // A balanced shuffled block keeps the mean admission rate unchanged
         // without requiring a saved RNG state or replaying all past answers.
         int[] gaps = [5, 6, 6, 6, 7];
-        var seed = unchecked(((int)(block ^ (block >> 32)) * 397 ^ days) * 397 ^ (int)type);
+        // "SRSC" separates this stream from the queue's date/type word seed,
+        // including the first block before any practice history exists.
+        var seed = unchecked(((int)(block ^ (block >> 32)) * 397 ^ days) * 397 ^ (int)type ^ 0x53525343);
         new Random(seed).Shuffle(gaps);
         var position = -1;
         for (int i = 0; i < gaps.Length; i++)

@@ -21,7 +21,7 @@ Pre-existing Spanish/Russian resource edits are outside this task.
 - [x] M1: Add an optional production clock to queue and repository operations;
   preserve system-clock defaults and existing scheduling. Test exact due
   boundaries, recorded timestamps/history, and local progress-day rollover.
-- [ ] M2: Add a small deterministic runner using production providers and
+- [x] M2: Add a small deterministic runner using production providers and
   SQLite repositories, a synthetic corpus and the read-only bundled dictionary.
   Exercise actual completed-card budgets, silent rebuilds, and persisted
   answers; verify replay, abandoned cards, and file-backed reopen behavior.
@@ -69,3 +69,10 @@ or changing project configuration.
   registered the existing 10.0.303.1 workload set there. Use this directory first
   in `PATH` and as `DOTNET_ROOT` for subsequent gates. System installation and
   project SDK/dependency configuration remain unchanged.
+- M2: Eight runner tests passed for both practice types: abandonment, completed
+  budgets, silent rebuilds, exhausted/cooldown pools, file reopening, and replay
+  on the bundled corpus. Independent SQL supplies expected default eligibility;
+  each answer must also have an attested inflection. Independent review found
+  no blockers. The auto gate passed desktop/Roslyn checks, with the same
+  pre-existing Spanish resource failure (3,024 passed, one failed).
+  Evidence: `20260912T000853.928101Z-5462-ec88b5`; focused `m2-simulation.trx`.

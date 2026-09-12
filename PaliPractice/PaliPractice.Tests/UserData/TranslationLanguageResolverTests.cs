@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text.Json;
 using PaliPractice.Services.UserData;
 
 namespace PaliPractice.Tests.UserData;
@@ -6,6 +7,24 @@ namespace PaliPractice.Tests.UserData;
 [TestFixture]
 public class TranslationLanguageResolverTests
 {
+    [TestCase("en-US")]
+    [TestCase("ru-RU")]
+    [TestCase("es-ES")]
+    [TestCase("es-MX")]
+    public void StartupConfigurationPreservesSupportedTranslationLocales(string locale)
+    {
+        var path = System.IO.Path.Combine(TestPaths.RepositoryRoot, "PaliPractice", "PaliPractice", "appsettings.json");
+        using var configuration = JsonDocument.Parse(File.ReadAllText(path));
+        var cultures = configuration.RootElement.GetProperty("LocalizationConfiguration")
+            .GetProperty("Cultures").EnumerateArray().Select(value => value.GetString()).ToArray();
+        var deviceCulture = new CultureInfo(locale);
+
+        cultures.Should().Contain(deviceCulture.TwoLetterISOLanguageName,
+            "startup must preserve the device language before creating dictionary preferences");
+        TranslationLanguageResolver.GetInitialPreference(deviceCulture).Should().Be(
+            TranslationLanguageResolver.PreferenceFromLanguageCode(deviceCulture.TwoLetterISOLanguageName));
+    }
+
     [Test]
     public void EnglishPreference_UsesEnglish()
     {

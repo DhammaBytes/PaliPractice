@@ -63,6 +63,9 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     // Track if we've already shown the daily goal congratulations this session
     bool _dailyGoalNotified;
+    readonly SemaphoreSlim _sessionGate = new(1, 1);
+    Dictionary<string, string>? _sessionSettings;
+    int _sessionDay;
 
     // Commands - stored as fields to maintain reference for NotifyCanExecuteChanged
     readonly RelayCommand _hardCommand;
@@ -142,7 +145,56 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 #endif
 
     /// <summary>Called by the page after subscribing to session notifications.</summary>
-    public virtual Task StartAsync(CancellationToken ct = default) => InitializeAsync(ct);
+    public virtual async Task StartAsync(CancellationToken ct = default)
+    {
+        try
+        {
+            await _sessionGate.WaitAsync(ct);
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested) { return; }
+
+        try
+        {
+            var day = UserData.GetTodayProgress().Date;
+            var settings = GetSessionSettings();
+            DailyGoal.Refresh();
+            if (_sessionDay == day && _sessionSettings != null &&
+                _sessionSettings.Count == settings.Count &&
+                _sessionSettings.All(pair => settings.TryGetValue(pair.Key, out var value) && value == pair.Value) &&
+                _provider.Current != null && FlashCard.ErrorMessage.Length == 0)
+            {
+                RefreshMeanings();
+                return;
+            }
+
+            if (_sessionDay != day)
+                _dailyGoalNotified = UserData.IsDailyGoalMet(CurrentPracticeType);
+            FlashCard.Reset();
+            FlashCard.Question = string.Empty;
+            FlashCard.Root = string.Empty;
+            FlashCard.ErrorMessage = string.Empty;
+            AlternativeForms = string.Empty;
+            ExampleCarousel.Reset();
+            await InitializeAsync(ct);
+            if (!ct.IsCancellationRequested && FlashCard.ErrorMessage.Length == 0)
+            {
+                _sessionDay = day;
+                // Queue construction may repair invalid settings.
+                _sessionSettings = GetSessionSettings();
+            }
+        }
+        finally
+        {
+            _sessionGate.Release();
+        }
+    }
+
+    Dictionary<string, string> GetSessionSettings()
+    {
+        var prefix = CurrentPracticeType == PracticeType.Declension ? "nouns." : "verbs.";
+        return UserData.GetAllSettings().Where(pair => pair.Key.StartsWith(prefix, StringComparison.Ordinal))
+            .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal);
+    }
 
     protected async Task InitializeAsync(CancellationToken ct = default)
     {
@@ -151,6 +203,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
             FlashCard.IsLoading = true;
 
             await _provider.LoadAsync(ct);
+            ct.ThrowIfCancellationRequested();
             if (_provider.TotalCount == 0)
             {
                 QueueExhausted?.Invoke(this, EventArgs.Empty);

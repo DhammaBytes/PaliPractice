@@ -8,6 +8,8 @@ using PaliPractice.Services.Feedback;
 using PaliPractice.Services.Grammar;
 using PaliPractice.Services.Practice;
 using PaliPractice.Tests.Practice.Fakes;
+using PaliPractice.Tests.Practice.Builders;
+using PaliPractice.Services.UserData;
 
 namespace PaliPractice.Tests.Practice;
 
@@ -43,6 +45,101 @@ public class PracticeSessionLifecycleTests
         vm.EasyCommand.CanExecute(null).Should().BeFalse();
         vm.HardCommand.CanExecute(null).Should().BeFalse();
         db.UserData.GetPracticeCount(type).Should().Be(0);
+    }
+
+    [Test]
+    public async Task UnchangedSessionPreservesRevealedCard()
+    {
+        var (vm, provider, _) = CreateNounSession();
+        await vm.StartAsync();
+        var formId = provider.Current!.FormId;
+        vm.FlashCard.ErrorMessage.Should().BeEmpty();
+        vm.RevealCommand.Execute(null);
+
+        await vm.StartAsync();
+
+        provider.Current!.FormId.Should().Be(formId);
+        vm.FlashCard.IsRevealed.Should().BeTrue();
+        vm.EasyCommand.CanExecute(null).Should().BeTrue();
+    }
+
+    [Test]
+    public async Task ChangedFiltersAndGoalRefreshCachedSession()
+    {
+        var (vm, provider, db) = CreateNounSession();
+        await vm.StartAsync();
+        db.UserData.SetSetting(SettingsKeys.NounsCases, "2");
+        db.UserData.SetSetting(SettingsKeys.NounsDailyGoal, 10);
+
+        await vm.StartAsync();
+
+        Declension.ParseId(provider.Current!.FormId).Case.Should().Be(Case.Accusative);
+        vm.DailyGoal.DailyGoalText.Should().Be("0/10");
+        vm.FlashCard.ErrorMessage.Should().BeEmpty();
+        vm.RevealCommand.CanExecute(null).Should().BeTrue();
+    }
+
+    [Test]
+    public async Task ChangedLogicalDayRefreshesProgressAndCard()
+    {
+        var (vm, _, db) = CreateNounSession();
+        await vm.StartAsync();
+        vm.RevealCommand.Execute(null);
+        var progress = db.UserData.GetTodayProgress();
+        progress.Date = PaliPractice.Services.UserData.Entities.DailyProgress.ToDateKey(
+            PaliPractice.Services.UserData.Entities.DailyProgress.FromDateKey(progress.Date).AddDays(1));
+        progress.DeclensionsCompleted = 0;
+
+        await vm.StartAsync();
+
+        vm.FlashCard.IsRevealed.Should().BeFalse();
+        vm.RevealCommand.CanExecute(null).Should().BeTrue();
+    }
+
+    [Test]
+    public async Task ExhaustedSessionCanRecoverAfterSettingsChange()
+    {
+        var (vm, provider, db) = CreateNounSession();
+        var forms = new PracticeQueueBuilder(db).BuildQueue(PracticeType.Declension, 100);
+        foreach (var form in forms)
+            db.FakeUserData.AddNounFormMastery(form.FormId, 9, DateTime.UtcNow);
+        var exhausted = 0;
+        vm.QueueExhausted += (_, _) => exhausted++;
+        await vm.StartAsync();
+        exhausted.Should().Be(1);
+        provider.Current.Should().BeNull();
+
+        db.UserData.SetSetting(SettingsKeys.NounsCases, "2");
+        await vm.StartAsync();
+
+        provider.Current.Should().NotBeNull();
+        vm.FlashCard.Question.Should().NotBeEmpty();
+        vm.RevealCommand.CanExecute(null).Should().BeTrue();
+    }
+
+    static (PracticeViewModelBase Vm, DeclensionPracticeProvider Provider, FakeDatabaseService Db) CreateNounSession()
+    {
+        var db = new TestScenarioBuilder().WithNounRange(1, 20)
+            .WithCases(Case.Nominative, Case.Accusative).WithNumbers(Number.Plural)
+            .WithMascPatterns(NounPattern.AMasc).AddNouns(20, NounPattern.AMasc, Gender.Masculine).Build();
+        db.UserData.SetSetting(SettingsKeys.NounsCases, "1");
+        var provider = new DeclensionPracticeProvider(new PracticeQueueBuilder(db), db);
+        var vm = new SessionViewModel(provider, db);
+        return (vm, provider, db);
+    }
+
+    // The shared session logic needs no native theme or badge rendering.
+    sealed class SessionViewModel(IPracticeProvider provider, FakeDatabaseService db)
+        : PracticeViewModelBase(provider, db.UserData, new FlashCardViewModel(), null!, new NoStoreReview(), NullLogger.Instance)
+    {
+        public override PracticeType PracticeTypePublic => PracticeType.Declension;
+        protected override PracticeType CurrentPracticeType => PracticeType.Declension;
+        public override System.Windows.Input.ICommand GoToSettingsCommand => null!;
+        protected override void PrepareCardAnswer(ILemma lemma, object parameters) { }
+        protected override string GetInflectedForm() => "devā";
+        protected override string GetInflectedEnding() => "ā";
+        protected override IReadOnlyList<string> GetAllInflectedForms() => ["devā"];
+        protected override string GetAlternativeForms() => string.Empty;
     }
 
     sealed class NoStoreReview : IStoreReviewService

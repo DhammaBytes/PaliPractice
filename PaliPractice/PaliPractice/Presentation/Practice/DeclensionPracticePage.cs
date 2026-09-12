@@ -10,12 +10,13 @@ namespace PaliPractice.Presentation.Practice;
 public sealed partial class DeclensionPracticePage : Page
 {
     DeclensionPracticeViewModel? _viewModel;
+    CancellationTokenSource? _activation;
 
     protected override void OnNavigatedTo(Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
-        if (DataContext is DeclensionPracticeViewModel vm)
-            vm.RefreshMeanings();
+        _activation = new CancellationTokenSource();
+        AttachViewModel(DataContext as DeclensionPracticeViewModel);
     }
 
     public DeclensionPracticePage()
@@ -23,7 +24,6 @@ public sealed partial class DeclensionPracticePage : Page
         var elements = new ResponsiveElements();
         var heightClass = LayoutConstants.GetCurrentHeightClass();
 
-        Unloaded += OnUnloaded;
         DataContextChanged += OnDataContextChanged;
 
         DeclensionPracticePageMarkup.DataContext<DeclensionPracticeViewModel>(this, (page, _) => page
@@ -36,33 +36,39 @@ public sealed partial class DeclensionPracticePage : Page
             hc => PracticePageBuilder.ApplyResponsiveValues(elements, hc));
     }
 
-    void OnUnloaded(object sender, RoutedEventArgs e)
+    protected override void OnNavigatedFrom(Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
     {
-        if (_viewModel != null)
-        {
-            _viewModel.QueueExhausted -= OnQueueExhausted;
-            _viewModel.DailyGoalReached -= OnDailyGoalReached;
-            _viewModel = null;
-        }
+        _activation?.Cancel();
+        _activation?.Dispose();
+        _activation = null;
+        AttachViewModel(null);
+        base.OnNavigatedFrom(e);
     }
 
     void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
     {
+        if (_activation != null)
+            AttachViewModel(args.NewValue as DeclensionPracticeViewModel);
+    }
+
+    void AttachViewModel(DeclensionPracticeViewModel? vm)
+    {
         if (_viewModel != null)
         {
             _viewModel.QueueExhausted -= OnQueueExhausted;
             _viewModel.DailyGoalReached -= OnDailyGoalReached;
         }
+        _viewModel = vm;
+        if (vm == null || _activation == null) return;
 
-        if (args.NewValue is DeclensionPracticeViewModel vm)
+        vm.QueueExhausted += OnQueueExhausted;
+        vm.DailyGoalReached += OnDailyGoalReached;
+        var ct = _activation.Token;
+        DispatcherQueue.TryEnqueue(async () =>
         {
-            _viewModel = vm;
-            _viewModel.QueueExhausted += OnQueueExhausted;
-            _viewModel.DailyGoalReached += OnDailyGoalReached;
-            // Navigation assigns DataContext after constructing the view model.
-            // Start only after handlers are attached and the visual tree is ready.
-            DispatcherQueue.TryEnqueue(async () => await vm.StartAsync());
-        }
+            if (!ct.IsCancellationRequested && ReferenceEquals(_viewModel, vm))
+                await vm.StartAsync(ct);
+        });
     }
 
     async void OnQueueExhausted(object? sender, EventArgs e)

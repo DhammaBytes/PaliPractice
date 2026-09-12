@@ -128,6 +128,47 @@ public class PracticeSessionLifecycleTests
         return (vm, provider, db);
     }
 
+    [TestCase(1, 9, "exhausted")]
+    [TestCase(2, 9, "goal")]
+    [TestCase(1, 0, "exhausted")]
+    public async Task RatingProducesOneCompletionOutcome(int cardCount, int completed, string expected)
+    {
+        var db = new FakeDatabaseService();
+        db.UserData.SetSetting(SettingsKeys.NounsDailyGoal, 10);
+        for (var i = 0; i < completed; i++)
+            db.UserData.IncrementProgress(PracticeType.Declension);
+        var provider = new FixedProvider(cardCount);
+        var vm = new SessionViewModel(provider, db);
+        var outcomes = new List<string>();
+        vm.QueueExhausted += (_, _) => outcomes.Add("exhausted");
+        vm.DailyGoalReached += (_, _) => outcomes.Add("goal");
+        await vm.StartAsync();
+        vm.RevealCommand.Execute(null);
+
+        vm.EasyCommand.Execute(null);
+
+        outcomes.Should().Equal(expected);
+        db.UserData.GetTodayProgress().DeclensionsCompleted.Should().Be(completed + 1);
+        vm.EasyCommand.CanExecute(null).Should().BeFalse();
+        vm.RevealCommand.CanExecute(null).Should().Be(cardCount > 1);
+    }
+
+    sealed class FixedProvider(int count) : IPracticeProvider
+    {
+        int _index;
+        public PracticeItem? Current => _index < count
+            ? PracticeItem.NewForm(Declension.ResolveId(10001 + _index, Case.Nominative, Gender.Masculine, Number.Plural, 0),
+                PracticeType.Declension, 10001 + _index) : null;
+        public int CurrentIndex => _index;
+        public int TotalCount => count;
+        public bool HasNext => _index + 1 < count;
+        public Task LoadAsync(CancellationToken ct = default) { _index = 0; return Task.CompletedTask; }
+        public bool MoveNext() => ++_index < count;
+        public ILemma? GetCurrentLemma() => Current == null ? null :
+            FakeLemma.CreateNoun(10001 + _index, "deva", Gender.Masculine, NounPattern.AMasc);
+        public object GetCurrentParameters() => (Case.Nominative, Gender.Masculine, Number.Plural);
+    }
+
     // The shared session logic needs no native theme or badge rendering.
     sealed class SessionViewModel(IPracticeProvider provider, FakeDatabaseService db)
         : PracticeViewModelBase(provider, db.UserData, new FlashCardViewModel(), null!, new NoStoreReview(), NullLogger.Instance)

@@ -330,18 +330,23 @@ public abstract partial class PracticeViewModelBase : ObservableObject
             this, data: new InflectionTableNavigationData(lemma, CurrentPracticeType));
     }
 
-    void MarkAsHard()
-    {
-        if (!CanRateCard) return;
-        RecordResult(wasEasy: false);
-        MoveToNextCard();
-    }
+    void MarkAsHard() => RateCard(wasEasy: false);
+    void MarkAsEasy() => RateCard(wasEasy: true);
 
-    void MarkAsEasy()
+    void RateCard(bool wasEasy)
     {
         if (!CanRateCard) return;
-        RecordResult(wasEasy: true);
-        MoveToNextCard();
+        RecordResult(wasEasy);
+        var goalReached = !_dailyGoalNotified && UserData.IsDailyGoalMet(CurrentPracticeType);
+        if (goalReached)
+            _dailyGoalNotified = true;
+
+        // Exhaustion owns the final-card outcome; Continue requires another card.
+        if (MoveToNextCard() && goalReached)
+        {
+            Logger.LogInformation("Daily goal reached!");
+            DailyGoalReached?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     void RecordResult(bool wasEasy)
@@ -363,28 +368,22 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         UserData.IncrementProgress(CurrentPracticeType);
         DailyGoal.Refresh();
 
-        // Check if daily goal was just reached (first time this session)
-        if (!_dailyGoalNotified && UserData.IsDailyGoalMet(CurrentPracticeType))
-        {
-            _dailyGoalNotified = true;
-            Logger.LogInformation("Daily goal reached!");
-            DailyGoalReached?.Invoke(this, EventArgs.Empty);
-        }
     }
 
-    void MoveToNextCard()
+    bool MoveToNextCard()
     {
         if (!_provider.MoveNext())
         {
             Logger.LogInformation("Practice queue exhausted");
             UpdateNavigationState();
             QueueExhausted?.Invoke(this, EventArgs.Empty);
-            return;
+            return false;
         }
 
         FlashCard.Reset();
         ExampleCarousel.Reset();
         DisplayCurrentCard();
         UpdateNavigationState();
+        return true;
     }
 }

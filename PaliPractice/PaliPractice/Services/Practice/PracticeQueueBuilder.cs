@@ -313,9 +313,8 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
     /// overdue first). So we get diversity across levels while still prioritizing
     /// the most urgent items within each level group.
     ///
-    /// SWAP TECHNIQUE: When FindFormWithConstraints picks an item at index N > startIdx
-    /// (skipping items that violate spacing), we swap it to startIdx and advance.
-    /// This avoids O(n) removal while maintaining bucket order for remaining items.
+    /// When spacing requires a later item, move it to the consumed position while
+    /// preserving the due order of skipped items. The candidate scan bounds the shift.
     /// </summary>
     PracticeItem? TakeReviewForm(
         List<List<FormMasteryData>> buckets,
@@ -347,10 +346,10 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
             if (form != null)
             {
-                // Swap selected item to the "consumed" position and advance the index.
-                // This marks the item as used without removing it from the list.
-                if (foundIdx != startIdx)
-                    (bucket[startIdx], bucket[foundIdx]) = (bucket[foundIdx], bucket[startIdx]);
+                // Keep skipped reviews in urgency order for subsequent selections.
+                for (var index = foundIdx; index > startIdx; index--)
+                    bucket[index] = bucket[index - 1];
+                bucket[startIdx] = form;
                 bucketIndices[bucketIdx]++;
 
                 // Advance round-robin so next call starts with the following bucket

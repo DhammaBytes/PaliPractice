@@ -9,6 +9,29 @@ public class SrsSchedulingTests
 {
     [TestCase(PracticeType.Declension)]
     [TestCase(PracticeType.Conjugation)]
+    public async Task SpacingSkip_PreservesUrgencyOfUnselectedReviews(PracticeType type)
+    {
+        var corpus = SrsSimulationTests.SyntheticCorpus(2);
+        using var sim = new SrsSimulation(corpus.Nouns, corpus.Verbs, new(SrsSimulationTests.Start));
+        var eligible = SrsSimulationTests.SyntheticEligible(type, 2);
+        var divisor = type == PracticeType.Declension ? 10000 : 100000;
+        var lemmas = eligible.Order().GroupBy(id => id / divisor).Select(g => g.Take(4).ToArray()).ToArray();
+        var active = lemmas.SelectMany(ids => ids).ToHashSet();
+        foreach (var (id, i) in eligible.Order().Select((id, i) => (id, i)))
+            sim.SeedMastery(type, id, active.Contains(id) ? 1 : 11,
+                SrsSimulationTests.Start.UtcDateTime.AddDays(-10).AddSeconds(i));
+
+        var session = await sim.RunSession(type, 50, 5, eligible, (_, _) => true);
+        // A1, B2, A3, B1 satisfy the same spacing in either implementation.
+        // At position 4 both A2 and A4 fit, but A2 became due earlier.
+        Assert.That(session.Answers.Take(4).Select(a => a.FormId),
+            Is.EqualTo(new[] { lemmas[0][0], lemmas[1][1], lemmas[0][2], lemmas[1][0] }));
+        Assert.That(session.Answers[4].FormId, Is.EqualTo(lemmas[0][1]),
+            "Skipping an urgent card for spacing must not put it behind a newer compatible review");
+    }
+
+    [TestCase(PracticeType.Declension)]
+    [TestCase(PracticeType.Conjugation)]
     public async Task SparseBuckets_ReceiveEqualServiceAcrossRestarts(PracticeType type)
     {
         var corpus = SrsSimulationTests.SyntheticCorpus(20);

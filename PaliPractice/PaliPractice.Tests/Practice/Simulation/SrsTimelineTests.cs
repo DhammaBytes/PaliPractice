@@ -4,6 +4,7 @@ using System.Text.Json;
 using Path = System.IO.Path;
 using PaliPractice.Presentation.Practice.ViewModels.Common;
 using PaliPractice.Services.Practice;
+using PaliPractice.Services.UserData.Entities;
 
 namespace PaliPractice.Tests.Practice.Simulation;
 
@@ -19,7 +20,16 @@ public class SrsTimelineTests
     }
 
     [TestCaseSource(nameof(Scenarios))]
-    public async Task Timeline(PracticeType type, string name, int seed)
+    public Task Timeline(PracticeType type, string name, int seed) =>
+        RunTimeline(type, name, seed, SrsStudentProfile.Legacy);
+
+    [Test]
+    public Task ExtendedTimeline(
+        [Values(PracticeType.Declension, PracticeType.Conjugation)] PracticeType type,
+        [Values(SrsStudentProfile.AlwaysEasy, SrsStudentProfile.WeakPlural)] SrsStudentProfile profile,
+        [Values(17, 83)] int seed) => RunTimeline(type, "daily", seed, profile, 365);
+
+    static async Task RunTimeline(PracticeType type, string name, int seed, SrsStudentProfile profile, int? days = null)
     {
         using var corpus = new BundledSrsCorpus();
         var start = SrsSimulationTests.Start.AddDays(seed);
@@ -28,14 +38,15 @@ public class SrsTimelineTests
         var points = new List<TimelinePoint>();
         var priorEligible = new HashSet<long>();
         var previousEnd = start.UtcDateTime;
-        double dueCardDays = 0;
-        foreach (var step in Steps(type, name, seed))
+        var debt = new double[5];
+        var priorDue = new HashSet<long>();
+        var answer = SrsStudent.Answers(profile, type, name, seed);
+        foreach (var step in Steps(type, name, seed, days))
         {
             sim.Clock.UtcNow = start.AddDays(step.Day);
             var now = sim.Clock.UtcNow.UtcDateTime;
             // Exact debt between sessions while the prior filter remains active.
-            dueCardDays += sim.AllMastery(type).Where(m => priorEligible.Contains(m.FormId) && m.MasteryLevel is >= 1 and <= 10)
-                .Sum(m => Math.Max(0, (now - (m.NextDueUtc > previousEnd ? m.NextDueUtc : previousEnd)).TotalDays));
+            SrsBacklog.AccumulateDebt(debt, sim.AllMastery(type), priorEligible, previousEnd, now);
             var masteryBefore = MasteryFingerprint(sim, type);
             var answersBefore = sim.UserData.GetPracticeCount(type);
             step.Filter.Apply(sim.UserData, type);
@@ -45,29 +56,38 @@ public class SrsTimelineTests
             Assert.That(sim.EligibleForms(type), Is.EquivalentTo(eligible), step.Filter.Name);
             Assert.That(MasteryFingerprint(sim, type), Is.EqualTo(masteryBefore), "Filters must not rewrite mastery");
             Assert.That(sim.UserData.GetPracticeCount(type), Is.EqualTo(answersBefore));
-            var due = sim.AllMastery(type).Where(m => eligible.Contains(m.FormId) && m.MasteryLevel is >= 1 and <= 10 && m.NextDueUtc <= now).ToList();
-            var session = await sim.RunSession(type, step.Goal, step.Budget, eligible,
-                (item, _) => name == "daily" || (name != "short" && (item.FormId / 10 + seed) % 4 != 0));
+            var due = Due(sim, type, eligible);
+            var session = await sim.RunSession(type, step.Goal, step.Budget, eligible, answer);
             var served = session.Answers.Select(a => a.FormId).ToHashSet();
             var stillWaiting = due.Where(m => !served.Contains(m.FormId)).Select(m => m.FormId).ToHashSet();
             foreach (var id in waiting.Keys.Except(stillWaiting).ToArray()) waiting.Remove(id);
             foreach (var id in stillWaiting) waiting[id] = waiting.GetValueOrDefault(id) + 1;
             var maxOverdue = due.Count == 0 ? 0 : due.Max(m => (now - m.NextDueUtc).TotalDays);
+            var dueAfter = Due(sim, type, eligible);
+            var buckets = SrsBacklog.Capture(due, dueAfter, priorDue, session.Answers, waiting, debt, now);
+            Assert.That(buckets.Sum(b => b.DueBefore), Is.EqualTo(session.DueBefore));
+            Assert.That(buckets.Sum(b => b.DueAfter), Is.EqualTo(session.DueAfter));
+            Assert.That(buckets.Sum(b => b.Served), Is.EqualTo(session.Answers.Count(a => a.Source == PracticeItemSource.DueForReview)));
             points.Add(new TimelinePoint(step.Day, step.Filter, step.Budget, maxOverdue,
-                waiting.Values.DefaultIfEmpty().Max(), session));
+                waiting.Values.DefaultIfEmpty().Max(), session, buckets));
             priorEligible = eligible;
+            priorDue = dueAfter.Select(m => m.FormId).ToHashSet();
             previousEnd = sim.Clock.UtcNow.UtcDateTime;
         }
-        WriteReport(type, name, seed, points, dueCardDays);
+        WriteReport(type, name, seed, profile, points, debt.Sum());
     }
+
+    static List<FormMasteryBase> Due(SrsSimulation sim, PracticeType type, IReadOnlySet<long> eligible) =>
+        sim.AllMastery(type).Where(m => eligible.Contains(m.FormId) && m.MasteryLevel is >= 1 and <= 10 &&
+            m.NextDueUtc <= sim.Clock.UtcNow.UtcDateTime).ToList();
 
     static string MasteryFingerprint(SrsSimulation sim, PracticeType type) => JsonSerializer.Serialize(
         sim.AllMastery(type).Select(m => new { m.FormId, m.MasteryLevel, m.PreviousLevel, m.LastPracticedUtc }));
 
-    static IEnumerable<Step> Steps(PracticeType type, string name, int seed)
+    static IEnumerable<Step> Steps(PracticeType type, string name, int seed, int? days)
     {
         var attendance = new Random(seed); // Separate from the date-seeded production queue.
-        var total = name switch { "daily" or "short" => 90, "weekly-small" => 26, "long-return" => 6, _ => 30 };
+        var total = days ?? (name switch { "daily" or "short" => 90, "weekly-small" => 26, "long-return" => 6, _ => 30 });
         int day = 0;
         for (int visit = 0; visit < total; visit++)
         {
@@ -100,7 +120,8 @@ public class SrsTimelineTests
         };
     }
 
-    static void WriteReport(PracticeType type, string name, int seed, List<TimelinePoint> points, double dueCardDays)
+    static void WriteReport(PracticeType type, string name, int seed, SrsStudentProfile profile,
+        List<TimelinePoint> points, double dueCardDays)
     {
         var trace = JsonSerializer.Serialize(points);
         var answers = points.SelectMany(p => p.Session.Answers).ToList();
@@ -110,6 +131,9 @@ public class SrsTimelineTests
         var report = new
         {
             Scenario = name, Type = type.ToString(), Seed = seed,
+            ReportVersion = 2, LearnerProfile = profile.ToString(),
+            SchedulerSha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(Path.Combine(TestPaths.RepositoryRoot,
+                "PaliPractice", "PaliPractice", "Services", "Practice", "PracticeQueueBuilder.cs")))),
             DictionarySha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(TestPaths.PaliDbPath))),
             TraceSha256 = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(trace))),
             Summary = new { Sessions = points.Count, Answers = answers.Count,
@@ -128,7 +152,8 @@ public class SrsTimelineTests
         var directory = Environment.GetEnvironmentVariable("PALIPRACTICE_SRS_REPORT_DIR")
             ?? Path.Combine(Path.GetTempPath(), "pali-srs-reports", Environment.ProcessId.ToString());
         Directory.CreateDirectory(directory);
-        var path = Path.Combine(directory, $"{type}-{name}-{seed}.json");
+        var suffix = profile == SrsStudentProfile.Legacy ? "" : $"-{profile}-{points.Count}days";
+        var path = Path.Combine(directory, $"{type}-{name}-{seed}{suffix}.json");
         File.WriteAllText(path, JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true }));
         TestContext.AddTestAttachment(path, "Deterministic SRS timeline and unselected backlog");
         TestContext.Out.WriteLine($"{type}/{name}/{seed}: {answers.Count} answers; pools {string.Join(',', points.Select(p => p.Session.EligibleCards).Distinct())}; report {path}");
@@ -136,5 +161,5 @@ public class SrsTimelineTests
 
     sealed record Step(int Day, SrsFilter Filter, int Goal, int Budget);
     sealed record TimelinePoint(int Day, SrsFilter Filter, int Budget, double MaxOverdueDays,
-        int MaxEligibleVisitsSkipped, SrsSession Session);
+        int MaxEligibleVisitsSkipped, SrsSession Session, SrsBucketBacklog[] Buckets);
 }

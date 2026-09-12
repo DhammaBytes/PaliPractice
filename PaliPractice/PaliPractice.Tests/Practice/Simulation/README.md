@@ -20,8 +20,13 @@ JSON report contains the scenario, complete filter timeline, seed, dictionary
 SHA-256, trace SHA-256, session results, and every answered card. Matching input
 and trace hashes provide a replay check. The current runner uses dates derived
 from seeds 17 and 83 for production queue ordering; attendance has its own seeded
-random generator, and answers use a deterministic policy independent of queue
-randomness. Replaying requires the same code/runtime and dictionary. An alternate
+random generator. The original 24 timelines retain the `Legacy` answer policy
+for comparisons with existing reports; that policy depends on the scenario seed.
+Eight 365-visit daily timelines cross two ordering seeds with `AlwaysEasy` and
+`WeakPlural` learners for both practice types. These explicit learners do not
+depend on the ordering seed: `WeakPlural` always answers Hard for plural forms
+and Easy for singular forms. It is a persistent-difficulty stress case, not a
+model of a student learning. Replaying requires the same code/runtime and dictionary. An alternate
 candidate can be supplied through the existing test input configuration.
 
 Reports default to an external temporary directory and are attached to NUnit
@@ -68,6 +73,21 @@ transition, queue builds (including an exhausted rebuild), and the pending card.
 Reports also count exposure by case/tense, unique forms, and within-session lemma
 repeats. Exposure totals are descriptive; a large grammar cohort naturally has
 more opportunities than a sparse one.
+
+Version 2 reports include the queue source hash and five mastery-bucket records
+per visit. Each records due counts before/after, reviews served at their previous
+level, maximum overdue age, skipped visits, oldest unserved card, and cumulative
+between-session due card-days. `EnteredDueSet` counts cards due now that were not
+in the previous visit's eligible due set after answering. It includes newly
+enabled overdue cards as well as cards whose cooldown expired; it is not a pure
+cooldown-arrival rate. Empty buckets report zero maxima and no oldest card.
+
+Use `FullyQualifiedName~SrsTimelineTests.ExtendedTimeline` to run only the eight
+year-long cases. Visits 180 and 365 provide paired checkpoints without separate
+runs. Compare the same learner, seed, dictionary, and filters across revisions;
+trace hashes change when report instrumentation changes even if selections do
+not. For the ordering experiment, all original session selections and old
+summary metrics were compared before applying the scheduler change.
 
 Always compare answer capacity with due arrivals before interpreting backlog as
 starvation. A one-card daily learner with a large enabled set is intentionally

@@ -54,13 +54,15 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
     {
         _inflectionService = inflectionService;
         _db = db;
+    }
 
+    public override Task StartAsync(CancellationToken ct = default)
+    {
 #if DEBUG
         if (ScreenshotMode.IsEnabled)
-            _ = InitializeForScreenshotAsync();
-        else
+            return InitializeForScreenshotAsync();
 #endif
-            _ = InitializeAsync();
+        return base.StartAsync(ct);
     }
 
     public override ICommand GoToSettingsCommand =>

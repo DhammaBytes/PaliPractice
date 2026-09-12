@@ -58,6 +58,9 @@ public sealed partial class ConjugationPracticePage : Page
             _viewModel = vm;
             _viewModel.QueueExhausted += OnQueueExhausted;
             _viewModel.DailyGoalReached += OnDailyGoalReached;
+            // Navigation assigns DataContext after constructing the view model.
+            // Start only after handlers are attached and the visual tree is ready.
+            DispatcherQueue.TryEnqueue(async () => await vm.StartAsync());
         }
     }
 

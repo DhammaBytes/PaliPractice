@@ -122,17 +122,27 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         // Initialize commands with CanExecute predicates
         _hardCommand = new RelayCommand(MarkAsHard, () => CanRateCard);
         _easyCommand = new RelayCommand(MarkAsEasy, () => CanRateCard);
-        _revealCommand = new RelayCommand(RevealAnswer, () => !FlashCard.IsRevealed);
+        _revealCommand = new RelayCommand(RevealAnswer, () => HasLoadedCard && !FlashCard.IsRevealed);
 
         // Subscribe to flashcard state changes to update navigation
         FlashCard.PropertyChanged += (_, e) =>
         {
-            if (e.PropertyName == nameof(FlashCardViewModel.IsRevealed))
+            if (e.PropertyName is nameof(FlashCardViewModel.IsRevealed) or nameof(FlashCardViewModel.IsLoading))
             {
                 UpdateNavigationState();
             }
         };
     }
+
+    bool HasLoadedCard => !FlashCard.IsLoading && FlashCard.ErrorMessage.Length == 0 &&
+#if DEBUG
+        (_provider.Current != null || ScreenshotLemma != null);
+#else
+        _provider.Current != null;
+#endif
+
+    /// <summary>Called by the page after subscribing to session notifications.</summary>
+    public virtual Task StartAsync(CancellationToken ct = default) => InitializeAsync(ct);
 
     protected async Task InitializeAsync(CancellationToken ct = default)
     {
@@ -217,6 +227,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     void RevealAnswer()
     {
+        if (!HasLoadedCard || FlashCard.IsRevealed) return;
         FlashCard.Reveal();
         ExampleCarousel.IsRevealed = true;
         Logger.LogDebug("Answer revealed: {Form}", FlashCard.Answer);
@@ -226,7 +237,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
     {
         var hasNext = _provider.HasNext;
         var isRevealed = FlashCard.IsRevealed;
-        CanRateCard = isRevealed;
+        CanRateCard = HasLoadedCard && isRevealed;
 
         Logger.LogDebug("UpdateNavigationState: hasNext={HasNext}, isRevealed={IsRevealed}, CanRateCard={CanRate}",
             hasNext, isRevealed, CanRateCard);
@@ -313,9 +324,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
         if (!_provider.MoveNext())
         {
             Logger.LogInformation("Practice queue exhausted");
-            CanRateCard = false;
-            _hardCommand.NotifyCanExecuteChanged();
-            _easyCommand.NotifyCanExecuteChanged();
+            UpdateNavigationState();
             QueueExhausted?.Invoke(this, EventArgs.Empty);
             return;
         }

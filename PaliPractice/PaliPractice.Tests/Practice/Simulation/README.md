@@ -18,11 +18,10 @@ PALIPRACTICE_SRS_REPORT_DIR=/tmp/pali-srs-run-a \
 Repeat with another report directory to compare independent processes. Each
 JSON report contains the scenario, complete filter timeline, seed, dictionary
 SHA-256, trace SHA-256, session results, and every answered card. Matching input
-and trace hashes provide a replay check. The current runner uses dates derived
-from seeds 17 and 83 for production queue ordering; attendance has its own seeded
-random generator. The original 24 timelines retain the `Legacy` answer policy
+and trace hashes provide a replay check. The runner derives production queue ordering from each scenario’s date seed;
+attendance has its own seeded random generator. The original 24 timelines retain the `Legacy` answer policy
 for comparisons with existing reports; that policy depends on the scenario seed.
-Eight 365-visit daily timelines cross two ordering seeds with `AlwaysEasy` and
+Sixteen 365-visit daily timelines cross four ordering seeds with `AlwaysEasy` and
 `WeakPlural` learners for both practice types. These explicit learners do not
 depend on the ordering seed: `WeakPlural` always answers Hard for plural forms
 and Easy for singular forms. It is a persistent-difficulty stress case, not a
@@ -82,7 +81,7 @@ in the previous visit's eligible due set after answering. It includes newly
 enabled overdue cards as well as cards whose cooldown expired; it is not a pure
 cooldown-arrival rate. Empty buckets report zero maxima and no oldest card.
 
-Use `FullyQualifiedName~SrsTimelineTests.ExtendedTimeline` to run only the eight
+Use `FullyQualifiedName~SrsTimelineTests.ExtendedTimeline` to run only the sixteen
 year-long cases. Visits 180 and 365 provide paired checkpoints without separate
 runs. Compare the same learner, seed, dictionary, and filters across revisions;
 trace hashes change when report instrumentation changes even if selections do
@@ -133,7 +132,8 @@ New-card positions now use a separate deterministic schedule. Each 30-answer
 block shuffles gaps of 5, 6, 6, 6, and 7 positions, preserving five new slots per
 block while breaking the fixed six-position rhythm. The first recorded answer's
 UTC date seeds the schedule; before any history exists, the build's seed date is
-used. Completed answers determine the position, so queues can be abandoned or
+used. A purpose-specific seed constant separates cadence from word shuffling.
+Completed answers determine the position, so queues can be abandoned or
 rebuilt without resetting it. Bucket rotation uses the corresponding scheduled
 review ordinal. As before, an exhausted source falls back to the other source;
 the cadence is not an absolute daily introduction limit.
@@ -141,7 +141,7 @@ the cadence is not an absolute daily introduction limit.
 The year-long cases now include seeds 211 and 397 in addition to 17 and 83
 (16 year-long cases total). The schedule tests check variable-gap bounds,
 balanced admission, arbitrary split/restart equivalence, persisted seed lookup,
-and database reopening. A real-corpus regression protects against exclusion of
+database reopening, and separation from the word RNG stream. A real-corpus regression protects against exclusion of
 the dominant new noun pattern. Scheduler fingerprints include both queue and
 cadence source files. See `Specs/SRS-variable-cadence.md` for paired measurements
 and explicitly retained regressions.

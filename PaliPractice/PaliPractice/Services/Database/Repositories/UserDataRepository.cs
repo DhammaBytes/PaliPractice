@@ -13,13 +13,15 @@ namespace PaliPractice.Services.Database.Repositories;
 public class UserDataRepository : IUserDataRepository
 {
     readonly SQLiteConnection _connection;
+    readonly TimeProvider _timeProvider;
 
     // Key to track if defaults have been initialized
     const string SettingsInitializedKey = "system.settings_initialized";
 
-    public UserDataRepository(SQLiteConnection connection)
+    public UserDataRepository(SQLiteConnection connection, TimeProvider? timeProvider = null)
     {
         _connection = connection;
+        _timeProvider = timeProvider ?? TimeProvider.System;
     }
 
     /// <summary>
@@ -34,7 +36,7 @@ public class UserDataRepository : IUserDataRepository
             ORDER BY last_practiced_utc, form_id
             LIMIT ?";
 
-        var cutoffs = CooldownCalculator.GetDueCutoffParams();
+        var cutoffs = CooldownCalculator.GetDueCutoffParams(_timeProvider.GetUtcNow().UtcDateTime);
 
         return _connection.Query<T>(sql,
             cutoffs[0], cutoffs[1], cutoffs[2], cutoffs[3], cutoffs[4],
@@ -139,7 +141,7 @@ public class UserDataRepository : IUserDataRepository
             var record = existing ?? new TMastery { FormId = formId };
             record.PreviousLevel = oldLevel;
             record.MasteryLevel = CooldownCalculator.AdjustLevel(oldLevel, wasEasy);
-            record.LastPracticedUtc = DateTime.UtcNow;
+            record.LastPracticedUtc = _timeProvider.GetUtcNow().UtcDateTime;
             if (existing is null)
                 _connection.Insert(record);
             else
@@ -171,7 +173,7 @@ public class UserDataRepository : IUserDataRepository
 
     public List<NounsPracticeHistory> GetTodayNounHistory()
     {
-        var todayStart = DateTime.UtcNow.Date;
+        var todayStart = _timeProvider.GetUtcNow().UtcDateTime.Date;
         return _connection.Table<NounsPracticeHistory>()
             .Where(h => h.PracticedUtc >= todayStart)
             .OrderByDescending(h => h.PracticedUtc)
@@ -190,7 +192,7 @@ public class UserDataRepository : IUserDataRepository
 
     public List<VerbsPracticeHistory> GetTodayVerbHistory()
     {
-        var todayStart = DateTime.UtcNow.Date;
+        var todayStart = _timeProvider.GetUtcNow().UtcDateTime.Date;
         return _connection.Table<VerbsPracticeHistory>()
             .Where(h => h.PracticedUtc >= todayStart)
             .OrderByDescending(h => h.PracticedUtc)
@@ -274,13 +276,13 @@ public class UserDataRepository : IUserDataRepository
             {
                 Key = key,
                 Value = stringValue,
-                UpdatedUtc = DateTime.UtcNow
+                UpdatedUtc = _timeProvider.GetUtcNow().UtcDateTime
             });
         }
         else
         {
             existing.Value = stringValue;
-            existing.UpdatedUtc = DateTime.UtcNow;
+            existing.UpdatedUtc = _timeProvider.GetUtcNow().UtcDateTime;
             _connection.Update(existing);
         }
     }
@@ -298,7 +300,7 @@ public class UserDataRepository : IUserDataRepository
 
     public DailyProgress GetTodayProgress()
     {
-        var todayKey = DailyProgress.TodayKey;
+        var todayKey = DailyProgress.GetDateKey(_timeProvider.GetLocalNow().DateTime);
         var existing = _connection.Table<DailyProgress>()
             .FirstOrDefault(p => p.Date == todayKey);
 
@@ -306,7 +308,7 @@ public class UserDataRepository : IUserDataRepository
             return existing;
 
         // Create new record for today
-        var progress = DailyProgress.CreateForToday();
+        var progress = new DailyProgress { Date = todayKey };
         _connection.Insert(progress);
         return progress;
     }

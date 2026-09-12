@@ -101,9 +101,9 @@ public static class CooldownCalculator
     /// <summary>
     /// Gets the 10 cutoff DateTime parameters for DueFormsWhereClause.
     /// </summary>
-    public static DateTime[] GetDueCutoffParams()
+    public static DateTime[] GetDueCutoffParams(DateTime? utcNow = null)
     {
-        var now = DateTime.UtcNow;
+        var now = utcNow ?? DateTime.UtcNow;
         return CooldownHoursLookup.Select(hours => now.AddHours(-hours)).ToArray();
     }
 }

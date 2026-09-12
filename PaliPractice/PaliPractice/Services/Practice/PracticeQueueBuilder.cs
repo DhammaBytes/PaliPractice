@@ -36,6 +36,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
     readonly IUserDataRepository _userData;
     readonly INounRepository _nouns;
     readonly IVerbRepository _verbs;
+    readonly TimeProvider _timeProvider;
     Random _random = new();  // Re-seeded per build for determinism
 
     // Introduce new forms gradually: 1 new form every 4-6 reviews.
@@ -62,11 +63,12 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         (9, 10),  // Practiced - near retirement (level 11 = retired forever)
     ];
 
-    public PracticeQueueBuilder(IDatabaseService db)
+    public PracticeQueueBuilder(IDatabaseService db, TimeProvider? timeProvider = null)
     {
         _userData = db.UserData;
         _nouns = db.Nouns;
         _verbs = db.Verbs;
+        _timeProvider = timeProvider ?? TimeProvider.System;
     }
 
     public List<PracticeItem> BuildQueue(PracticeType type, int count, DateTime? seedDate = null)
@@ -77,7 +79,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
         // This ensures reproducibility for testing and prevents queue "churn" during a session.
         // We use a custom hash because HashCode.Combine is not stable across processes/restarts.
         // The 397 multiplier is a common prime that provides good distribution.
-        var today = (seedDate ?? DateTime.UtcNow).Date;
+        var today = (seedDate ?? _timeProvider.GetUtcNow().UtcDateTime).Date;
         var daysSinceEpoch = (int)(today - DateTime.UnixEpoch).TotalDays;
         var seed = unchecked(daysSinceEpoch * 397 ^ (int)type);
         _random = new Random(seed);

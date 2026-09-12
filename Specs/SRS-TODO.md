@@ -18,7 +18,7 @@ Pre-existing Spanish/Russian resource edits are outside this task.
 ## Milestones (commit each after verification)
 
 - [x] M0: Record scope, checklist, branch, and starting revision.
-- [ ] M1: Add an optional production clock to queue and repository operations;
+- [x] M1: Add an optional production clock to queue and repository operations;
   preserve system-clock defaults and existing scheduling. Test exact due
   boundaries, recorded timestamps/history, and local progress-day rollover.
 - [ ] M2: Add a small deterministic runner using production providers and
@@ -53,3 +53,19 @@ or changing project configuration.
 
 - M0: Created the branch from `a15f954`; two pre-existing localization edits
   remain unstaged. No implementation changes yet.
+- M1: Optional `TimeProvider` in the existing queue/repository; explicit due
+  cutoffs and a shared pure local-day key calculation. No schema, IDs, cooldown,
+  or scheduling-policy changes. All 28 focused clock tests passed; independent
+  review found no blockers.
+- M1 gate (`auto`, base `eeb9e08`): 3,016 tests passed, one pre-existing Spanish
+  resource test failed; desktop build and Roslyn checks passed. The failing test
+  passes against temporary copies of the committed resources. The unstaged
+  Spanish `Top 100/300/500` labels explain the failure; neither the resources nor
+  its assertion was changed for this task. Overall gate remains failed.
+  Evidence: `20260911T235449.359576Z-78696-b11d0f` under the gate's external runs.
+  Focused TRX and baseline comparison: `/private/tmp/pali-srs-task/test-results`.
+- Toolchain: `/private/tmp/pali-srs-toolchain` is a private copy of the installed
+  toolchain plus the existing 10.0.401 archive. Microsoft's workload installer
+  registered the existing 10.0.303.1 workload set there. Use this directory first
+  in `PATH` and as `DOTNET_ROOT` for subsequent gates. System installation and
+  project SDK/dependency configuration remain unchanged.

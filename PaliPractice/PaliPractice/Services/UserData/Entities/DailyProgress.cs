@@ -32,16 +32,11 @@ public class DailyProgress
     /// The day resets at 5am local time, so practice between midnight and 5am
     /// counts toward the previous day's goal.
     /// </summary>
-    public static int TodayKey
-    {
-        get
-        {
-            var now = DateTime.Now;
-            // If before 5am, consider it still "yesterday"
-            var logicalDate = now.Hour < DayStartHour ? now.Date.AddDays(-1) : now.Date;
-            return ToDateKey(logicalDate);
-        }
-    }
+    public static int TodayKey => GetDateKey(DateTime.Now);
+
+    /// <summary>Gets the practice-day key for an explicit local wall-clock time.</summary>
+    public static int GetDateKey(DateTime localNow) =>
+        ToDateKey(localNow.Hour < DayStartHour ? localNow.Date.AddDays(-1) : localNow.Date);
 
     /// <summary>
     /// Converts a DateTime to YYYYMMDD integer format.

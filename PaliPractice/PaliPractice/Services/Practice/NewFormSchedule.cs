@@ -10,12 +10,13 @@ internal static class NewFormSchedule
     const int BlockLength = 30;
     const int NewPerBlock = 5;
 
-    public static (bool[] Slots, long ReviewsBefore) Build(long completed, int count, PracticeType type, DateTime seedDate)
+    public static (bool[] Slots, long ReviewsBefore) Build(long completed, int count, PracticeType type, DateTime seedDate,
+        DateTime? firstPracticeUtc = null)
     {
         var slots = new bool[count];
         var block = completed / BlockLength;
         var offset = (int)(completed % BlockLength);
-        var days = (int)(seedDate.Date - DateTime.UnixEpoch).TotalDays;
+        var days = (int)((firstPracticeUtc ?? seedDate).Date - DateTime.UnixEpoch).TotalDays;
         var positions = Positions(block, type, days);
         var priorNew = block * NewPerBlock + positions.Count(p => p < offset);
         for (int i = 0; i < count; i++)

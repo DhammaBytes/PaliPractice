@@ -111,7 +111,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
         // 3. Build slot plan: determines new vs review for each position
         var completed = _userData.GetPracticeCount(type);
-        var cadence = NewFormSchedule.Build(completed, count, type, _userData.GetFirstPracticeUtc(type) ?? today);
+        var cadence = NewFormSchedule.Build(completed, count, type, today, _userData.GetFirstPracticeUtc(type));
         var slotPlan = BuildSlotPlan(count, untriedIds.Count, dueForReview.Count, cadence.Slots);
         var newSlotCount = slotPlan.Count(isNew => isNew);
         var reviewSlotCount = slotPlan.Count - newSlotCount;
@@ -161,7 +161,7 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
         // 7. Fill slots according to plan
         int newIdx = 0;
-        int bucketRound = InitialBucket(levelBuckets, untriedIds.Count > 0 ? cadence.ReviewsBefore : completed);
+        int bucketRound = InitialBucket(levelBuckets, completed, cadence.ReviewsBefore, untriedIds.Count > 0);
         var bucketIndices = new int[LevelBuckets.Length];  // Current index in each bucket
 
         for (int pos = 0; pos < slotPlan.Count; pos++)
@@ -267,9 +267,10 @@ public class PracticeQueueBuilder : IPracticeQueueBuilder
 
     #region Level Bucket Management
 
-    static int InitialBucket(List<List<FormMasteryData>> buckets, long reviewOrdinal)
+    static int InitialBucket(List<List<FormMasteryData>> buckets, long completed, long scheduledReviews, bool hasNew)
     {
         var active = Enumerable.Range(0, buckets.Count).Where(i => buckets[i].Count > 0).ToArray();
+        var reviewOrdinal = hasNew ? scheduledReviews : completed;
         return active.Length == 0 ? 0 : active[reviewOrdinal % active.Length];
     }
 

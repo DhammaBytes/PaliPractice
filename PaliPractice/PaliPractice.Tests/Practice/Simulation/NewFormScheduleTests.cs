@@ -55,5 +55,8 @@ public class NewFormScheduleTests
             Assert.That(resumed.Slots, Is.EqualTo(full.Skip(completed).Take(100)));
             Assert.That(resumed.ReviewsBefore, Is.EqualTo(full.Take(completed).LongCount(x => !x)));
         }
+        var later = NewFormSchedule.Build(100, 100, type, SrsSimulationTests.Start.UtcDateTime.AddYears(1),
+            SrsSimulationTests.Start.UtcDateTime);
+        Assert.That(later.Slots, Is.EqualTo(full.Skip(100).Take(100)), "Recorded seed must override the current build date");
     }
 }

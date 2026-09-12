@@ -33,7 +33,7 @@ Pre-existing Spanish/Russian resource edits are outside this task.
   backlog/service (including unselected due cards), and repetition. Keep exact
   invariants separate from descriptive metrics and distinguish overload from
   starvation. Use independent eligibility checks rather than queue self-checks.
-- [ ] M5: Run the repository gate and bounded independent review, address
+- [x] M5: Run the repository gate and bounded independent review, address
   blocking findings, record replay commands/evidence and limitations, and commit
   the final milestone. Confirm history/IDs/assets and unrelated edits remain
   intact.
@@ -107,3 +107,19 @@ or changing project configuration.
   the new checkout lacked its Python environment and DPD submodule. Both were
   provisioned from existing local copies before rerunning the gate. This does
   not change the original worktree or its pre-existing localization edits.
+- M5: Complete `auto --base a15f954` gate passed in
+  `/private/tmp/pali-srs-verification`: all 3,063 .NET tests passed with no skips;
+  Python/producer, data, recursive submodule, Roslyn/complexity, coverage-report,
+  desktop-build, and unchanged-worktree checks all passed. Evidence:
+  `20260912T003910.426347Z-76489-69928d`. The nine DPD checkouts use the recorded
+  revisions from local originals; no source acquisition or data promotion ran.
+- M5: All 18 changed code/test/README files match the verified checkout exactly;
+  only this milestone log differs. SHA-256 checks confirm the original bundled
+  dictionary, legacy history resource, corpus/primary contracts, and both
+  pre-existing resource edits remain unchanged. Independent milestone reviews
+  found no blocking issues. The original working tree still has the confirmed
+  Spanish resource-test failure caused by its unrelated `Top 100/300/500` edits.
+- Limits: This establishes deterministic scheduling and bounded service in the
+  tested scenarios, not human retention or universal starvation freedom.
+  Cooldowns, retirement, per-ending identity, cross-build spacing, and the
+  existing soft fallback/search policy are outside this rework.

@@ -164,7 +164,7 @@ public class StatisticsRepository : IStatisticsRepository
     /// </summary>
     int CalculateStreak(bool countingBackwards, bool requireGoalMet, PracticeType? type)
     {
-        var todayKey = DailyProgress.TodayKey;
+        var todayKey = _userData.GetTodayProgress().Date;
 
         // Get all days ordered descending
         var query = _connection.Table<DailyProgress>()
@@ -189,7 +189,7 @@ public class StatisticsRepository : IStatisticsRepository
             if (dayDate != expectedDate)
             {
                 // If we haven't started counting and today is missing, check yesterday
-                if (streak == 0 && (expectedDate - dayDate).Days == 1)
+                if (expectedDate == DailyProgress.FromDateKey(todayKey) && (expectedDate - dayDate).Days == 1)
                 {
                     expectedDate = dayDate;
                 }
@@ -215,6 +215,12 @@ public class StatisticsRepository : IStatisticsRepository
             if (qualifies)
             {
                 streak++;
+                expectedDate = expectedDate.AddDays(-1);
+            }
+            else if (day.Date == todayKey)
+            {
+                // The current logical day is still open, even if reading stats
+                // has already created its zero-progress row.
                 expectedDate = expectedDate.AddDays(-1);
             }
             else

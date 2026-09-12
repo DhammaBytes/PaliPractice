@@ -42,6 +42,61 @@ public class StatisticsRepositoryTests
 
     #region Streak Tests
 
+    [TestCase(0)]
+    [TestCase(1)]
+    public void GeneralStatsPreservesStreaksWhileTodayIsIncomplete(int todayCount)
+    {
+        for (var i = 1; i <= 3; i++) InsertProgress(DaysAgo(i), 50, 50);
+        if (todayCount > 0) InsertProgress(DailyProgress.TodayKey, todayCount, todayCount);
+
+        var first = _stats.GetGeneralStats();
+        var second = _stats.GetGeneralStats();
+
+        first.CurrentPracticeStreak.Should().Be(todayCount == 0 ? 3 : 4);
+        first.CurrentNounGoalStreak.Should().Be(3);
+        first.CurrentVerbGoalStreak.Should().Be(3);
+        second.Should().BeEquivalentTo(first);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void IncompleteTodayDoesNotSkipAMissingOrEmptyYesterday(bool yesterdayExists)
+    {
+        InsertProgress(DailyProgress.TodayKey, 0, 0);
+        if (yesterdayExists) InsertProgress(DaysAgo(1), 0, 0);
+        InsertProgress(DaysAgo(2), 50, 50);
+
+        var stats = _stats.GetGeneralStats();
+
+        stats.CurrentPracticeStreak.Should().Be(0);
+        stats.CurrentNounGoalStreak.Should().Be(0);
+        stats.CurrentVerbGoalStreak.Should().Be(0);
+    }
+
+    [Test]
+    public void GeneralStatsUsesTheProgressClockAcrossFiveAm()
+    {
+        var zone = TimeZoneInfo.CreateCustomTimeZone("StreakTest", TimeSpan.FromHours(9), "StreakTest", "StreakTest");
+        var clock = new PaliPractice.Tests.Practice.Simulation.SimulationTimeProvider(
+            new DateTimeOffset(2035, 1, 4, 4, 59, 59, TimeSpan.FromHours(9)).ToUniversalTime(), zone);
+        var userData = new UserDataRepository(_connection, clock);
+        var stats = new StatisticsRepository(_connection, userData);
+        InsertProgress(20350101, 50, 50);
+        InsertProgress(20350102, 50, 50);
+        InsertProgress(20350103, 50, 50);
+        stats.GetGeneralStats().CurrentPracticeStreak.Should().Be(3);
+
+        clock.UtcNow += TimeSpan.FromSeconds(1);
+
+        var afterBoundary = stats.GetGeneralStats();
+        afterBoundary.TodayDeclensions.Should().Be(0);
+        afterBoundary.CurrentPracticeStreak.Should().Be(3);
+        afterBoundary.CurrentNounGoalStreak.Should().Be(3);
+        clock.UtcNow += TimeSpan.FromDays(1);
+        stats.GetGeneralStats().CurrentPracticeStreak.Should().Be(0,
+            "the unpracticed day now belongs to yesterday");
+    }
+
     [Test]
     public void GetCurrentPracticeStreak_NoPracticeToday_IncludesYesterdayStreak()
     {

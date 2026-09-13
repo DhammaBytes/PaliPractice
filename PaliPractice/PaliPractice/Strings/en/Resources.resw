@@ -361,7 +361,7 @@ Verbs: {2}</value></data>
   <data name="Grammar.Person.Third.Short" xml:space="preserve"><value>3rd</value></data>
 
   <data name="Grammar.Tense.Present.Full" xml:space="preserve"><value>Present</value></data>
-  <data name="Grammar.Tense.Present.Short" xml:space="preserve"><value>Pr</value></data>
+  <data name="Grammar.Tense.Present.Short" xml:space="preserve"><value>Pres</value></data>
   <data name="Grammar.Tense.Present.Table" xml:space="preserve"><value>pr</value></data>
   <data name="Grammar.Tense.Present.SettingsHint" xml:space="preserve"><value>present and habitual actions, general truths</value></data>
   <data name="Grammar.Tense.Imperative.Full" xml:space="preserve"><value>Imperative</value></data>
@@ -380,8 +380,8 @@ Verbs: {2}</value></data>
   <data name="Grammar.Voice.Active.Full" xml:space="preserve"><value>Active</value></data>
   <data name="Grammar.Voice.Active.Short" xml:space="preserve"><value>Act</value></data>
   <data name="Grammar.Voice.Reflexive.Full" xml:space="preserve"><value>Reflexive</value></data>
-  <data name="Grammar.Voice.Reflexive.Short" xml:space="preserve"><value>Refl.</value></data>
-  <data name="Grammar.Voice.Reflexive.Table" xml:space="preserve"><value>refl.</value></data>
+  <data name="Grammar.Voice.Reflexive.Short" xml:space="preserve"><value>Refl</value></data>
+  <data name="Grammar.Voice.Reflexive.Table" xml:space="preserve"><value>refl</value></data>
 
   <data name="Grammar.Type.Declension" xml:space="preserve"><value>declension</value></data>
   <data name="Grammar.Type.Conjugation" xml:space="preserve"><value>conjugation</value></data>

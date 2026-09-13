@@ -74,7 +74,7 @@ memory and a recorded review does not itself prove promotion succeeded.
 ## Meaning freshness and local terminology
 
 `../configs/localized_translations.json` supplies language-specific preferred
-terms after source mapping. It is separate from the historical Spanish review
+terms and guarded full replacements after source mapping. It is separate from the historical Spanish review
 file and applies to RU too. Pin it as `sources.overrides`; see SETUP for its
 schema. The comparator detects removal of that input and asks for a review when
 upstream changes while overrides remain present.

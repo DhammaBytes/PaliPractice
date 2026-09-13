@@ -59,7 +59,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 
-  <data name="Common.AllForms" xml:space="preserve"><value>Todas las formas</value></data>
+  <data name="Common.AllForms" xml:space="preserve"><value>Otras formas</value></data>
   <data name="Common.Back" xml:space="preserve"><value>Volver</value></data>
   <data name="Common.History" xml:space="preserve"><value>Historial</value></data>
   <data name="Common.Ok" xml:space="preserve"><value>Aceptar</value></data>
@@ -118,11 +118,11 @@
   <data name="Settings.Range.Title.Declension" xml:space="preserve"><value>Selección de sustantivos</value></data>
   <data name="Settings.Range.Title.Conjugation" xml:space="preserve"><value>Selección de verbos</value></data>
   <data name="Settings.Range.SectionTitle" xml:space="preserve"><value>Selección de palabras</value></data>
-  <data name="Settings.Range.Top100.Title" xml:space="preserve"><value>Las 100 más frecuentes</value></data>
+  <data name="Settings.Range.Top100.Title" xml:space="preserve"><value>Top 100</value></data>
   <data name="Settings.Range.Top100.Subtitle" xml:space="preserve"><value>Las palabras más comunes</value></data>
-  <data name="Settings.Range.Top300.Title" xml:space="preserve"><value>Las 300 más frecuentes</value></data>
+  <data name="Settings.Range.Top300.Title" xml:space="preserve"><value>Top 300</value></data>
   <data name="Settings.Range.Top300.Subtitle" xml:space="preserve"><value>Palabras comunes</value></data>
-  <data name="Settings.Range.Top500.Title" xml:space="preserve"><value>Las 500 más frecuentes</value></data>
+  <data name="Settings.Range.Top500.Title" xml:space="preserve"><value>Top 500</value></data>
   <data name="Settings.Range.Top500.Subtitle" xml:space="preserve"><value>Vocabulario ampliado</value></data>
   <data name="Settings.Range.AllWords.Title" xml:space="preserve"><value>Todas las palabras</value></data>
   <data name="Settings.Range.Custom.Title" xml:space="preserve"><value>Intervalo personalizado</value></data>
@@ -157,8 +157,6 @@ Esta app también está disponible en [otras plataformas](https://www.dhammabyte
 El icono muestra a la codorniz de [SN 47:6, el Sakuṇagghi Sutta](https://www.dhammatalks.org/suttas/SN/SN47_6.html) («El halcón»), escondida detrás de unas rocas en su territorio ancestral: un campo recién arado con terrones de tierra removida:
 
 *«Recorran, monjes, el ámbito que les corresponde, su propio territorio ancestral. En quien recorre el ámbito que le corresponde, su propio territorio ancestral, Māra no encuentra una abertura, Māra no encuentra dónde afianzarse. ¿Y cuál es, para un monje, el ámbito que le corresponde, su propio territorio ancestral? Los cuatro establecimientos de la atención plena».*
-
-Traducción para esta app del pasaje citado en inglés.
 
 Ilustración del icono y diseño de la app: [Irina Mir](https://www.instagram.com/irmirx)
 </value></data>
@@ -232,7 +230,7 @@ Esta app se centra en las formas más útiles para estudiantes de nivel inicial 
 Estas formas varían mucho de un verbo a otro y a menudo hay que aprenderlas palabra por palabra. Por eso no encajan bien en el formato de práctica actual. Es posible que en futuras versiones se añada una práctica específica para estas formas.
 </value></data>
   <data name="Help.Faq.AboutApp" xml:space="preserve"><value>
-**¿Dónde puedo encontrar más información sobre la app?**
+**¿Dónde puedo encontrar más información?**
 
 En Ajustes, consulta la sección Acerca de Pāli Practice para saber más sobre la app, sus fuentes de datos, las licencias y cómo contactarnos.
 </value></data>
@@ -298,62 +296,62 @@ Verbos: {2}</value></data>
   <data name="Feedback.SettingsReadError" xml:space="preserve"><value>  (No se pudieron leer los ajustes: {0})</value></data>
 
   <data name="Grammar.Case.Nominative.Full" xml:space="preserve"><value>Nominativo</value></data>
-  <data name="Grammar.Case.Nominative.Short" xml:space="preserve"><value>nom.</value></data>
-  <data name="Grammar.Case.Nominative.Table" xml:space="preserve"><value>nom.</value></data>
+  <data name="Grammar.Case.Nominative.Short" xml:space="preserve"><value>Nom</value></data>
+  <data name="Grammar.Case.Nominative.Table" xml:space="preserve"><value>nom</value></data>
   <data name="Grammar.Case.Nominative.PracticeHint" xml:space="preserve"><value>¿quién? ¿qué? (sujeto)</value></data>
   <data name="Grammar.Case.Nominative.SettingsHint" xml:space="preserve"><value>¿quién? ¿qué? (sujeto)</value></data>
   <data name="Grammar.Case.Accusative.Full" xml:space="preserve"><value>Acusativo</value></data>
-  <data name="Grammar.Case.Accusative.Short" xml:space="preserve"><value>acus.</value></data>
-  <data name="Grammar.Case.Accusative.Table" xml:space="preserve"><value>acus.</value></data>
+  <data name="Grammar.Case.Accusative.Short" xml:space="preserve"><value>Acus</value></data>
+  <data name="Grammar.Case.Accusative.Table" xml:space="preserve"><value>acus</value></data>
   <data name="Grammar.Case.Accusative.PracticeHint" xml:space="preserve"><value>¿a quién? ¿qué? (objeto directo)</value></data>
   <data name="Grammar.Case.Accusative.SettingsHint" xml:space="preserve"><value>¿a quién? ¿qué? (objeto directo, destino de la acción)</value></data>
   <data name="Grammar.Case.Instrumental.Full" xml:space="preserve"><value>Instrumental</value></data>
-  <data name="Grammar.Case.Instrumental.Short" xml:space="preserve"><value>instr.</value></data>
-  <data name="Grammar.Case.Instrumental.Table" xml:space="preserve"><value>instr.</value></data>
+  <data name="Grammar.Case.Instrumental.Short" xml:space="preserve"><value>Instr</value></data>
+  <data name="Grammar.Case.Instrumental.Table" xml:space="preserve"><value>instr</value></data>
   <data name="Grammar.Case.Instrumental.PracticeHint" xml:space="preserve"><value>¿con quién? ¿por quién? ¿por qué medio?</value></data>
-  <data name="Grammar.Case.Instrumental.SettingsHint" xml:space="preserve"><value>¿con quién? ¿por quién? ¿por qué medio? (voz pasiva, compañía)</value></data>
+  <data name="Grammar.Case.Instrumental.SettingsHint" xml:space="preserve"><value>¿con quién? ¿por quién? ¿por qué medio? (medio, agente, asociación)</value></data>
   <data name="Grammar.Case.Dative.Full" xml:space="preserve"><value>Dativo</value></data>
-  <data name="Grammar.Case.Dative.Short" xml:space="preserve"><value>dat.</value></data>
-  <data name="Grammar.Case.Dative.Table" xml:space="preserve"><value>dat.</value></data>
-  <data name="Grammar.Case.Dative.PracticeHint" xml:space="preserve"><value>¿para quién? ¿a quién? ¿a qué?</value></data>
-  <data name="Grammar.Case.Dative.SettingsHint" xml:space="preserve"><value>¿para quién? ¿a quién? ¿a qué? (finalidad, destinatario)</value></data>
+  <data name="Grammar.Case.Dative.Short" xml:space="preserve"><value>Dat</value></data>
+  <data name="Grammar.Case.Dative.Table" xml:space="preserve"><value>dat</value></data>
+  <data name="Grammar.Case.Dative.PracticeHint" xml:space="preserve"><value>¿para quién? ¿para qué? ¿a quién? ¿a qué?</value></data>
+  <data name="Grammar.Case.Dative.SettingsHint" xml:space="preserve"><value>¿para quién? ¿para qué? ¿a quién? ¿a qué? (finalidad, destinatario)</value></data>
   <data name="Grammar.Case.Ablative.Full" xml:space="preserve"><value>Ablativo</value></data>
-  <data name="Grammar.Case.Ablative.Short" xml:space="preserve"><value>abl.</value></data>
-  <data name="Grammar.Case.Ablative.Table" xml:space="preserve"><value>abl.</value></data>
+  <data name="Grammar.Case.Ablative.Short" xml:space="preserve"><value>Abl</value></data>
+  <data name="Grammar.Case.Ablative.Table" xml:space="preserve"><value>abl</value></data>
   <data name="Grammar.Case.Ablative.PracticeHint" xml:space="preserve"><value>¿de quién? ¿de dónde? ¿de qué?</value></data>
   <data name="Grammar.Case.Ablative.SettingsHint" xml:space="preserve"><value>¿de quién? ¿de dónde? ¿de qué? (causa, origen)</value></data>
   <data name="Grammar.Case.Genitive.Full" xml:space="preserve"><value>Genitivo</value></data>
-  <data name="Grammar.Case.Genitive.Short" xml:space="preserve"><value>gen.</value></data>
-  <data name="Grammar.Case.Genitive.Table" xml:space="preserve"><value>gen.</value></data>
+  <data name="Grammar.Case.Genitive.Short" xml:space="preserve"><value>Gen</value></data>
+  <data name="Grammar.Case.Genitive.Table" xml:space="preserve"><value>gen</value></data>
   <data name="Grammar.Case.Genitive.PracticeHint" xml:space="preserve"><value>¿de quién es? ¿de quién? ¿de qué?</value></data>
   <data name="Grammar.Case.Genitive.SettingsHint" xml:space="preserve"><value>¿de quién es? ¿de quién? ¿de qué? (posesión)</value></data>
   <data name="Grammar.Case.Locative.Full" xml:space="preserve"><value>Locativo</value></data>
-  <data name="Grammar.Case.Locative.Short" xml:space="preserve"><value>loc.</value></data>
-  <data name="Grammar.Case.Locative.Table" xml:space="preserve"><value>loc.</value></data>
-  <data name="Grammar.Case.Locative.PracticeHint" xml:space="preserve"><value>¿en quién? ¿dónde? ¿cuándo?</value></data>
-  <data name="Grammar.Case.Locative.SettingsHint" xml:space="preserve"><value>¿en quién? ¿dónde? ¿cuándo? (lugar, relación, tiempo)</value></data>
+  <data name="Grammar.Case.Locative.Short" xml:space="preserve"><value>Loc</value></data>
+  <data name="Grammar.Case.Locative.Table" xml:space="preserve"><value>loc</value></data>
+  <data name="Grammar.Case.Locative.PracticeHint" xml:space="preserve"><value>¿en quién? ¿en qué? ¿dónde? ¿cuándo?</value></data>
+  <data name="Grammar.Case.Locative.SettingsHint" xml:space="preserve"><value>¿en quién? ¿en qué? ¿dónde? ¿cuándo? (lugar, relación, tiempo)</value></data>
   <data name="Grammar.Case.Vocative.Full" xml:space="preserve"><value>Vocativo</value></data>
-  <data name="Grammar.Case.Vocative.Short" xml:space="preserve"><value>voc.</value></data>
-  <data name="Grammar.Case.Vocative.Table" xml:space="preserve"><value>voc.</value></data>
-  <data name="Grammar.Case.Vocative.PracticeHint" xml:space="preserve"><value>¡Oh, ...! (apelación directa)</value></data>
-  <data name="Grammar.Case.Vocative.SettingsHint" xml:space="preserve"><value>¡Oh, ...! (apelación directa)</value></data>
+  <data name="Grammar.Case.Vocative.Short" xml:space="preserve"><value>Voc</value></data>
+  <data name="Grammar.Case.Vocative.Table" xml:space="preserve"><value>voc</value></data>
+  <data name="Grammar.Case.Vocative.PracticeHint" xml:space="preserve"><value>¡Oh, ...! (a quién se habla)</value></data>
+  <data name="Grammar.Case.Vocative.SettingsHint" xml:space="preserve"><value>¡Oh, ...! (a quién se habla)</value></data>
 
   <data name="Grammar.Gender.Masculine.Full" xml:space="preserve"><value>Masculino</value></data>
-  <data name="Grammar.Gender.Masculine.Short" xml:space="preserve"><value>masc.</value></data>
-  <data name="Grammar.Gender.Masculine.Table" xml:space="preserve"><value>masc.</value></data>
+  <data name="Grammar.Gender.Masculine.Short" xml:space="preserve"><value>Masc</value></data>
+  <data name="Grammar.Gender.Masculine.Table" xml:space="preserve"><value>masc</value></data>
   <data name="Grammar.Gender.Feminine.Full" xml:space="preserve"><value>Femenino</value></data>
-  <data name="Grammar.Gender.Feminine.Short" xml:space="preserve"><value>fem.</value></data>
-  <data name="Grammar.Gender.Feminine.Table" xml:space="preserve"><value>fem.</value></data>
+  <data name="Grammar.Gender.Feminine.Short" xml:space="preserve"><value>Fem</value></data>
+  <data name="Grammar.Gender.Feminine.Table" xml:space="preserve"><value>fem</value></data>
   <data name="Grammar.Gender.Neuter.Full" xml:space="preserve"><value>Neutro</value></data>
-  <data name="Grammar.Gender.Neuter.Short" xml:space="preserve"><value>neut.</value></data>
-  <data name="Grammar.Gender.Neuter.Table" xml:space="preserve"><value>neut.</value></data>
+  <data name="Grammar.Gender.Neuter.Short" xml:space="preserve"><value>Neut</value></data>
+  <data name="Grammar.Gender.Neuter.Table" xml:space="preserve"><value>neut</value></data>
 
   <data name="Grammar.Number.Singular.Full" xml:space="preserve"><value>Singular</value></data>
-  <data name="Grammar.Number.Singular.Short" xml:space="preserve"><value>sing.</value></data>
-  <data name="Grammar.Number.Singular.Table" xml:space="preserve"><value>sing.</value></data>
+  <data name="Grammar.Number.Singular.Short" xml:space="preserve"><value>Sing</value></data>
+  <data name="Grammar.Number.Singular.Table" xml:space="preserve"><value>sing</value></data>
   <data name="Grammar.Number.Plural.Full" xml:space="preserve"><value>Plural</value></data>
-  <data name="Grammar.Number.Plural.Short" xml:space="preserve"><value>pl.</value></data>
-  <data name="Grammar.Number.Plural.Table" xml:space="preserve"><value>pl.</value></data>
+  <data name="Grammar.Number.Plural.Short" xml:space="preserve"><value>Plur</value></data>
+  <data name="Grammar.Number.Plural.Table" xml:space="preserve"><value>pl</value></data>
 
   <data name="Grammar.Person.First.Full" xml:space="preserve"><value>1.ª persona</value></data>
   <data name="Grammar.Person.First.Short" xml:space="preserve"><value>1.ª</value></data>
@@ -363,27 +361,27 @@ Verbos: {2}</value></data>
   <data name="Grammar.Person.Third.Short" xml:space="preserve"><value>3.ª</value></data>
 
   <data name="Grammar.Tense.Present.Full" xml:space="preserve"><value>Presente</value></data>
-  <data name="Grammar.Tense.Present.Short" xml:space="preserve"><value>pres.</value></data>
-  <data name="Grammar.Tense.Present.Table" xml:space="preserve"><value>pres.</value></data>
+  <data name="Grammar.Tense.Present.Short" xml:space="preserve"><value>Pres</value></data>
+  <data name="Grammar.Tense.Present.Table" xml:space="preserve"><value>pres</value></data>
   <data name="Grammar.Tense.Present.SettingsHint" xml:space="preserve"><value>acciones presentes y habituales, verdades generales</value></data>
   <data name="Grammar.Tense.Imperative.Full" xml:space="preserve"><value>Imperativo</value></data>
-  <data name="Grammar.Tense.Imperative.Short" xml:space="preserve"><value>imper.</value></data>
-  <data name="Grammar.Tense.Imperative.Table" xml:space="preserve"><value>imper.</value></data>
+  <data name="Grammar.Tense.Imperative.Short" xml:space="preserve"><value>Imper</value></data>
+  <data name="Grammar.Tense.Imperative.Table" xml:space="preserve"><value>imper</value></data>
   <data name="Grammar.Tense.Imperative.SettingsHint" xml:space="preserve"><value>órdenes, peticiones, exhortaciones</value></data>
   <data name="Grammar.Tense.Optative.Full" xml:space="preserve"><value>Optativo</value></data>
-  <data name="Grammar.Tense.Optative.Short" xml:space="preserve"><value>opt.</value></data>
-  <data name="Grammar.Tense.Optative.Table" xml:space="preserve"><value>opt.</value></data>
+  <data name="Grammar.Tense.Optative.Short" xml:space="preserve"><value>Opt</value></data>
+  <data name="Grammar.Tense.Optative.Table" xml:space="preserve"><value>opt</value></data>
   <data name="Grammar.Tense.Optative.SettingsHint" xml:space="preserve"><value>deseos, posibilidad, deber o conveniencia</value></data>
   <data name="Grammar.Tense.Future.Full" xml:space="preserve"><value>Futuro</value></data>
-  <data name="Grammar.Tense.Future.Short" xml:space="preserve"><value>fut.</value></data>
-  <data name="Grammar.Tense.Future.Table" xml:space="preserve"><value>fut.</value></data>
+  <data name="Grammar.Tense.Future.Short" xml:space="preserve"><value>Fut</value></data>
+  <data name="Grammar.Tense.Future.Table" xml:space="preserve"><value>fut</value></data>
   <data name="Grammar.Tense.Future.SettingsHint" xml:space="preserve"><value>acciones que aún no ocurren, predicciones</value></data>
 
   <data name="Grammar.Voice.Active.Full" xml:space="preserve"><value>Activa</value></data>
-  <data name="Grammar.Voice.Active.Short" xml:space="preserve"><value>act.</value></data>
+  <data name="Grammar.Voice.Active.Short" xml:space="preserve"><value>Act</value></data>
   <data name="Grammar.Voice.Reflexive.Full" xml:space="preserve"><value>Media</value></data>
-  <data name="Grammar.Voice.Reflexive.Short" xml:space="preserve"><value>med.</value></data>
-  <data name="Grammar.Voice.Reflexive.Table" xml:space="preserve"><value>med.</value></data>
+  <data name="Grammar.Voice.Reflexive.Short" xml:space="preserve"><value>Med</value></data>
+  <data name="Grammar.Voice.Reflexive.Table" xml:space="preserve"><value>med</value></data>
 
   <data name="Grammar.Type.Declension" xml:space="preserve"><value>declinación</value></data>
   <data name="Grammar.Type.Conjugation" xml:space="preserve"><value>conjugación</value></data>
@@ -459,19 +457,19 @@ Verbos: {2}</value></data>
   </data>
   <!-- Display-only qualifiers extracted from DPD pattern identifiers -->
   <data name="Grammar.Pattern.Masculine" xml:space="preserve">
-    <value>masc.</value>
+    <value>masc</value>
   </data>
   <data name="Grammar.Pattern.Feminine" xml:space="preserve">
-    <value>fem.</value>
+    <value>fem</value>
   </data>
   <data name="Grammar.Pattern.Neuter" xml:space="preserve">
-    <value>neut.</value>
+    <value>neut</value>
   </data>
   <data name="Grammar.Pattern.Plural" xml:space="preserve">
-    <value>pl.</value>
+    <value>pl</value>
   </data>
   <data name="Grammar.Pattern.Present" xml:space="preserve">
-    <value>pres.</value>
+    <value>pres</value>
   </data>
   <data name="Grammar.Pattern.Eastern" xml:space="preserve">
     <value>oriental</value>

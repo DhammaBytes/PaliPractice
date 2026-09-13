@@ -30,7 +30,7 @@ public static class AppTitleBar
         UIElement centerElement,
         Expression<Func<TDC, ICommand>> goBackCommand)
     {
-        return BuildCoreWithCenterElement(
+        return BuildCoreWithTitleElement(
             centerElement,
             CreateBackButton(goBackCommand),
             rightButton: null);
@@ -116,6 +116,18 @@ public static class AppTitleBar
     /// </summary>
     static Grid BuildCore(string title, UIElement leftButton, UIElement? rightButton)
     {
+        return BuildCoreWithTitleElement(
+            RegularText()
+                .Text(title)
+                .FontSize(21) // 2pt larger than navigation buttons
+                .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
+                .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush")),
+            leftButton,
+            rightButton);
+    }
+
+    static Grid BuildCoreWithTitleElement(UIElement titleElement, UIElement leftButton, UIElement? rightButton)
+    {
         // Title layer: centered within symmetric margins
         // Always use same margin on both sides to keep title truly centered
         var titleMargin = NavButtonMinWidth + 8;
@@ -126,13 +138,7 @@ public static class AppTitleBar
                     .StretchDirection(StretchDirection.DownOnly) // Only shrink, never grow
                     .HorizontalAlignment(HorizontalAlignment.Center)
                     .VerticalAlignment(VerticalAlignment.Center)
-                    .Child(
-                        RegularText()
-                            .Text(title)
-                            .FontSize(21) // 2pt larger than navigation buttons
-                            .FontWeight(Microsoft.UI.Text.FontWeights.Medium)
-                            .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
-                    )
+                    .Child(titleElement)
             );
 
         // Buttons layer: left and right edges

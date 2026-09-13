@@ -71,6 +71,8 @@ public class ResourceCompletenessTests
         var spanish = LoadValues("es");
         english.Where(entry => spanish[entry.Key] == entry.Value).Select(entry => entry.Key)
             .Should().BeEquivalentTo("About.AppNameFormat", "Grammar.Table.LikeSuffix",
+                // The Spanish range presets intentionally use the compact shared label "Top".
+                "Settings.Range.Top100.Title", "Settings.Range.Top300.Title", "Settings.Range.Top500.Title",
                 "Statistics.Streak.Total", "Grammar.Case.Instrumental.Full",
                 "Grammar.Number.Singular.Full", "Grammar.Number.Plural.Full",
                 "Settings.Section.General", "Feedback.Label.App", "MacMenu.Zoom");

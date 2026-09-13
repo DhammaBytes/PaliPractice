@@ -61,8 +61,22 @@ class BundleTests(unittest.TestCase):
         promote(candidate or self.candidate, destination, self.inputs, self.proof, after_write,
                 english=self.english, translations=self.translations)
 
+    def seed_shipped_baseline(self, target):
+        database = target / TARGETS['pali.db']
+        database.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(self.candidate / 'pali.db', database)
+        with contextlib.closing(sqlite3.connect(database)) as db, db:
+            version = db.execute('PRAGMA user_version').fetchone()[0]
+            db.execute(f'PRAGMA user_version = {version - 1}')
+        manifest = read_json(self.candidate / 'bundle.json')
+        manifest['outputs']['pali.db'] = sha256(database)
+        dump_json(target / TARGETS['candidate.json'], manifest)
+        return {TARGETS[name]: (target / TARGETS[name]).read_bytes()
+                for name in ('pali.db', 'candidate.json')}
+
     def test_promotes_exact_database_manifest_and_registries(self):
         target = self.root / 'success'
+        self.seed_shipped_baseline(target)
         self.promote(target)
         recover(target)
         for name, path in TARGETS.items():
@@ -83,6 +97,7 @@ class BundleTests(unittest.TestCase):
                         before[path] = (self.candidate / name).read_bytes()
                     if before[path] is not None:
                         (target / path).write_bytes(before[path])
+                before.update(self.seed_shipped_baseline(target))
                 def interrupt(name):
                     if name == boundary:
                         raise RuntimeError('interrupted')

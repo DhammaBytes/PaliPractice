@@ -120,6 +120,10 @@ When modifying code:
 For database changes:
 - Modify extraction script in scripts/extract_nouns_and_verbs.py
 - Validate the isolated candidate with `scripts/extract_nouns_and_verbs.py validate <candidate-directory>`
+- Before multilingual promotion, generate the shipped-dictionary comparison with
+  `scripts/compare_translations.py`. Resolve or record every required decision;
+  promotion enforces it independently of the full gate. See
+  [dictionary maintenance](scripts/dictionaries/README.md).
 - Regenerate C# models if schema changes
 
 Example of Uno Fluent C# Markup for building UIs:

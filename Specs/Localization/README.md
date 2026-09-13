@@ -4,10 +4,16 @@ Localize Pāli Practice into Russian and Spanish with verified grammatical
 terminology, a small pilot, and independent review in each language. This is a
 planning and research deliverable; it does not approve or ship translations.
 
+This document preserves the original plan. Spanish and Russian UI resources now
+exist; subsequent review and platform evidence are recorded in [es.md](es.md)
+and [ru.md](ru.md). The absent-Spanish and test-coverage statements below
+describe the starting checkpoint, not the current implementation. Dictionary
+imports use the separate [maintenance workflow](../../scripts/dictionaries/README.md).
+
 Baseline: `e27d39be9cfb4b02a56afd4522fbaa7edfc87532`, inspected 2026-09-07.
 The worktree was clean at the start of this task.
 
-## Scope and current state
+## Scope and starting state — 7 September 2026
 
 The source is
 [`Strings/en/Resources.resw`](../../PaliPractice/PaliPractice/Strings/en/Resources.resw).

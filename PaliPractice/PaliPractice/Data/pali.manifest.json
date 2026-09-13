@@ -11,7 +11,7 @@
         "scripts/extraction/compact.py": "4a055f3c65cf34740a887ac4b56780a2cae8ab55a682be2574e5a104eaffbabf",
         "scripts/extraction/compatibility.py": "59de8cebc6ecdd6793f50b6b0f837841a02eef1bb8d936ed0b869667d9b768d6",
         "scripts/extraction/config.py": "4e4a459cdf7d1ddec516143568bdf941dee1414168cfa6203bae83c3b1cce818",
-        "scripts/extraction/enrichment.py": "a5ad5b078cb89c6becd27552f95f8c39a50354c486e7ee7df1c4d2ec54c29fd1",
+        "scripts/extraction/enrichment.py": "3f717a86cf1f54a6794a3e35348b8f9223494cce8cbb91a71c02d670199d3b4c",
         "scripts/extraction/form_storage.py": "53591ba42610e533f7c2b64b1f4bae791875cfd22c95177dd5a5a63310589495",
         "scripts/extraction/forms.py": "247c7afaf5c39ba030b81bc27ed28a7bb7764f2896e5b634080f595c12ef3ef8",
         "scripts/extraction/grammar.py": "82ede59be4c6785d2460422a468523661b3fa83636472c9a751b75409418a768",
@@ -20,6 +20,7 @@
         "scripts/extraction/plural_dedup.py": "1fc2e2e5ccab55205a05d6481ef81bfbee80a3e7ca61eb59c9930c7ad73dd74e",
         "scripts/extraction/registry.py": "c0e498e52956814148eb1a7d4c948993021a449fc69413bf742cc9b62731d5a6",
         "scripts/extraction/russian_meanings.py": "99b40dbf4867195d27cdd81a513f6b3eee87ade5042b1fb70411b115e4261d49",
+        "scripts/extraction/spanish_dictionary.py": "c3e42690d0689afb48b51cc019d113950279e1d424d7a6caa00064916d62792b",
         "scripts/extraction/spanish_meanings.py": "45bdb9566946fbefc91f4a2282a3fbc7d1e81471115e4dd463bf10c60efa55f3",
         "scripts/extraction/templates.py": "94c5e51a3a7deeef0dbd44285b73e01b4064314fbfe5a4e739c686f61c8ac310",
         "scripts/extraction/translations.py": "8314e4140433dd689d4a0a14d03a258de807e1a0813574d812c03338203d0b1d",
@@ -28,11 +29,11 @@
         "scripts/extraction/validate_inflections.py": "aa17918fac3e3f93266d6b0f48db6867e028ba6d6c34a6793c6974fef0c62f9e"
       },
       "packages": {
-        "SQLAlchemy": "2.0.41",
+        "SQLAlchemy": "2.0.52",
         "aksharamukha": "2.3"
       },
       "python": "3.13.15",
-      "revision": "a3fcf5b1f063e1716ddd75b5778d68ed54637c2e",
+      "revision": "85d240130471ec21df0ba51bd6200285e198f52b",
       "sqlite": "3.53.4"
     },
     "configuration": {
@@ -79,12 +80,12 @@
         "thai": "a3d216560ed3c44ab35e2250d17c9faf7fb7d8e4"
       }
     },
-    "database_version": 2026090801,
+    "database_version": 2026091201,
     "inputs": {
       "adjustments": {
         "sha256": "eb43aff156e32abcf574873eb647d31a737c939b0529c200781a9dc0c59771a2",
         "source": {
-          "origin": "explicit local adjustments",
+          "origin": "local configuration snapshot before Spanish dictionary promotion",
           "revision": "sha256:eb43aff156e32abcf574873eb647d31a737c939b0529c200781a9dc0c59771a2"
         }
       },
@@ -98,7 +99,7 @@
       "corrections": {
         "sha256": "4ca10b2b65dbe531a7dd54b89710964381e8ad6e81d796627a8f897912297c13",
         "source": {
-          "origin": "explicit local corrections",
+          "origin": "local configuration snapshot before Spanish dictionary promotion",
           "revision": "sha256:4ca10b2b65dbe531a7dd54b89710964381e8ad6e81d796627a8f897912297c13"
         }
       },
@@ -120,17 +121,17 @@
         }
       },
       "practice_registry": {
-        "sha256": "1e1b908f3aea0442b0e09f19d3827f0bc20168dbecfb3617798987d169acab1c",
+        "sha256": "74d6d7fab159270ba819be1746b74d4be88b080034fe9fd562319bf9fd587cab",
         "source": {
-          "origin": "explicit local practice_registry",
-          "revision": "sha256:1e1b908f3aea0442b0e09f19d3827f0bc20168dbecfb3617798987d169acab1c"
+          "origin": "local configuration snapshot before Spanish dictionary promotion",
+          "revision": "sha256:74d6d7fab159270ba819be1746b74d4be88b080034fe9fd562319bf9fd587cab"
         }
       },
       "registry": {
-        "sha256": "daa248dc5436ab1b78e336891ea2333f1759d7a2ab88f6200ed7eb16ceccaa45",
+        "sha256": "60def983ff5064eecac63c33494608900fe838e6653920e8c7871c80c6ff29c8",
         "source": {
-          "origin": "explicit local registry",
-          "revision": "sha256:daa248dc5436ab1b78e336891ea2333f1759d7a2ab88f6200ed7eb16ceccaa45"
+          "origin": "local configuration snapshot before Spanish dictionary promotion",
+          "revision": "sha256:60def983ff5064eecac63c33494608900fe838e6653920e8c7871c80c6ff29c8"
         }
       },
       "sc": {
@@ -150,12 +151,12 @@
     },
     "language_layer": "en",
     "outputs": {
-      "compatibility.json": "09e711082109700389dc54f84d578418bd4329c9e862c7dfd82964270306d86f",
+      "compatibility.json": "18621beb0f50230349e3ca0c1b8bb888ca363ba5ebf712c1a18dd185927f6053",
       "corpus_forms.json": "e6bfa934656079bfec1b088605bbad2284509af3bd250806c9a0ab2e5a3d1149",
-      "inflection_validation.log": "9daf41733524cd6cc55ce029981d3a97a490eb6bacb6838a7cccf6f348e67568",
+      "inflection_validation.log": "cf1520a7849a642cfd9f3ca534125963c022fd1c0739efdd5f0cc6cdf69ab1ed",
       "lemma_registry.json": "60def983ff5064eecac63c33494608900fe838e6653920e8c7871c80c6ff29c8",
-      "pali.db": "645adc63fd4fa80015d223cd037df3f87a8595fca88d54fc25092054997dd559",
-      "pali.version.txt": "02baf5dd9d87a1b1c2acb77a5e1a443bba30fd393ae3eba48d6eae6e28060ead",
+      "pali.db": "fca3709323664fe4a0a2676455482971d92d99ca7bac7a9327d1dbb98d6c7124",
+      "pali.version.txt": "223071c50f3117c80823355dbfa9452c27830317d51bb8d1a09f23f4133a32a1",
       "paradigm_corrections.json": "4ca10b2b65dbe531a7dd54b89710964381e8ad6e81d796627a8f897912297c13",
       "practice_registry.json": "74d6d7fab159270ba819be1746b74d4be88b080034fe9fd562319bf9fd587cab",
       "primary_forms.json": "12b969c906d2a75b4d5335b7c7fe9d199894db3ccc48e83dc42851a1b9e4add9"
@@ -170,13 +171,13 @@
     "ru"
   ],
   "outputs": {
-    "compatibility.json": "09e711082109700389dc54f84d578418bd4329c9e862c7dfd82964270306d86f",
+    "compatibility.json": "18621beb0f50230349e3ca0c1b8bb888ca363ba5ebf712c1a18dd185927f6053",
     "corpus_forms.json": "e6bfa934656079bfec1b088605bbad2284509af3bd250806c9a0ab2e5a3d1149",
-    "enrichment.json": "9195dd2ee3796dc6499eb0eaf2f11e4b2c196fdc65a9727bb7e5f3260b1ae0fb",
-    "inflection_validation.log": "9daf41733524cd6cc55ce029981d3a97a490eb6bacb6838a7cccf6f348e67568",
+    "enrichment.json": "7424c23f1faca94d2502699097771d31d8cb95c945b40a40d847c20700019ed3",
+    "inflection_validation.log": "cf1520a7849a642cfd9f3ca534125963c022fd1c0739efdd5f0cc6cdf69ab1ed",
     "lemma_registry.json": "60def983ff5064eecac63c33494608900fe838e6653920e8c7871c80c6ff29c8",
-    "pali.db": "9e951b247e7cf1ad053f9e6d9f4915b0d2f46a8b66b0e0feac357f3f1c82fcc9",
-    "pali.version.txt": "02baf5dd9d87a1b1c2acb77a5e1a443bba30fd393ae3eba48d6eae6e28060ead",
+    "pali.db": "c11793ce5da54156500da77c53b4c43573817da79f3f31e42bff2f13734276ae",
+    "pali.version.txt": "223071c50f3117c80823355dbfa9452c27830317d51bb8d1a09f23f4133a32a1",
     "paradigm_corrections.json": "4ca10b2b65dbe531a7dd54b89710964381e8ad6e81d796627a8f897912297c13",
     "practice_registry.json": "74d6d7fab159270ba819be1746b74d4be88b080034fe9fd562319bf9fd587cab",
     "primary_forms.json": "12b969c906d2a75b4d5335b7c7fe9d199894db3ccc48e83dc42851a1b9e4add9"
@@ -188,14 +189,21 @@
         "nouns": {
           "primary_lemmas": 1500,
           "selected_senses": 2395,
-          "translated_primary_lemmas": 1359,
-          "translated_senses": 2177
+          "translated_primary_lemmas": 1500,
+          "translated_senses": 2395
         },
         "verbs": {
           "primary_lemmas": 750,
           "selected_senses": 1327,
-          "translated_primary_lemmas": 683,
-          "translated_senses": 1162
+          "translated_primary_lemmas": 750,
+          "translated_senses": 1327
+        }
+      },
+      "identity_source": {
+        "sha256": "6e3a3b910c3d1c626abcc392ef44c9cc6253fceffc6c867f565d6f4ab422f63a",
+        "source": {
+          "origin": "PaliPractice Spanish dictionary: scripts/dictionaries/es/identity.json",
+          "revision": "sha256:6e3a3b910c3d1c626abcc392ef44c9cc6253fceffc6c867f565d6f4ab422f63a"
         }
       },
       "reference_source": {
@@ -203,6 +211,13 @@
         "source": {
           "origin": "https://github.com/DhammaBytes/dpd-dictionary-es/blob/8a634e53d0605bc50f0a9913b221ebc6a40f17b2/js/dpd_ebts.js",
           "revision": "8a634e53d0605bc50f0a9913b221ebc6a40f17b2"
+        }
+      },
+      "review_source": {
+        "sha256": "436564c732bade6995da9fb46ecab6e0f492e626b5087c4cc7d0363ce177fba9",
+        "source": {
+          "origin": "PaliPractice Spanish dictionary: scripts/dictionaries/es/reviews.json",
+          "revision": "sha256:436564c732bade6995da9fb46ecab6e0f492e626b5087c4cc7d0363ce177fba9"
         }
       },
       "source": {

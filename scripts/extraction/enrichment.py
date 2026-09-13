@@ -10,6 +10,7 @@ from .candidate import OUTPUTS, validate_candidate
 from .inputs import InputError, read_json, sha256, verify_file
 from .russian_meanings import load_russian_meanings
 from .spanish_meanings import spanish_records
+from .spanish_dictionary import dictionary_records
 
 TABLE = 'localized_meanings'
 SCHEMA = '''CREATE TABLE localized_meanings (
@@ -45,18 +46,24 @@ def read_sources(manifest_path: Path, english: Path):
         raise InputError('Unsupported translation manifest')
     if manifest['english_sha256'] != sha256(english / 'pali.db'):
         raise InputError('Translation manifest belongs to another English checkpoint')
-    sources = manifest['sources']
-    if not isinstance(sources, dict) or not sources or set(sources) - {'ru', 'es', 'es_english'}:
-        raise InputError('Unsupported translation languages')
-    if ('es' in sources) != ('es_english' in sources):
-        raise InputError('Spanish requires paired English and Spanish exports')
-    paths = {language: verify_file(entry, manifest_path.parent) for language, entry in sources.items()}
-    if 'es' in paths and sources['es']['source']['revision'] != sources['es_english']['source']['revision']:
-        raise InputError('Spanish paired exports must use the same revision')
+    paths = translation_source_paths(manifest['sources'], manifest_path.parent)
     paths['_dpd'] = verify_file(manifest['dpd'], manifest_path.parent)
     if manifest['dpd']['sha256'] != read_json(english / 'candidate.json')['inputs']['dpd']['sha256']:
         raise InputError('Translation identity reference differs from the English DPD source')
     return manifest, paths
+
+
+def translation_source_paths(sources: dict, parent: Path):
+    if not isinstance(sources, dict) or not sources or set(sources) - {'ru', 'es', 'es_english', 'es_identity', 'es_reviews'}:
+        raise InputError('Unsupported translation languages')
+    if ('es' in sources) != ('es_english' in sources):
+        raise InputError('Spanish requires paired English and Spanish exports')
+    if ('es_identity' in sources) != ('es_reviews' in sources) or ('es_identity' in sources and 'es' not in sources):
+        raise InputError('Spanish dictionary requires identity, reviews and paired exports')
+    paths = {language: verify_file(entry, parent) for language, entry in sources.items()}
+    if 'es' in paths and sources['es']['source']['revision'] != sources['es_english']['source']['revision']:
+        raise InputError('Spanish paired exports must use the same revision')
+    return paths
 
 
 def translation_records(words: list[dict], meanings: dict[int, str], language: str) -> list[dict]:
@@ -96,14 +103,20 @@ def expected_layer(manifest: dict, paths: dict, english: Path) -> dict:
         headwords = (dpd.execute('SELECT id, lemma_1, pos, meaning_1, meaning_2 FROM dpd_headwords').fetchall()
                      if 'es' in paths else [])
     layers = {}
-    for language in sorted(set(manifest['sources']) - {'es_english'}):
+    for language in sorted(set(manifest['sources']) & {'es', 'ru'}):
         if language == 'ru':
             meanings = load_russian_meanings(paths[language])
             records = translation_records(words, meanings, language)
             extra = {'unselected_source_ids': sorted(set(meanings) & known_ids - selected_ids),
                      'unknown_source_ids': sorted(set(meanings) - known_ids)}
         else:
-            records, extra = spanish_records(words, headwords, paths['es_english'], paths['es'])
+            if 'es_identity' in paths:
+                records, extra = dictionary_records(words, headwords, paths['es_english'], paths['es'],
+                    paths['es_identity'], paths['es_reviews'], manifest['dpd']['sha256'])
+                extra['identity_source'] = source_evidence(manifest['sources']['es_identity'])
+                extra['review_source'] = source_evidence(manifest['sources']['es_reviews'])
+            else:
+                records, extra = spanish_records(words, headwords, paths['es_english'], paths['es'])
             extra['reference_source'] = source_evidence(manifest['sources']['es_english'])
         layers[language] = {'source': source_evidence(manifest['sources'][language]),
                             'records': records, 'coverage': coverage(records), **extra}
@@ -143,7 +156,7 @@ def bundle_manifest(english: Path, output: Path, report: dict) -> dict:
     return {'schema': 1, 'kind': 'multilingual-database',
             'english': read_json(english / 'candidate.json'),
             'languages': ['en', *sorted(report['layers'])],
-            'translations': {language: {key: layer[key] for key in ('source', 'coverage', 'reference_source') if key in layer}
+            'translations': {language: {key: layer[key] for key in ('source', 'coverage', 'reference_source', 'identity_source', 'review_source') if key in layer}
                              for language, layer in report['layers'].items()},
             'outputs': {name: sha256(output / name) for name in (*OUTPUTS, 'enrichment.json')}}
 

@@ -1,5 +1,9 @@
 # M7 completion evidence
 
+> Historical milestone evidence; its counts and verification describe that
+> checkpoint. For subsequent ES/RU mapping recovery and current update safeguards,
+> see [dictionary maintenance](../../../scripts/dictionaries/README.md).
+
 Base: `816e7a5` (M6). Paired ES/EN source: DhammaBytes/dpd-dictionary-es commit
 `8a634e53d0605bc50f0a9913b221ebc6a40f17b2` (18 July 2026), rechecked and acquired
 at the full revision on 7 September 2026. See [pinned inputs](input-manifest.json).

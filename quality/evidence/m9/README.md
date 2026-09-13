@@ -1,5 +1,9 @@
 # M9 — Multilingual database and model readiness
 
+> Historical milestone evidence; its counts and verification describe that
+> checkpoint. For subsequent ES/RU mapping recovery and current update safeguards,
+> see [dictionary maintenance](../../../scripts/dictionaries/README.md).
+
 This checkpoint covers database generation, model behavior, recoverable promotion
 and packaged data identities. It is not approval to publish the whole app.
 

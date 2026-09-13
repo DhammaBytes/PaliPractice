@@ -8,6 +8,10 @@ Full attestation spellings are now build evidence; the runtime uses scoped compa
 
 The objective is a reproducible, grammatically correct English DPD database with stable production practice identities, followed by verified Russian and Spanish meanings in the next app update. The findings and measured starting state are in [DATA-REBUILD-AUDIT.md](DATA-REBUILD-AUDIT.md).
 
+Current dictionary maintenance: [historical Spanish recovery and mandatory
+ES/RU update comparison](scripts/dictionaries/README.md). The milestones below
+retain their original dated scope and measurements.
+
 ## Sequence and working rules
 
 | Milestone | Outcome | Depends on |

@@ -1,0 +1,4571 @@
+{
+  "schema": 1,
+  "identity_sha256": "6e3a3b910c3d1c626abcc392ef44c9cc6253fceffc6c867f565d6f4ab422f63a",
+  "dpd_sha256": "6982aee8a9cdce83c3c57af7f7c506f59fe07afd5673a952fb8d27d52c693a98",
+  "entries": [
+    {
+      "headword_id": 526,
+      "target_key": "agāra 1",
+      "target_pos": "nt",
+      "target_english": "dwelling; building; house; home; hut",
+      "source_keys": [
+        "agāra 1"
+      ],
+      "meaning": "morada; edificio; casa; choza",
+      "mode": "verbatim",
+      "reason": "Added home overlaps authored casa and morada; dwelling/building/house/hut are unchanged.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 1045,
+      "target_key": "acchariya 3",
+      "target_pos": "nt",
+      "target_english": "marvel; wonder; amazing quality (of)",
+      "source_keys": [
+        "acchariya 3"
+      ],
+      "meaning": "prodigio, maravilla",
+      "mode": "verbatim",
+      "reason": "The older marvel/wonder pair directly covers the current noun; amazing quality is an explanatory synonym.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 1064,
+      "target_key": "acchādeti 1.1",
+      "target_pos": "pr",
+      "target_english": "dresses; clothes; gives clothes (to)",
+      "source_keys": [
+        "acchādeti 1.1"
+      ],
+      "meaning": "viste; da ropa; da vestimenta (a)",
+      "mode": "verbatim",
+      "reason": "English give became gives; the Spanish already uses third-person singular da.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 1431,
+      "target_key": "ajjhosati",
+      "target_pos": "pr",
+      "target_english": "fixates (on); clings; attaches (to); obsesses (on)",
+      "source_keys": [
+        "ajjhosati"
+      ],
+      "meaning": "se fija (en); se aferra (a); se apega (a)",
+      "mode": "verbatim",
+      "reason": "Fixation/clinging/attachment already expresses the added obsession synonym.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 1455,
+      "target_key": "ajjhohāreti",
+      "target_pos": "pr",
+      "target_english": "infuses; injects; instils",
+      "source_keys": [
+        "ajjhohāreti"
+      ],
+      "meaning": "infunde; inyecta; instila",
+      "mode": "verbatim",
+      "reason": "Instills changes to British instils; infunde/inyecta/instila unchanged.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 1724,
+      "target_key": "aṭṭhakathā",
+      "target_pos": "fem",
+      "target_english": "commentary; exegesis; detailed explanation",
+      "source_keys": [
+        "vaṇṇanā 1"
+      ],
+      "meaning": "comentario; exégesis; explicación detallada",
+      "mode": "verbatim",
+      "reason": "The other authored entry has exactly the target English commentary/exegesis/detailed explanation.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 2621,
+      "target_key": "atthagama 1",
+      "target_pos": "masc",
+      "target_english": "settling down; subsiding; disappearance; vanishing",
+      "source_keys": [
+        "atthaṅgama 1"
+      ],
+      "meaning": "apaciguamiento; disminución; desaparición; desvanecimiento",
+      "mode": "adapted",
+      "reason": "The spelling variant supplies all four English concepts; omit its additional passing-away gloss.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 3018,
+      "target_key": "addhāna 3",
+      "target_pos": "nt",
+      "target_english": "course (of saṃsāra); long (cycle of rebirths)",
+      "source_keys": [
+        "addhāna 3"
+      ],
+      "meaning": "curso (del saṃsāra)",
+      "mode": "verbatim",
+      "reason": "Course of saṃsāra remains explicitly in the target; the new cycle wording clarifies the same referent.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 4334,
+      "target_key": "anukampā",
+      "target_pos": "fem",
+      "target_english": "care; compassion; concern (for); taking pity (on)",
+      "source_keys": [
+        "anukampā"
+      ],
+      "meaning": "cuidado; compasión; piedad; preocupación (por)",
+      "mode": "verbatim",
+      "reason": "Pity and taking pity express the same compassion sense; the four Spanish nouns remain applicable.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 5097,
+      "target_key": "anuyoga 1",
+      "target_pos": "masc",
+      "target_english": "praxis; practice; pursuit; doing (of); devotion (to)",
+      "source_keys": [
+        "anuyoga 1"
+      ],
+      "meaning": "praxis (de); práctica (de); devoción (a); búsqueda (de); realización (de)",
+      "mode": "verbatim",
+      "reason": "Praxis/practice/devotion/pursuit/doing are reordered with prepositions adjusted; Spanish retains the same concepts.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 5507,
+      "target_key": "anekapariyāya",
+      "target_pos": "masc",
+      "target_english": "various ways; different methods; alternative means",
+      "source_keys": [
+        "anekapariyāya"
+      ],
+      "meaning": "varias maneras; diferentes métodos; medios alternativos",
+      "mode": "verbatim",
+      "reason": "Alternate became alternative; medios alternativos already expresses both.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 6210,
+      "target_key": "apanāmeti 3",
+      "target_pos": "pr",
+      "target_english": "withholds; keeps away",
+      "source_keys": [
+        "paṭibāhati 2",
+        "sandhāreti"
+      ],
+      "meaning": "retiene; mantiene alejado",
+      "mode": "adapted",
+      "reason": "Reject banishes/removes as too broad. Borrow holds-back/retiene and keeps-away/mantiene alejado, which explicitly support the target actions.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 7336,
+      "target_key": "abbhuta 2",
+      "target_pos": "nt",
+      "target_english": "marvel; wonder (of); astonishing thing (about)",
+      "source_keys": [
+        "abbhuta 2"
+      ],
+      "meaning": "maravilla, prodigio",
+      "mode": "verbatim",
+      "reason": "Maravilla and prodigio cover marvel and astonishing thing; the adjective and wager senses are excluded.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 7576,
+      "target_key": "abhikkhaṇati",
+      "target_pos": "pr",
+      "target_english": "digs; turns up the soil",
+      "source_keys": [
+        "abhikkhaṇati"
+      ],
+      "meaning": "excava; remueve la tierra",
+      "mode": "verbatim",
+      "reason": "Turn became turns in English; excava and remueve la tierra already agree.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 7893,
+      "target_key": "abhinisīdati 1",
+      "target_pos": "pr",
+      "target_english": "sits down hard; sits heavily; sits forcibly (on)",
+      "source_keys": [
+        "abhinisīdati 1"
+      ],
+      "meaning": "se sienta con fuerza; se sienta pesadamente; se sienta a la fuerza (sobre)",
+      "mode": "verbatim",
+      "reason": "Sit corrected to sits; source Spanish already inflected se sienta.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 7940,
+      "target_key": "abhinīharati 2",
+      "target_pos": "pr",
+      "target_english": "directs; aims; steers; resolves",
+      "source_keys": [
+        "abhinīharati 2"
+      ],
+      "meaning": "dirige; apunta; conduce",
+      "mode": "verbatim",
+      "reason": "Dirige, apunta and conduce still translate the retained directs/aims/steers; resolves expands the same intentional direction sense.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 8231,
+      "target_key": "abhisambujjhati 1",
+      "target_pos": "pr",
+      "target_english": "realizes; discovers; fully understands; awakens (to)",
+      "source_keys": [
+        "abhisambujjhati 1"
+      ],
+      "meaning": "se da cuenta; descubre; comprende plenamente; despierta (a)",
+      "mode": "adapted",
+      "reason": "Corrects realiza, a false friend for realizes in this awareness context; retains authored remaining glosses.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 8232,
+      "target_key": "abhisambujjhati 2",
+      "target_pos": "pr",
+      "target_english": "attains full awakening; achieves total enlightenment",
+      "source_keys": [
+        "abhisambujjhati 2"
+      ],
+      "meaning": "alcanza el despertar pleno; logra la iluminación total",
+      "mode": "verbatim",
+      "reason": "Awaking corrected to awakening; despertar pleno already fits.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 8454,
+      "target_key": "amata 1.1",
+      "target_pos": "nt",
+      "target_english": "deathless state; immortality; freedom from death; epithet of Nibbāna",
+      "source_keys": [
+        "amata 1.1"
+      ],
+      "meaning": "estado inmortal; inmortalidad; epíteto de nibbāna",
+      "mode": "verbatim",
+      "reason": "Freedom from death explicates immortality; estado inmortal and inmortalidad already cover it.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 8499,
+      "target_key": "amanasikāra 2",
+      "target_pos": "masc",
+      "target_english": "lack of attention; not paying heed (to)",
+      "source_keys": [
+        "amanasikāra 2"
+      ],
+      "meaning": "falta de atención; no prestar atención",
+      "mode": "verbatim",
+      "reason": "The only addition is the optional English complement to; the attention gloss is unchanged.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 8881,
+      "target_key": "arati 1",
+      "target_pos": "fem",
+      "target_english": "dissatisfaction; dislike; discontent; aversion; boredom (towards); ennui (with)",
+      "source_keys": [
+        "arati 1"
+      ],
+      "meaning": "insatisfacción; disgusto; descontento; aversión; aburrimiento; hastío",
+      "mode": "adapted",
+      "reason": "The accepted apatía carries over source listlessness, which current English replaced with ennui. Keep aburrimiento and render the new ennui as hastío; apathy is not the same state.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 8899,
+      "target_key": "arahatā",
+      "target_pos": "masc",
+      "target_english": "by an awakened being",
+      "source_keys": [
+        "arahatā"
+      ],
+      "meaning": "por un ser despierto",
+      "mode": "adapted",
+      "reason": "Corrects source-derived definite el to indefinite un: current English says by an awakened being and does not identify a unique being.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 8958,
+      "target_key": "ariṭṭha 2.4",
+      "target_pos": "nt",
+      "target_english": "medicinal spirit; fermented herbal decoction",
+      "source_keys": [
+        "ariṭṭha 2.4"
+      ],
+      "meaning": "licor medicinal; decocción fermentada de hierbas",
+      "mode": "adapted",
+      "reason": "Spirit now explicitly means fermented herbal medicine; replace the misleading literal espiritu with licor and express the new clarification.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 9353,
+      "target_key": "asacchikata 2",
+      "target_pos": "nt",
+      "target_english": "inexperienced; unrealized; unattained",
+      "source_keys": [
+        "asacchikata 2"
+      ],
+      "meaning": "no experimentado; no realizado; no alcanzado",
+      "mode": "verbatim",
+      "reason": "Unexperienced changed to inexperienced; the three negative Spanish descriptions still match.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 10777,
+      "target_key": "aveccappasāda",
+      "target_pos": "masc",
+      "target_english": "faith founded in understanding; experiential confidence; epithet of stream entry",
+      "source_keys": [
+        "aveccappasāda",
+        "pasāda 1",
+        "vedanā 1"
+      ],
+      "meaning": "fe fundada en la comprensión; confianza basada en la experiencia; epíteto de la entrada en la corriente",
+      "mode": "adapted",
+      "reason": "Restores the newly explicit experiential-confidence dimension using authored confianza and experiencia vocabulary; first pass retained only faith founded in understanding.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 11143,
+      "target_key": "āgacchati 1",
+      "target_pos": "pr",
+      "target_english": "comes (to); arrives (at); reaches",
+      "source_keys": [
+        "āgacchati 1"
+      ],
+      "meaning": "viene (a); llega (a)",
+      "mode": "verbatim",
+      "reason": "Viene and llega directly match comes and arrives; llega also covers reaches.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 11192,
+      "target_key": "āgama 3",
+      "target_pos": "masc",
+      "target_english": "coming; arrival; approach",
+      "source_keys": [
+        "āgama 3"
+      ],
+      "meaning": "venida, acercamiento",
+      "mode": "verbatim",
+      "reason": "Coming and approach remain target glosses; arrival is within the same movement sense.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 11372,
+      "target_key": "ājānāti 3",
+      "target_pos": "pr",
+      "target_english": "recognizes; acknowledges",
+      "source_keys": [
+        "ājānāti 3"
+      ],
+      "meaning": "reconoce",
+      "mode": "verbatim",
+      "reason": "Reconoce covers both acknowledges and newly added recognizes.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 12298,
+      "target_key": "āyuppamāṇa",
+      "target_pos": "nt",
+      "target_english": "length of life; lifespan",
+      "source_keys": [
+        "āyuppamāṇa"
+      ],
+      "meaning": "duración de la vida",
+      "mode": "adapted",
+      "reason": "Esperanza de vida means life expectancy, an expected/statistical duration, whereas target says actual length of life/lifespan. Retain the authored duración de la vida and drop the misleading synonym.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 12366,
+      "target_key": "āraññika 1",
+      "target_pos": "masc",
+      "target_english": "forest monk; forest-dwelling ascetic",
+      "source_keys": [
+        "āraññika 1"
+      ],
+      "meaning": "monje del bosque; asceta que habita en el bosque",
+      "mode": "verbatim",
+      "reason": "Only forest-dwelling hyphenation changes; both authored Spanish phrases fit.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 12387,
+      "target_key": "ārabbhati",
+      "target_pos": "pr",
+      "target_english": "begins; starts; initiates; undertakes; rouses oneself",
+      "source_keys": [
+        "ārabbhati"
+      ],
+      "meaning": "se anima; comienza; se pone en marcha",
+      "mode": "verbatim",
+      "reason": "Begins/starts and rouses oneself overlap comienza/se anima/se pone en marcha; added initiates/undertakes do not invalidate this concise meaning.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 12573,
+      "target_key": "āropeti 3",
+      "target_pos": "pr",
+      "target_english": "blames; imputes; charges",
+      "source_keys": [
+        "āropeti 3"
+      ],
+      "meaning": "atribuye la culpa; imputa; acusa",
+      "mode": "adapted",
+      "reason": "Narrow the authored attributes/atribuye to attributing blame and express the current charge/impute sense; do not reuse neutral attribution alone.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 12764,
+      "target_key": "āsana 2",
+      "target_pos": "nt",
+      "target_english": "sitting; sitting posture",
+      "source_keys": [
+        "āsana 2"
+      ],
+      "meaning": "postura sentada",
+      "mode": "verbatim",
+      "reason": "Postura sentada directly translates the retained sitting-posture sense.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 13222,
+      "target_key": "āhareti 3",
+      "target_pos": "pr",
+      "target_english": "takes (the knife); commits (suicide)",
+      "source_keys": [
+        "āhareti 3"
+      ],
+      "meaning": "toma el cuchillo, se mata",
+      "mode": "verbatim",
+      "reason": "Taking the knife and killing oneself expresses the same target suicide sense.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 13417,
+      "target_key": "iṭṭha 1.2",
+      "target_pos": "nt",
+      "target_english": "what is liked; what is pleasant",
+      "source_keys": [
+        "iṭṭha 1.1",
+        "iṭṭha 1.2"
+      ],
+      "meaning": "lo que agrada; lo que es agradable",
+      "mode": "adapted",
+      "reason": "Target now denotes what is pleasant, rather than pleasure itself; nominalizes authored agradable and agrado.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 13483,
+      "target_key": "itisadda",
+      "target_pos": "masc",
+      "target_english": "the word 'thus'",
+      "source_keys": [
+        "evaṃsadda 1"
+      ],
+      "meaning": "la palabra 'así'",
+      "mode": "verbatim",
+      "reason": "Independent source has exactly the target English the word thus; la palabra así directly translates that definition.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 13648,
+      "target_key": "iddhi 3",
+      "target_pos": "fem",
+      "target_english": "success; accomplishment; achievement",
+      "source_keys": [
+        "iddhi 3"
+      ],
+      "meaning": "éxito; logro",
+      "mode": "adapted",
+      "reason": "Retain éxito for success and use logro for accomplishment; omit older prosperity and potency, which no longer occur.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 14105,
+      "target_key": "ukkhipati 1",
+      "target_pos": "pr",
+      "target_english": "(vinaya) expels; debars",
+      "source_keys": [
+        "ukkhipati 1"
+      ],
+      "meaning": "(vinaya) expulsa; excluye",
+      "mode": "adapted",
+      "reason": "Retain expulsa and adapt historical suspension to explicit debar/exclude; add current vinaya domain.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 15178,
+      "target_key": "uddhaccakukkucca",
+      "target_pos": "nt",
+      "target_english": "restlessness and uneasiness; agitation and anxiety",
+      "source_keys": [
+        "uddhaccakukkucca"
+      ],
+      "meaning": "inquietud y nerviosismo; agitación e intranquilidad",
+      "mode": "verbatim",
+      "reason": "Inquietud, nerviosismo, agitación and intranquilidad express both old edginess and new anxiety wording.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 15362,
+      "target_key": "upakkama 4",
+      "target_pos": "masc",
+      "target_english": "approach; strategy; way of dealing",
+      "source_keys": [
+        "upakkama 5",
+        "upakkama 1"
+      ],
+      "meaning": "enfoque; estrategia; método",
+      "mode": "adapted",
+      "reason": "Approach plus technique/means/method support a strategic approach; acercamiento is adapted to enfoque for this nonphysical context.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 15396,
+      "target_key": "upagacchati 1",
+      "target_pos": "pr",
+      "target_english": "veers towards; swerves towards; drifts towards",
+      "source_keys": [
+        "upagacchati 1"
+      ],
+      "meaning": "se desvía hacia; vira hacia",
+      "mode": "verbatim",
+      "reason": "Veers/swerves remain exact matches for se desvía/vira; drifts is an added close synonym.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 15516,
+      "target_key": "upaṭṭhahati 2",
+      "target_pos": "pr",
+      "target_english": "serves; provides (somebody with)",
+      "source_keys": [
+        "upaṭṭhahati 2"
+      ],
+      "meaning": "sirve; proporciona (algo a alguien)",
+      "mode": "adapted",
+      "reason": "Keeps sirve and corrects awkward provee (con) to the target provide-somebody-with construction; drops attends.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 15561,
+      "target_key": "upaṭṭhāpeti 3",
+      "target_pos": "pr",
+      "target_english": "gets (a doctor) to treat; makes attend (to)",
+      "source_keys": [
+        "upaṭṭhāpeti 3"
+      ],
+      "meaning": "hace que (un médico) trate; hace atender (a)",
+      "mode": "verbatim",
+      "reason": "Make attend corrected to makes attend; hace atender already correct.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 16318,
+      "target_key": "upādānakkhandha",
+      "target_pos": "masc",
+      "target_english": "aggregates that are clung to; physical and mental conglomerations that are held onto as a self",
+      "source_keys": [
+        "upādānakkhandha"
+      ],
+      "meaning": "conglomeraciones físicas y mentales a las que uno se aferra como a un yo",
+      "mode": "adapted",
+      "reason": "Select the authored physical/mental conglomeration and held-as-self clauses; discard fuel and acquisition metaphors removed from current English.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 16380,
+      "target_key": "upāyāsa 1",
+      "target_pos": "masc",
+      "target_english": "affliction; difficulty; trouble; despair; ennui",
+      "source_keys": [
+        "upāyāsa 1"
+      ],
+      "meaning": "aflicción; dificultad; problema; desesperación; hastío",
+      "mode": "adapted",
+      "reason": "The new ennui sense is not covered by affliction, difficulty, trouble or despair. Preserve those authored equivalents and add hastío for the explicit current English extension.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 16430,
+      "target_key": "upāsikā",
+      "target_pos": "fem",
+      "target_english": "female disciple; laywoman; female devotee",
+      "source_keys": [
+        "upāsikā"
+      ],
+      "meaning": "discípula laica; mujer laica; devota",
+      "mode": "verbatim",
+      "reason": "Laywomen becomes singular laywoman; Spanish mujer laica was already singular.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 16449,
+      "target_key": "upekkhā",
+      "target_pos": "fem",
+      "target_english": "looking on; mental poise; mental balance; equanimity; equipoise; non-reactivity",
+      "source_keys": [
+        "upekkhā"
+      ],
+      "meaning": "ecuanimidad; observación; serenidad mental; equilibrio mental; no reactividad",
+      "mode": "adapted",
+      "reason": "Reorder the authored equivalents around current equanimity and remove the deleted composure gloss and redundant equilibrium synonym.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 17156,
+      "target_key": "ussahati 1.1",
+      "target_pos": "pr",
+      "target_english": "makes an (initial) effort; strives; actively endeavours (in)",
+      "source_keys": [
+        "ussahati 1.1"
+      ],
+      "meaning": "hace un esfuerzo inicial; se esfuerza; se empeña activamente (en)",
+      "mode": "adapted",
+      "reason": "Retain all authored phrases and add the target's initial qualification.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 18324,
+      "target_key": "okkamati 1",
+      "target_pos": "pr",
+      "target_english": "occurs; happens; develops (in); befalls",
+      "source_keys": [
+        "okkamati 1"
+      ],
+      "meaning": "ocurre; sucede; se desarrolla; sobreviene",
+      "mode": "verbatim",
+      "reason": "Occurs/happens/develops/befalls unchanged apart from English argument marker.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 18355,
+      "target_key": "okkhāyati",
+      "target_pos": "pr",
+      "target_english": "(it) is seen; is perceived; is discerned; it appears (for)",
+      "source_keys": [
+        "okkhāyati"
+      ],
+      "meaning": "es visto; es percibido; es discernido; aparece",
+      "mode": "adapted",
+      "reason": "Retain seen/appears and adapt source known/visible wording to current perceived/discerned; remove obsolete known.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 19852,
+      "target_key": "kathā 3",
+      "target_pos": "fem",
+      "target_english": "discourse on; lecture on; sermon on",
+      "source_keys": [
+        "kathā 3"
+      ],
+      "meaning": "disertación sobre; conferencia sobre; sermón sobre",
+      "mode": "verbatim",
+      "reason": "Discourse about became discourse on; all three Spanish sobre phrases already match.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 20960,
+      "target_key": "kāma 4",
+      "target_pos": "masc",
+      "target_english": "(objects of) pleasure; sensual pleasure; sexual pleasure; sensual temptation",
+      "source_keys": [
+        "kāma 4"
+      ],
+      "meaning": "(objetos de) placer; placer sensual; placer sexual",
+      "mode": "verbatim",
+      "reason": "Authored objects of pleasure, sensual pleasure and sexual pleasure cover the core target; sensual temptation is an added related gloss.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 21324,
+      "target_key": "kāraṇā 2",
+      "target_pos": "fem",
+      "target_english": "torture; physical punishment",
+      "source_keys": [
+        "kāraṇā 2"
+      ],
+      "meaning": "tortura, castigo corporal",
+      "mode": "verbatim",
+      "reason": "Bodily punishment and physical punishment both correspond to castigo corporal.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 21643,
+      "target_key": "kiñcati",
+      "target_pos": "pr",
+      "target_english": "crushes; tramples",
+      "source_keys": [
+        "maddati 1"
+      ],
+      "meaning": "aplasta; pisotea",
+      "mode": "adapted",
+      "reason": "Reject obstructs/disturbs from the historical ID; the alternate source exactly supplies crushes/tramples, with squashes omitted.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 21810,
+      "target_key": "kirati",
+      "target_pos": "pr",
+      "target_english": "scatters; sprinkles",
+      "source_keys": [
+        "kirati"
+      ],
+      "meaning": "esparce, rocía",
+      "mode": "verbatim",
+      "reason": "Only the English separator changed; esparce and rocía are exact.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 21841,
+      "target_key": "kilamati 2",
+      "target_pos": "pr",
+      "target_english": "is in difficulty; is in trouble (with)",
+      "source_keys": [
+        "kilamati 2"
+      ],
+      "meaning": "está en dificultades; tiene problemas (con)",
+      "mode": "adapted",
+      "reason": "Correct authored literal es dificultad/es problema to idiomatic predicates for is in difficulty/is in trouble.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 23381,
+      "target_key": "khattiya 2",
+      "target_pos": "masc",
+      "target_english": "man of the warrior caste; high-caste man; nobleman",
+      "source_keys": [
+        "khattiya 2"
+      ],
+      "meaning": "hombre de la casta guerrera; hombre de casta alta; noble",
+      "mode": "verbatim",
+      "reason": "Only the English high-caste hyphen changed; the nobleman sense is unchanged.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 23420,
+      "target_key": "khanti 1",
+      "target_pos": "fem",
+      "target_english": "patience (with); endurance; tolerance (of)",
+      "source_keys": [
+        "khanti 1"
+      ],
+      "meaning": "paciencia; resistencia; tolerancia",
+      "mode": "verbatim",
+      "reason": "Only with/of complements were added; paciencia/resistencia/tolerancia match the nouns.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 23691,
+      "target_key": "khipati 1.2",
+      "target_pos": "pr",
+      "target_english": "pushes forward; shoves (on something or somebody)",
+      "source_keys": [
+        "khipati 1.2"
+      ],
+      "meaning": "empuja hacia adelante; empuja (algo o a alguien)",
+      "mode": "adapted",
+      "reason": "Empuja sobre algo o alguien mechanically copies English on; Spanish empujar takes the pushed thing or person as its object. Use algo o a alguien for grammatical argument structure.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 23716,
+      "target_key": "khippa 2",
+      "target_pos": "nt",
+      "target_english": "fishing net; casting net (for)",
+      "source_keys": [
+        "khippa 2"
+      ],
+      "meaning": "red de pesca",
+      "mode": "verbatim",
+      "reason": "Red de pesca is a valid concise translation; casting net is a narrower explanatory example.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 23732,
+      "target_key": "khiyyati",
+      "target_pos": "pr",
+      "target_english": "criticizes; complains (about)",
+      "source_keys": [
+        "khiyyati"
+      ],
+      "meaning": "critica; se queja (de)",
+      "mode": "verbatim",
+      "reason": "British criticises changed to criticizes; critica and se queja remain exact.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 23773,
+      "target_key": "khīyati 2",
+      "target_pos": "pr",
+      "target_english": "is depleted; gets less; is worn away (for)",
+      "source_keys": [
+        "khīyati 2"
+      ],
+      "meaning": "se agota; disminuye",
+      "mode": "verbatim",
+      "reason": "Is depleted/gets less remain exact; worn away is an added compatible depletion gloss.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 23775,
+      "target_key": "khīyati 4",
+      "target_pos": "pr",
+      "target_english": "criticizes; complains (about)",
+      "source_keys": [
+        "khīyati 4"
+      ],
+      "meaning": "critica; se queja (de)",
+      "mode": "verbatim",
+      "reason": "Criticises became criticizes; critica and se queja are unaffected.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 24071,
+      "target_key": "gaṇa 4",
+      "target_pos": "nt",
+      "target_english": "hoard; group; collection; mass",
+      "source_keys": [
+        "gaṇa 4"
+      ],
+      "meaning": "grupo; colección; masa",
+      "mode": "adapted",
+      "reason": "Selects the shared group/collection/mass glosses; drops horda because target now says hoard rather than horde.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 24422,
+      "target_key": "gamana 5",
+      "target_pos": "nt",
+      "target_english": "course; procedure; undertaking; way",
+      "source_keys": [
+        "gamana 5"
+      ],
+      "meaning": "curso; procedimiento; empresa",
+      "mode": "verbatim",
+      "reason": "Course/procedure/undertaking are unchanged; added way overlaps curso/procedimiento.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 24491,
+      "target_key": "garahati",
+      "target_pos": "pr",
+      "target_english": "criticizes; abuses; blames",
+      "source_keys": [
+        "garahati"
+      ],
+      "meaning": "critica; insulta; culpa",
+      "mode": "verbatim",
+      "reason": "British criticises changed to criticizes; all three authored glosses still match.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 24598,
+      "target_key": "gavesati 2",
+      "target_pos": "pr",
+      "target_english": "wishes (for); wants to make",
+      "source_keys": [
+        "gavesati 2"
+      ],
+      "meaning": "desea; quiere hacer",
+      "mode": "verbatim",
+      "reason": "Want corrected to wants; desea/quiere hacer already correct.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 25675,
+      "target_key": "cakka 3",
+      "target_pos": "nt",
+      "target_english": "power; authority; dominion; sovereignty",
+      "source_keys": [
+        "cakka 5"
+      ],
+      "meaning": "poder; autoridad; dominio",
+      "mode": "adapted",
+      "reason": "The historical command/mando sense is authority, not a wheel; adapt its gloss to the current explicit authority and dominion wording.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 26199,
+      "target_key": "candimasuriya",
+      "target_pos": "masc",
+      "target_english": "moon and sun",
+      "source_keys": [
+        "candimasūriya"
+      ],
+      "meaning": "luna y sol",
+      "mode": "verbatim",
+      "reason": "The spelling variant has exactly the target moon and sun gloss.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 26420,
+      "target_key": "cātummahārājika 2",
+      "target_pos": "masc",
+      "target_english": "realm of the Four Great Kings",
+      "source_keys": [
+        "cātumahārājika 2"
+      ],
+      "meaning": "reino de los Cuatro Grandes Reyes",
+      "mode": "verbatim",
+      "reason": "Single-m spelling source has exactly realm of the Four Great Kings and its complete Spanish equivalent.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 27087,
+      "target_key": "cetāpeti",
+      "target_pos": "pr",
+      "target_english": "swaps; exchanges; trades; buy (for)",
+      "source_keys": [
+        "cetāpeti"
+      ],
+      "meaning": "permuta; intercambia; comercia; compra (por)",
+      "mode": "verbatim",
+      "reason": "Swops became swaps; permuta and the other three equivalents remain valid.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 27141,
+      "target_key": "cetosamādhi",
+      "target_pos": "masc",
+      "target_english": "stability of mind; stillness of mind; meditative composure",
+      "source_keys": [
+        "cetosamādhi"
+      ],
+      "meaning": "estabilidad de la mente; quietud de la mente; compostura meditativa",
+      "mode": "adapted",
+      "reason": "The first two clauses are unchanged; qualify compostura as meditativa to reflect mental→meditative.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 27190,
+      "target_key": "codaka 2",
+      "target_pos": "masc",
+      "target_english": "adviser; admonisher; encourager",
+      "source_keys": [
+        "codaka 2"
+      ],
+      "meaning": "consejero; amonestador; alentador",
+      "mode": "verbatim",
+      "reason": "Advisor changed to adviser; consejero, amonestador and alentador remain exact.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 27212,
+      "target_key": "codeti 2",
+      "target_pos": "pr",
+      "target_english": "(of a debt) pressures to repay; demands payment",
+      "source_keys": [
+        "codeti 2"
+      ],
+      "meaning": "(de una deuda) presiona para pagar; exige el pago",
+      "mode": "adapted",
+      "reason": "Keeps repayment pressure and updates generic emite una demanda to the explicit target demands payment.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 27393,
+      "target_key": "chanda 2",
+      "target_pos": "masc",
+      "target_english": "(vinaya) agreement; approval; consent",
+      "source_keys": [
+        "chanda 2"
+      ],
+      "meaning": "(vinaya) acuerdo; aprobación; consentimiento",
+      "mode": "adapted",
+      "reason": "Same three meanings reordered to follow target.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 27591,
+      "target_key": "chādeti 2.1",
+      "target_pos": "pr",
+      "target_english": "(of food or drink) pleases; gives pleasure; is agreeable; appeals (to)",
+      "source_keys": [
+        "chādeti 2.1"
+      ],
+      "meaning": "(de comida o bebida) agrada; da placer; es agradable (a)",
+      "mode": "verbatim",
+      "reason": "Food/drink domain and pleases/gives pleasure/is agreeable unchanged; added appeals to overlaps agrada.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 28133,
+      "target_key": "jahati 2",
+      "target_pos": "pr",
+      "target_english": "disappears; leaves; is no more",
+      "source_keys": [
+        "jahati 2"
+      ],
+      "meaning": "desaparece; se va; ya no existe",
+      "mode": "verbatim",
+      "reason": "English disappear became disappears; Spanish desaparece was already correctly inflected.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 28184,
+      "target_key": "jāta 7",
+      "target_pos": "nt",
+      "target_english": "type; class; variety; kind (of)",
+      "source_keys": [
+        "jāta 7"
+      ],
+      "meaning": "tipo; clase; variedad; especie (de)",
+      "mode": "adapted",
+      "reason": "Remove the duplicated de inherited from the older English typo kind of (of).",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 28185,
+      "target_key": "jāta 8",
+      "target_pos": "masc",
+      "target_english": "type; class; variety; kind (of)",
+      "source_keys": [
+        "jāta 8"
+      ],
+      "meaning": "tipo; clase; variedad; especie (de)",
+      "mode": "adapted",
+      "reason": "Removes the duplicated de in the old kind of (of) wording; preserves type/class/variety.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 28973,
+      "target_key": "ṭīkā",
+      "target_pos": "fem",
+      "target_english": "sub-commentary; commentary on a commentary",
+      "source_keys": [
+        "aṭṭhakathāṭīkā"
+      ],
+      "meaning": "subcomentario",
+      "mode": "adapted",
+      "reason": "Select authored subcomentario from commentary and sub-commentary; it exactly names a commentary on a commentary.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 29236,
+      "target_key": "taca 1",
+      "target_pos": "masc",
+      "target_english": "(of a human) skin",
+      "source_keys": [
+        "taca 1"
+      ],
+      "meaning": "(de un humano) piel",
+      "mode": "verbatim",
+      "reason": "English humna was corrected to human; the Spanish already says humano.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 29388,
+      "target_key": "taṇhāyati",
+      "target_pos": "pr",
+      "target_english": "thirsts for; craves",
+      "source_keys": [
+        "taṇhāyati"
+      ],
+      "meaning": "tiene sed de; anhela",
+      "mode": "adapted",
+      "reason": "Selects thirst/craving vocabulary while removing the source denominative explanation and making the present verb natural.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 29667,
+      "target_key": "tathāgata",
+      "target_pos": "masc",
+      "target_english": "Such Become; realized; being in such a state; arrived at the truth; epithet of the Buddha",
+      "source_keys": [
+        "tathāgata"
+      ],
+      "meaning": "que ha llegado a ser así; realizado; que está en tal estado; que ha llegado a la verdad; epíteto del Buddha",
+      "mode": "adapted",
+      "reason": "Source Así Llegado expresses arrival, while the current retained English first clause is Such Become. Adapt to llegado a ser así to preserve becoming; the later arrived-at-truth clause remains separate. This is an English-to-Spanish correction, not a Pali etymological judgment.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 30288,
+      "target_key": "tāyati",
+      "target_pos": "pr",
+      "target_english": "protects; preserves; saves",
+      "source_keys": [
+        "tāyati"
+      ],
+      "meaning": "protege; preserva; salva",
+      "mode": "adapted",
+      "reason": "Retain protect/preserve, replace old nourish/nutre with current save/salva.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 30353,
+      "target_key": "tāsa",
+      "target_pos": "masc",
+      "target_english": "anxiety; worry; fear; terror",
+      "source_keys": [
+        "tāsa"
+      ],
+      "meaning": "miedo; terror",
+      "mode": "adapted",
+      "reason": "Retain exact fear/terror overlap; remove trembling, which is no longer in current English.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 31516,
+      "target_key": "thīnamiddha",
+      "target_pos": "nt",
+      "target_english": "dullness and drowsiness; sloth and torpor; rigidity and lethargy",
+      "source_keys": [
+        "thinamiddha 1"
+      ],
+      "meaning": "embotamiento y somnolencia; pereza y torpor; rigidez y letargo",
+      "mode": "verbatim",
+      "reason": "Every English clause matches exactly across the spelling variant; retain all authored Spanish equivalents.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 31646,
+      "target_key": "therīgāthā",
+      "target_pos": "fem",
+      "target_english": "Book 9 of the Khuddaka Nikāya",
+      "source_keys": [
+        "therīgāthā"
+      ],
+      "meaning": "Libro 9 del Khuddaka Nikāya",
+      "mode": "adapted",
+      "reason": "Selects the retained book identification and removes the title no longer present in target.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 31652,
+      "target_key": "thoka 2",
+      "target_pos": "nt",
+      "target_english": "little bit; tiny amount; drop",
+      "source_keys": [
+        "thoka 2"
+      ],
+      "meaning": "gota; cantidad diminuta",
+      "mode": "verbatim",
+      "reason": "Tiny amount and drop remain; little bit adds an equivalent synonym.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 31765,
+      "target_key": "daṇḍa 5",
+      "target_pos": "masc",
+      "target_english": "(of a vīṇā) neck",
+      "source_keys": [
+        "daṇḍa 5"
+      ],
+      "meaning": "(de una vīṇā) mástil",
+      "mode": "verbatim",
+      "reason": "English veena changed to vīṇā; the Spanish already uses vīṇā and correctly says mástil.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 32178,
+      "target_key": "dahati 1.1",
+      "target_pos": "pr",
+      "target_english": "takes; considers; regards (as)",
+      "source_keys": [
+        "dahati 1.1"
+      ],
+      "meaning": "considera como; toma como; ve como",
+      "mode": "verbatim",
+      "reason": "The same consider/take/regard-as glosses were reordered; Spanish retains each relation.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 32196,
+      "target_key": "dahāti",
+      "target_pos": "pr",
+      "target_english": "considers; takes; regards (as)",
+      "source_keys": [
+        "dahāti"
+      ],
+      "meaning": "considera como; toma como; estima como",
+      "mode": "verbatim",
+      "reason": "Only English preposition placement changed; the three authored como phrases match.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 32309,
+      "target_key": "dāyaka 1",
+      "target_pos": "masc",
+      "target_english": "giver; donor; sponsor (of)",
+      "source_keys": [
+        "dāyaka 1"
+      ],
+      "meaning": "dador; donante; patrocinador",
+      "mode": "verbatim",
+      "reason": "Giver/donor/sponsor unchanged; addition of an English argument marker does not change the translation.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 32486,
+      "target_key": "diṭṭhigata",
+      "target_pos": "nt",
+      "target_english": "(wrong or false) belief; misconception; theory; dogma; doctrine; speculative view",
+      "source_keys": [
+        "diṭṭhigata"
+      ],
+      "meaning": "creencia (errónea o falsa); concepción errónea; teoría; dogma; doctrina",
+      "mode": "verbatim",
+      "reason": "Wrong belief, misconception, theory, dogma and doctrine remain; speculative view is consistent with these.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 34001,
+      "target_key": "deseti 1",
+      "target_pos": "pr",
+      "target_english": "preaches; teaches; instructs; explains (something to)",
+      "source_keys": [
+        "deseti 1"
+      ],
+      "meaning": "predica; enseña; explica (a)",
+      "mode": "verbatim",
+      "reason": "Preach corrected to preaches and instructs added; predica/enseña/explica retains all core actions.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 34162,
+      "target_key": "devī 2",
+      "target_pos": "fem",
+      "target_english": "goddess; female deity",
+      "source_keys": [
+        "devī 2"
+      ],
+      "meaning": "diosa",
+      "mode": "verbatim",
+      "reason": "Diosa expresses both goddess and female deity.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 34175,
+      "target_key": "dehī 2",
+      "target_pos": "masc",
+      "target_english": "creature; being",
+      "source_keys": [
+        "dehī"
+      ],
+      "meaning": "criatura; ser",
+      "mode": "adapted",
+      "reason": "Selects criatura and supplies its plain synonym ser; removes the earlier explanatory body clause.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 34631,
+      "target_key": "dhamma 1.06",
+      "target_pos": "masc",
+      "target_english": "matter; thing; phenomenon",
+      "source_keys": [
+        "dhamma 1.06"
+      ],
+      "meaning": "materia; cosa; fenómeno",
+      "mode": "adapted",
+      "reason": "English phenomena changed to singular phenomenon; Spanish fenómenos likewise becomes fenómeno.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 34714,
+      "target_key": "dhammatā 1",
+      "target_pos": "fem",
+      "target_english": "nature; character; characteristic; attribute (of)",
+      "source_keys": [
+        "dhammatā 1"
+      ],
+      "meaning": "naturaleza; carácter; característica; atributo",
+      "mode": "verbatim",
+      "reason": "Nature, character, characteristic and attribute are unchanged; adding an optional of does not invalidate the gloss.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 35053,
+      "target_key": "dhātunānatta",
+      "target_pos": "nt",
+      "target_english": "diversity of the states; variety of elements",
+      "source_keys": [
+        "dhātunānatta"
+      ],
+      "meaning": "diversidad de los estados; variedad de elementos",
+      "mode": "adapted",
+      "reason": "Extends authored diversidad de los elementos to the explicitly added English states wording.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 35887,
+      "target_key": "nava 1.2",
+      "target_pos": "masc",
+      "target_english": "(vinaya) newcomer; newbie; new monk; monastic of less than five years' standing",
+      "source_keys": [
+        "nava 1.2"
+      ],
+      "meaning": "(vinaya) recién llegado; novato; monje nuevo; monástico con menos de cinco años de antigüedad",
+      "mode": "verbatim",
+      "reason": "Only the English possessive apostrophe changes; newcomer and under-five-years criterion are identical.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 35994,
+      "target_key": "nahāru",
+      "target_pos": "masc",
+      "target_english": "tendon; sinew",
+      "source_keys": [
+        "nhāru 1"
+      ],
+      "meaning": "tendón",
+      "mode": "adapted",
+      "reason": "The English tendon/sinew match is exact across the spelling variant; retain tendón and omit nervio, which can misleadingly mean nerve.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 36768,
+      "target_key": "nikkhamati 1",
+      "target_pos": "pr",
+      "target_english": "comes out (from); leaves; exits",
+      "source_keys": [
+        "nikkhamati 1"
+      ],
+      "meaning": "sale (de); abandona; sale al exterior",
+      "mode": "adapted",
+      "reason": "Select and streamline the authored exit/leave meanings; remove the awkward literal viene fuera while preserving coming out.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 36862,
+      "target_key": "nigantha",
+      "target_pos": "masc",
+      "target_english": "Jain; naked ascetic",
+      "source_keys": [
+        "nigaṇṭha 1"
+      ],
+      "meaning": "jainista; asceta desnudo",
+      "mode": "verbatim",
+      "reason": "Both target senses Jain and naked ascetic exactly match this spelling variant.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 37099,
+      "target_key": "niṭṭhā 1",
+      "target_pos": "fem",
+      "target_english": "end; finish; completion; conclusion; perfection",
+      "source_keys": [
+        "niṭṭhā 1"
+      ],
+      "meaning": "fin; término; conclusión; perfección",
+      "mode": "verbatim",
+      "reason": "Added completion overlaps fin/término; all other English glosses remain.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 37390,
+      "target_key": "nipāta 3",
+      "target_pos": "masc",
+      "target_english": "chapter of a book; section; division",
+      "source_keys": [
+        "nipāta 3"
+      ],
+      "meaning": "capítulo de un libro; sección",
+      "mode": "verbatim",
+      "reason": "Chapter and section are unchanged; division is covered by sección.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 37660,
+      "target_key": "nibbidā",
+      "target_pos": "fem",
+      "target_english": "dis-enchantment (towards); de-illusionment (with); disinterest (in)",
+      "source_keys": [
+        "nibbidā"
+      ],
+      "meaning": "desencanto (hacia); desilusión (con); desinterés (en)",
+      "mode": "adapted",
+      "reason": "Removes dispassion, which is no longer in the target, retaining the three matching clauses.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 37679,
+      "target_key": "nibbindati 1",
+      "target_pos": "pr",
+      "target_english": "is disenchanted (with); is disinterested (in); is disillusioned (by); loses interest (in); is dispassionate (towards)",
+      "source_keys": [
+        "nibbindati 1"
+      ],
+      "meaning": "está desencantado (de); está desinteresado (en); está desilusionado (por); pierde interés (en); está desapasionado (hacia)",
+      "mode": "verbatim",
+      "reason": "Dis-enchanted became disenchanted; all five Spanish clauses remain aligned.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 37759,
+      "target_key": "nimitta 2",
+      "target_pos": "nt",
+      "target_english": "mental feature; aspect of experience",
+      "source_keys": [
+        "liṅga 2",
+        "nimitta 2",
+        "pañcaṭṭhānāni",
+        "vedanā 1"
+      ],
+      "meaning": "rasgo mental; aspecto de la experiencia",
+      "mode": "adapted",
+      "reason": "Resolves the gap by composing authored feature/rasgo, mental, aspect/aspecto and experience/experiencia vocabulary against explicit current English. Does not retain the obsolete mental-image meaning as a synonym.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 37925,
+      "target_key": "niyyati 1.1",
+      "target_pos": "pr",
+      "target_english": "is led; is carried (to)",
+      "source_keys": [
+        "niyyati 1.1"
+      ],
+      "meaning": "es guiado; es llevado (a)",
+      "mode": "verbatim",
+      "reason": "Lead corrected to led; Spanish es guiado was already passive.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 38319,
+      "target_key": "nissarati 1",
+      "target_pos": "pr",
+      "target_english": "escapes; gets free (from)",
+      "source_keys": [
+        "nissarati 1"
+      ],
+      "meaning": "escapa; se libera (de)",
+      "mode": "adapted",
+      "reason": "Select the retained escapes/gets-free clauses and omit the removed departs/parte.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 38421,
+      "target_key": "nivāreti",
+      "target_pos": "pr",
+      "target_english": "prevents; blocks; obstructs; reins in (something from)",
+      "source_keys": [
+        "nivāreti"
+      ],
+      "meaning": "impide; bloquea; obstruye; frena",
+      "mode": "adapted",
+      "reason": "Retains block/obstruct and renders prevents/reins in naturally; removes the source dangling de.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 38443,
+      "target_key": "nivāseti 1",
+      "target_pos": "pr",
+      "target_english": "(of an inner garment) wears; puts on; dresses oneself",
+      "source_keys": [
+        "nivāseti 1"
+      ],
+      "meaning": "(de una prenda interior) viste; se pone; se viste",
+      "mode": "adapted",
+      "reason": "Retain authored verbs and add the current restricting inner-garment domain.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 38573,
+      "target_key": "nīyati 1.2",
+      "target_pos": "pr",
+      "target_english": "is led; is guided (by)",
+      "source_keys": [
+        "nīyati 1.1"
+      ],
+      "meaning": "es conducido; es guiado (por)",
+      "mode": "adapted",
+      "reason": "Select is led from the related source and discard its astray/misled glosses; the old same-ID emancipated sense is not the current meaning.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 38574,
+      "target_key": "nīyati 2.1",
+      "target_pos": "pr",
+      "target_english": "departs; leaves; exits; is emancipated (from)",
+      "source_keys": [
+        "nīyati 2.1",
+        "nīyati 1.2"
+      ],
+      "meaning": "parte; se va; sale (de); es liberado (de)",
+      "mode": "adapted",
+      "reason": "Combines the target departure glosses with authored emancipation gloss from the separate historical entry.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 38634,
+      "target_key": "nīharati 1",
+      "target_pos": "pr",
+      "target_english": "takes out; removes; extracts; rescues; salvages",
+      "source_keys": [
+        "nīharati 1"
+      ],
+      "meaning": "remueve; extrae; saca; rescata; salva",
+      "mode": "verbatim",
+      "reason": "Same five verbs reordered; source Spanish covers removal and rescue.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 39465,
+      "target_key": "paccāsiṃsati",
+      "target_pos": "pr",
+      "target_english": "wishes; hopes (for); expects",
+      "source_keys": [
+        "paccāsīsati"
+      ],
+      "meaning": "desea; espera; aguarda",
+      "mode": "verbatim",
+      "reason": "The spelling-variant source has the identical wishes/hopes/expects gloss and all three Spanish equivalents.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 39577,
+      "target_key": "pacceti 4",
+      "target_pos": "pr",
+      "target_english": "reaches; achieves; attains; realizes",
+      "source_keys": [
+        "adhigacchati 3",
+        "appeti 2"
+      ],
+      "meaning": "alcanza; logra",
+      "mode": "adapted",
+      "reason": "Uses exact authored reaches/attains/achieves evidence; avoids realiza, which alone is an ambiguous translation of realizes.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 39943,
+      "target_key": "pañcindriyāni 1",
+      "target_pos": "nt",
+      "target_english": "five faculties (confidence, effort, mindfulness, meditative composure and understanding)",
+      "source_keys": [
+        "pañcindriyāni 1"
+      ],
+      "meaning": "cinco facultades (confianza, esfuerzo, atención plena, compostura meditativa y entendimiento)",
+      "mode": "adapted",
+      "reason": "All faculties align; only mental composure becomes meditative composure.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 40084,
+      "target_key": "paññāsa",
+      "target_pos": "masc",
+      "target_english": "group of fifty (discourses)",
+      "source_keys": [
+        "paññāsa"
+      ],
+      "meaning": "grupo de cincuenta (discursos)",
+      "mode": "adapted",
+      "reason": "Replaces source suttas with target discourses, keeping the authored group-of-fifty wording.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 40200,
+      "target_key": "paṭikaroti 1",
+      "target_pos": "pr",
+      "target_english": "makes amends; fixes; repairs; redresses; remedies; corrects oneself",
+      "source_keys": [
+        "paṭikaroti 1"
+      ],
+      "meaning": "enmienda; arregla; repara; resarce; remedia; se corrige a sí mismo",
+      "mode": "verbatim",
+      "reason": "Redressed corrected to redresses; resarce already present tense.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 40201,
+      "target_key": "paṭikaroti 2",
+      "target_pos": "pr",
+      "target_english": "acts accordingly; does in return; responds accordingly; deals with",
+      "source_keys": [
+        "paṭikaroti 2"
+      ],
+      "meaning": "actúa en consecuencia; hace a cambio; responde en consecuencia",
+      "mode": "verbatim",
+      "reason": "The three authored clauses remain verbatim target senses; deals with is an additional response paraphrase.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 40276,
+      "target_key": "paṭikkosati",
+      "target_pos": "pr",
+      "target_english": "rejects; refuses to accept; dismisses; disdains",
+      "source_keys": [
+        "paṭikkosati"
+      ],
+      "meaning": "rechaza; se niega a aceptar; desdeña; desprecia",
+      "mode": "verbatim",
+      "reason": "Dismisses replaces colloquial disses; authored rechaza, desdeña and desprecia still express rejection.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 40521,
+      "target_key": "paṭipajjati 1",
+      "target_pos": "pr",
+      "target_english": "follows a path; undertakes a journey; travels",
+      "source_keys": [
+        "paṭipajjati 1"
+      ],
+      "meaning": "sigue un camino; emprende un viaje; viaja",
+      "mode": "verbatim",
+      "reason": "Undertake corrected to undertakes; emprende already present third person.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 40548,
+      "target_key": "paṭipadā 1",
+      "target_pos": "fem",
+      "target_english": "way; path of progress; mode of practice; method of implementation",
+      "source_keys": [
+        "paṭipadā 1"
+      ],
+      "meaning": "camino; senda de progreso; modo de práctica; método de aplicación",
+      "mode": "adapted",
+      "reason": "Retain camino/senda de progreso and adapt historical path of practice to the explicit current mode of practice/method of implementation.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 40634,
+      "target_key": "paṭippassambhati 2",
+      "target_pos": "pr",
+      "target_english": "settles; calms down; subsides; dies down",
+      "source_keys": [
+        "paṭippassambhati 2"
+      ],
+      "meaning": "se asienta; se calma; se extingue",
+      "mode": "verbatim",
+      "reason": "Settles/calms-down/dies-down remain present; subsides adds a synonym already covered by se calma.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 40657,
+      "target_key": "paṭibāhati 3",
+      "target_pos": "pr",
+      "target_english": "keeps (somebody) out (of); blocks; prohibits (somebody from)",
+      "source_keys": [
+        "paṭibāhati 3"
+      ],
+      "meaning": "mantiene (a alguien) fuera (de); bloquea; prohíbe (a alguien)",
+      "mode": "adapted",
+      "reason": "Retains exclusion/block/prohibition meaning and repairs the old dangling Spanish de argument markers.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 41017,
+      "target_key": "paṭivijjhati 1",
+      "target_pos": "pr",
+      "target_english": "pierces through; penetrates; breaks through (to)",
+      "source_keys": [
+        "paṭivijjhati 1"
+      ],
+      "meaning": "penetra; atraviesa; irrumpe (hacia)",
+      "mode": "verbatim",
+      "reason": "Pierces though typo corrected and order changed; atraviesa/penetra/irrumpe already match.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 41018,
+      "target_key": "paṭivijjhati 2",
+      "target_pos": "pr",
+      "target_english": "penetrates; comprehends; understands",
+      "source_keys": [
+        "paṭivijjhati 2"
+      ],
+      "meaning": "comprende; entiende",
+      "mode": "verbatim",
+      "reason": "Comprende and entiende directly match comprehends/understands; penetrates is figurative in this sense.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 41510,
+      "target_key": "paṭhavī",
+      "target_pos": "fem",
+      "target_english": "earth; ground",
+      "source_keys": [
+        "pathavī 2"
+      ],
+      "meaning": "tierra; suelo",
+      "mode": "verbatim",
+      "reason": "The spelling-variant source has exactly earth; ground and tierra; suelo.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 41515,
+      "target_key": "paṭhavīdhātu",
+      "target_pos": "fem",
+      "target_english": "solids; solid state; earth element",
+      "source_keys": [
+        "pathavīdhātu 1"
+      ],
+      "meaning": "sólidos; estado sólido; elemento tierra",
+      "mode": "verbatim",
+      "reason": "This spelling variant exactly matches all three solid-state/earth-element glosses.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 41678,
+      "target_key": "paṇṇāsaka 2",
+      "target_pos": "masc",
+      "target_english": "group of fifty discourses",
+      "source_keys": [
+        "paṇṇāsaka 2"
+      ],
+      "meaning": "grupo de cincuenta suttas",
+      "mode": "verbatim",
+      "reason": "Fifty discourses corresponds to fifty suttas; authored grupo de cincuenta suttas preserves the intended collection.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 41979,
+      "target_key": "pattheti 1",
+      "target_pos": "pr",
+      "target_english": "wishes; aspire; craves (for); sets one's heart (on)",
+      "source_keys": [
+        "pattheti"
+      ],
+      "meaning": "desea; aspira (a); anhela; pone su corazón (en)",
+      "mode": "verbatim",
+      "reason": "Only English inflection and possessive wording changed; all authored wish/aspire/crave phrases match.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 42055,
+      "target_key": "pada 06",
+      "target_pos": "nt",
+      "target_english": "factor; reason; cause",
+      "source_keys": [
+        "pada 06"
+      ],
+      "meaning": "razón, causa",
+      "mode": "verbatim",
+      "reason": "Razón and causa directly cover two retained synonyms; factor does not require a different sense.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 42110,
+      "target_key": "padahati 1",
+      "target_pos": "pr",
+      "target_english": "exerts oneself; strives; applies oneself; perseveres (with)",
+      "source_keys": [
+        "padahati 1"
+      ],
+      "meaning": "se esfuerza; lucha; se aplica; se empeña (con)",
+      "mode": "verbatim",
+      "reason": "Endeavours becomes perseveres; se empeña expresses sustained effort alongside remaining exact glosses.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 43066,
+      "target_key": "parahita",
+      "target_pos": "masc",
+      "target_english": "others' welfare; others' benefit; the good of others",
+      "source_keys": [
+        "parahita"
+      ],
+      "meaning": "bienestar de otros; beneficio de otros; el bien de otros",
+      "mode": "verbatim",
+      "reason": "English possessive changed to plural; existing Spanish de otros already expresses the plural.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 43342,
+      "target_key": "paricāreti 3",
+      "target_pos": "pr",
+      "target_english": "serves (at); attends (on); waits (on)",
+      "source_keys": [
+        "paricāreti 3"
+      ],
+      "meaning": "sirve; atiende",
+      "mode": "adapted",
+      "reason": "The current English removes causation; convert hace servir/hace atender into the direct verbs sirve/atiende.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 43463,
+      "target_key": "paritassati",
+      "target_pos": "pr",
+      "target_english": "is perturbed; is shaken; is agitated; is anxious; is anguished",
+      "source_keys": [
+        "paritassati"
+      ],
+      "meaning": "está perturbado; está sacudido; está agitado; está angustiado",
+      "mode": "verbatim",
+      "reason": "Existing perturbation/agitation/anguish glosses adequately cover the added anxiety synonym.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 43494,
+      "target_key": "paritta 2.1",
+      "target_pos": "nt",
+      "target_english": "protection; safeguarding (against); shielding (from)",
+      "source_keys": [
+        "paritta 2.1"
+      ],
+      "meaning": "protección (contra); resguardo (de); salvaguardia (contra)",
+      "mode": "verbatim",
+      "reason": "Protection/shielding/safeguarding reorder and spelling changes leave all three Spanish terms valid.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 43508,
+      "target_key": "parittā",
+      "target_pos": "fem",
+      "target_english": "protection; shielding; safeguarding",
+      "source_keys": [
+        "parittā"
+      ],
+      "meaning": "protección; resguardo; salvaguardia",
+      "mode": "verbatim",
+      "reason": "Only English safe-guarding changed to safeguarding; all Spanish equivalents remain applicable.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 43538,
+      "target_key": "parideva",
+      "target_pos": "masc",
+      "target_english": "wailing; crying; lamentation",
+      "source_keys": [
+        "parideva"
+      ],
+      "meaning": "lamentación; llanto; gemido",
+      "mode": "verbatim",
+      "reason": "Only synonym order changed; lamentación, llanto and gemido remain the same crying sense.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 43539,
+      "target_key": "paridevati",
+      "target_pos": "pr",
+      "target_english": "wails; cries; laments",
+      "source_keys": [
+        "paridevati"
+      ],
+      "meaning": "se lamenta; llora; gime",
+      "mode": "verbatim",
+      "reason": "Llora and gime match cries/wails; se lamenta matches laments despite English synonym order changing.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 43579,
+      "target_key": "parinibbāna 1",
+      "target_pos": "nt",
+      "target_english": "(of mental defilement) complete quenching; total extinguishing; complete cooling",
+      "source_keys": [
+        "parinibbāna 1"
+      ],
+      "meaning": "(de impureza mental) extinción completa; apagamiento total; enfriamiento completo",
+      "mode": "verbatim",
+      "reason": "English excetinguishing typo is corrected; authored apagamiento already translates extinguishing.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 43737,
+      "target_key": "paribbajati 1",
+      "target_pos": "pr",
+      "target_english": "wanders around; roams about; lives one's life; lives the life of a homeless renunciant",
+      "source_keys": [
+        "paribbajati 1"
+      ],
+      "meaning": "vaga alrededor; deambula; vive su vida; vive la vida de un renunciante sin hogar",
+      "mode": "verbatim",
+      "reason": "Only ones became one's; the Spanish su vida and the full renunciant clause already match.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 44039,
+      "target_key": "pariyodapana",
+      "target_pos": "nt",
+      "target_english": "purifying; refining; cleansing (of)",
+      "source_keys": [
+        "pariyodapana"
+      ],
+      "meaning": "purificación; refinamiento; limpieza",
+      "mode": "verbatim",
+      "reason": "Purification/refinement/cleansing remain the same process nouns; the new optional of changes no meaning.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 44669,
+      "target_key": "pasādeti 4",
+      "target_pos": "pr",
+      "target_english": "makes (the mind) have faith (in); lets (the mind) trust (in)",
+      "source_keys": [
+        "pasādeti 4"
+      ],
+      "meaning": "hace que la mente tenga fe (en); deja que la mente confíe (en)",
+      "mode": "adapted",
+      "reason": "Adapts authored makes faithful to the clarified mental faith/trust meaning and removes converts.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 45077,
+      "target_key": "pahāna",
+      "target_pos": "nt",
+      "target_english": "giving up; letting go; removing; abandoning (of)",
+      "source_keys": [
+        "pahāna"
+      ],
+      "meaning": "abandono; soltar; remoción; renuncia (de)",
+      "mode": "verbatim",
+      "reason": "Removal became removing; the authored abandonment/letting-go/removal wording preserves the sense.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 45338,
+      "target_key": "pāṭha 1",
+      "target_pos": "masc",
+      "target_english": "variant reading; textual variant; alternative text",
+      "source_keys": [
+        "pāḷi 2"
+      ],
+      "meaning": "lectura alternativa; variante de lectura en el texto",
+      "mode": "adapted",
+      "reason": "English alternate reading/variant reading in the text is equivalent to target textual variant/alternative text; reuse the matching source phrase.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 45691,
+      "target_key": "pāmojja",
+      "target_pos": "nt",
+      "target_english": "joy; happiness; gladness; appreciation",
+      "source_keys": [
+        "pāmojja"
+      ],
+      "meaning": "alegría; felicidad; contento; aprecio",
+      "mode": "adapted",
+      "reason": "Correct alegria's accent and retain the three authored equivalents; add aprecio for the newly explicit appreciation gloss.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 45726,
+      "target_key": "pāra 1",
+      "target_pos": "nt",
+      "target_english": "far side; far shore; bank on the other side (of)",
+      "source_keys": [
+        "pāra 1.1"
+      ],
+      "meaning": "lado lejano; orilla lejana; ribera del otro lado (de)",
+      "mode": "adapted",
+      "reason": "Selects the three shore descriptions and omits the removed Nibbāna epithet.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 46405,
+      "target_key": "pītisambojjhaṅga",
+      "target_pos": "masc",
+      "target_english": "delight as an element of awakening; joy as a factor of enlightenment",
+      "source_keys": [
+        "pītisambojjhaṅga"
+      ],
+      "meaning": "deleite como elemento del despertar; gozo como factor de la iluminación",
+      "mode": "verbatim",
+      "reason": "An factor becomes a factor; Spanish factor de la iluminación already correct.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 46417,
+      "target_key": "pīneti",
+      "target_pos": "pr",
+      "target_english": "delights; pleases; satisfies",
+      "source_keys": [
+        "pīṇeti 1"
+      ],
+      "meaning": "deleita; complace; satisface",
+      "mode": "verbatim",
+      "reason": "Renamed spelling has exactly delights/pleases/satisfies; authored Spanish maps all three.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 47599,
+      "target_key": "phalati 2.1",
+      "target_pos": "pr",
+      "target_english": "fruits; bears fruit",
+      "source_keys": [
+        "phalati 2.1"
+      ],
+      "meaning": "da fruto",
+      "mode": "verbatim",
+      "reason": "Da fruto translates both fruits as a verb and bears fruit.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 47658,
+      "target_key": "phassanirodha",
+      "target_pos": "masc",
+      "target_english": "ending of sense contact; cessation of sense experience",
+      "source_keys": [
+        "phassanirodha"
+      ],
+      "meaning": "cesación del contacto sensorial; cesación de la experiencia sensorial",
+      "mode": "adapted",
+      "reason": "Keep the authored cessation construction and replace older raw/direct experience with the current explicit sensory qualification.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 47806,
+      "target_key": "pheggu 1",
+      "target_pos": "nt",
+      "target_english": "fibre; sapwood; soft, permeable, valueless wood surrounding the heartwood",
+      "source_keys": [
+        "pheggu 1"
+      ],
+      "meaning": "fibra; albura; madera blanda, permeable y sin valor que rodea el duramen",
+      "mode": "adapted",
+      "reason": "Preserves authored albura and duramen while incorporating the new explicit soft/permeable/surrounding qualifiers.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 48049,
+      "target_key": "balivadda",
+      "target_pos": "masc",
+      "target_english": "ox; bull",
+      "source_keys": [
+        "balibadda"
+      ],
+      "meaning": "buey; toro",
+      "mode": "verbatim",
+      "reason": "Ox/bull matches exactly across spelling variant; buey/toro has no extra sense.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 48317,
+      "target_key": "bāhā 1",
+      "target_pos": "fem",
+      "target_english": "arm",
+      "source_keys": [
+        "bāhā 1"
+      ],
+      "meaning": "brazo",
+      "mode": "adapted",
+      "reason": "Select arm/brazo and drop forearm/antebrazo, which current English removed.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 48663,
+      "target_key": "bodhi 3",
+      "target_pos": "fem",
+      "target_english": "Bodhi tree; Ficus religiosa",
+      "source_keys": [
+        "bodhi 3"
+      ],
+      "meaning": "árbol Bodhi; Ficus religiosa",
+      "mode": "adapted",
+      "reason": "Corrects the botanical spelling religiosia to the target religiosa; the tree identification is unchanged.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 48832,
+      "target_key": "byāpajjati 4",
+      "target_pos": "pr",
+      "target_english": "is wounded; is killed",
+      "source_keys": [
+        "byāpajjati 2",
+        "byāpajjati 4"
+      ],
+      "meaning": "es herido; es matado",
+      "mode": "adapted",
+      "reason": "Passivizes authored hiere and selects is killed from the related passive source; drops death/perishing beyond target.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 49834,
+      "target_key": "bhāvitatta 1.1",
+      "target_pos": "masc",
+      "target_english": "who is awakened; who has a developed mind; who is self-developed; evolved person",
+      "source_keys": [
+        "bhāvitatta 1.1"
+      ],
+      "meaning": "que está despierto; que tiene una mente desarrollada; que se ha desarrollado a sí mismo",
+      "mode": "verbatim",
+      "reason": "Added evolved person restates developed mind/self-developed; all three authored descriptions remain applicable.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 49897,
+      "target_key": "bhikkhunisaṅgha",
+      "target_pos": "masc",
+      "target_english": "community of nuns; female monastic order",
+      "source_keys": [
+        "bhikkhunisaṅgha"
+      ],
+      "meaning": "comunidad de monjas",
+      "mode": "verbatim",
+      "reason": "Comunidad de monjas directly covers the current community of nuns; monastic order is explanatory.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 49938,
+      "target_key": "bhikkhusaṃgha",
+      "target_pos": "masc",
+      "target_english": "community of monks; monastic order",
+      "source_keys": [
+        "bhikkhusaṅgha"
+      ],
+      "meaning": "comunidad de monjes; orden monástica",
+      "mode": "verbatim",
+      "reason": "Orthographic variant has exactly the same community of monks/monastic order meaning.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 50084,
+      "target_key": "bhuñjati 2",
+      "target_pos": "pr",
+      "target_english": "(of sensual objects) uses; enjoys; partakes (of); indulges (in)",
+      "source_keys": [
+        "bhuñjati 2"
+      ],
+      "meaning": "(de objetos sensuales) usa; disfruta; participa (de); se entrega (a)",
+      "mode": "adapted",
+      "reason": "Adapt domain from sensual pleasures to current sensual objects; retain all four authored action glosses.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 50333,
+      "target_key": "bhoga 1.2",
+      "target_pos": "masc",
+      "target_english": "use; enjoyment; pleasure",
+      "source_keys": [
+        "bhoga 1.2",
+        "bhoga 1.4"
+      ],
+      "meaning": "uso; disfrute; placer",
+      "mode": "adapted",
+      "reason": "Combine use from historical sense 1.4 with enjoyment/pleasure from 1.2; exclude application/function absent in target.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 50459,
+      "target_key": "makkha 1",
+      "target_pos": "masc",
+      "target_english": "depreciating; denigrating; besmirching",
+      "source_keys": [
+        "makkha 1"
+      ],
+      "meaning": "depreciar; denigrar; difamar",
+      "mode": "verbatim",
+      "reason": "Smirching became besmirching; difamar already conveys the intended denigration.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 50519,
+      "target_key": "maggati",
+      "target_pos": "pr",
+      "target_english": "tracks; seeks; searches (for something with)",
+      "source_keys": [
+        "maggati"
+      ],
+      "meaning": "busca, rastrea, indaga",
+      "mode": "verbatim",
+      "reason": "Busca and rastrea directly match seeks/searches and tracks; the added complement does not change the action.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 51128,
+      "target_key": "manasikāra",
+      "target_pos": "masc",
+      "target_english": "attention (to); bringing-to-mind; observation; noticing; focusing",
+      "source_keys": [
+        "manasikāra"
+      ],
+      "meaning": "atención; traer a la mente; observación; enfoque",
+      "mode": "adapted",
+      "reason": "Drops notación, which does not naturally translate noticing; remaining authored glosses cover the attention sense.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 51473,
+      "target_key": "maraṇassati",
+      "target_pos": "fem",
+      "target_english": "recollection of death; mindfulness of dying",
+      "source_keys": [
+        "maraṇassati"
+      ],
+      "meaning": "recuerdo de la muerte",
+      "mode": "verbatim",
+      "reason": "Recollection of death remains exact; mindfulness of dying supplies a close explanatory synonym.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 51995,
+      "target_key": "mahāvagga 02",
+      "target_pos": "masc",
+      "target_english": "Part 2 of the Dīgha Nikāya (DN14-23)",
+      "source_keys": [
+        "mahāvagga 02"
+      ],
+      "meaning": "Parte 2 del Dīgha Nikāya (DN14-23)",
+      "mode": "adapted",
+      "reason": "Update authored Libro 2 to the current Part 2 and retain the explicitly supplied passage range.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 51996,
+      "target_key": "mahāvagga 03",
+      "target_pos": "masc",
+      "target_english": "Part 5 of the Saṃyutta Nikāya (SN45-56)",
+      "source_keys": [
+        "mahāvagga 03"
+      ],
+      "meaning": "Parte 5 del Saṃyutta Nikāya (SN45-56)",
+      "mode": "adapted",
+      "reason": "Updates authored Book 5 identification to target Part 5 and copies the explicit target section range.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 51999,
+      "target_key": "mahāvagga 05",
+      "target_pos": "masc",
+      "target_english": "Vagga 7 of Tikanipāta (AN3.62-71)",
+      "source_keys": [
+        "mahāvagga 05"
+      ],
+      "meaning": "Capítulo 7 de Tikanipāta, Aṅguttara Nikāya 3.62-71",
+      "mode": "verbatim",
+      "reason": "Vagga 7 and Chapter 7 refer to the same Tikanipāta AN3.62-71 range, retained in source Spanish.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 52091,
+      "target_key": "mahesi",
+      "target_pos": "masc",
+      "target_english": "great sage; mighty seer; epithet of the Buddha",
+      "source_keys": [
+        "mahesi"
+      ],
+      "meaning": "gran sabio; poderoso vidente; epíteto del Buddha",
+      "mode": "adapted",
+      "reason": "Retain both authored descriptors and append the newly supplied epithet identification.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 52256,
+      "target_key": "māna 1.1",
+      "target_pos": "masc",
+      "target_english": "pride; conceit; egotism; comparing oneself",
+      "source_keys": [
+        "māna 1.1"
+      ],
+      "meaning": "orgullo; presunción; compararse a sí mismo",
+      "mode": "adapted",
+      "reason": "Removes superiority, now split out; keeps the central pride/conceit/comparison glosses and avoids egoísmo for egotism.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 52584,
+      "target_key": "micchācāra",
+      "target_pos": "masc",
+      "target_english": "misconduct",
+      "source_keys": [
+        "ajjhācāra"
+      ],
+      "meaning": "mala conducta",
+      "mode": "adapted",
+      "reason": "Select exact misconduct equivalent; omit source transgression synonym.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 53730,
+      "target_key": "yadanatta",
+      "target_pos": "masc",
+      "target_english": "what is non-self; whatever is not oneself",
+      "source_keys": [
+        "yadanatta"
+      ],
+      "meaning": "lo que es no-yo",
+      "mode": "verbatim",
+      "reason": "Lo que es no-yo directly matches the retained non-self clause; the added clause restates it.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 53943,
+      "target_key": "yāti 2",
+      "target_pos": "pr",
+      "target_english": "(of an army) marches against; pursues; routs",
+      "source_keys": [
+        "yāti 2"
+      ],
+      "meaning": "(de un ejército) marcha contra; persigue; pone en fuga",
+      "mode": "verbatim",
+      "reason": "English routes typo became routs; source pone en fuga already correctly translates routs.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 53995,
+      "target_key": "yāma 1",
+      "target_pos": "masc",
+      "target_english": "watch (of the night); one sixth of the day; about four hours",
+      "source_keys": [
+        "yāma 1"
+      ],
+      "meaning": "vigilia (de la noche); una sexta parte del día; aproximadamente cuatro horas",
+      "mode": "adapted",
+      "reason": "Preserves the night-watch label but explicitly corrects the obsolete eighth/three-hours values to target sixth/four-hours.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 54321,
+      "target_key": "yonisomanasikāra",
+      "target_pos": "masc",
+      "target_english": "paying proper attention; applying attention in the right way; prudently applying the mind",
+      "source_keys": [
+        "yonisomanasikāra"
+      ],
+      "meaning": "prestar atención adecuada; aplicar la atención de la manera correcta; aplicar la mente prudentemente",
+      "mode": "adapted",
+      "reason": "Uses idiomatic Spanish infinitives to name the practice, rather than isolated gerunds prestando/aplicando, and preserves the current explicit right-way clause.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 54689,
+      "target_key": "rasa 5",
+      "target_pos": "masc",
+      "target_english": "nutrients; fertile elements",
+      "source_keys": [
+        "rasa 5"
+      ],
+      "meaning": "nutrientes; elementos fértiles",
+      "mode": "adapted",
+      "reason": "Retain nutrientes; replace the more specific fertilizer with the target's fertile elements.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 54923,
+      "target_key": "rājabhogga 2",
+      "target_pos": "masc",
+      "target_english": "royal property; crown land",
+      "source_keys": [
+        "rājavatthu"
+      ],
+      "meaning": "tierra del rey; propiedad real",
+      "mode": "verbatim",
+      "reason": "Different authored entry matches royal property and king’s land; former same-key royal official is unrelated.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 56431,
+      "target_key": "sakkāya",
+      "target_pos": "masc",
+      "target_english": "sense of self; individual identity; personal existence; (view that) one is the owner of the body and mind",
+      "source_keys": [
+        "sakkāya"
+      ],
+      "meaning": "identidad individual; existencia personal; (visión de que) uno es el dueño del cuerpo y la mente",
+      "mode": "adapted",
+      "reason": "Retain target identity/existence/ownership concepts and remove old mind-body complex/embodiment glosses.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 56433,
+      "target_key": "sakkāyadiṭṭhi",
+      "target_pos": "fem",
+      "target_english": "belief in the sense of self; view that one is an embodied being; the view that this mind-body complex is an independent entity",
+      "source_keys": [
+        "sakkāyadiṭṭhi"
+      ],
+      "meaning": "creencia en el sentido del yo; visión de que uno es un ser encarnado; visión de que este complejo mente-cuerpo es una entidad independiente",
+      "mode": "adapted",
+      "reason": "Preserve the two unchanged clauses and update belief in self-identity to belief in the sense of self.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 56915,
+      "target_key": "saṅgaha 3",
+      "target_pos": "masc",
+      "target_english": "(of relationships) maintenance; support",
+      "source_keys": [
+        "saṅgaha 3"
+      ],
+      "meaning": "mantenimiento de relaciones; apoyo",
+      "mode": "verbatim",
+      "reason": "Maintaining relationships and support are the same target relationship-maintenance sense.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 57081,
+      "target_key": "saṅghādisesa 2",
+      "target_pos": "masc",
+      "target_english": "offence requiring communal rehabilitation; offence entailing demotion",
+      "source_keys": [
+        "saṅghādisesa 2",
+        "āpattivuṭṭhāna",
+        "alaṃsājīva",
+        "niyassakamma"
+      ],
+      "meaning": "falta que requiere rehabilitación comunitaria; falta que conlleva un descenso de rango",
+      "mode": "adapted",
+      "reason": "Resolves the gap using authored offence/falta, rehabilitation/rehabilitación, communal/comunitaria and demotion/degradación. Replaces historical suspension rather than incorrectly treating it as the same sanction.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 57480,
+      "target_key": "saññojana",
+      "target_pos": "nt",
+      "target_english": "fetter; chain; bond; thing which binds",
+      "source_keys": [
+        "saṃyojana 1"
+      ],
+      "meaning": "traba; cadena; vínculo; aquello que ata",
+      "mode": "verbatim",
+      "reason": "The alternate source spelling has exactly the same complete English definition and supplies all four Spanish glosses.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 57818,
+      "target_key": "sattāha 1",
+      "target_pos": "nt",
+      "target_english": "seven days; week",
+      "source_keys": [
+        "sattāha 1"
+      ],
+      "meaning": "semana; siete días",
+      "mode": "verbatim",
+      "reason": "Week and seven days changed order only.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 57819,
+      "target_key": "sattāha 2",
+      "target_pos": "masc",
+      "target_english": "seven days; week",
+      "source_keys": [
+        "sattāha 2"
+      ],
+      "meaning": "semana; siete días",
+      "mode": "verbatim",
+      "reason": "Seven days/week only reverses order; Spanish matches both.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 58198,
+      "target_key": "santappeti",
+      "target_pos": "pr",
+      "target_english": "pleases; satisfies (somebody with)",
+      "source_keys": [
+        "santappeti"
+      ],
+      "meaning": "satisface, complace",
+      "mode": "verbatim",
+      "reason": "Satisfies/pleases retained; somebody with adds argument structure but no new meaning.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 58548,
+      "target_key": "sannipāta 2",
+      "target_pos": "masc",
+      "target_english": "arrangement; organization",
+      "source_keys": [
+        "sannipāta 2"
+      ],
+      "meaning": "disposición; organización",
+      "mode": "verbatim",
+      "reason": "Organisation became organization; organización is unchanged.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 59346,
+      "target_key": "samanupassati 2",
+      "target_pos": "pr",
+      "target_english": "regards; considers; recognizes; sees (as)",
+      "source_keys": [
+        "samanupassati 2"
+      ],
+      "meaning": "considera; contempla; reconoce; ve (como)",
+      "mode": "verbatim",
+      "reason": "Recognises became recognizes; reconoce and all other equivalents remain the same.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 59623,
+      "target_key": "samādhi 1",
+      "target_pos": "masc",
+      "target_english": "perfect peace of mind; stability of mind; stillness of mind; meditative composure",
+      "source_keys": [
+        "samādhi 1"
+      ],
+      "meaning": "paz perfecta de la mente; estabilidad mental; quietud mental; compostura meditativa",
+      "mode": "adapted",
+      "reason": "Keeps first three authored glosses and narrows mental composure to target meditative composure.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 59641,
+      "target_key": "samādhindriya",
+      "target_pos": "nt",
+      "target_english": "power of a collected mind; faculty of meditative stability",
+      "source_keys": [
+        "samādhindriya"
+      ],
+      "meaning": "poder de una mente recogida; facultad de estabilidad meditativa",
+      "mode": "adapted",
+      "reason": "Adapt estabilidad mental to estabilidad meditativa to reflect the explicit mental-to-meditative qualifier change.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 59665,
+      "target_key": "samādhisampadā",
+      "target_pos": "fem",
+      "target_english": "attainment of mental stillness; success in stability of mind; being accomplished in meditative composure",
+      "source_keys": [
+        "samādhisampadā"
+      ],
+      "meaning": "logro de quietud mental; éxito en la estabilidad de la mente; dominio de la compostura meditativa",
+      "mode": "adapted",
+      "reason": "Ser consumado en compostura is an unnatural calque of being accomplished in composure. Dominio de la compostura meditativa preserves the achievement/proficiency meaning without treating consumado as an independent personal predicate.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 59735,
+      "target_key": "samāpatti 1",
+      "target_pos": "fem",
+      "target_english": "attainment; meditation attainment (of)",
+      "source_keys": [
+        "samāpatti 1"
+      ],
+      "meaning": "logro; logro meditativo",
+      "mode": "verbatim",
+      "reason": "Attainment and meditation attainment are unchanged; argument marker added only.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 59985,
+      "target_key": "samudaya 1",
+      "target_pos": "masc",
+      "target_english": "source; origin; origination (of)",
+      "source_keys": [
+        "samudaya 1"
+      ],
+      "meaning": "origen; fuente",
+      "mode": "adapted",
+      "reason": "Select source origin/source; drop appearance, absent from target.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 60365,
+      "target_key": "sampasādana 1",
+      "target_pos": "nt",
+      "target_english": "calming; tranquillizing; pacifying; settling",
+      "source_keys": [
+        "sampasādana 1"
+      ],
+      "meaning": "calmar; tranquilizar; apaciguar; asentar",
+      "mode": "verbatim",
+      "reason": "Tranquillising became tranquillizing; all four authored equivalents still apply.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 60840,
+      "target_key": "sammāsamādhi 1",
+      "target_pos": "masc",
+      "target_english": "perfect stability of mind; correct meditative composure",
+      "source_keys": [
+        "sammāsamādhi 1"
+      ],
+      "meaning": "estabilidad mental perfecta; compostura meditativa correcta",
+      "mode": "adapted",
+      "reason": "Narrows authored mental composure to explicitly meditative composure.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 60867,
+      "target_key": "sammiñjati",
+      "target_pos": "pr",
+      "target_english": "bends back; folds back; flexes back",
+      "source_keys": [
+        "samiñjati 2"
+      ],
+      "meaning": "se dobla hacia atrás; se pliega hacia atrás; se flexiona hacia atrás",
+      "mode": "verbatim",
+      "reason": "Spelling variant has exactly bends/folds/flexes back, retaining the noncausative Spanish reflexive construction.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 61305,
+      "target_key": "savaṇa 1",
+      "target_pos": "nt",
+      "target_english": "hearing; listening",
+      "source_keys": [
+        "ariyadhammassavana",
+        "asaddhammassavana"
+      ],
+      "meaning": "oír; escuchar",
+      "mode": "adapted",
+      "reason": "Paired compound definitions explicitly translate hearing/listening as escuchar/oír; remove their teaching objects and negation.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 61551,
+      "target_key": "saṃkilissati",
+      "target_pos": "pr",
+      "target_english": "is dirtied; is soiled; becomes impure",
+      "source_keys": [
+        "saṅkilissati"
+      ],
+      "meaning": "es ensuciado; es manchado; se vuelve impuro",
+      "mode": "adapted",
+      "reason": "Spelling variant supplies exact dirtied/soiled/becomes impure; remove from complement absent in target.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 61555,
+      "target_key": "saṃkilesa 1",
+      "target_pos": "masc",
+      "target_english": "dirt; defilement; impurity; corruption (of)",
+      "source_keys": [
+        "asoceyya"
+      ],
+      "meaning": "suciedad; contaminación; impureza",
+      "mode": "adapted",
+      "reason": "The other source explicitly translates impurity, defilement and uncleanness; borrow these overlapping English senses, without asserting Pali identity.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 61556,
+      "target_key": "saṃkilesa 2",
+      "target_pos": "masc",
+      "target_english": "(of the sun, a star or a planet) darkening",
+      "source_keys": [
+        "tamobhūta"
+      ],
+      "meaning": "(del sol, una estrella o un planeta) oscurecimiento",
+      "mode": "adapted",
+      "reason": "Nominalizes authored darkened/oscurecido into darkening; celestial qualifier is supplied explicitly by current English.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 61564,
+      "target_key": "saṃkīyati",
+      "target_pos": "pr",
+      "target_english": "is adulterated; is corrupted; is impure",
+      "source_keys": [
+        "anikkasāva"
+      ],
+      "meaning": "es impuro; está corrompido",
+      "mode": "adapted",
+      "reason": "The source explicitly supplies impure/corrupt adjectives; adapt them to the target is-impure/is-corrupted verbs, without claiming historical identity.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 61910,
+      "target_key": "saṃvāsa 1",
+      "target_pos": "masc",
+      "target_english": "living together; cohabitation; close association (with)",
+      "source_keys": [
+        "saṃvāsa 1"
+      ],
+      "meaning": "convivencia; cohabitación; asociación estrecha (con)",
+      "mode": "verbatim",
+      "reason": "Co-habitation changes spelling only; convivencia/cohabitación/asociación estrecha remain exact.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 61923,
+      "target_key": "saṃvijjati 2.1",
+      "target_pos": "pr",
+      "target_english": "is alarmed (about); feels urgency (due to); is jolted into action; is dismayed (by)",
+      "source_keys": [
+        "saṃvijjati 2.1",
+        "saṃvega 1"
+      ],
+      "meaning": "está alarmado (por); siente urgencia; se ve impulsado a actuar; está consternado (por)",
+      "mode": "adapted",
+      "reason": "Retains alarm, derives urgency/consternation from the authored sense-of-urgency/dismay entry, and spells out the new action clause from target English.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 61972,
+      "target_key": "saṃvega 1",
+      "target_pos": "masc",
+      "target_english": "sense of urgency; existential alarm; shock about existence",
+      "source_keys": [
+        "saṃvega 1"
+      ],
+      "meaning": "sentido de urgencia; alarma existencial",
+      "mode": "adapted",
+      "reason": "Retain the exact sense-of-urgency phrase; replace general anxiety/dismay with the new existential qualification.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 62005,
+      "target_key": "saṃharati 1",
+      "target_pos": "pr",
+      "target_english": "collects; brings together; carries together",
+      "source_keys": [
+        "saṃharati 1"
+      ],
+      "meaning": "recolecta; reúne; transporta conjuntamente",
+      "mode": "adapted",
+      "reason": "Corrects unidiomatic lleva junto to transporta conjuntamente for carries together; authored collection and gathering glosses remain unchanged.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 62293,
+      "target_key": "sāmañña 1.1",
+      "target_pos": "nt",
+      "target_english": "ascetic life; monasticism; monkhood; state of being a monastic",
+      "source_keys": [
+        "sāmañña 1.1"
+      ],
+      "meaning": "vida monástica; estado de ser monje; vida ascética",
+      "mode": "verbatim",
+      "reason": "Vida monástica and vida ascética cover the expanded monasticism/ascetic-life wording without narrowing it to a new sense.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 62423,
+      "target_key": "sāra 2",
+      "target_pos": "masc",
+      "target_english": "core; essence; substance; value (in)",
+      "source_keys": [
+        "sāra 2"
+      ],
+      "meaning": "núcleo; esencia; sustancia; valor",
+      "mode": "verbatim",
+      "reason": "Only in complement added to value; núcleo/esencia/sustancia/valor unchanged.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 62657,
+      "target_key": "sāvatthinidāna",
+      "target_pos": "nt",
+      "target_english": "at Sāvatthī; Sāvatthī is the location; set in Sāvatthī",
+      "source_keys": [
+        "sāvatthinidāna"
+      ],
+      "meaning": "en Sāvatthī; ambientado en Sāvatthī",
+      "mode": "adapted",
+      "reason": "The location is unchanged; remove the former occurred-in event wording and express the current location/setting wording.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 63093,
+      "target_key": "sīta 2",
+      "target_pos": "nt",
+      "target_english": "coolness; cold",
+      "source_keys": [
+        "sīta 2"
+      ],
+      "meaning": "frescura; frío",
+      "mode": "verbatim",
+      "reason": "The target and source coolness/cold English meanings are identical.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 63146,
+      "target_key": "sīla 1",
+      "target_pos": "nt",
+      "target_english": "ethical conduct; ethics; virtue; moral integrity",
+      "source_keys": [
+        "sīla 1"
+      ],
+      "meaning": "conducta ética; virtud; integridad moral",
+      "mode": "verbatim",
+      "reason": "Ethics adds a noun synonymous with the retained ethical conduct/virtue/moral integrity.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 63560,
+      "target_key": "sukhāyati",
+      "target_pos": "pr",
+      "target_english": "is comfortable with; is ok with; is happy with",
+      "source_keys": [
+        "sukhāyati"
+      ],
+      "meaning": "se siente cómodo con; le parece bien; está contento con",
+      "mode": "adapted",
+      "reason": "Está de acuerdo con asserts agreement, stronger than the target is ok with, which can mean mere acceptance or comfort. Le parece bien preserves that broader acceptability meaning; se siente cómodo also avoids comfortable/comfort-giving ambiguity.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 63624,
+      "target_key": "sugati",
+      "target_pos": "fem",
+      "target_english": "good destination; happy fate; state of happiness",
+      "source_keys": [
+        "sugati"
+      ],
+      "meaning": "buen destino; destino feliz",
+      "mode": "verbatim",
+      "reason": "Buen destino and destino feliz remain exact equivalents for the retained main glosses.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 63834,
+      "target_key": "suttanipāta",
+      "target_pos": "masc",
+      "target_english": "Book 5 of the Khuddaka Nikāya",
+      "source_keys": [
+        "suttanipātapāḷi"
+      ],
+      "meaning": "Libro 5 del Khuddaka Nikāya",
+      "mode": "verbatim",
+      "reason": "Other authored entry has exactly Book 5 of the Khuddaka Nikāya.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 64252,
+      "target_key": "subhāsita 2",
+      "target_pos": "nt",
+      "target_english": "good speech; eloquent communication; well-spoken words",
+      "source_keys": [
+        "subhāsita 2"
+      ],
+      "meaning": "buen discurso; comunicación elocuente; palabras bien dichas",
+      "mode": "verbatim",
+      "reason": "Well-spoken hyphenation changes only; all Spanish glosses fit.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 64877,
+      "target_key": "seti 2",
+      "target_pos": "pr",
+      "target_english": "sleeps (on)",
+      "source_keys": [
+        "seti 2"
+      ],
+      "meaning": "duerme",
+      "mode": "verbatim",
+      "reason": "Duerme remains the exact sleep verb; English only added a possible surface argument.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 64966,
+      "target_key": "seyyā 1",
+      "target_pos": "fem",
+      "target_english": "lying posture; sleeping position",
+      "source_keys": [
+        "seyyā 1"
+      ],
+      "meaning": "postura acostada; postura para dormir",
+      "mode": "adapted",
+      "reason": "Retain posture for sleeping, remove standalone sleep/rest, and specify lying posture from current English.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 65126,
+      "target_key": "socati",
+      "target_pos": "pr",
+      "target_english": "sorrows; suffers (over); grieves (about); mourns (over)",
+      "source_keys": [
+        "socati"
+      ],
+      "meaning": "se apena (por); se aflige (por); se lamenta (por)",
+      "mode": "verbatim",
+      "reason": "Added suffers overlaps se apena/se aflige; grief and mourning meanings are unchanged.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 66024,
+      "target_key": "vattar 1",
+      "target_pos": "masc",
+      "target_english": "speaker; preacher; adviser",
+      "source_keys": [
+        "vattar 1"
+      ],
+      "meaning": "orador; predicador; consejero",
+      "mode": "verbatim",
+      "reason": "Advisor became adviser; speaker/preacher/adviser translations are unchanged.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 66029,
+      "target_key": "vattāro",
+      "target_pos": "masc",
+      "target_english": "those who say; those who speak; those who comment",
+      "source_keys": [
+        "vattāro"
+      ],
+      "meaning": "quienes dicen; quienes hablan; quienes comentan",
+      "mode": "verbatim",
+      "reason": "English those who says corrected to say; authored quienes dicen already has correct plural.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 66145,
+      "target_key": "vadeti 1.1",
+      "target_pos": "pr",
+      "target_english": "calls; describes (as)",
+      "source_keys": [
+        "vadeti 1"
+      ],
+      "meaning": "llama; describe (como)",
+      "mode": "adapted",
+      "reason": "Select calls/describes from the old combined entry and remove says/speaks, which now belong to a separate sense.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 66532,
+      "target_key": "vassa 1.5",
+      "target_pos": "masc",
+      "target_english": "rains retreat; three-month long retreat for monastics",
+      "source_keys": [
+        "vassa 1.5"
+      ],
+      "meaning": "retiro de lluvias; retiro de tres meses para monásticos",
+      "mode": "verbatim",
+      "reason": "Only the English duration's hyphenation changed; the Spanish three-month retreat already matches.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 66620,
+      "target_key": "vahati 1",
+      "target_pos": "pr",
+      "target_english": "carries; carries away; transports",
+      "source_keys": [
+        "vahati 1"
+      ],
+      "meaning": "lleva; se lleva; transporta",
+      "mode": "adapted",
+      "reason": "The accepted source phrase lleva consigo means carries with oneself, not necessarily carries away. Use lleva/se lleva for carries/carries away and make the target transports explicit; these are direct English-driven adaptations.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 66734,
+      "target_key": "vāta 1",
+      "target_pos": "masc",
+      "target_english": "wind; breeze",
+      "source_keys": [
+        "vāta 1"
+      ],
+      "meaning": "viento",
+      "mode": "verbatim",
+      "reason": "Viento is a valid concise translation of wind/breeze; other atmosphere and spray senses excluded.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 66835,
+      "target_key": "vāpī",
+      "target_pos": "fem",
+      "target_english": "reservoir; dam; artificial lake; pond",
+      "source_keys": [
+        "vāpī"
+      ],
+      "meaning": "embalse; presa; estanque",
+      "mode": "verbatim",
+      "reason": "Added artificial lake is covered by embalse alongside retained dam and pond.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 67580,
+      "target_key": "vijānāti 1",
+      "target_pos": "pr",
+      "target_english": "comprehends; understands; recognizes; distinguishes; is aware (of)",
+      "source_keys": [
+        "vijānāti 1"
+      ],
+      "meaning": "comprende; entiende; reconoce; distingue; es consciente (de)",
+      "mode": "verbatim",
+      "reason": "Recognises becomes recognizes only; all authored Spanish verbs still match.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 67785,
+      "target_key": "viññāpeti 3",
+      "target_pos": "pr",
+      "target_english": "makes oneself heard (to)",
+      "source_keys": [
+        "viññāpeti 3"
+      ],
+      "meaning": "se hace oír",
+      "mode": "adapted",
+      "reason": "The old communicates/makes-known entry supports communication; narrow it explicitly to the current makes-oneself-heard wording rather than preserving the broader informs clause.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 67792,
+      "target_key": "viññāyati",
+      "target_pos": "pr",
+      "target_english": "is known; is understood",
+      "source_keys": [
+        "viññāyati"
+      ],
+      "meaning": "es conocido; es comprendido",
+      "mode": "adapted",
+      "reason": "Retains authored is known and adds the explicitly expanded understood gloss.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 67801,
+      "target_key": "viññū 2",
+      "target_pos": "masc",
+      "target_english": "wise person; sage; knowledgeable man; intelligent person",
+      "source_keys": [
+        "viññū 2"
+      ],
+      "meaning": "persona sabia; sabio; hombre conocedor; persona inteligente",
+      "mode": "verbatim",
+      "reason": "The only English change is correcting knowledgable; the Spanish four-part description is unaffected.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 68182,
+      "target_key": "vinipāta",
+      "target_pos": "masc",
+      "target_english": "state of suffering; lower realm; underworld",
+      "source_keys": [
+        "vinipāta"
+      ],
+      "meaning": "estado de sufrimiento; reino inferior; inframundo",
+      "mode": "adapted",
+      "reason": "Replaces obsolete purgatory/purgatorio with the target lower realm while retaining matching outer glosses.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 68277,
+      "target_key": "vindati 2.1",
+      "target_pos": "pr",
+      "target_english": "enjoys; undergoes; experiences",
+      "source_keys": [
+        "vindati 2.1"
+      ],
+      "meaning": "disfruta; experimenta; vive",
+      "mode": "adapted",
+      "reason": "Remove conoce for knows, dropped from English; retain enjoyment/experience/undergoing equivalents.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 68819,
+      "target_key": "virajjati 2",
+      "target_pos": "pr",
+      "target_english": "is indifferent (to); is apathetic (towards)",
+      "source_keys": [
+        "virajjati 2"
+      ],
+      "meaning": "es indiferente (a); es apático (hacia)",
+      "mode": "verbatim",
+      "reason": "Toward became towards; hacia already matches either form.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 68872,
+      "target_key": "virāga 2.1",
+      "target_pos": "masc",
+      "target_english": "fading; disappearance; destruction (of)",
+      "source_keys": [
+        "virāga 2.1"
+      ],
+      "meaning": "desvanecimiento; desaparición; destrucción (de)",
+      "mode": "adapted",
+      "reason": "Remove cessation/cesación dropped from target; retain the three exact matches.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 68923,
+      "target_key": "viriyabala",
+      "target_pos": "nt",
+      "target_english": "power that is effort; strength of energy",
+      "source_keys": [
+        "vīriyabala"
+      ],
+      "meaning": "poder que es el esfuerzo; fuerza de la energía",
+      "mode": "verbatim",
+      "reason": "The spelling-variant source English exactly matches both current clauses.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 69366,
+      "target_key": "visodheti 1",
+      "target_pos": "pr",
+      "target_english": "cleanses; purifies",
+      "source_keys": [
+        "visodheti"
+      ],
+      "meaning": "limpia; purifica",
+      "mode": "verbatim",
+      "reason": "Cleans became cleanses; limpia and purifica preserve both meanings.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 69412,
+      "target_key": "vissajjeti 6",
+      "target_pos": "pr",
+      "target_english": "wastes; squanders; dissipates; (comm) gives away to others",
+      "source_keys": [
+        "vissajjeti 6",
+        "vissajjeti 1"
+      ],
+      "meaning": "malgasta; derrocha; (com.) entrega a otros",
+      "mode": "adapted",
+      "reason": "Narrow source spends/gasta to wasteful spending in current wastes/squanders; source gives away/entrega supplies commentary giving away.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 69662,
+      "target_key": "viharati 2",
+      "target_pos": "pr",
+      "target_english": "stays; remains; continues; abides (in)",
+      "source_keys": [
+        "viharati 2"
+      ],
+      "meaning": "permanece; se queda; continúa; mora (en)",
+      "mode": "adapted",
+      "reason": "For a person staying in a place, source queda needs reflexive se queda; bare queda can mean remains available or fits rather than stays. Other authored glosses remain valid.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 69685,
+      "target_key": "vihāra 1",
+      "target_pos": "masc",
+      "target_english": "dwelling; residence; abode",
+      "source_keys": [
+        "vihāra 1"
+      ],
+      "meaning": "morada; residencia",
+      "mode": "verbatim",
+      "reason": "Morada and residencia cover dwelling/residence/abode; no new sense is needed.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 69911,
+      "target_key": "vīriya 1",
+      "target_pos": "nt",
+      "target_english": "effort; energy; might; power; strength; vitality",
+      "source_keys": [
+        "vīriya 1"
+      ],
+      "meaning": "esfuerzo; energía; poder; fuerza",
+      "mode": "verbatim",
+      "reason": "Effort/energy/might/power unchanged; fuerza covers added strength, energía covers vitality.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 69975,
+      "target_key": "vuṭṭhahati 2",
+      "target_pos": "pr",
+      "target_english": "stands up; gets up (from)",
+      "source_keys": [
+        "vuṭṭhahati 2"
+      ],
+      "meaning": "se pone de pie; se levanta (de)",
+      "mode": "adapted",
+      "reason": "Converts source infinitives into present third-person verbs to match the corrected target stands up/gets up.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 70032,
+      "target_key": "vuḍḍhi",
+      "target_pos": "fem",
+      "target_english": "increase; development; prosperity; elevation",
+      "source_keys": [
+        "vuḍḍhi"
+      ],
+      "meaning": "aumento; prosperidad; desarrollo; elevación",
+      "mode": "verbatim",
+      "reason": "The English synonym order changed; all four authored Spanish glosses still match.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 70093,
+      "target_key": "vuddhi 1",
+      "target_pos": "fem",
+      "target_english": "growth; increase; development (in or of)",
+      "source_keys": [
+        "vuddhi 1"
+      ],
+      "meaning": "crecimiento; aumento; desarrollo (de)",
+      "mode": "verbatim",
+      "reason": "Growth/increase/development remain unchanged; English added an alternative preposition only.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 70238,
+      "target_key": "vedanā 1",
+      "target_pos": "fem",
+      "target_english": "(pleasant, unpleasant or neutral) felt experience; feeling; feeling tone; hedonic tone; sensation (coming from six sense experience); second of the five aggregates",
+      "source_keys": [
+        "vedanā 1"
+      ],
+      "meaning": "experiencia sentida (placentera, desagradable o neutral); sentimiento; tono de sentimiento; tono hedónico; sensación (procedente de la experiencia de los seis sentidos); segundo de los cinco agregados",
+      "mode": "adapted",
+      "reason": "Keep authored core and add explicit current hedonic-tone and six-senses qualifiers as Spanish English-based adaptations.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 70721,
+      "target_key": "vyākaroti",
+      "target_pos": "pr",
+      "target_english": "answers; replies",
+      "source_keys": [
+        "viyākaroti"
+      ],
+      "meaning": "responde; replica",
+      "mode": "verbatim",
+      "reason": "Spelling variant has exact answers/replies definition; responde/replica matches.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 70737,
+      "target_key": "vyāpāda",
+      "target_pos": "masc",
+      "target_english": "dislike; ill-will; hatred; hostility; enmity; malevolence (towards)",
+      "source_keys": [
+        "byāpāda"
+      ],
+      "meaning": "aversión; mala voluntad; odio; hostilidad; enemistad; malevolencia (hacia)",
+      "mode": "verbatim",
+      "reason": "The spelling-variant source English matches the whole current definition, including its complement.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 71328,
+      "target_key": "hīna 5",
+      "target_pos": "nt",
+      "target_english": "lay life; secular world",
+      "source_keys": [
+        "hīna 5"
+      ],
+      "meaning": "vida laica; mundo secular",
+      "mode": "verbatim",
+      "reason": "Laylife changed to lay life; vida laica and mundo secular exactly match.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 71783,
+      "target_key": "anicca 2",
+      "target_pos": "nt",
+      "target_english": "impermanence; inconstancy; instability; irregularity",
+      "source_keys": [
+        "anicca 2"
+      ],
+      "meaning": "impermanencia; inconstancia; inestabilidad; irregularidad",
+      "mode": "verbatim",
+      "reason": "Inconstance corrected to inconstancy; Spanish inconstancia already correct.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 72827,
+      "target_key": "adinnādāyī 2",
+      "target_pos": "masc",
+      "target_english": "thief; robber",
+      "source_keys": [
+        "adinnādāyī 2"
+      ],
+      "meaning": "ladrón",
+      "mode": "verbatim",
+      "reason": "Ladrón covers thief and robber without requiring a new lexical sense.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 73332,
+      "target_key": "amata 1.3",
+      "target_pos": "nt",
+      "target_english": "ambrosia; drink of immortality; divine nectar",
+      "source_keys": [
+        "amata 1.3"
+      ],
+      "meaning": "ambrosía; bebida de la inmortalidad; néctar divino",
+      "mode": "verbatim",
+      "reason": "English devine typo corrected to divine; authored néctar divino already has the correct sense.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 74545,
+      "target_key": "bhindati 4",
+      "target_pos": "pr",
+      "target_english": "(of the community) causes a schism (in); splits apart",
+      "source_keys": [
+        "bhindati 4"
+      ],
+      "meaning": "(de la comunidad) causa un cisma (en); divide",
+      "mode": "verbatim",
+      "reason": "Cause became causes; Spanish causa was already correctly inflected and divide matches splits apart.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 75641,
+      "target_key": "andhakāra 2",
+      "target_pos": "masc",
+      "target_english": "ignorance; spiritual darkness",
+      "source_keys": [
+        "andhakāra 2"
+      ],
+      "meaning": "ignorancia",
+      "mode": "verbatim",
+      "reason": "Ignorance remains exact; spiritual darkness is its metaphorical synonym.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 75792,
+      "target_key": "paṭilabhati 2",
+      "target_pos": "pr",
+      "target_english": "gets back; finds again; regains; recovers",
+      "source_keys": [
+        "paṭilabhati 2"
+      ],
+      "meaning": "recupera; recobra; obtiene de vuelta",
+      "mode": "verbatim",
+      "reason": "Regains/recovers/gets back cover the added finds-again wording; same recovery sense.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 77493,
+      "target_key": "tāta 2",
+      "target_pos": "masc",
+      "target_english": "term of endearment; son; brother; friend; dear",
+      "source_keys": [
+        "tāta 2"
+      ],
+      "meaning": "término de afecto; hijo; hermano; amigo; querido",
+      "mode": "verbatim",
+      "reason": "Term of affection became term of endearment; término de afecto and all following addresses remain valid.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 77891,
+      "target_key": "tikanipāta 1",
+      "target_pos": "masc",
+      "target_english": "Book 3 of the Aṅguttara Nikāya",
+      "source_keys": [
+        "tikanipāta 1"
+      ],
+      "meaning": "Libro 3 del Aṅguttara Nikāya",
+      "mode": "adapted",
+      "reason": "Selects the retained volume identification and removes the extra Book of Threes title.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 79973,
+      "target_key": "ajjhoharati 2",
+      "target_pos": "pr",
+      "target_english": "infuses; injects; instils",
+      "source_keys": [
+        "ajjhoharati 2"
+      ],
+      "meaning": "infunde; inyecta; instila",
+      "mode": "verbatim",
+      "reason": "Instills becomes instils; infunde/inyecta/instila unchanged.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 80437,
+      "target_key": "kubbati 2",
+      "target_pos": "pr",
+      "target_english": "does; acts; performs",
+      "source_keys": [
+        "kubbati 2"
+      ],
+      "meaning": "hace; realiza",
+      "mode": "verbatim",
+      "reason": "Hace and realiza remain exact equivalents of does and performs; acts is an additional close synonym.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 81045,
+      "target_key": "acchariya 2",
+      "target_pos": "nt",
+      "target_english": "(the) wonderful; marvellous; incredible; epithet of Nibbāna",
+      "source_keys": [
+        "acchariya 1",
+        "acchariya 2"
+      ],
+      "meaning": "lo maravilloso; lo prodigioso; epíteto de Nibbāna",
+      "mode": "adapted",
+      "reason": "Combine authored wonderful/marvellous adjectives with the epithet sense; nominalize with lo for current the wonderful.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 85876,
+      "target_key": "saraṇa 1.2",
+      "target_pos": "nt",
+      "target_english": "house; home; shelter",
+      "source_keys": [
+        "nivesana 1",
+        "saraṇa 1.1"
+      ],
+      "meaning": "casa; hogar; refugio",
+      "mode": "adapted",
+      "reason": "Reject the same-ID walking-stick sense. Borrow exact house/home from nivesana and select shelter/refugio from the related source.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 87132,
+      "target_key": "janeti 2",
+      "target_pos": "pr",
+      "target_english": "gives birth (to)",
+      "source_keys": [
+        "janeti 2"
+      ],
+      "meaning": "da a luz",
+      "mode": "verbatim",
+      "reason": "Da a luz exactly matches gives birth; target only adds the argument marker.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 87981,
+      "target_key": "abhinipphādeti 2",
+      "target_pos": "pr",
+      "target_english": "creates; produces; outputs; manifests",
+      "source_keys": [
+        "abhinimmiṇāti"
+      ],
+      "meaning": "crea; produce; hace",
+      "mode": "adapted",
+      "reason": "Independent source creates/produces/makes matches target creation/production; avoid old makes someone produce a robe causative.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 87982,
+      "target_key": "kiñceti",
+      "target_pos": "pr",
+      "target_english": "crushes; tramples",
+      "source_keys": [
+        "maddati 1"
+      ],
+      "meaning": "aplasta; pisotea",
+      "mode": "adapted",
+      "reason": "This newly added ID has the exact crushes/tramples English pair already translated in maddati; borrow only those clauses.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 87984,
+      "target_key": "vadeti 1.2",
+      "target_pos": "pr",
+      "target_english": "says; speaks",
+      "source_keys": [
+        "vadeti 1"
+      ],
+      "meaning": "dice; habla",
+      "mode": "adapted",
+      "reason": "Selects the first two authored glosses for the new says/speaks split, excluding calls/describes.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 87988,
+      "target_key": "pacceti 3",
+      "target_pos": "pr",
+      "target_english": "believes (in); relies (on); trusts (in)",
+      "source_keys": [
+        "pacceti 2",
+        "abhippasanna"
+      ],
+      "meaning": "cree (en); confía (en)",
+      "mode": "adapted",
+      "reason": "Historical believes supplies cree; independent trusts in supplies confía en. Exclude assumes/takes as and mismatching realizes sense.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 88003,
+      "target_key": "manta 1.3",
+      "target_pos": "masc",
+      "target_english": "council; strategy; diplomacy; (comm) spells",
+      "source_keys": [
+        "kharamanta",
+        "adhippāya 3",
+        "sammuti 2",
+        "manta 1.2"
+      ],
+      "meaning": "consejo; estrategia; diplomacia; (com.) hechizos",
+      "mode": "adapted",
+      "reason": "Combines authored council/consejo, strategy/estrategia, diplomacy/diplomacia and spells/hechizos; removes bad and incantation qualifiers absent from target.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 88040,
+      "target_key": "adhimuccati 3",
+      "target_pos": "pr",
+      "target_english": "determines; resolves; intends (to be); (comm) thinks",
+      "source_keys": [
+        "adhimuccati 1",
+        "adhimuccati 2"
+      ],
+      "meaning": "se decide; se resuelve; tiene la intención (de ser)",
+      "mode": "adapted",
+      "reason": "Select resolved/decided from the related entries and adapt to the active determines/resolves form; omit attraction, faith and spirit possession.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 88041,
+      "target_key": "sakkhī 2.1",
+      "target_pos": "masc",
+      "target_english": "friendship; intimacy; close association (with)",
+      "source_keys": [
+        "santhuta 1"
+      ],
+      "meaning": "amistad; intimidad",
+      "mode": "adapted",
+      "reason": "Select exact friendship/intimacy matches from a source also mentioning acquaintance/familiarity; exclude those extra glosses.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 88043,
+      "target_key": "upakkamati 2",
+      "target_pos": "pr",
+      "target_english": "approaches with a purpose",
+      "source_keys": [
+        "ajjhupeti",
+        "ajjhāsaya 2"
+      ],
+      "meaning": "se aproxima con un propósito",
+      "mode": "adapted",
+      "reason": "Combines exact authored approaches and purpose vocabulary; historical strives/begins is not used as if equivalent.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 88044,
+      "target_key": "sarati 2.1",
+      "target_pos": "pr",
+      "target_english": "streams; seeps (with lust)",
+      "source_keys": [
+        "sarati 2.3"
+      ],
+      "meaning": "fluye (con lujuria)",
+      "mode": "adapted",
+      "reason": "Select streams/fluye from same lemma and add explicit current with-lust qualifier; remove spreads out.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 88051,
+      "target_key": "saraṇa 1.3",
+      "target_pos": "nt",
+      "target_english": "walking stick; staff",
+      "source_keys": [
+        "saraṇa 1.2"
+      ],
+      "meaning": "bastón; cayado",
+      "mode": "verbatim",
+      "reason": "The old staff entry is an exact English match, though its historical ID now denotes house; use the former sense's Spanish explicitly.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 88062,
+      "target_key": "ghara 3",
+      "target_pos": "nt",
+      "target_english": "(of a building) level; storey",
+      "source_keys": [
+        "uparipāsāda"
+      ],
+      "meaning": "(de un edificio) piso; nivel",
+      "mode": "adapted",
+      "reason": "Selects piso from upper storey and removes upper/mansion restrictions; building qualifier comes from target.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 88105,
+      "target_key": "dissati 2.1",
+      "target_pos": "pr",
+      "target_english": "is indicated; is pointed out",
+      "source_keys": [
+        "uddisīyati"
+      ],
+      "meaning": "es señalado; es indicado",
+      "mode": "verbatim",
+      "reason": "The other source has exactly is pointed out; is indicated in reverse order; both authored passive Spanish phrases match.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 88108,
+      "target_key": "mukhena 2",
+      "target_pos": "nt",
+      "target_english": "with the mouth; by speech; verbally",
+      "source_keys": [
+        "pisuṇavāca"
+      ],
+      "meaning": "con el habla; verbalmente",
+      "mode": "adapted",
+      "reason": "Source explicitly renders by speech as con el habla; remove who-separates-others context and use its speech means alone.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 88109,
+      "target_key": "uddharati 5",
+      "target_pos": "pr",
+      "target_english": "(of water) draws",
+      "source_keys": [
+        "uddharati 1",
+        "kumbhadāsī"
+      ],
+      "meaning": "saca agua",
+      "mode": "adapted",
+      "reason": "Selects authored saca from pulls out and the exact draws-water phrase in the servant-girl entry, excluding the person noun.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 88113,
+      "target_key": "sambhuñjati 3",
+      "target_pos": "pr",
+      "target_english": "partakes; engages; takes on",
+      "source_keys": [
+        "anubhoti 1",
+        "āpajjati 3"
+      ],
+      "meaning": "participa; se involucra",
+      "mode": "adapted",
+      "reason": "Select partakes/participa and engages/se involucra; old eats together or recites Dhamma meanings do not fit.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 88135,
+      "target_key": "sujjhati 2",
+      "target_pos": "pr",
+      "target_english": "is pure; is clean (because of)",
+      "source_keys": [
+        "pariyodāta 1"
+      ],
+      "meaning": "es puro; está limpio (debido a)",
+      "mode": "adapted",
+      "reason": "Borrow exact pure/clean adjective equivalents and add the target copula and causal complement; do not use the older purified/washed event sense.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 88136,
+      "target_key": "sameti 2.4",
+      "target_pos": "pr",
+      "target_english": "harmonizes; is united; agrees (with)",
+      "source_keys": [
+        "sameti 2.2"
+      ],
+      "meaning": "armoniza; concuerda (con); está unido",
+      "mode": "adapted",
+      "reason": "Uses authored agrees/concuerda as the core and extends it to the explicitly stated harmony/unity synonyms; drops fits-in repetition.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 88140,
+      "target_key": "pareti 1",
+      "target_pos": "pr",
+      "target_english": "goes; proceeds (to); reaches",
+      "source_keys": [
+        "peti",
+        "pāpuṇāti 1"
+      ],
+      "meaning": "va; avanza (hacia); llega (a)",
+      "mode": "adapted",
+      "reason": "Selects authored avanza for proceeds in this movement sense; procede can suggest following a procedure and is less precise beside goes/reaches.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 88141,
+      "target_key": "pareti 2",
+      "target_pos": "pr",
+      "target_english": "sets out (on); travels across",
+      "source_keys": [
+        "uyyuñjati 2",
+        "tarati 1.1"
+      ],
+      "meaning": "se pone en marcha; atraviesa",
+      "mode": "adapted",
+      "reason": "Select sets out/se pone en marcha and goes through/atraviesa from explicit English evidence, dropping home and other source clauses.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 88609,
+      "target_key": "adhimuccati 5",
+      "target_pos": "pr",
+      "target_english": "becomes free; is liberated",
+      "source_keys": [
+        "nimuccati"
+      ],
+      "meaning": "es liberado; queda libre",
+      "mode": "adapted",
+      "reason": "Other authored entry exactly supplies is liberated/is freed, unlike same-lemma resolve/possession senses.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 88610,
+      "target_key": "nīyati 1.4",
+      "target_pos": "pr",
+      "target_english": "is carried (by)",
+      "source_keys": [
+        "niyyati 1.1"
+      ],
+      "meaning": "es llevado (por)",
+      "mode": "adapted",
+      "reason": "Select is carried/es llevado and change agent complement from destination to by/por; remove led.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 88615,
+      "target_key": "osāreti 2.1",
+      "target_pos": "pr",
+      "target_english": "recites; utters",
+      "source_keys": [
+        "bhāsati 1.3"
+      ],
+      "meaning": "recita; pronuncia",
+      "mode": "adapted",
+      "reason": "The source supplies the exact recites/utters verbs; remove its verse-specific restriction, absent from the target.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 88619,
+      "target_key": "pakaraṇa 3",
+      "target_pos": "nt",
+      "target_english": "discussion; explanation",
+      "source_keys": [
+        "atthakathā"
+      ],
+      "meaning": "explicación",
+      "mode": "adapted",
+      "reason": "The assigned lemma's older book/event senses do not fit. Select explanation/explicación from a source that explicitly has that English gloss; no Pali identity is claimed.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 88637,
+      "target_key": "manteti 3",
+      "target_pos": "pr",
+      "target_english": "chats; talks; converses",
+      "source_keys": [
+        "sallapati"
+      ],
+      "meaning": "charla; habla; conversa",
+      "mode": "adapted",
+      "reason": "Selects authored habla/conversa and adapts chats to charla; avoids the obsolete considers/thinks-over sense.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 88654,
+      "target_key": "sajjati 1.3",
+      "target_pos": "pr",
+      "target_english": "coalesces; aggregates (in)",
+      "source_keys": [
+        "bandhati 4",
+        "samūha 1"
+      ],
+      "meaning": "se une; se agrega (en)",
+      "mode": "adapted",
+      "reason": "Resolves coalesces/aggregates through authored unites/une and aggregation/agregación, changing to intransitive reflexive verbs. Rejects the unrelated attachment, hesitation and adornment senses.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 88673,
+      "target_key": "dutiya 3",
+      "target_pos": "masc",
+      "target_english": "second man; another man; male companion",
+      "source_keys": [
+        "dutiya 1",
+        "dutiya 2"
+      ],
+      "meaning": "segundo hombre; otro hombre; compañero",
+      "mode": "adapted",
+      "reason": "Combines authored segundo and compañero, adapting them to the target explicitly male companion sense.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 88679,
+      "target_key": "pareti 3",
+      "target_pos": "pr",
+      "target_english": "implies; tends towards",
+      "source_keys": [],
+      "meaning": "implica; tiende hacia",
+      "mode": "translated",
+      "reason": "New local English-to-Spanish translation of 'implies; tends towards'. No upstream Spanish authorship or Pali interpretation is claimed.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 88792,
+      "target_key": "nāseti 3",
+      "target_pos": "pr",
+      "target_english": "ruins; bankrupts (someone)",
+      "source_keys": [
+        "nāseti 2"
+      ],
+      "meaning": "arruina; lleva a la bancarrota (a alguien)",
+      "mode": "adapted",
+      "reason": "Selects authored arruina, drops kills/destroys, and makes the new financial-bankruptcy sense explicit.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 88798,
+      "target_key": "osarati 2",
+      "target_pos": "pr",
+      "target_english": "subsides; decreases",
+      "source_keys": [
+        "paṭippassambhati 3"
+      ],
+      "meaning": "disminuye",
+      "mode": "adapted",
+      "reason": "Select source subsides/disminuye, dropping illness domain; it also expresses target decreases. Historical comes down/enters is a different action.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 88804,
+      "target_key": "caṅkamati 2",
+      "target_pos": "pr",
+      "target_english": "walks; strolls (with)",
+      "source_keys": [
+        "caṅkamati"
+      ],
+      "meaning": "camina; pasea (con)",
+      "mode": "adapted",
+      "reason": "Retain the authored walk verb, remove the meditation/up-and-down restrictions, and express the new stroll-with gloss.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 88816,
+      "target_key": "bajjhati 2",
+      "target_pos": "pr",
+      "target_english": "is obstructed (by)",
+      "source_keys": [
+        "virujjhati 1"
+      ],
+      "meaning": "está obstruido (por)",
+      "mode": "adapted",
+      "reason": "Selects the exact authored is obstructed gloss; unrelated responsibility and imprisonment senses excluded.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 88817,
+      "target_key": "bahuka 2",
+      "target_pos": "nt",
+      "target_english": "large amount; substantial portion",
+      "source_keys": [
+        "bahuka"
+      ],
+      "meaning": "gran cantidad; porción abundante",
+      "mode": "adapted",
+      "reason": "Convert historical many/lots and authored abundante into noun phrases matching current large amount/substantial portion.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 88824,
+      "target_key": "nisīdati 2",
+      "target_pos": "pr",
+      "target_english": "sits down (on)",
+      "source_keys": [
+        "nisīdati"
+      ],
+      "meaning": "se sienta (en)",
+      "mode": "adapted",
+      "reason": "Select the source sits down expression; repeated se sienta en adds no value.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 88851,
+      "target_key": "appaka 3",
+      "target_pos": "nt",
+      "target_english": "small thing; minute deed; trifle",
+      "source_keys": [
+        "appaka 2",
+        "appaka 1"
+      ],
+      "meaning": "cosa pequeña; nimiedad",
+      "mode": "adapted",
+      "reason": "Convert the authored small-amount/few-things noun and pequeño adjective into a singular small thing; nimiedad expresses the target trifle.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 88863,
+      "target_key": "saṃvega 2",
+      "target_pos": "masc",
+      "target_english": "dread; shock; awe",
+      "source_keys": [
+        "saṃvigga"
+      ],
+      "meaning": "terror; conmoción; sobrecogimiento",
+      "mode": "adapted",
+      "reason": "Nominalizes the authored terrified/in shock/awestruck glosses; historical religious emotion is too vague for this target.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 88908,
+      "target_key": "yāma 6",
+      "target_pos": "masc",
+      "target_english": "(vinaya) time between noon and dawn",
+      "source_keys": [
+        "majjhaṇha",
+        "pabhāta 1"
+      ],
+      "meaning": "(vinaya) período entre el mediodía y el amanecer siguiente",
+      "mode": "adapted",
+      "reason": "Resolves the explicitly defined interval by composing authored noon/mediodía and dawn/amanecer. Does not reuse the different historical three-hour watch meaning.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 88909,
+      "target_key": "bhojana 5",
+      "target_pos": "nt",
+      "target_english": "(vinaya) cooked food; staple food",
+      "source_keys": [
+        "bhojana 1"
+      ],
+      "meaning": "(vinaya) comida cocinada; alimento básico",
+      "mode": "adapted",
+      "reason": "The proposed cooked/staple adaptation fits, but omits the target vinaya domain. Restore it because this is a specialised food classification rather than an unrestricted definition of all food.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 88910,
+      "target_key": "nissaggiya 3",
+      "target_pos": "nt",
+      "target_english": "letting go; dropping; relinquishment",
+      "source_keys": [
+        "vossagga 2"
+      ],
+      "meaning": "soltar; abandono; renuncia",
+      "mode": "adapted",
+      "reason": "Selects authored letting-go/relinquishment glosses and removes complete, which is not required in target.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 89051,
+      "target_key": "sammannati 3",
+      "target_pos": "pr",
+      "target_english": "esteems; honours (somebody with)",
+      "source_keys": [
+        "garukaroti"
+      ],
+      "meaning": "estima; honra (a alguien con)",
+      "mode": "adapted",
+      "reason": "The source explicitly supplies esteems/honours; reorder those authored verbs and include the new person-with complement.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 89055,
+      "target_key": "niraya 2",
+      "target_pos": "nt",
+      "target_english": "hell; hell realm",
+      "source_keys": [
+        "niraya"
+      ],
+      "meaning": "infierno; reino infernal",
+      "mode": "verbatim",
+      "reason": "Hell/hell realm unchanged; numbering only.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 89060,
+      "target_key": "sārathī",
+      "target_pos": "masc",
+      "target_english": "charioteer; driver",
+      "source_keys": [
+        "sārathi 1"
+      ],
+      "meaning": "auriga; conductor",
+      "mode": "verbatim",
+      "reason": "Charioteer; driver exactly matches, so auriga; conductor can be reused across the spelling change.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 89084,
+      "target_key": "addhāna 4",
+      "target_pos": "nt",
+      "target_english": "long time; long duration; lifetime",
+      "source_keys": [
+        "addhāna 2",
+        "cirattaṃ",
+        "addhānaṃ āpādeti"
+      ],
+      "meaning": "largo tiempo; larga duración; toda una vida",
+      "mode": "adapted",
+      "reason": "The accepted two duration phrases omit lifetime, which is not necessarily synonymous with an unspecified long interval. The paired source lives out one's lifetime/vive su vida entera supports adding toda una vida.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 89086,
+      "target_key": "āpādeti 3",
+      "target_pos": "pr",
+      "target_english": "maintains; sustains",
+      "source_keys": [
+        "anuggaṇhāti 1"
+      ],
+      "meaning": "mantiene; sostiene",
+      "mode": "adapted",
+      "reason": "Selects the exact authored maintains/upholds glosses matching maintains/sustains; does not equate upbringing with maintenance.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 89099,
+      "target_key": "nāseti 2",
+      "target_pos": "pr",
+      "target_english": "rejects; dismisses; sends away",
+      "source_keys": [
+        "paccācikkhati",
+        "uyyojeti 1"
+      ],
+      "meaning": "rechaza; desestima; despide; envía lejos",
+      "mode": "adapted",
+      "reason": "Use exact rejects/dismisses and sends away from independent sources; avoid historical kills/destroys.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 89100,
+      "target_key": "vāseti 2.3",
+      "target_pos": "pr",
+      "target_english": "accommodates; allows to stay; makes live",
+      "source_keys": [
+        "vāseti 2.1"
+      ],
+      "meaning": "aloja; permite quedarse; hace vivir",
+      "mode": "adapted",
+      "reason": "Retain makes-live, remove forces-to-live because permission differs from compulsion, and adapt to the current accommodation sense.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 89209,
+      "target_key": "uyyojeti 3",
+      "target_pos": "pr",
+      "target_english": "sends; dispatches",
+      "source_keys": [
+        "uyyojeti 1"
+      ],
+      "meaning": "envía; despacha",
+      "mode": "adapted",
+      "reason": "Selects authored sends vocabulary and removes dismissal/away restrictions absent from the new split.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 89224,
+      "target_key": "ākāsa 3.1",
+      "target_pos": "masc",
+      "target_english": "attraction; fascination; (comm) craving",
+      "source_keys": [
+        "appaṭikulyatā",
+        "ākāsa 1.5"
+      ],
+      "meaning": "atracción; encanto; (com.) anhelo",
+      "mode": "adapted",
+      "reason": "Use source attraction/allure for current attraction/fascination and retain only the commentary craving overlap from historical ākāsa; exclude environment/atmosphere.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 89243,
+      "target_key": "samudayadhamma 2",
+      "target_pos": "masc",
+      "target_english": "an arising phenomenon",
+      "source_keys": [
+        "samudayadhamma"
+      ],
+      "meaning": "fenómeno que surge",
+      "mode": "adapted",
+      "reason": "Convert the source's having-the-nature-to-arise adjective into the target noun phenomenon that arises; do not retain subject-to-appearance as a separate sense.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 89254,
+      "target_key": "anāhāra 2",
+      "target_pos": "masc",
+      "target_english": "not fuel; not nutriment (for)",
+      "source_keys": [
+        "anāhāra"
+      ],
+      "meaning": "no es combustible; no es nutrimento (para)",
+      "mode": "adapted",
+      "reason": "Changes without fuel/nutriment to the target negative identification not fuel/nutriment.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 89257,
+      "target_key": "appaccaya 1.2",
+      "target_pos": "masc",
+      "target_english": "not a cause; not a reason; not a supporting condition",
+      "source_keys": [
+        "appaccaya 1.1",
+        "paccaya 2"
+      ],
+      "meaning": "no es una causa; no es una razón; no es una condición de apoyo",
+      "mode": "adapted",
+      "reason": "Historical causeless/without condition supports negation; source paccaya supplies exact cause/reason/supporting-condition terminology. Do not reuse mismatching indignation sense.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 89265,
+      "target_key": "bāhira 4",
+      "target_pos": "masc",
+      "target_english": "outsider; (comm) outside of the eight noble individuals",
+      "source_keys": [
+        "paribāhira 1"
+      ],
+      "meaning": "persona ajena; (com.) que no pertenece al grupo de los ocho individuos nobles",
+      "mode": "adapted",
+      "reason": "Forastero ordinarily suggests a person from another place; target outsider is qualified by membership outside the eight noble individuals. Source ajeno/extraño supports persona ajena, and retaining the target commentary prevents geographical misreading.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 89365,
+      "target_key": "karaṇīya 4",
+      "target_pos": "nt",
+      "target_english": "need (of); use (for)",
+      "source_keys": [
+        "ūna 2",
+        "atthavasa 1"
+      ],
+      "meaning": "necesidad (de); utilidad (para)",
+      "mode": "adapted",
+      "reason": "Need and use are distinct target relations; necesidad alone omits the use-for sense. The paired atthavasa 1 use/utilidad provides direct additional evidence.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 89369,
+      "target_key": "pariḷāha 4",
+      "target_pos": "masc",
+      "target_english": "flame; scorching heat (of)",
+      "source_keys": [
+        "acci 1",
+        "jarāpariḷāha"
+      ],
+      "meaning": "llama; calor abrasador (de)",
+      "mode": "adapted",
+      "reason": "Select flame from acci and scorching heat from the compound; remove its ageing-specific object.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 89377,
+      "target_key": "paṭighāta 2",
+      "target_pos": "masc",
+      "target_english": "resistance; repulsion; aversion (of)",
+      "source_keys": [
+        "paṭighāta 1"
+      ],
+      "meaning": "repulsión; resistencia; aversión",
+      "mode": "adapted",
+      "reason": "Use repelling/repulsión as the bridge and adapt to the current resistance/aversion noun sense; reject the collision entry.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 89383,
+      "target_key": "vaṇṇa 1.09",
+      "target_pos": "masc",
+      "target_english": "arrangement; presentation; (comm) letters",
+      "source_keys": [
+        "anusandhi 1",
+        "onojana",
+        "lipi 1"
+      ],
+      "meaning": "disposición; presentación; (com.) letras",
+      "mode": "adapted",
+      "reason": "Selects exact authored arrangement/disposición, presentation/presentación and letters/letras; rejects disguise sense.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 89386,
+      "target_key": "pariyādiyati 4",
+      "target_pos": "pr",
+      "target_english": "is consumed",
+      "source_keys": [
+        "pariyādiyati 2"
+      ],
+      "meaning": "se consume",
+      "mode": "adapted",
+      "reason": "Select consumption wording from source used-up/exhausted sense; remove other glosses.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 89438,
+      "target_key": "kanta 1.2",
+      "target_pos": "nt",
+      "target_english": "what is desirable; what is wanted",
+      "source_keys": [
+        "kanta 1.1"
+      ],
+      "meaning": "lo deseable",
+      "mode": "adapted",
+      "reason": "Nominalize authored desirable/deseable to match what is desirable; do not reuse beloved husband sense.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 89514,
+      "target_key": "paṭighāta 3",
+      "target_pos": "masc",
+      "target_english": "(of disease) prevention (of)",
+      "source_keys": [
+        "paṭighāta 1"
+      ],
+      "meaning": "prevención (de enfermedades)",
+      "mode": "adapted",
+      "reason": "Warding off and keeping at bay support prevention; make the current disease restriction explicit and reject collision.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 89522,
+      "target_key": "nipatati 3",
+      "target_pos": "pr",
+      "target_english": "supplies (somebody with); invests in; (comm) invites",
+      "source_keys": [
+        "sampādeti 2",
+        "ajjhesati"
+      ],
+      "meaning": "suministra; provee; (com.) invita",
+      "mode": "adapted",
+      "reason": "The old fall/attack senses are unrelated. Borrow exact supplies/provides and invites evidence; omit investment rather than inferring a financial reading.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 89526,
+      "target_key": "hāyati 2",
+      "target_pos": "pr",
+      "target_english": "is deficient (in); lacks",
+      "source_keys": [
+        "ūna 1"
+      ],
+      "meaning": "es deficiente (en); carece (de)",
+      "mode": "adapted",
+      "reason": "Converts exact authored deficient/lacking adjectives into the target present verbs; avoids confusing inferior with lacking.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 89553,
+      "target_key": "upadaṃseti 2",
+      "target_pos": "pr",
+      "target_english": "produces; generates; creates",
+      "source_keys": [
+        "uppādeti",
+        "abhinimmiṇāti"
+      ],
+      "meaning": "produce; genera; crea",
+      "mode": "adapted",
+      "reason": "Independent paired meanings supply produces/generates and creates; old shows/displays alone does not support creation.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 89582,
+      "target_key": "amata 1.5",
+      "target_pos": "nt",
+      "target_english": "Ganges river water",
+      "source_keys": [
+        "gaṅgodaka"
+      ],
+      "meaning": "agua del río Ganges",
+      "mode": "verbatim",
+      "reason": "Other authored entry exactly means water of the Ganges river; immortality/nectar senses are unrelated.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 89593,
+      "target_key": "pāra 2",
+      "target_pos": "nt",
+      "target_english": "end of the spiritual journey; epithet of Nibbāna",
+      "source_keys": [
+        "vusitabrahmacariya",
+        "pāra 1.1"
+      ],
+      "meaning": "fin del camino espiritual; epíteto de Nibbāna",
+      "mode": "adapted",
+      "reason": "Completed spiritual journey supplies camino espiritual; express current end as fin and retain the explicitly shared Nibbāna epithet.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 89594,
+      "target_key": "saddha 5",
+      "target_pos": "nt",
+      "target_english": "food offered to ancestors",
+      "source_keys": [
+        "ayyavosāṭitaka"
+      ],
+      "meaning": "comida ofrecida a los ancestros",
+      "mode": "adapted",
+      "reason": "The source English explicitly says food offered to the ancestors; make the parenthetical food an ordinary noun in Spanish.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 89599,
+      "target_key": "upaneti 3",
+      "target_pos": "pr",
+      "target_english": "make use of; puts to use; uses up",
+      "source_keys": [
+        "paṭisevati 2"
+      ],
+      "meaning": "usa; hace uso (de)",
+      "mode": "adapted",
+      "reason": "The source explicitly has uses/makes-use-of, matching the principal current action; no claim of same lemma or historical identity.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 89600,
+      "target_key": "kappa 1.8",
+      "target_pos": "masc",
+      "target_english": "(vinaya) distinguishing mark on a robe",
+      "source_keys": [
+        "visesaka",
+        "kaṇḍusa"
+      ],
+      "meaning": "(vinaya) marca distintiva en una túnica",
+      "mode": "adapted",
+      "reason": "Combines authored distinguishing mark with robe-marking vocabulary; does not reuse the unrelated allowable-custom sense.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 89602,
+      "target_key": "saṃvasati 2",
+      "target_pos": "pr",
+      "target_english": "affiliates (with); acts as part of the same community",
+      "source_keys": [
+        "samānasaṃvāsa"
+      ],
+      "meaning": "se afilia; forma parte de la misma comunidad",
+      "mode": "adapted",
+      "reason": "Converts authored belonging to the same community into the target active community-membership description; excludes merely sharing a residence.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 89610,
+      "target_key": "pāpuṇāti 3",
+      "target_pos": "pr",
+      "target_english": "is for; is allocated (to); belongs (to)",
+      "source_keys": [
+        "pariṇata 1",
+        "bhavissati 2"
+      ],
+      "meaning": "está asignado (a); pertenece (a)",
+      "mode": "adapted",
+      "reason": "Allocated/asignado and belongs to/pertenece a directly cover target allocation/belonging; convert adjective to predicate.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 89624,
+      "target_key": "bandhati 7",
+      "target_pos": "pr",
+      "target_english": "ties on; fixes; attaches",
+      "source_keys": [
+        "bandhati 7"
+      ],
+      "meaning": "ata; fija; sujeta",
+      "mode": "adapted",
+      "reason": "Select ties-on/ata, reject composes, and expand with the current fastening/attaching synonyms.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 89626,
+      "target_key": "patiṭṭhāti 3",
+      "target_pos": "pr",
+      "target_english": "(of dice) lands; settles; comes to rest",
+      "source_keys": [
+        "papatati 2",
+        "oramati"
+      ],
+      "meaning": "(de un dado) cae; se detiene",
+      "mode": "adapted",
+      "reason": "Combines authored falls and stops for the target dice landing/coming to rest; qualifier is copied from current English.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 89643,
+      "target_key": "acchati 4",
+      "target_pos": "pr",
+      "target_english": "sits; is seated",
+      "source_keys": [
+        "nisīdati"
+      ],
+      "meaning": "se sienta; está sentado",
+      "mode": "adapted",
+      "reason": "Source sits/sits down supplies se sienta; adapt to the target state is seated as está sentado.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 89646,
+      "target_key": "dhammapada 4",
+      "target_pos": "nt",
+      "target_english": "aspect of the teaching",
+      "source_keys": [
+        "pañcaṭṭhānāni",
+        "dhammapada 1"
+      ],
+      "meaning": "aspecto de la enseñanza",
+      "mode": "adapted",
+      "reason": "Resolves the gap by combining authored aspects/aspectos with teaching/enseñanza. Removes verse/line, which are different meanings from the target aspect.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 89648,
+      "target_key": "gocara 2",
+      "target_pos": "masc",
+      "target_english": "hunting ground",
+      "source_keys": [
+        "gocara 2"
+      ],
+      "meaning": "terreno de caza",
+      "mode": "adapted",
+      "reason": "Select exactly hunting ground from the older multi-sense definition, dropping unrelated environment/alms senses.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 89649,
+      "target_key": "pakkamati 2",
+      "target_pos": "pr",
+      "target_english": "leaves (for); goes; sets out (to)",
+      "source_keys": [
+        "pakkamati 1"
+      ],
+      "meaning": "parte (hacia); va; se pone en marcha (hacia)",
+      "mode": "adapted",
+      "reason": "Use the older goes/leaves sense; change source-oriented de to destination-oriented hacia as required by leaves for/sets out to.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 89654,
+      "target_key": "cakka 4",
+      "target_pos": "nt",
+      "target_english": "influence; determinant; (comm) achievement",
+      "source_keys": [
+        "ādhipateyya",
+        "rasa 8"
+      ],
+      "meaning": "influencia; factor determinante; (com.) logro",
+      "mode": "adapted",
+      "reason": "The accepted gloss drops the explicitly marked commentary achievement, which is not an influence/determinant synonym. Source rasa 8 directly supplies achievement/logro; retain its target commentary marker.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 89662,
+      "target_key": "vāta 6",
+      "target_pos": "masc",
+      "target_english": "(of the stomach) gas; wind",
+      "source_keys": [
+        "kucchivāta"
+      ],
+      "meaning": "gas estomacal; viento abdominal",
+      "mode": "adapted",
+      "reason": "Source stomach gas/abdominal wind exactly establishes the target digestive sense, unlike historical atmospheric wind.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 89690,
+      "target_key": "pattheti 2",
+      "target_pos": "pr",
+      "target_english": "plots against; wishes to kill",
+      "source_keys": [
+        "palambhati"
+      ],
+      "meaning": "conspira contra; desea matar",
+      "mode": "adapted",
+      "reason": "Plots against can refer to nonlethal scheming, so conspira contra does not convey the separate explicit wishes-to-kill sense. Retain the authored phrase and add desea matar from current English; this is a declared manual extension rather than claimed upstream wording.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 89692,
+      "target_key": "passa 2.2",
+      "target_pos": "masc",
+      "target_english": "seer; who sees",
+      "source_keys": [
+        "daṭṭhar"
+      ],
+      "meaning": "vidente; quien ve",
+      "mode": "adapted",
+      "reason": "Source who sees; seer directly matches; select its ordinary glosses and omit the unrelated commentary having seen.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 89700,
+      "target_key": "samudaya 2",
+      "target_pos": "masc",
+      "target_english": "arising; appearance (of)",
+      "source_keys": [
+        "samudaya 1"
+      ],
+      "meaning": "aparición (de); surgimiento",
+      "mode": "adapted",
+      "reason": "Selects appearance and adapts origination to arising; excludes unrelated historical revenue sense.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 89702,
+      "target_key": "atta 1.3",
+      "target_pos": "masc",
+      "target_english": "body; form",
+      "source_keys": [
+        "viggaha 2"
+      ],
+      "meaning": "cuerpo; forma",
+      "mode": "adapted",
+      "reason": "Select exact body/form overlap; omit individual from the source.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 89703,
+      "target_key": "puggala 2",
+      "target_pos": "masc",
+      "target_english": "type of person; type of individual",
+      "source_keys": [
+        "puggala"
+      ],
+      "meaning": "tipo de persona; tipo de individuo",
+      "mode": "adapted",
+      "reason": "Retain authored persona/individuo and add the new noun type-of restriction to both.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 89706,
+      "target_key": "āyācati 2",
+      "target_pos": "pr",
+      "target_english": "aspires; hopes to be; makes a wish",
+      "source_keys": [
+        "paṇidahati 2",
+        "varaṃ gaṇhāti"
+      ],
+      "meaning": "anhela; formula un deseo",
+      "mode": "adapted",
+      "reason": "Use exact hopes-for/anhela and makes-a-wish/formula un deseo; omit prayer-specific source wording.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 89707,
+      "target_key": "sajjati 1.4",
+      "target_pos": "pr",
+      "target_english": "sticks; gets stuck (on)",
+      "source_keys": [
+        "laggati"
+      ],
+      "meaning": "se pega (a); queda pegado (a)",
+      "mode": "adapted",
+      "reason": "The other source explicitly supplies sticks/gets-stuck; select those two clauses and omit clinging/attachment extensions.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    },
+    {
+      "headword_id": 89708,
+      "target_key": "gaṇhāti 8",
+      "target_pos": "pr",
+      "target_english": "sticks fast; gets stuck",
+      "source_keys": [
+        "laggati",
+        "olīyati"
+      ],
+      "meaning": "se pega; queda pegado; se atasca",
+      "mode": "adapted",
+      "reason": "Selects authored sticks/gets stuck wording from laggati and se atasca from the exact gets-stuck gloss of olīyati; removes attachment/clinging synonyms absent from target.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 89713,
+      "target_key": "voharati 2",
+      "target_pos": "pr",
+      "target_english": "engages; deals (with); handles",
+      "source_keys": [
+        "āpajjati 3",
+        "voharati 3"
+      ],
+      "meaning": "se involucra; trata (con); maneja",
+      "mode": "adapted",
+      "reason": "Replaces administra, which narrows general handles to administration, with maneja. This is an explicit current-English adaptation, retaining the authored engagement/dealing basis.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 89741,
+      "target_key": "māna 1.2",
+      "target_pos": "masc",
+      "target_english": "arrogance; superiority; disrespect (towards)",
+      "source_keys": [
+        "māna 1.1",
+        "asakkāra"
+      ],
+      "meaning": "arrogancia; superioridad; falta de respeto (hacia)",
+      "mode": "adapted",
+      "reason": "Disrespect towards someone is an explicit new target gloss beyond arrogance/superiority. Source asakkāra directly pairs disrespect with falta de respeto and supplies the missing sense.",
+      "reviewer": "2026-09-12: spanish_review_3; independently checked by spanish_review_2"
+    },
+    {
+      "headword_id": 89754,
+      "target_key": "cunda 4",
+      "target_pos": "masc",
+      "target_english": "smith; metalworker",
+      "source_keys": [
+        "kammāra"
+      ],
+      "meaning": "herrero; trabajador del metal",
+      "mode": "adapted",
+      "reason": "Select exact smith/metal worker overlap; named-person cunda candidates do not support this occupational sense.",
+      "reviewer": "2026-09-12: spanish_review_1; independently checked by spanish_review_3"
+    },
+    {
+      "headword_id": 89850,
+      "target_key": "visodheti 2",
+      "target_pos": "pr",
+      "target_english": "cleans up; tidies; removes",
+      "source_keys": [
+        "visodheti"
+      ],
+      "meaning": "limpia; ordena; retira",
+      "mode": "adapted",
+      "reason": "Retain cleans/limpia, omit purifies, and add the current tidies/removes physical-cleanup glosses.",
+      "reviewer": "2026-09-12: spanish_review_2; independently checked by spanish_review_1"
+    }
+  ]
+}

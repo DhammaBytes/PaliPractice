@@ -1,5 +1,9 @@
 # M8 — Selected-language meanings and source credits
 
+> Historical milestone evidence; its counts and verification describe that
+> checkpoint. For subsequent ES/RU mapping recovery and current update safeguards,
+> see [dictionary maintenance](../../../scripts/dictionaries/README.md).
+
 The app stores one resolved meaning per displayed sense. Neutral details load
 without meaning columns. The repository queries only the requested language,
 then batches English for missing/blank senses. Preference changes clear cached

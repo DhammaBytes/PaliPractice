@@ -1,5 +1,9 @@
 # M6 completion evidence
 
+> Historical milestone evidence; its counts and verification describe that
+> checkpoint. For subsequent ES/RU mapping recovery and current update safeguards,
+> see [dictionary maintenance](../../../scripts/dictionaries/README.md).
+
 Base: `fed12dc748f0918a5c609acb478923e631c8b020`.
 
 Russian source: `sbs-ru` commit `c179f0c044e3e0ca366ac47445f30a1b2ffc732c`

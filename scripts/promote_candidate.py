@@ -161,7 +161,8 @@ def protect_destination_version(candidate: Path, repository: Path):
 
 
 def promote(candidate: Path, repository: Path, inputs: Path, evidence: Path, after_write=lambda _: None,
-            *, english: Path | None = None, translations: Path | None = None):
+            *, english: Path | None = None, translations: Path | None = None,
+            translation_decisions: Path | None = None):
     candidate, repository = candidate.resolve(), repository.resolve()
     outputs, manifest_name = promotion_inputs(candidate, repository, inputs, evidence, english, translations)
     protect_input_paths(repository, inputs, english, translations)
@@ -170,6 +171,14 @@ def promote(candidate: Path, repository: Path, inputs: Path, evidence: Path, aft
         recover_locked(repository, state)
         protect_destination_identities(candidate, repository)
         protect_destination_version(candidate, repository)
+        if manifest_name == 'bundle.json':
+            from compare_translations import compare, report_digest, verify_decisions
+            comparison = compare(repository, candidate)
+            decisions = verify_decisions(comparison, translation_decisions)
+            audit = state / 'translation-reviews' / (report_digest(comparison) + '.json')
+            audit.parent.mkdir(exist_ok=True)
+            durable_write(audit, (json.dumps({'comparison': comparison, 'review': decisions},
+                                            ensure_ascii=False, sort_keys=True, indent=2) + '\n').encode())
         files = {}
         for name in TARGETS:
             target = target_path(repository, name)
@@ -210,11 +219,12 @@ if __name__ == '__main__':
     parser.add_argument('--evidence', type=Path)
     parser.add_argument('--english', type=Path)
     parser.add_argument('--translations', type=Path)
+    parser.add_argument('--translation-decisions', type=Path)
     args = parser.parse_args()
     if args.command == 'recover':
         recover(args.repository.resolve())
     elif args.candidate and args.inputs and args.evidence:
         promote(args.candidate.resolve(), args.repository.resolve(), args.inputs, args.evidence,
-                english=args.english, translations=args.translations)
+                english=args.english, translations=args.translations, translation_decisions=args.translation_decisions)
     else:
         parser.error('promote requires --candidate, --inputs, and --evidence')

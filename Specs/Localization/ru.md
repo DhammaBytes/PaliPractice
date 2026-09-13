@@ -1,5 +1,9 @@
 # Russian UI localization: terminology and review plan
 
+Dictionary imports and resynchronization are covered by the separate
+[dictionary maintenance workflow](../../scripts/dictionaries/README.md).
+The dated UI reviews below do not certify later resource edits or dictionary data.
+
 Status: 262-key Russian resource draft aligned to Russian DPD terminology, 2026-09-08. Fresh review of this terminology revision and final technical verification remain with the coordinator.
 Scope: UI labels, grammar explanations, and Russian presentation conventions. Dictionary meanings and Pāli forms are separate content.
 The terminology pass used English resources and grammar code first; the existing Russian resource file was inspected afterwards as an unverified translation baseline. The owner-authored English is the source of intended meaning, including its explanations of poetic usage, uncommon infinitives, and omitted aorist forms. This memo supports faithful localization, not a source-correction task. UI language follows the system; dictionary translation preference is independent.

@@ -1,5 +1,9 @@
 # Spanish UI localization research memo
 
+Dictionary imports and resynchronization are covered by the separate
+[dictionary maintenance workflow](../../scripts/dictionaries/README.md).
+The dated UI reviews below do not certify later resource edits or dictionary data.
+
 Status: all 263 Spanish resources accepted by independent AI review on 8 September 2026. Native pilot and final-screen checks completed within the limits below; final history-title rendering, cleanup and repository gate rerun verified. Original research checked 7 September 2026; follow-up evidence below checked 8 September 2026. Scope is broadly usable Spanish (`es`) for Pāli Practice UI, selected by the system language. Dictionary-meaning language remains an independent preference. The owner-authored English resources are the semantic baseline; this memo researches faithful Spanish terminology, not changes to English explanations.
 
 ## Evidence and limits

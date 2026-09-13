@@ -218,7 +218,19 @@ the gate. Verification re-parses the pinned source, compares every stored meanin
 and compares all original SQLite schema objects, rows, version, and artifacts.
 A failed build leaves only its incomplete candidate directory; never reuse it.
 
-## Spanish sense mapping (M7)
+## Spanish sense mapping
+
+The current Spanish dictionary uses a verified historical DPD ID bridge plus
+reviewed English–Spanish adaptations. See
+[the Spanish dictionary README](dictionaries/es/README.md) for source dates,
+the editable review dictionary, reproduction, and future resynchronization.
+Add pinned `sources.es_identity` and `sources.es_reviews` entries to the
+translation manifest to use it. They must be supplied together and are verified
+like other source files. The bridge binds to the paired exports; reviews bind
+to the bridge and current DPD. Stale pins fail instead of applying old decisions.
+
+The following exact-key mode remains available when neither dictionary input
+is supplied, including when evaluating a newer upstream translation export:
 
 Add `sources.es` (`js/dpd_ebts_es.js`) and `sources.es_english`
 (`js/dpd_ebts.js`) to the translation manifest, both at the same pinned commit.
@@ -236,13 +248,18 @@ and unbold definitions and removes only recognized literal/etymology scaffolding
 The report classifies meaning drift, missing keys/translations, possible renamed
 or renumbered keys, ambiguous DPD keys, unsupported definitions, and POS mismatch.
 Suggested keys are diagnostics, never automatic joins. Unresolved mappings stay
-absent from `localized_meanings` for English fallback. No mapping overrides were
-needed for the accepted M7 subset; any future override requires explicit review
-and pins for source bytes, full keys, target ID, and paired English evidence.
+absent from `localized_meanings` for English fallback. Explicit reviewed mappings
+live in `dictionaries/es/reviews.json`, with source pins, full keys, target IDs,
+English meanings, authorship modes and review rationale.
 Mechanical correspondence does not establish translation quality: retain the
 bounded terminology/sample review and upstream AI-assisted translation credits.
 
 ## Multilingual database readiness and promotion (M9)
+
+Promotion also requires the [shipped-dictionary comparison](dictionaries/README.md#required-comparison-before-promotion).
+Generate its report against the exact gate candidate and supply
+`--translation-decisions` when findings require review. A successful gate does
+not waive this check. The comparison runs before any production file is staged.
 
 Run the complete gate with both pinned input manifests. It creates two English
 and two enriched candidates, runs real repository and provisioning/model tests

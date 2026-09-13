@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "english": {
+    "path": "../../../.local/inputs/spanish-m7/dpd_ebts.js",
+    "sha256": "cd09aa50bc96fa3b321afbbc185c49687bc075efbb211710de772be5aedbc191",
+    "source": {
+      "origin": "https://github.com/DhammaBytes/dpd-dictionary-es/blob/8a634e53d0605bc50f0a9913b221ebc6a40f17b2/js/dpd_ebts.js",
+      "revision": "8a634e53d0605bc50f0a9913b221ebc6a40f17b2"
+    }
+  },
+  "spanish": {
+    "path": "../../../.local/inputs/spanish-m7/dpd_ebts_es.js",
+    "sha256": "73c96127eb8a16921153a2d112c7f23fbf4ecd01e549867f83f49ef510c91068",
+    "source": {
+      "origin": "https://github.com/DhammaBytes/dpd-dictionary-es/blob/8a634e53d0605bc50f0a9913b221ebc6a40f17b2/js/dpd_ebts_es.js",
+      "revision": "8a634e53d0605bc50f0a9913b221ebc6a40f17b2"
+    }
+  },
+  "headwords": [
+    {
+      "path": "../../../.local/inputs/spanish-identity/dpd_headwords_part_001.tsv",
+      "sha256": "ea365e0b465e6db9510ae23019bf18acaf54283dca6d025c9a223d37def34c0c",
+      "source": {
+        "origin": "https://github.com/digitalpalidictionary/dpd-db/blob/2f74b9d40bf1f25f9c11fb0446d60e110eeb6d00/db/backup_tsv/dpd_headwords_part_001.tsv",
+        "revision": "2f74b9d40bf1f25f9c11fb0446d60e110eeb6d00"
+      }
+    },
+    {
+      "path": "../../../.local/inputs/spanish-identity/dpd_headwords_part_002.tsv",
+      "sha256": "ee334a084c8f3a948512d3e7167dc5c02514ff8a5b173837ac2ba87eff6df0f1",
+      "source": {
+        "origin": "https://github.com/digitalpalidictionary/dpd-db/blob/2f74b9d40bf1f25f9c11fb0446d60e110eeb6d00/db/backup_tsv/dpd_headwords_part_002.tsv",
+        "revision": "2f74b9d40bf1f25f9c11fb0446d60e110eeb6d00"
+      }
+    }
+  ]
+}

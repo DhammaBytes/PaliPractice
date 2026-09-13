@@ -151,6 +151,28 @@ class EnrichmentTests(unittest.TestCase):
         with closing(sqlite3.connect(result / 'pali.db')) as db:
             self.assertEqual([(1, 'es', 'palabra'), (1, 'ru', 'слово'), (2, 'ru', 'сырой')],
                              db.execute('SELECT * FROM localized_meanings ORDER BY headword_id,language').fetchall())
+        identity = self.root / 'identity.json'
+        identity.write_text(json.dumps({'schema': 1, 'historical_sources': [{'revision': 'b' * 40}],
+            'english_sha256': self.spec['sources']['es_english']['sha256'],
+            'spanish_sha256': self.spec['sources']['es']['sha256'], 'headword_ids': {'word 1': 1}}))
+        reviews = self.root / 'reviews.json'
+        reviews.write_text(json.dumps({'schema': 1, 'identity_sha256': sha256(identity),
+            'dpd_sha256': sha256(dpd), 'entries': [{'headword_id': 2, 'target_key': 'word 2',
+                'target_pos': 'nt', 'target_english': 'meaning 2', 'source_keys': [],
+                'meaning': 'significado dos', 'mode': 'translated', 'reason': 'Translate pinned English.',
+                'reviewer': 'two independent reviewers'}]}))
+        for language, path in [('es_identity', identity), ('es_reviews', reviews)]:
+            self.spec['sources'][language] = {'path': str(path), 'sha256': sha256(path),
+                'source': {'origin': 'local reviewed dictionary', 'revision': 'sha256:' + sha256(path)}}
+        self.manifest.write_text(json.dumps(self.spec))
+        enriched = self.build('dictionary')
+        with closing(sqlite3.connect(enriched / 'pali.db')) as db:
+            self.assertEqual([(1, 'es', 'palabra'), (1, 'ru', 'слово'),
+                              (2, 'es', 'significado dos'), (2, 'ru', 'сырой')],
+                             db.execute('SELECT * FROM localized_meanings ORDER BY headword_id,language').fetchall())
+        bundle = json.loads((enriched / 'bundle.json').read_text())
+        self.assertEqual(sha256(identity), bundle['translations']['es']['identity_source']['sha256'])
+        self.assertEqual(sha256(reviews), bundle['translations']['es']['review_source']['sha256'])
         self.spec['sources']['es_english']['source']['revision'] = 'c' * 40
         self.manifest.write_text(json.dumps(self.spec))
         with self.assertRaisesRegex(InputError, 'same revision'):

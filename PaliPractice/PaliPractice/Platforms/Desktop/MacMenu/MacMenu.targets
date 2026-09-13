@@ -33,11 +33,11 @@
   <Target Name="CompilePaliMenu"
           BeforeTargets="AssignTargetPaths"
           Condition="'$(_BuildPaliMenu)' == 'true'"
-          Inputs="$(_PaliMenuSource);$(MSBuildThisFileFullPath)"
+          Inputs="$(_PaliMenuSource);$(MSBuildThisFileFullPath);$(MSBuildProjectFullPath)"
           Outputs="$(_PaliMenuDylib)">
 
     <MakeDir Directories="$(_PaliMenuObjDir)" />
-    <Exec Command="clang -shared -fobjc-arc -arch arm64 -arch x86_64 -framework AppKit -o &quot;$(_PaliMenuDylib)&quot; &quot;$(_PaliMenuSource)&quot;" />
+    <Exec Command="clang -shared -fobjc-arc -arch arm64 -arch x86_64 -mmacosx-version-min=$(UnoMacOSMinimumSystemVersion) -framework AppKit -o &quot;$(_PaliMenuDylib)&quot; &quot;$(_PaliMenuSource)&quot;" />
   </Target>
 
   <!-- Must run after CompilePaliMenu so the file exists when MSBuild evaluates it -->

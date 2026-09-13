@@ -50,6 +50,13 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
     </PropertyGroup>
 
+    <PropertyGroup Condition="$(TargetFramework.Contains('-desktop'))">
+        <!-- Explicit floor: do not infer it from native dependency build stamps.
+             Uno ICU's macOS 15 stamp is tracked in unoplatform/uno#24496.
+             Apple Silicon's architecture minimum is macOS 11. -->
+        <UnoMacOSMinimumSystemVersion>10.15</UnoMacOSMinimumSystemVersion>
+    </PropertyGroup>
+
     <PropertyGroup Condition="$(TargetFramework.Contains('-android'))">
         <!-- Include 32-bit ARM for older devices -->
         <!-- AAB ensures users only download their device's architecture -->

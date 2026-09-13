@@ -14,6 +14,7 @@ public class LocalizedCandidateTests
     [Test]
     public void EveryDisplayedSenseResolvesSelectedLanguageWithoutChangingEligibleIds()
     {
+        SQLitePCL.Batteries_V2.Init();
         using var connection = new SQLiteConnection(TestPaths.PaliDbPath, SQLiteOpenFlags.ReadOnly);
         var language = "en";
         var nouns = new NounRepository(connection, () => language);

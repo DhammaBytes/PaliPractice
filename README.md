@@ -5,7 +5,7 @@
 A cross-platform Pāli language learning app designed to train noun declensions and verb conjugations with flashcards, using spaced repetition. Available in English, Spanish, and Russian. Built with .NET and Uno Platform, so that it works on:
 
 - Windows x64 (Windows 10/11; see [.NET OS support](https://github.com/dotnet/core/blob/main/release-notes/10.0/supported-os.md#windows))
-- macOS 10.15+ (Catalina)
+- macOS 10.15+ (Catalina, Intel x64) or macOS 11+ (Apple Silicon ARM64)
 - Linux x64 ([.NET-supported distros](https://github.com/dotnet/core/blob/main/release-notes/10.0/supported-os.md#linux))
 - Android 7+ (Nougat)
 - iOS 15+ (iPhone & iPad)

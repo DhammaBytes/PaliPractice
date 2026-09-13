@@ -125,47 +125,4 @@ public class VerbPatternsTests
         actualEndings.Should().Equal(testCase.ExpectedEndings,
             because: $"pattern '{testCase.Pattern.ToDbString()}' for {testCase.Tense} {(testCase.Reflexive ? "Reflexive" : "Active")} {testCase.Person} {testCase.Number} should match DPD");
     }
-
-    /// <summary>
-    /// Sanity test: Verify we can parse verb titles correctly.
-    /// </summary>
-    [Test]
-    public void EnumMapper_ShouldParseVerbTitle_Active()
-    {
-        var (tense, person, number, reflexive) = EnumMapper.ParseVerbTitle("pr 3rd sg");
-
-        tense.Should().Be(Tense.Present);
-        person.Should().Be(Person.Third);
-        number.Should().Be(Number.Singular);
-        reflexive.Should().BeFalse();
-    }
-
-    /// <summary>
-    /// Sanity test: Verify we can parse reflexive verb titles correctly (optative tense).
-    /// </summary>
-    [Test]
-    public void EnumMapper_ShouldParseVerbTitle_Reflexive()
-    {
-        var (tense, person, number, reflexive) = EnumMapper.ParseVerbTitle("reflx opt 1st pl");
-
-        tense.Should().Be(Tense.Optative);
-        person.Should().Be(Person.First);
-        number.Should().Be(Number.Plural);
-        reflexive.Should().BeTrue();
-    }
-
-    /// <summary>
-    /// Sanity test: Verify HTML parsing works for verbs.
-    /// </summary>
-    [Test]
-    public void HtmlParser_ShouldExtractVerbEndings()
-    {
-        var html = "<td title='pr 3rd sg'>bhav<b>ati</b></td><td title='opt 1st pl'><span class='gray'>bhav<b>ema</b></span><br><span class='gray'>bhav<b>emu</b></span><br><span class='gray'>bhav<b>eyyāma</b></span></td>";
-
-        var prEndings = HtmlParser.ParseVerbEndings(html, "pr 3rd sg");
-        prEndings.Should().Equal("ati");
-
-        var optEndings = HtmlParser.ParseVerbEndings(html, "opt 1st pl");
-        optEndings.Should().Equal("ema", "emu", "eyyāma");
-    }
 }

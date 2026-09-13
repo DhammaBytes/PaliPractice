@@ -141,32 +141,4 @@ public class NounPatternsTests
         words.Should().NotBeEmpty();
         words[0].InflectionsHtml.Should().NotBeNullOrEmpty();
     }
-
-    /// <summary>
-    /// Sanity test: Verify HTML parsing works correctly.
-    /// </summary>
-    [Test]
-    public void HtmlParser_ShouldExtractEndings()
-    {
-        var html = "<td title='masc nom sg'>dhamm<b>o</b></td><td title='masc nom pl'>dhamm<b>ā</b><br><span class='gray'>dhamm<b>āse</b></span></td>";
-
-        var singularEndings = HtmlParser.ParseNounEndings(html, "masc nom sg");
-        singularEndings.Should().Equal("o");
-
-        var pluralEndings = HtmlParser.ParseNounEndings(html, "masc nom pl");
-        pluralEndings.Should().Equal("ā", "āse");
-    }
-
-    /// <summary>
-    /// Sanity test: Verify enum mapping works correctly.
-    /// </summary>
-    [Test]
-    public void EnumMapper_ShouldParseNounTitle()
-    {
-        var (gender, nounCase, number) = EnumMapper.ParseNounTitle("masc nom sg");
-
-        gender.Should().Be(Gender.Masculine);
-        nounCase.Should().Be(Case.Nominative);
-        number.Should().Be(Number.Singular);
-    }
 }

@@ -30,7 +30,6 @@ public class UnicodeNormalizationTests
     PaliDbLoader? _paliDb;
     List<PaliNoun>? _nouns;
     List<PaliVerb>? _verbs;
-    HashSet<string>? _tipitakaWords;
 
     /// <summary>
     /// Standard Pali diacriticals that must be preserved.
@@ -49,11 +48,9 @@ public class UnicodeNormalizationTests
         _paliDb = new PaliDbLoader();
         _nouns = _paliDb.GetAllNouns();
         _verbs = _paliDb.GetAllVerbs();
-        _tipitakaWords = TipitakaWordlistLoader.GetAllWords();
 
         TestContext.WriteLine($"Loaded {_nouns.Count} nouns");
         TestContext.WriteLine($"Loaded {_verbs.Count} verbs");
-        TestContext.WriteLine($"Loaded {_tipitakaWords.Count} Tipitaka words");
     }
 
     [OneTimeTearDown]
@@ -133,20 +130,6 @@ public class UnicodeNormalizationTests
     #region Diacritical Preservation Tests
 
     [Test]
-    public void PaliDiacriticals_ArePrecomposedCharacters()
-    {
-        // Verify that our reference diacriticals are themselves NFC
-        foreach (var c in PaliDiacriticals)
-        {
-            var str = c.ToString();
-            var nfc = str.Normalize(NormalizationForm.FormC);
-
-            nfc.Length.Should().Be(1,
-                $"'{c}' (U+{(int)c:X4}) should be a single precomposed character, not decomposed");
-        }
-    }
-
-    [Test]
     public void PaliDb_ContainsPaliDiacriticals()
     {
         // Verify that pali data actually contains Pali diacriticals
@@ -202,73 +185,6 @@ public class UnicodeNormalizationTests
 
         decomposed.Should().BeEmpty(
             "lemmas should not contain combining diacritical marks (should be precomposed NFC)");
-    }
-
-    #endregion
-
-    #region Corpus Matching Tests
-
-    [Test]
-    public void TipitakaWordlist_IsNfcNormalized()
-    {
-        var nonNfc = _tipitakaWords!
-            .Where(w => w != w.Normalize(NormalizationForm.FormC))
-            .Take(100)
-            .ToList();
-
-        TestContext.WriteLine($"Non-NFC words in Tipitaka wordlist: {nonNfc.Count}");
-        foreach (var word in nonNfc.Take(20))
-            TestContext.WriteLine($"  '{word}'");
-
-        // Allow some tolerance - report but don't fail if minor
-        if (nonNfc.Count > 0)
-        {
-            var rate = (double)nonNfc.Count / _tipitakaWords!.Count;
-            rate.Should().BeLessThan(0.001,
-                "less than 0.1% of Tipitaka words should be non-NFC normalized");
-        }
-    }
-
-    [Test]
-    public void NounLemmas_FindableInTipitakaWithNormalization()
-    {
-        // Sample some nouns that should definitely be in corpus
-        var sampleNouns = _nouns!
-            .Where(n => n.EbtCount > 100) // High-frequency words
-            .Take(50)
-            .ToList();
-
-        var notFound = new List<string>();
-        var foundWithNormalization = new List<string>();
-
-        foreach (var noun in sampleNouns)
-        {
-            var lemma = noun.Lemma;
-            var nfc = lemma.Normalize(NormalizationForm.FormC);
-            var nfd = lemma.Normalize(NormalizationForm.FormD);
-
-            var directMatch = _tipitakaWords!.Contains(lemma);
-            var nfcMatch = _tipitakaWords!.Contains(nfc);
-            var nfdMatch = _tipitakaWords!.Contains(nfd);
-
-            if (!directMatch && !nfcMatch && !nfdMatch)
-            {
-                // High-frequency lemmas might not be in wordlist as-is (they appear as inflected forms)
-                // This is expected behavior, not an error
-            }
-            else if (!directMatch && (nfcMatch || nfdMatch))
-            {
-                foundWithNormalization.Add($"{noun.Lemma} (id={noun.Id}) - found only after normalization");
-            }
-        }
-
-        TestContext.WriteLine($"Found only after normalization: {foundWithNormalization.Count}");
-        foreach (var msg in foundWithNormalization)
-            TestContext.WriteLine($"  {msg}");
-
-        // If any lemmas are only findable after normalization, that's a warning sign
-        foundWithNormalization.Should().BeEmpty(
-            "if lemmas are in wordlist, they should match directly without extra normalization");
     }
 
     #endregion

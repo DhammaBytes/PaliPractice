@@ -51,7 +51,11 @@ Fresh output directories avoid mixing old artifacts into a new archive.
 ```sh
 dotnet publish "$app_project" -f net10.0-desktop -r osx-arm64 -c Release \
   -p:TargetFrameworks=net10.0-desktop -p:SelfContained=true \
-  -p:PackageFormat=app -o "$release_dir/macos"
+  -p:PackageFormat=app -o "$release_dir/macos-arm64"
+
+dotnet publish "$app_project" -f net10.0-desktop -r osx-x64 -c Release \
+  -p:TargetFrameworks=net10.0-desktop -p:SelfContained=true \
+  -p:PackageFormat=app -o "$release_dir/macos-x64"
 
 dotnet publish "$app_project" -f net10.0-desktop -r win-x64 -c Release \
   -p:TargetFrameworks=net10.0-desktop -p:SelfContained=true \
@@ -64,6 +68,15 @@ dotnet publish "$app_project" -f net10.0-desktop -r linux-x64 -c Release \
 
 ### macOS signing and notarization
 
+The app project sets `UnoMacOSMinimumSystemVersion` to `10.15`; the native menu
+compiler uses the same value. ARM64 has a hardware/OS floor of macOS 11.
+Publish both architectures to include Catalina users. Verify each bundle's
+`LSMinimumSystemVersion` and the executable/menu-library deployment targets.
+The ICU dylibs' macOS 15 stamp is an upstream build bug tracked in
+[Uno #24496](https://github.com/unoplatform/uno/issues/24496); do not infer the
+app's deployment target from that stamp. Test on the oldest supported OS;
+deployment targets alone do not prove runtime compatibility.
+
 The entitlement file is `PaliPractice/Platforms/macOS/Entitlements.plist`.
 It permits the .NET JIT and bundled native libraries. This is a Developer ID
 release, not a sandboxed Mac App Store app.
@@ -71,9 +84,12 @@ release, not a sandboxed Mac App Store app.
 Sign nested Mach-O files before the outer bundle, using the same Developer ID
 Application identity. Replace the example identity below. Avoid `codesign --deep`
 for signing; use it for verification. Keep archives outside the `.app` bundle.
+Run signing and notarization for each architecture: first with `mac_arch=arm64`,
+then repeat with `mac_arch=x64`.
 
 ```sh
-mac_app="$release_dir/macos/PāliPractice.app"
+mac_arch=arm64
+mac_app="$release_dir/macos-$mac_arch/PāliPractice.app"
 signing_identity='Developer ID Application: YOUR NAME (YOUR_TEAM_ID)'
 find "$mac_app" -type f -print0 | while IFS= read -r -d '' binary; do
   if file -b "$binary" | grep -q 'Mach-O'; then
@@ -104,8 +120,8 @@ xcrun notarytool store-credentials pali-notary
 Then notarize and staple:
 
 ```sh
-ditto -c -k --keepParent "$mac_app" "$release_dir/notarization.zip"
-xcrun notarytool submit "$release_dir/notarization.zip" \
+ditto -c -k --keepParent "$mac_app" "$release_dir/notarization-$mac_arch.zip"
+xcrun notarytool submit "$release_dir/notarization-$mac_arch.zip" \
   --keychain-profile pali-notary --wait
 xcrun stapler staple "$mac_app"
 xcrun stapler validate "$mac_app"
@@ -169,7 +185,10 @@ Package the stapled macOS bundle with `ditto`. Use subshells for the other
 archives so the working directory remains unchanged:
 
 ```sh
-ditto -c -k --keepParent "$mac_app" "$release_dir/PaliPractice-macos-arm64.zip"
+ditto -c -k --keepParent "$release_dir/macos-arm64/PāliPractice.app" \
+  "$release_dir/PaliPractice-macos-arm64.zip"
+ditto -c -k --keepParent "$release_dir/macos-x64/PāliPractice.app" \
+  "$release_dir/PaliPractice-macos-x64.zip"
 (cd "$release_dir/windows" && zip -r "$release_dir/PaliPractice-windows-x64.zip" . -x '*.pdb')
 COPYFILE_DISABLE=1 tar -czf "$release_dir/PaliPractice-linux-x64.tar.gz" \
   --exclude='*.pdb' -C "$release_dir/linux" .
@@ -184,6 +203,7 @@ information. Create a draft after the release commit is pushed:
 ```sh
 gh release create "v$release_version" --draft --target RELEASE_COMMIT \
   "$release_dir/PaliPractice-macos-arm64.zip" \
+  "$release_dir/PaliPractice-macos-x64.zip" \
   "$release_dir/PaliPractice-windows-x64.zip" \
   "$release_dir/PaliPractice-linux-x64.tar.gz" \
   "$release_dir/PaliPractice-android.apk" \

@@ -223,6 +223,9 @@
       <UnoImage Include="Assets\Svg\Settings\verb.svg" BaseSize="21,21" />
     </ItemGroup>
 
+    <!-- Compile the shared Icon Composer source for Apple app bundles. -->
+    <Import Project="Platforms\Apple\AppIcon.targets" />
+
     <!-- Native macOS menu bar: compiles PaliMenu.m → libPaliMenu.dylib on macOS builds -->
     <Import Project="Platforms\Desktop\MacMenu\MacMenu.targets" />
 

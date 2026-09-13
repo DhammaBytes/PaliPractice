@@ -1,0 +1,44 @@
+<Project>
+  <PropertyGroup>
+    <_PaliComposerIcon>$(MSBuildThisFileDirectory)quail.icon</_PaliComposerIcon>
+    <_PaliComposerMacOSMinimumSystemVersion Condition="'$(UnoMacOSMinimumSystemVersion)' == ''">10.15</_PaliComposerMacOSMinimumSystemVersion>
+    <_PaliComposerMacOSMinimumSystemVersion Condition="'$(UnoMacOSMinimumSystemVersion)' != ''">$(UnoMacOSMinimumSystemVersion)</_PaliComposerMacOSMinimumSystemVersion>
+  </PropertyGroup>
+
+  <!-- The .NET 10 iOS 26.5 ACTool task only discovers .xcassets files. Compile
+       the native icon together with Uno's cloned catalog so there is one
+       Assets.car containing both the icon and the launch image. -->
+  <Target Name="CompilePaliComposerIconForIOS"
+          AfterTargets="_CoreCompileImageAssets"
+          Condition="$(TargetFramework.Contains('-ios')) And '$(IsMacEnabled)' == 'true'">
+    <Exec Command="xcrun actool --errors --warnings --notices --output-format human-readable-text --app-icon quail --target-device iphone --target-device ipad --minimum-deployment-target $(_MinimumOSVersion) --platform $(_SdkPlatform.ToLowerInvariant()) --output-partial-info-plist &quot;$(DeviceSpecificIntermediateOutputPath)actool/partial-info.plist&quot; --compile &quot;$(DeviceSpecificIntermediateOutputPath)actool/bundle&quot; &quot;$(DeviceSpecificIntermediateOutputPath)actool/cloned-assets/Media.xcassets&quot; &quot;$(_PaliComposerIcon)&quot;" />
+    <ItemGroup>
+      <!-- Incremental upgrades can retain the former appiconset's cached resources. -->
+      <_BundleResourceWithLogicalName Remove="$(DeviceSpecificIntermediateOutputPath)actool/bundle/AppIcon*.png" />
+      <_BundleResourceWithLogicalName Include="$(DeviceSpecificIntermediateOutputPath)actool/bundle/quail60x60@2x.png"
+                                      LogicalName="quail60x60@2x.png"
+                                      Optimize="false" />
+      <_BundleResourceWithLogicalName Include="$(DeviceSpecificIntermediateOutputPath)actool/bundle/quail76x76@2x~ipad.png"
+                                      LogicalName="quail76x76@2x~ipad.png"
+                                      Optimize="false" />
+      <FileWrites Include="$(DeviceSpecificIntermediateOutputPath)actool/bundle/quail*.png" />
+    </ItemGroup>
+  </Target>
+
+  <!-- Uno's Skia packager creates an .icns from UnoIcon PNGs. Replace its
+       packaged icon with Apple's rendering of the shared Icon Composer source. -->
+  <Target Name="InstallPaliComposerIconForMacOS"
+          AfterTargets="_UnoPublishAppBundle"
+          BeforeTargets="_UnoPackageAppBundle;_UnoCreateDiskImage;_UnoNotarizeApp"
+          Condition="$(TargetFramework.Contains('-desktop')) And $([MSBuild]::IsOSPlatform('OSX')) And ('$(PackageFormat)' == 'app' Or '$(PackageFormat)' == 'pkg' Or '$(PackageFormat)' == 'dmg') And $(RuntimeIdentifier.StartsWith('osx-'))">
+    <Error Condition="'$(CodesignKey)' != ''"
+           Text="The Icon Composer asset must be installed before code signing. Use the manual signing flow in PUBLISHING.md." />
+    <MakeDir Directories="$(IntermediateOutputPath)composer-macos" />
+    <Exec Command="xcrun actool --errors --warnings --notices --output-format human-readable-text --app-icon quail --minimum-deployment-target $(_PaliComposerMacOSMinimumSystemVersion) --platform macosx --output-partial-info-plist &quot;$(IntermediateOutputPath)composer-macos/partial-info.plist&quot; --compile &quot;$(IntermediateOutputPath)composer-macos&quot; &quot;$(_PaliComposerIcon)&quot;" />
+    <Copy SourceFiles="$(IntermediateOutputPath)composer-macos/quail.icns"
+          DestinationFiles="$(AppBundlePath)/Contents/Resources/icon.icns" />
+    <Copy SourceFiles="$(IntermediateOutputPath)composer-macos/Assets.car"
+          DestinationFiles="$(AppBundlePath)/Contents/Resources/Assets.car" />
+    <Exec Command="plutil -replace CFBundleIconName -string quail &quot;$(AppBundlePath)/Contents/Info.plist&quot;" />
+  </Target>
+</Project>

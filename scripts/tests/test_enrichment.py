@@ -178,3 +178,40 @@ class EnrichmentTests(unittest.TestCase):
         with self.assertRaisesRegex(InputError, 'same revision'):
             self.build('unpaired')
         self.assertFalse((self.root / 'unpaired').exists())
+
+    def test_pinned_overrides_prepend_fill_gaps_and_preserve_provenance(self):
+        dpd = Path(self.spec['dpd']['path'])
+        with closing(sqlite3.connect(dpd)) as db, db:
+            for column in ('lemma_1', 'pos', 'meaning_1', 'meaning_2'):
+                db.execute(f"ALTER TABLE dpd_headwords ADD COLUMN {column} TEXT DEFAULT ''")
+            db.execute("UPDATE dpd_headwords SET lemma_1='word ' || id")
+        self.spec['dpd']['sha256'] = sha256(dpd)
+        (self.english / 'candidate.json').write_text(json.dumps({'inputs': {'dpd': self.spec['dpd']}}))
+        overrides = self.root / 'overrides.json'
+        overrides.write_text(json.dumps({'schema': 1, 'primary': {'ru': {
+            '1': {'lemma_1': 'word 1', 'preferred': ['осознавание']},
+            '3': {'lemma_1': 'word 3', 'preferred': ['пустое']},
+            '4': {'lemma_1': 'word 4', 'preferred': ['новое']},
+            '90': {'lemma_1': 'word 90', 'preferred': ['не включать']}}}}))
+        self.spec['sources']['overrides'] = {'path': str(overrides), 'sha256': sha256(overrides),
+            'source': {'origin': 'user terminology', 'revision': 'sha256:' + sha256(overrides)}}
+        self.manifest.write_text(json.dumps(self.spec))
+        first, second = self.build('one'), self.build('two')
+        self.assertEqual((first / 'enrichment.json').read_bytes(), (second / 'enrichment.json').read_bytes())
+        self.assertEqual(sha256(first / 'pali.db'), sha256(second / 'pali.db'))
+        with closing(sqlite3.connect(first / 'pali.db')) as db:
+            self.assertEqual([(1, 'ru', 'осознавание; слово'), (2, 'ru', 'сырой'),
+                              (3, 'ru', 'пустое'), (4, 'ru', 'новое')],
+                             db.execute('SELECT * FROM localized_meanings').fetchall())
+        layer = validate_enrichment(self.english, self.manifest, first)['layers']['ru']
+        self.assertEqual(['accepted', 'empty', 'missing'],
+                         [r['override']['source_status'] for r in layer['records'] if 'override' in r])
+        self.assertEqual(2, layer['coverage']['nouns']['translated_primary_lemmas'])
+        bundle = json.loads((first / 'bundle.json').read_text())
+        self.assertEqual(sha256(overrides), bundle['translations']['ru']['override_source']['sha256'])
+        overrides.write_text('{}')
+        with self.assertRaisesRegex(InputError, 'Checksum mismatch'):
+            validate_enrichment(self.english, self.manifest, first)
+        with self.assertRaisesRegex(InputError, 'Checksum mismatch'):
+            self.build('changed')
+        self.assertFalse((self.root / 'changed').exists())

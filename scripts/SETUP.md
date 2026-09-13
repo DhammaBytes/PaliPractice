@@ -254,6 +254,31 @@ English meanings, authorship modes and review rationale.
 Mechanical correspondence does not establish translation quality: retain the
 bounded terminology/sample review and upstream AI-assisted translation credits.
 
+## Localized terminology preferences
+
+`scripts/configs/localized_translations.json` contains the user-selected ES/RU
+primary meanings. English preferences remain in `configs/custom_translations.json`.
+Add a pinned `sources.overrides` entry to the translation manifest, using the same
+`path`, `sha256`, and `source` structure as other inputs. Snapshot the configuration
+and pin its checksum before building; manifests without this optional input retain
+upstream-only behavior.
+
+The file uses `{"schema": 1, "primary": {"es": {"59985": {"lemma_1":
+"samudaya 1", "preferred": ["surgimiento", "origen"]}}, "ru": {}}}`.
+Each preferred list is ordered. Matching semicolon-separated meanings move to the
+front (case-insensitive exact match); absent terms are prepended. Other meanings
+keep their order. Each ID and full lemma key must match the pinned DPD reference.
+Only selected headwords and explicitly configured languages are changed.
+
+Overrides run after source mapping. A missing or rejected source row receives only
+the explicitly supplied translation, without importing an unverified source
+meaning. The enrichment report retains the original status and meaning under
+`override`; the report and packaged manifest record `override_source` provenance.
+Thus `samudaya 1` can become `surgimiento; origen` when Spanish is absent, or
+`surgimiento; origen; fuente` when its accepted source is `origen; fuente`.
+Rebuild, verify, and promote the multilingual bundle as below; do not patch the
+packaged SQLite database directly.
+
 ## Multilingual database readiness and promotion (M9)
 
 Promotion also requires the [shipped-dictionary comparison](dictionaries/README.md#required-comparison-before-promotion).

@@ -1,0 +1,203 @@
+{
+  "schema": 1,
+  "primary": {
+    "es": {
+      "5217": {
+        "lemma_1": "anusaya",
+        "preferred": [
+          "obsesión"
+        ]
+      },
+      "12198": {
+        "lemma_1": "āyatana 1",
+        "preferred": [
+          "medio sensorial"
+        ]
+      },
+      "16449": {
+        "lemma_1": "upekkhā",
+        "preferred": [
+          "ecuanimidad"
+        ]
+      },
+      "20959": {
+        "lemma_1": "kāma 3",
+        "preferred": [
+          "sensorialidad"
+        ]
+      },
+      "27053": {
+        "lemma_1": "cetas",
+        "preferred": [
+          "conciencia"
+        ]
+      },
+      "27150": {
+        "lemma_1": "cetovimutti 1",
+        "preferred": [
+          "liberación de la conciencia"
+        ]
+      },
+      "28748": {
+        "lemma_1": "jhāna 1",
+        "preferred": [
+          "absorción meditativa"
+        ]
+      },
+      "32877": {
+        "lemma_1": "dukkha 3",
+        "preferred": [
+          "malestar"
+        ]
+      },
+      "37569": {
+        "lemma_1": "nibbāna 1",
+        "preferred": [
+          "desatadura"
+        ]
+      },
+      "39995": {
+        "lemma_1": "paññā 2",
+        "preferred": [
+          "con discernimiento"
+        ]
+      },
+      "56595": {
+        "lemma_1": "saṅkappa 1",
+        "preferred": [
+          "determinación"
+        ]
+      },
+      "56770": {
+        "lemma_1": "saṅkhāra 3",
+        "preferred": [
+          "construcción mental"
+        ]
+      },
+      "57625": {
+        "lemma_1": "satipaṭṭhāna 1",
+        "preferred": [
+          "establecimiento de la atención plena"
+        ]
+      },
+      "57626": {
+        "lemma_1": "satipaṭṭhāna 2",
+        "preferred": [
+          "establecimiento de la atención plena"
+        ]
+      },
+      "59985": {
+        "lemma_1": "samudaya 1",
+        "preferred": [
+          "surgimiento",
+          "origen"
+        ]
+      },
+      "68921": {
+        "lemma_1": "viriya",
+        "preferred": [
+          "perseverancia"
+        ]
+      },
+      "3545": {
+        "lemma_1": "anatta 2",
+        "preferred": [
+          "no-yo"
+        ]
+      },
+      "71783": {
+        "lemma_1": "anicca 2",
+        "preferred": [
+          "inconstancia"
+        ]
+      }
+    },
+    "ru": {
+      "5217": {
+        "lemma_1": "anusaya",
+        "preferred": [
+          "обсессия"
+        ]
+      },
+      "12198": {
+        "lemma_1": "āyatana 1",
+        "preferred": [
+          "сфера чувств"
+        ]
+      },
+      "27053": {
+        "lemma_1": "cetas",
+        "preferred": [
+          "осознавание"
+        ]
+      },
+      "27150": {
+        "lemma_1": "cetovimutti 1",
+        "preferred": [
+          "освобождение осознавания"
+        ]
+      },
+      "28748": {
+        "lemma_1": "jhāna 1",
+        "preferred": [
+          "медитативное погружение"
+        ]
+      },
+      "32877": {
+        "lemma_1": "dukkha 3",
+        "preferred": [
+          "напряжение",
+          "стресс"
+        ]
+      },
+      "37569": {
+        "lemma_1": "nibbāna 1",
+        "preferred": [
+          "освобождение от уз"
+        ]
+      },
+      "39994": {
+        "lemma_1": "paññā 1",
+        "preferred": [
+          "проницательность"
+        ]
+      },
+      "39995": {
+        "lemma_1": "paññā 2",
+        "preferred": [
+          "с проницательностью"
+        ]
+      },
+      "40109": {
+        "lemma_1": "paññāvimutti",
+        "preferred": [
+          "освобождение через проницательность"
+        ]
+      },
+      "56595": {
+        "lemma_1": "saṅkappa 1",
+        "preferred": [
+          "решимость"
+        ]
+      },
+      "56770": {
+        "lemma_1": "saṅkhāra 3",
+        "preferred": [
+          "умственная конструкция"
+        ]
+      },
+      "68921": {
+        "lemma_1": "viriya",
+        "preferred": [
+          "настойчивость"
+        ]
+      },
+      "3545": {
+        "lemma_1": "anatta 2",
+        "preferred": [
+          "не-я"
+        ]
+      }
+    }
+  }
+}

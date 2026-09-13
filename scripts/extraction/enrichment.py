@@ -9,6 +9,7 @@ import sqlite3
 from .candidate import OUTPUTS, validate_candidate
 from .inputs import InputError, read_json, sha256, verify_file
 from .russian_meanings import load_russian_meanings
+from .localized_translations import apply_overrides, load_overrides
 from .spanish_meanings import spanish_records
 from .spanish_dictionary import dictionary_records
 
@@ -54,7 +55,7 @@ def read_sources(manifest_path: Path, english: Path):
 
 
 def translation_source_paths(sources: dict, parent: Path):
-    if not isinstance(sources, dict) or not sources or set(sources) - {'ru', 'es', 'es_english', 'es_identity', 'es_reviews'}:
+    if not isinstance(sources, dict) or not sources or set(sources) - {'ru', 'es', 'es_english', 'es_identity', 'es_reviews', 'overrides'}:
         raise InputError('Unsupported translation languages')
     if ('es' in sources) != ('es_english' in sources):
         raise InputError('Spanish requires paired English and Spanish exports')
@@ -101,7 +102,9 @@ def expected_layer(manifest: dict, paths: dict, english: Path) -> dict:
     with connect(paths['_dpd']) as dpd:
         known_ids = {row[0] for row in dpd.execute('SELECT id FROM dpd_headwords')}
         headwords = (dpd.execute('SELECT id, lemma_1, pos, meaning_1, meaning_2 FROM dpd_headwords').fetchall()
-                     if 'es' in paths else [])
+                     if 'es' in paths or 'overrides' in paths else [])
+    overrides = (load_overrides(paths['overrides'], {row[0]: row[1] for row in headwords},
+                                set(paths) & {'es', 'ru'}) if 'overrides' in paths else {})
     layers = {}
     for language in sorted(set(manifest['sources']) & {'es', 'ru'}):
         if language == 'ru':
@@ -118,6 +121,9 @@ def expected_layer(manifest: dict, paths: dict, english: Path) -> dict:
             else:
                 records, extra = spanish_records(words, headwords, paths['es_english'], paths['es'])
             extra['reference_source'] = source_evidence(manifest['sources']['es_english'])
+        if language in overrides:
+            records = apply_overrides(records, overrides[language])
+            extra['override_source'] = source_evidence(manifest['sources']['overrides'])
         layers[language] = {'source': source_evidence(manifest['sources'][language]),
                             'records': records, 'coverage': coverage(records), **extra}
     return layers
@@ -156,7 +162,7 @@ def bundle_manifest(english: Path, output: Path, report: dict) -> dict:
     return {'schema': 1, 'kind': 'multilingual-database',
             'english': read_json(english / 'candidate.json'),
             'languages': ['en', *sorted(report['layers'])],
-            'translations': {language: {key: layer[key] for key in ('source', 'coverage', 'reference_source', 'identity_source', 'review_source') if key in layer}
+            'translations': {language: {key: layer[key] for key in ('source', 'coverage', 'reference_source', 'identity_source', 'review_source', 'override_source') if key in layer}
                              for language, layer in report['layers'].items()},
             'outputs': {name: sha256(output / name) for name in (*OUTPUTS, 'enrichment.json')}}
 

@@ -258,9 +258,9 @@ En los dispositivos móviles, la copia de seguridad del sistema suele incluir au
   <data name="Statistics.Label.NeedWork" xml:space="preserve"><value>Necesitan práctica</value></data>
   <data name="Statistics.Legend.Less" xml:space="preserve"><value>Menos</value></data>
   <data name="Statistics.Legend.More" xml:space="preserve"><value>Más</value></data>
-  <data name="Statistics.Legend.Struggling" xml:space="preserve"><value>Con dificultad</value></data>
-  <data name="Statistics.Legend.Learning" xml:space="preserve"><value>En aprendizaje</value></data>
-  <data name="Statistics.Legend.Strong" xml:space="preserve"><value>Bien aprendidas</value></data>
+  <data name="Statistics.Legend.Struggling" xml:space="preserve"><value>Difíciles</value></data>
+  <data name="Statistics.Legend.Learning" xml:space="preserve"><value>Aprendiendo</value></data>
+  <data name="Statistics.Legend.Strong" xml:space="preserve"><value>Aprendidas</value></data>
   <data name="Statistics.Legend.Mastered" xml:space="preserve"><value>Dominadas</value></data>
   <data name="Statistics.CalendarTooltipFormat" xml:space="preserve"><value>{0}
 Sustantivos: {1}

@@ -99,11 +99,11 @@
   <data name="Settings.LanguageOption.Russian" xml:space="preserve"><value>Русский</value></data>
   <data name="Settings.LanguageOption.Spanish" xml:space="preserve"><value>Испанский</value></data>
   <data name="Settings.NumberOption.Both" xml:space="preserve"><value>Един. и множ.</value></data>
-  <data name="Settings.NumberOption.SingularOnly" xml:space="preserve"><value>Только единственное</value></data>
-  <data name="Settings.NumberOption.PluralOnly" xml:space="preserve"><value>Только множественное</value></data>
+  <data name="Settings.NumberOption.SingularOnly" xml:space="preserve"><value>Только един.</value></data>
+  <data name="Settings.NumberOption.PluralOnly" xml:space="preserve"><value>Только множ.</value></data>
   <data name="Settings.VoiceOption.Both" xml:space="preserve"><value>Действ. и возвр.</value></data>
-  <data name="Settings.VoiceOption.ActiveOnly" xml:space="preserve"><value>Только действительный</value></data>
-  <data name="Settings.VoiceOption.ReflexiveOnly" xml:space="preserve"><value>Только возвратный</value></data>
+  <data name="Settings.VoiceOption.ActiveOnly" xml:space="preserve"><value>Только действ.</value></data>
+  <data name="Settings.VoiceOption.ReflexiveOnly" xml:space="preserve"><value>Только возвр.</value></data>
   <data name="Settings.Navigation.NounDeclensions" xml:space="preserve"><value>Склонение существительных</value></data>
   <data name="Settings.Navigation.VerbConjugations" xml:space="preserve"><value>Спряжение глаголов</value></data>
   <data name="Settings.Navigation.AboutApp" xml:space="preserve"><value>О приложении</value></data>
@@ -232,7 +232,7 @@
   <data name="Help.Faq.AboutApp" xml:space="preserve"><value>
 **Где узнать больше?**
 
-Откройте раздел «О приложении» в настройках. Там можно узнать о проекте, источниках данных и лицензии, и узнать, как с нами связаться.
+Откройте раздел «О приложении» в настройках. Там можно узнать о проекте, источниках данных и лицензии, и как с нами связаться.
 </value></data>
   <data name="Help.Faq.DataStorage" xml:space="preserve"><value>
 **Где хранятся мои данные?**
@@ -258,9 +258,9 @@
   <data name="Statistics.Label.NeedWork" xml:space="preserve"><value>Требуют внимания</value></data>
   <data name="Statistics.Legend.Less" xml:space="preserve"><value>Меньше</value></data>
   <data name="Statistics.Legend.More" xml:space="preserve"><value>Больше</value></data>
-  <data name="Statistics.Legend.Struggling" xml:space="preserve"><value>Трудности</value></data>
+  <data name="Statistics.Legend.Struggling" xml:space="preserve"><value>Сложные</value></data>
   <data name="Statistics.Legend.Learning" xml:space="preserve"><value>Изучаются</value></data>
-  <data name="Statistics.Legend.Strong" xml:space="preserve"><value>Хорошо знакомы</value></data>
+  <data name="Statistics.Legend.Strong" xml:space="preserve"><value>Знакомы</value></data>
   <data name="Statistics.Legend.Mastered" xml:space="preserve"><value>Освоены</value></data>
   <data name="Statistics.CalendarTooltipFormat" xml:space="preserve"><value><![CDATA[{0}
 Существительные: {1}

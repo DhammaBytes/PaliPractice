@@ -2,7 +2,7 @@
 
 # Pāli Practice
 
-A cross-platform Pāli language learning app designed to train noun declensions and verb conjugations with flashcards, using spaced repetition. Built with .NET and Uno Platform, so that it works on:
+A cross-platform Pāli language learning app designed to train noun declensions and verb conjugations with flashcards, using spaced repetition. Available in English, Spanish, and Russian. Built with .NET and Uno Platform, so that it works on:
 
 - Windows x64 (Windows 10/11; see [.NET OS support](https://github.com/dotnet/core/blob/main/release-notes/10.0/supported-os.md#windows))
 - macOS 10.15+ (Catalina)
@@ -66,7 +66,7 @@ Icon illustration and app design by [Irina Mir](https://www.instagram.com/irmirx
 
 ## License
 
-*Pāli Practice* builds on the hard work of the contributors to the [Digital Pāḷi Dictionary](https://digitalpalidictionary.github.io) which is included as a Git submodule in this project. To keep things simple, it is released under the same **CC BY-NC-SA 4.0** license as the *Digital Pāḷi Dictionary* itself.
+*Pāli Practice* builds on the hard work of the contributors to the [Digital Pāḷi Dictionary](https://digitalpalidictionary.github.io) which is included as a Git submodule in this project, plus [Spanish DPD](https://dhamma-pb.org/dpd-espanol/) and [Russian DPD](https://ru.dpdict.net) localizations. To keep things simple, it is released under the same **CC BY-NC-SA 4.0** license as the *Digital Pāḷi Dictionary* itself.
 
 - __CC__: You are free to __share__ and __adapt__ it
 - __BY__: as long as you attribute the source,

@@ -192,7 +192,9 @@ class EnrichmentTests(unittest.TestCase):
             '1': {'lemma_1': 'word 1', 'preferred': ['осознавание']},
             '3': {'lemma_1': 'word 3', 'preferred': ['пустое']},
             '4': {'lemma_1': 'word 4', 'preferred': ['новое']},
-            '90': {'lemma_1': 'word 90', 'preferred': ['не включать']}}}}))
+            '90': {'lemma_1': 'word 90', 'preferred': ['не включать']}}},
+            'replace': {'ru': {'2': {'lemma_1': 'word 2', 'meaning_1': '',
+                'source_meaning': 'сырой', 'replacement': 'исправленный', 'reason': 'Reviewed correction.'}}}}))
         self.spec['sources']['overrides'] = {'path': str(overrides), 'sha256': sha256(overrides),
             'source': {'origin': 'user terminology', 'revision': 'sha256:' + sha256(overrides)}}
         self.manifest.write_text(json.dumps(self.spec))
@@ -200,11 +202,11 @@ class EnrichmentTests(unittest.TestCase):
         self.assertEqual((first / 'enrichment.json').read_bytes(), (second / 'enrichment.json').read_bytes())
         self.assertEqual(sha256(first / 'pali.db'), sha256(second / 'pali.db'))
         with closing(sqlite3.connect(first / 'pali.db')) as db:
-            self.assertEqual([(1, 'ru', 'осознавание; слово'), (2, 'ru', 'сырой'),
+            self.assertEqual([(1, 'ru', 'осознавание; слово'), (2, 'ru', 'исправленный'),
                               (3, 'ru', 'пустое'), (4, 'ru', 'новое')],
                              db.execute('SELECT * FROM localized_meanings').fetchall())
         layer = validate_enrichment(self.english, self.manifest, first)['layers']['ru']
-        self.assertEqual(['accepted', 'empty', 'missing'],
+        self.assertEqual(['accepted', 'accepted', 'empty', 'missing'],
                          [r['override']['source_status'] for r in layer['records'] if 'override' in r])
         self.assertEqual(2, layer['coverage']['nouns']['translated_primary_lemmas'])
         bundle = json.loads((first / 'bundle.json').read_text())

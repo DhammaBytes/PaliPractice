@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "comparison_sha256": "dda35a389d170b6ef671a33a37225c17b0e3526834b909a24326cb65f5f4fde1",
+  "decisions": [
+    {
+      "key": "english_target_changed:es:89243",
+      "reason": "Owner approved English primary subject to origination for noun samudayadhamma 2 (ID 89243), retaining an arising phenomenon. Reviewed corresponding Spanish fenómeno sujeto a originación; fenómeno que surge and Russian то, что подвержено возникновению; возникающее явление. No POS, identity or practice-selection change. See scripts/dictionaries/ru/README.md.",
+      "reviewer": "Owner approval in dictionary review task, 2026-09-13"
+    },
+    {
+      "key": "english_target_changed:ru:89243",
+      "reason": "Owner approved English primary subject to origination for noun samudayadhamma 2 (ID 89243), retaining an arising phenomenon. Reviewed corresponding Spanish fenómeno sujeto a originación; fenómeno que surge and Russian то, что подвержено возникновению; возникающее явление. No POS, identity or practice-selection change. See scripts/dictionaries/ru/README.md.",
+      "reviewer": "Owner approval in dictionary review task, 2026-09-13"
+    }
+  ]
+}

@@ -254,7 +254,7 @@ English meanings, authorship modes and review rationale.
 Mechanical correspondence does not establish translation quality: retain the
 bounded terminology/sample review and upstream AI-assisted translation credits.
 
-## Localized terminology preferences
+## Localized terminology preferences and reviewed replacements
 
 `scripts/configs/localized_translations.json` contains the user-selected ES/RU
 primary meanings. English preferences remain in `configs/custom_translations.json`.
@@ -276,6 +276,16 @@ meaning. The enrichment report retains the original status and meaning under
 `override`; the report and packaged manifest record `override_source` provenance.
 Thus `samudaya 1` can become `surgimiento; origen` when Spanish is absent, or
 `surgimiento; origen; fuente` when its accepted source is `origen; fuente`.
+For a full correction, add an optional `replace` section alongside `primary`,
+keyed by language and headword ID. Each entry requires `lemma_1`, `meaning_1`
+(the exact raw DPD English definition), `source_meaning` (the exact mapped meaning
+before overrides, or an empty string for a gap), `replacement` (the full corrected
+semicolon-separated meaning), and a nonempty `reason`. The build rejects changed
+English targets, changed source meanings, and IDs present in both sections for
+the same language. Full replacements remove obsolete synonyms; primary preferences
+preserve the remaining source glosses. Both retain provenance in `override`.
+The [September Russian review](dictionaries/ru/README.md) records the first use.
+
 Rebuild, verify, and promote the multilingual bundle as below; do not patch the
 packaged SQLite database directly.
 

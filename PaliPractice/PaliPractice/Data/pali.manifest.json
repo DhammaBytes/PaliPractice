@@ -11,13 +11,13 @@
         "scripts/extraction/compact.py": "4a055f3c65cf34740a887ac4b56780a2cae8ab55a682be2574e5a104eaffbabf",
         "scripts/extraction/compatibility.py": "59de8cebc6ecdd6793f50b6b0f837841a02eef1bb8d936ed0b869667d9b768d6",
         "scripts/extraction/config.py": "4e4a459cdf7d1ddec516143568bdf941dee1414168cfa6203bae83c3b1cce818",
-        "scripts/extraction/enrichment.py": "b4cab7a76289f5275380cad36578359351785445a622d71d3ec81a8d987b376e",
+        "scripts/extraction/enrichment.py": "565b92f05e825a9909d9a6f62c741fb321ed70580d5602cd77f99f2f7e8e7853",
         "scripts/extraction/form_storage.py": "53591ba42610e533f7c2b64b1f4bae791875cfd22c95177dd5a5a63310589495",
         "scripts/extraction/forms.py": "247c7afaf5c39ba030b81bc27ed28a7bb7764f2896e5b634080f595c12ef3ef8",
         "scripts/extraction/grammar.py": "82ede59be4c6785d2460422a468523661b3fa83636472c9a751b75409418a768",
         "scripts/extraction/identity.py": "dfcf5ae8cf39ac212d93413526193846e758b31766425eb1d9c3053143c538f4",
         "scripts/extraction/inputs.py": "a72a93ef3e711e1dec04ae7de406e05339ddd29771dde8bcdd322a87c1a53d4c",
-        "scripts/extraction/localized_translations.py": "7b754cc6c9cd43f44fd6540cc10ade4a1aba1c21008d09089e6de29d3e2b8f8e",
+        "scripts/extraction/localized_translations.py": "127835c2c962af41552a7df26a7d0ede8eeeaa1f85bc1078dfe886f9e30940a6",
         "scripts/extraction/plural_dedup.py": "1fc2e2e5ccab55205a05d6481ef81bfbee80a3e7ca61eb59c9930c7ad73dd74e",
         "scripts/extraction/registry.py": "c0e498e52956814148eb1a7d4c948993021a449fc69413bf742cc9b62731d5a6",
         "scripts/extraction/russian_meanings.py": "99b40dbf4867195d27cdd81a513f6b3eee87ade5042b1fb70411b115e4261d49",
@@ -34,7 +34,7 @@
         "aksharamukha": "2.3"
       },
       "python": "3.13.15",
-      "revision": "85d240130471ec21df0ba51bd6200285e198f52b",
+      "revision": "dd112926b2a6bba2422411897131609e31474ac5",
       "sqlite": "3.53.4"
     },
     "configuration": {
@@ -81,13 +81,13 @@
         "thai": "a3d216560ed3c44ab35e2250d17c9faf7fb7d8e4"
       }
     },
-    "database_version": 2026091202,
+    "database_version": 2026091301,
     "inputs": {
       "adjustments": {
-        "sha256": "eb43aff156e32abcf574873eb647d31a737c939b0529c200781a9dc0c59771a2",
+        "sha256": "0aaca20b502c2dffe101611326f5f5573dfffa1d11cc50451138b3ce8af0d237",
         "source": {
-          "origin": "local configuration snapshot before Spanish dictionary promotion",
-          "revision": "sha256:eb43aff156e32abcf574873eb647d31a737c939b0529c200781a9dc0c59771a2"
+          "origin": "PaliPractice owner-approved dictionary review 2026-09-13: scripts/configs/custom_translations.json",
+          "revision": "sha256:0aaca20b502c2dffe101611326f5f5573dfffa1d11cc50451138b3ce8af0d237"
         }
       },
       "bjt": {
@@ -154,10 +154,10 @@
     "outputs": {
       "compatibility.json": "18621beb0f50230349e3ca0c1b8bb888ca363ba5ebf712c1a18dd185927f6053",
       "corpus_forms.json": "e6bfa934656079bfec1b088605bbad2284509af3bd250806c9a0ab2e5a3d1149",
-      "inflection_validation.log": "9bbc7cd970c1fa161cdfc8dee47efb0a0b6504e0dd7cc1380d5c05abb6996160",
+      "inflection_validation.log": "ae1b3e743770dc9d89251c9de8363928a3277f0fd5e406e264cae670d9d64926",
       "lemma_registry.json": "60def983ff5064eecac63c33494608900fe838e6653920e8c7871c80c6ff29c8",
-      "pali.db": "54c528a2970715772d93d44afc088e4cea5a2e8b469d89629cdbda920ed272f4",
-      "pali.version.txt": "323cfd235def6900a554601343677d34bd1f6486e153d40f301e2e797ad25075",
+      "pali.db": "10f0434cd5ceb10d8e581a4f0304793e67c162e39ae2356382b8ac592d8376f0",
+      "pali.version.txt": "430332bdad3e6196ccbc482a9bf4eaa36fd6bcdcee64572f4449b3bf5027cf94",
       "paradigm_corrections.json": "4ca10b2b65dbe531a7dd54b89710964381e8ad6e81d796627a8f897912297c13",
       "practice_registry.json": "74d6d7fab159270ba819be1746b74d4be88b080034fe9fd562319bf9fd587cab",
       "primary_forms.json": "12b969c906d2a75b4d5335b7c7fe9d199894db3ccc48e83dc42851a1b9e4add9"
@@ -174,11 +174,11 @@
   "outputs": {
     "compatibility.json": "18621beb0f50230349e3ca0c1b8bb888ca363ba5ebf712c1a18dd185927f6053",
     "corpus_forms.json": "e6bfa934656079bfec1b088605bbad2284509af3bd250806c9a0ab2e5a3d1149",
-    "enrichment.json": "3e52a1966099d9d599c24c12c44336ed83dced796e0d6302bf82965ab83d1963",
-    "inflection_validation.log": "9bbc7cd970c1fa161cdfc8dee47efb0a0b6504e0dd7cc1380d5c05abb6996160",
+    "enrichment.json": "70b38e4b0b859d56d45918db4501156ae6b5b977a7e9bc9f6cfeb86a83f974b8",
+    "inflection_validation.log": "ae1b3e743770dc9d89251c9de8363928a3277f0fd5e406e264cae670d9d64926",
     "lemma_registry.json": "60def983ff5064eecac63c33494608900fe838e6653920e8c7871c80c6ff29c8",
-    "pali.db": "8bce394aae661f2b436c5920fce2ff1971e5e26721f20c6d9767a66dbaa628e0",
-    "pali.version.txt": "323cfd235def6900a554601343677d34bd1f6486e153d40f301e2e797ad25075",
+    "pali.db": "eda119bdfa0a4acdcd9a1b14aa0111e9c1408ba5312ae091b8e723bbd3b4c271",
+    "pali.version.txt": "430332bdad3e6196ccbc482a9bf4eaa36fd6bcdcee64572f4449b3bf5027cf94",
     "paradigm_corrections.json": "4ca10b2b65dbe531a7dd54b89710964381e8ad6e81d796627a8f897912297c13",
     "practice_registry.json": "74d6d7fab159270ba819be1746b74d4be88b080034fe9fd562319bf9fd587cab",
     "primary_forms.json": "12b969c906d2a75b4d5335b7c7fe9d199894db3ccc48e83dc42851a1b9e4add9"
@@ -208,10 +208,10 @@
         }
       },
       "override_source": {
-        "sha256": "d75118d7242de229f7f0a1c1b929afdf241adf605809a84ea261370ce569c843",
+        "sha256": "eb9879bb57da849f86f1c2907160a47e258b48eb01bdc068f1b7f96f8813bb6b",
         "source": {
-          "origin": "PaliPractice user-selected ES/RU terminology: scripts/configs/localized_translations.json",
-          "revision": "sha256:d75118d7242de229f7f0a1c1b929afdf241adf605809a84ea261370ce569c843"
+          "origin": "PaliPractice owner-approved dictionary review 2026-09-13: scripts/configs/localized_translations.json",
+          "revision": "sha256:eb9879bb57da849f86f1c2907160a47e258b48eb01bdc068f1b7f96f8813bb6b"
         }
       },
       "reference_source": {
@@ -241,21 +241,21 @@
         "nouns": {
           "primary_lemmas": 1500,
           "selected_senses": 2395,
-          "translated_primary_lemmas": 1498,
-          "translated_senses": 2384
+          "translated_primary_lemmas": 1500,
+          "translated_senses": 2395
         },
         "verbs": {
           "primary_lemmas": 750,
           "selected_senses": 1327,
           "translated_primary_lemmas": 750,
-          "translated_senses": 1320
+          "translated_senses": 1327
         }
       },
       "override_source": {
-        "sha256": "d75118d7242de229f7f0a1c1b929afdf241adf605809a84ea261370ce569c843",
+        "sha256": "eb9879bb57da849f86f1c2907160a47e258b48eb01bdc068f1b7f96f8813bb6b",
         "source": {
-          "origin": "PaliPractice user-selected ES/RU terminology: scripts/configs/localized_translations.json",
-          "revision": "sha256:d75118d7242de229f7f0a1c1b929afdf241adf605809a84ea261370ce569c843"
+          "origin": "PaliPractice owner-approved dictionary review 2026-09-13: scripts/configs/localized_translations.json",
+          "revision": "sha256:eb9879bb57da849f86f1c2907160a47e258b48eb01bdc068f1b7f96f8813bb6b"
         }
       },
       "source": {

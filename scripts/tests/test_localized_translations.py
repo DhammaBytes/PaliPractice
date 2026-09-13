@@ -30,7 +30,7 @@ class LocalizedTranslationTests(unittest.TestCase):
             with self.subTest(status=status):
                 original = {'headword_id': 59985, 'status': status, 'meaning': 'untrusted meaning'}
                 untouched = {'headword_id': 2, 'status': 'accepted', 'meaning': 'otra'}
-                result = apply_overrides([original, untouched], {59985: ['surgimiento', 'origen']})
+                result = apply_overrides([original, untouched], {59985: {'preferred': ['surgimiento', 'origen']}})
                 self.assertEqual('surgimiento; origen', result[0]['meaning'])
                 self.assertEqual('accepted', result[0]['status'])
                 self.assertEqual(status, result[0]['override']['source_status'])
@@ -45,11 +45,11 @@ class LocalizedTranslationTests(unittest.TestCase):
             path = Path(directory) / 'overrides.json'
             def read(data, words=None, languages=None):
                 path.write_text(json.dumps(data))
-                return load_overrides(path, words if words is not None else {59985: 'samudaya 1'},
+                return load_overrides(path, words if words is not None else {59985: ('samudaya 1', 'origin')},
                                       languages if languages is not None else {'es'})
-            self.assertEqual({59985: ['surgimiento', 'origen']}, read(valid)['es'])
-            for words, languages in [({}, {'es'}), ({59985: 'samudaya 2'}, {'es'}),
-                                      ({59985: 'samudaya 1'}, {'ru'})]:
+            self.assertEqual(valid['primary']['es']['59985'], read(valid)['es'][59985])
+            for words, languages in [({}, {'es'}), ({59985: ('samudaya 2', 'origin')}, {'es'}),
+                                      ({59985: ('samudaya 1', 'origin')}, {'ru'})]:
                 with self.subTest(words=words, languages=languages), self.assertRaises(InputError):
                     read(valid, words, languages)
             for preferred in ([], 'word', [''], ['a; b'], [' word'], ['a', 'A'], [None], ['<b>x</b>']):
@@ -60,3 +60,33 @@ class LocalizedTranslationTests(unittest.TestCase):
             path.write_text('{"schema":1,"schema":1,"primary":{}}')
             with self.assertRaises(InputError):
                 load_overrides(path, {}, {'es'})
+
+    def test_reviewed_replacement_removes_obsolete_gloss_and_guards_resync(self):
+        entry = {'lemma_1': 'rasa 5', 'meaning_1': 'nutrients',
+                 'source_meaning': 'питательные вещества; удобрение',
+                 'replacement': 'питательные вещества', 'reason': 'Fertilizer removed from this sense.'}
+        data = {'schema': 1, 'primary': {}, 'replace': {'ru': {'54689': entry}}}
+        record = {'headword_id': 54689, 'status': 'accepted', 'meaning': entry['source_meaning']}
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'overrides.json'
+            path.write_text(json.dumps(data))
+            overrides = load_overrides(path, {54689: ('rasa 5', 'nutrients')}, {'ru'})
+            result = apply_overrides([record], overrides['ru'])[0]
+            self.assertEqual('питательные вещества', result['meaning'])
+            self.assertEqual(entry['source_meaning'], result['override']['source_meaning'])
+            self.assertEqual(entry['source_meaning'], record['meaning'])
+            with self.assertRaisesRegex(InputError, 'English target'):
+                load_overrides(path, {54689: ('rasa 5', 'flavour')}, {'ru'})
+            with self.assertRaisesRegex(InputError, 'replacement source'):
+                apply_overrides([{**record, 'meaning': 'changed upstream'}], overrides['ru'])
+            data['primary'] = {'ru': {'54689': {'lemma_1': 'rasa 5', 'preferred': ['другое']}}}
+            path.write_text(json.dumps(data))
+            with self.assertRaisesRegex(InputError, 'Conflicting'):
+                load_overrides(path, {54689: ('rasa 5', 'nutrients')}, {'ru'})
+
+    def test_reviewed_missing_translation_becomes_accepted(self):
+        entry = {'replacement': 'возникающее явление', 'source_meaning': ''}
+        result = apply_overrides([{'headword_id': 89243, 'status': 'missing', 'meaning': ''}], {89243: entry})
+        self.assertEqual('accepted', result[0]['status'])
+        self.assertEqual('возникающее явление', result[0]['meaning'])
+        self.assertEqual('missing', result[0]['override']['source_status'])

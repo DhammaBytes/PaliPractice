@@ -103,7 +103,7 @@ def expected_layer(manifest: dict, paths: dict, english: Path) -> dict:
         known_ids = {row[0] for row in dpd.execute('SELECT id FROM dpd_headwords')}
         headwords = (dpd.execute('SELECT id, lemma_1, pos, meaning_1, meaning_2 FROM dpd_headwords').fetchall()
                      if 'es' in paths or 'overrides' in paths else [])
-    overrides = (load_overrides(paths['overrides'], {row[0]: row[1] for row in headwords},
+    overrides = (load_overrides(paths['overrides'], {row[0]: (row[1], row[3]) for row in headwords},
                                 set(paths) & {'es', 'ru'}) if 'overrides' in paths else {})
     layers = {}
     for language in sorted(set(manifest['sources']) & {'es', 'ru'}):

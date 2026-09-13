@@ -110,6 +110,12 @@
         "preferred": [
           "inconstancia"
         ]
+      },
+      "89243": {
+        "lemma_1": "samudayadhamma 2",
+        "preferred": [
+          "fenómeno sujeto a originación"
+        ]
       }
     },
     "ru": {
@@ -197,6 +203,243 @@
         "preferred": [
           "не-я"
         ]
+      }
+    }
+  },
+  "replace": {
+    "ru": {
+      "24071": {
+        "lemma_1": "gaṇa 4",
+        "meaning_1": "hoard; group; collection; mass",
+        "source_meaning": "орда; группа; коллекция; масса",
+        "replacement": "скопление; группа; совокупность; масса",
+        "reason": "The change from horde to hoard is semantic here. Орда follows the old English homophone; the example lists collections of gold, grain and property."
+      },
+      "43579": {
+        "lemma_1": "parinibbāna 1",
+        "meaning_1": "(of mental defilement) complete quenching; total extinguishing; complete cooling",
+        "source_meaning": "(об омрачениях) полное успокоение; полное освобождение; абсолютная невозмутимость",
+        "replacement": "(об омрачениях) полное освобождение от уз; полное успокоение; полное затухание",
+        "reason": "Owner wording approved 2026-09-13."
+      },
+      "54689": {
+        "lemma_1": "rasa 5",
+        "meaning_1": "nutrients; fertile elements",
+        "source_meaning": "питательные вещества; удобрение",
+        "replacement": "питательные вещества",
+        "reason": "Remove удобрение, which follows the removed fertilizer gloss. The retained wording covers nutrients/fertile elements; the example is nourishment drawn from earth and water."
+      },
+      "57081": {
+        "lemma_1": "saṅghādisesa 2",
+        "meaning_1": "offence requiring communal rehabilitation; offence entailing demotion",
+        "source_meaning": "нарушение влекущее за собой отстранение",
+        "replacement": "нарушение, влекущее за собой отстранение (Виная)",
+        "reason": "Owner wording approved 2026-09-13."
+      },
+      "85796": {
+        "lemma_1": "vaṇṇa 1.10",
+        "meaning_1": "guise; disguise; appearance; form (of)",
+        "source_meaning": "",
+        "replacement": "обличье; личина; вид; форма",
+        "reason": "Translate this exact selected DPD sense, checked against its pinned example; do not copy another same-lemma sense."
+      },
+      "89243": {
+        "lemma_1": "samudayadhamma 2",
+        "meaning_1": "an arising phenomenon",
+        "source_meaning": "",
+        "replacement": "то, что подвержено возникновению; возникающее явление",
+        "reason": "Owner wording approved 2026-09-13."
+      },
+      "89646": {
+        "lemma_1": "dhammapada 4",
+        "meaning_1": "aspect of the teaching",
+        "source_meaning": "",
+        "replacement": "аспект учения",
+        "reason": "Translate this exact selected DPD sense, checked against its pinned example; do not copy another same-lemma sense."
+      },
+      "89648": {
+        "lemma_1": "gocara 2",
+        "meaning_1": "hunting ground",
+        "source_meaning": "",
+        "replacement": "место охоты; охотничьи угодья",
+        "reason": "Translate this exact selected DPD sense, checked against its pinned example; do not copy another same-lemma sense."
+      },
+      "89654": {
+        "lemma_1": "cakka 4",
+        "meaning_1": "influence; determinant; (comm) achievement",
+        "source_meaning": "",
+        "replacement": "влияющий фактор; определяющее условие; (комм) достижение; букв.: колесо",
+        "reason": "Owner wording approved 2026-09-13."
+      },
+      "89662": {
+        "lemma_1": "vāta 6",
+        "meaning_1": "(of the stomach) gas; wind",
+        "source_meaning": "",
+        "replacement": "(в животе) газы",
+        "reason": "Translate this exact selected DPD sense, checked against its pinned example; do not copy another same-lemma sense."
+      },
+      "89700": {
+        "lemma_1": "samudaya 2",
+        "meaning_1": "arising; appearance (of)",
+        "source_meaning": "",
+        "replacement": "возникновение; появление",
+        "reason": "Translate this exact selected DPD sense, checked against its pinned example; do not copy another same-lemma sense."
+      },
+      "89702": {
+        "lemma_1": "atta 1.3",
+        "meaning_1": "body; form",
+        "source_meaning": "",
+        "replacement": "тело; форма",
+        "reason": "Translate this exact selected DPD sense, checked against its pinned example; do not copy another same-lemma sense."
+      },
+      "89703": {
+        "lemma_1": "puggala 2",
+        "meaning_1": "type of person; type of individual",
+        "source_meaning": "",
+        "replacement": "тип человека; тип индивида",
+        "reason": "Translate this exact selected DPD sense, checked against its pinned example; do not copy another same-lemma sense."
+      },
+      "89741": {
+        "lemma_1": "māna 1.2",
+        "meaning_1": "arrogance; superiority; disrespect (towards)",
+        "source_meaning": "",
+        "replacement": "высокомерие; чувство превосходства; неуважение (к)",
+        "reason": "Translate this exact selected DPD sense, checked against its pinned example; do not copy another same-lemma sense."
+      },
+      "89754": {
+        "lemma_1": "cunda 4",
+        "meaning_1": "smith; metalworker",
+        "source_meaning": "",
+        "replacement": "кузнец; мастер по обработке металла",
+        "reason": "Translate this exact selected DPD sense, checked against its pinned example; do not copy another same-lemma sense."
+      },
+      "17156": {
+        "lemma_1": "ussahati 1.1",
+        "meaning_1": "makes an (initial) effort; strives; actively endeavours (in)",
+        "source_meaning": "пытается; старается; прилагает усилие",
+        "replacement": "предпринимает первоначальное усилие; старается; прилагает усилие",
+        "reason": "The new initial qualifier is explained explicitly in the DPD note contrasting initial ussahati with sustained padahati."
+      },
+      "38443": {
+        "lemma_1": "nivāseti 1",
+        "meaning_1": "(of an inner garment) wears; puts on; dresses oneself",
+        "source_meaning": "носит; одевает; одевается",
+        "replacement": "(о нижней одежде) носит; надевает; одевается",
+        "reason": "Preserve the newly specified garment scope and correct одевает to надевает for putting on an item of clothing."
+      },
+      "42110": {
+        "lemma_1": "padahati 1",
+        "meaning_1": "exerts oneself; strives; applies oneself; perseveres (with)",
+        "source_meaning": "напрягается; старается; прилагает усилие",
+        "replacement": "напрягается; старается; прилагает усилие; проявляет настойчивость",
+        "reason": "Add the sustained/persevering aspect now explicit in English; existing effort glosses remain valid."
+      },
+      "44669": {
+        "lemma_1": "pasādeti 4",
+        "meaning_1": "makes (the mind) have faith (in); lets (the mind) trust (in)",
+        "source_meaning": "внушает (уму) веру (в); позволяет (уму) доверять (в); досл. заставляет (ум) наклониться вперёд",
+        "replacement": "внушает (уму) веру (в); позволяет (уму) доверять; досл. заставляет (ум) наклониться вперёд",
+        "reason": "English let/lets is harmless. Remove the incorrect Russian government доверять в; preserve the rest of the source wording."
+      },
+      "59346": {
+        "lemma_1": "samanupassati 2",
+        "meaning_1": "regards; considers; recognizes; sees (as)",
+        "source_meaning": "рассматривает; считает; пологает; видит как",
+        "replacement": "рассматривает; считает; полагает; видит как",
+        "reason": "English recognises/recognizes is harmless. Independently fix the Russian spelling error пологает → полагает."
+      },
+      "60380": {
+        "lemma_1": "sampasīdati",
+        "meaning_1": "is sure (about); is certain (about); is settled (regarding); is confident (about)",
+        "source_meaning": "уверен (в); убеждён (об); решителен (в)",
+        "replacement": "уверен (в); убеждён (в); не сомневается (в)",
+        "reason": "Inherited Russian issue, not a new meaning_1 change: убеждён об is unidiomatic and решителен describes resolve, whereas the MN91 example concerns certainty about observed marks."
+      },
+      "67792": {
+        "lemma_1": "viññāyati",
+        "meaning_1": "is known; is understood",
+        "source_meaning": "известен",
+        "replacement": "известен; понятен",
+        "reason": "Retain is known and add the newly explicit is understood gloss, illustrated by understanding the meaning of a phrase."
+      },
+      "81217": {
+        "lemma_1": "adhigacchati 3",
+        "meaning_1": "attains; reaches; gets to",
+        "source_meaning": "",
+        "replacement": "достигает; доходит (до)",
+        "reason": "Translate this exact selected DPD sense, checked against its pinned example; do not copy another same-lemma sense."
+      },
+      "89643": {
+        "lemma_1": "acchati 4",
+        "meaning_1": "sits; is seated",
+        "source_meaning": "сидит; остается; ждет",
+        "replacement": "сидит",
+        "reason": "Remove remains/waits carried over from the older broader sense. Сидит covers both current English glosses without padding."
+      },
+      "89649": {
+        "lemma_1": "pakkamati 2",
+        "meaning_1": "leaves (for); goes; sets out (to)",
+        "source_meaning": "",
+        "replacement": "отправляется (в); идёт; пускается в путь",
+        "reason": "Translate this exact selected DPD sense, checked against its pinned example; do not copy another same-lemma sense."
+      },
+      "89690": {
+        "lemma_1": "pattheti 2",
+        "meaning_1": "plots against; wishes to kill",
+        "source_meaning": "нападает; строит козни против; желает причинить вред; досл. активно желает",
+        "replacement": "строит козни против; желает убить; досл. активно желает",
+        "reason": "Remove нападать and generic wishing to harm; retain plotting and explicitly express the narrowed killing sense. The pinned commentary says ghātetuṃ icchati."
+      },
+      "89706": {
+        "lemma_1": "āyācati 2",
+        "meaning_1": "aspires; hopes to be; makes a wish",
+        "source_meaning": "",
+        "replacement": "стремится; надеется стать; выражает желание",
+        "reason": "Translate this exact selected DPD sense, checked against its pinned example; do not copy another same-lemma sense."
+      },
+      "89707": {
+        "lemma_1": "sajjati 1.4",
+        "meaning_1": "sticks; gets stuck (on)",
+        "source_meaning": "",
+        "replacement": "прилипает; застревает (на)",
+        "reason": "Translate this exact selected DPD sense, checked against its pinned example; do not copy another same-lemma sense."
+      },
+      "89708": {
+        "lemma_1": "gaṇhāti 8",
+        "meaning_1": "sticks fast; gets stuck",
+        "source_meaning": "",
+        "replacement": "крепко прилипает; застревает",
+        "reason": "Translate this exact selected DPD sense, checked against its pinned example; do not copy another same-lemma sense."
+      },
+      "89713": {
+        "lemma_1": "voharati 2",
+        "meaning_1": "engages; deals (with); handles",
+        "source_meaning": "",
+        "replacement": "взаимодействует; имеет дело (с); обращается (с)",
+        "reason": "Translate this exact selected DPD sense, checked against its pinned example; do not copy another same-lemma sense."
+      },
+      "89850": {
+        "lemma_1": "visodheti 2",
+        "meaning_1": "cleans up; tidies; removes",
+        "source_meaning": "",
+        "replacement": "расчищает; приводит в порядок; убирает",
+        "reason": "Translate this exact selected DPD sense, checked against its pinned example; do not copy another same-lemma sense."
+      }
+    },
+    "es": {
+      "89654": {
+        "lemma_1": "cakka 4",
+        "meaning_1": "influence; determinant; (comm) achievement",
+        "source_meaning": "influencia; factor determinante; (com.) logro",
+        "replacement": "influencia; factor determinante; (com.) logro; lit. rueda",
+        "reason": "Owner approved Spanish follow-up terminology and literal gloss on 2026-09-13."
+      },
+      "43579": {
+        "lemma_1": "parinibbāna 1",
+        "meaning_1": "(of mental defilement) complete quenching; total extinguishing; complete cooling",
+        "source_meaning": "(de impureza mental) extinción completa; apagamiento total; enfriamiento completo",
+        "replacement": "(de las impurezas mentales) desatadura completa; extinción completa; apagamiento total; enfriamiento completo",
+        "reason": "Owner approved Spanish follow-up terminology and literal gloss on 2026-09-13."
       }
     }
   }

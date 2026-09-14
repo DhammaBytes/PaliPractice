@@ -14,7 +14,7 @@
         <ApplicationId>org.dhammabytes.palipractice</ApplicationId>
         <!-- Versions -->
         <ApplicationDisplayVersion>1.2</ApplicationDisplayVersion>
-        <ApplicationVersion>1201</ApplicationVersion>
+        <ApplicationVersion>1202</ApplicationVersion>
         <!-- Package Publisher -->
         <ApplicationPublisher>O=DhammaBytes</ApplicationPublisher>
         <!-- Package Description -->
@@ -55,6 +55,7 @@
              Uno ICU's macOS 15 stamp is tracked in unoplatform/uno#24496.
              Apple Silicon's architecture minimum is macOS 11. -->
         <UnoMacOSMinimumSystemVersion>10.15</UnoMacOSMinimumSystemVersion>
+        <UnoMacOSCustomInfoPlist>Platforms/macOS/Info.plist</UnoMacOSCustomInfoPlist>
     </PropertyGroup>
 
     <PropertyGroup Condition="$(TargetFramework.Contains('-android'))">

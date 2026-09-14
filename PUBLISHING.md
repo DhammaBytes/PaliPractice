@@ -12,6 +12,9 @@ and Linux desktop builds can be cross-published from macOS; a Windows host is
 not needed to create the portable Windows ZIP. Runtime testing still requires
 the target OS.
 
+Build 1202 refreshes Android, macOS, and Windows for cold-start UI language
+selection. The existing iOS and Linux build-1201 packages remain in distribution.
+
 | Artifact | Delivery state required |
 | --- | --- |
 | `PaliPractice-android.apk` | Signed with the chosen sideload distribution key |
@@ -55,7 +58,7 @@ Create a new staging directory; do not reuse or delete a previous release:
 ```sh
 set -euo pipefail
 release_version=1.2
-release_build=1201
+release_build=1202
 release_dir="$PWD/release/v$release_version/build-$release_build"
 mkdir -p "$PWD/release/v$release_version"
 mkdir "$release_dir"

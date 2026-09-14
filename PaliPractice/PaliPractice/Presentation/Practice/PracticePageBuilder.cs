@@ -474,9 +474,9 @@ public static class PracticePageBuilder
         var textBlock = PaliText()
             .FontSize(fonts.Answer)
             .HorizontalAlignment(HorizontalAlignment.Center)
-            .TextAlignment(TextAlignment.Center);
-        textBlock.Inlines.Add(stemRun);
-        textBlock.Inlines.Add(endingRun);
+            .TextAlignment(TextAlignment.Center)
+            // Markup establishes the resource parent so runs follow the app theme.
+            .Inlines(stemRun, endingRun);
 
         return textBlock;
     }

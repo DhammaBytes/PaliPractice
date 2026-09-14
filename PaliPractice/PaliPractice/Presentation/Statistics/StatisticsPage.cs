@@ -30,7 +30,6 @@ public sealed partial class StatisticsPage : Page
 
         this.DataContext<StatisticsViewModel>((page, vm) => page
             .NavigationCacheMode(NavigationCacheMode.Disabled)
-            .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
             .Content(PageFadeIn.Wrap(page,
                 new Grid()
                     .SafeArea(SafeArea.InsetMask.VisibleBounds)

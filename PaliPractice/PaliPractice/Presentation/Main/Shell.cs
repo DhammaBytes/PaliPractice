@@ -1,9 +1,11 @@
-﻿namespace PaliPractice.Presentation.Main;
+namespace PaliPractice.Presentation.Main;
 
 public sealed partial class Shell : UserControl, IContentControlProvider
 {
     public Shell()
     {
+        // Keep the navigation background on the persistent Shell. Detached Pages
+        // can resolve the device theme before inheriting the app theme on attachment.
         this.Content(
             new Border()
                 .Child(

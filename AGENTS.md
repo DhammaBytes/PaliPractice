@@ -111,6 +111,9 @@ When modifying code:
   - `PaliText()` - For Pali words and inflected forms (uses LibertinusSans font)
 - Add `using static PaliPractice.Presentation.Common.TextHelpers;` to use these helpers directly
 
+**Page Backgrounds:**
+- Shell owns the shared `BackgroundBrush` for navigation. Keep route Pages transparent: a detached Page can resolve the device theme before inheriting the app theme, causing an opposite-color flash when attached. Component backgrounds (cards, rows, sticky headers) still use their own theme resources.
+
 **UI Shapes Guidelines:**
 - For rounded backgrounds and buttons, use squircle helpers from `Presentation/Common/Squircle/`:
   - `SquircleBorder` - For card backgrounds (use `.Fill()` instead of `.Background()`)
@@ -134,7 +137,6 @@ public sealed partial class MainPage : Page
     public MainPage()
     {
         this.DataContext(new MainViewModel(), (page, vm) => page
-            .Background(ThemeResource.Get<Brush>("ApplicationPageBackgroundThemeBrush"))
             .Content(
                 new StackPanel()
                     .VerticalAlignment(VerticalAlignment.Center)

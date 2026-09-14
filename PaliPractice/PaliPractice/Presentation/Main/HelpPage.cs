@@ -20,7 +20,6 @@ public sealed partial class HelpPage : Page
     {
         this.DataContext<HelpViewModel>((page, _) => page
             .NavigationCacheMode<HelpPage>(NavigationCacheMode.Required)
-            .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
             .Content(new Grid()
                 .SafeArea(SafeArea.InsetMask.VisibleBounds)
                 .RowDefinitions("Auto,*")

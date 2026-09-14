@@ -15,7 +15,6 @@ public sealed partial class SettingsPage : Page
     {
         this.DataContext<SettingsViewModel>((page, vm) => page
             .NavigationCacheMode<SettingsPage>(NavigationCacheMode.Required)
-            .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
             .Content(PageFadeIn.Wrap(page,
                 new Grid()
                     .SafeArea(SafeArea.InsetMask.VisibleBounds)

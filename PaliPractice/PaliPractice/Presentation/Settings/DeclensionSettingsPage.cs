@@ -24,7 +24,6 @@ public sealed partial class DeclensionSettingsPage : Page
 
         DeclensionSettingsPageMarkup.DataContext<DeclensionSettingsViewModel>(this, (page, vm) => page
             .NavigationCacheMode<DeclensionSettingsPage>(NavigationCacheMode.Required)
-            .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
             .Content(PageFadeIn.Wrap(page, new Grid()
                 .SafeArea(SafeArea.InsetMask.VisibleBounds)
                 .RowDefinitions("Auto,*")

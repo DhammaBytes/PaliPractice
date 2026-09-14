@@ -22,7 +22,6 @@ public sealed partial class AboutPage : Page
     {
         this.DataContext<AboutViewModel>((page, vm) => page
             .NavigationCacheMode(NavigationCacheMode.Required)
-            .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
             .Content(new Grid()
                 .SafeArea(SafeArea.InsetMask.VisibleBounds)
                 .RowDefinitions("Auto,*")

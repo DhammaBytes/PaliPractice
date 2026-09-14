@@ -32,7 +32,6 @@ public sealed partial class HistoryPage : Page
 
         this.DataContext<HistoryViewModel>((page, vm) => page
             .NavigationCacheMode(NavigationCacheMode.Disabled) // Don't cache - different data each time
-            .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
             .Content(PageFadeIn.Wrap(page,
                 new Grid()
                     .SafeArea(SafeArea.InsetMask.Top) // Only top safe area - content extends to physical bottom

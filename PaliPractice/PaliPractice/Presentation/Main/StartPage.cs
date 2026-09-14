@@ -34,7 +34,6 @@ public sealed partial class StartPage : Page
 
         this.DataContext<StartViewModel>((page, vm) => page
             .NavigationCacheMode(NavigationCacheMode.Required)
-            .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
             .Content(PageFadeIn.Wrap(page,
                 new Grid()
                     .AddChildren(

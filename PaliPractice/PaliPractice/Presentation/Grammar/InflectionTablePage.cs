@@ -38,7 +38,6 @@ public sealed partial class InflectionTablePage : Page
 
         this.DataContext<InflectionTableViewModel>((page, vm) => page
             .NavigationCacheMode<InflectionTablePage>(NavigationCacheMode.Disabled)
-            .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
             .Content(PageFadeIn.Wrap(page,
                 new Grid()
                     .SafeArea(SafeArea.InsetMask.VisibleBounds)

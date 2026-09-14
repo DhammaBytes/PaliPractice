@@ -14,7 +14,7 @@
         <ApplicationId>org.dhammabytes.palipractice</ApplicationId>
         <!-- Versions -->
         <ApplicationDisplayVersion>1.2</ApplicationDisplayVersion>
-        <ApplicationVersion>1200</ApplicationVersion>
+        <ApplicationVersion>1201</ApplicationVersion>
         <!-- Package Publisher -->
         <ApplicationPublisher>O=DhammaBytes</ApplicationPublisher>
         <!-- Package Description -->

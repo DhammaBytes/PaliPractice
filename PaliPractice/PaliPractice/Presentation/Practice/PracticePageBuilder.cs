@@ -164,6 +164,29 @@ public static class PracticePageBuilder
         elements.CardBorder = cardBorder;
         elements.CardStackPanel = cardStackPanel;
 
+        PracticeViewModelBase? badgeViewModel = null;
+        void RefreshBadgeLabels()
+        {
+            if (badgeViewModel is null || cardBorder.ActualWidth <= 0) return;
+            var currentHeightClass = LayoutConstants.GetCurrentHeightClass();
+            var availableWidth = cardBorder.ActualWidth -
+                (2 * LayoutConstants.Gaps.CardHorizontalPadding(currentHeightClass));
+            badgeViewModel.AbbreviatedBadgeMask = BadgeWidthMeasurer.SelectAbbreviatedMask(
+                availableWidth, badgeViewModel.GetBadgeLabelOptions(), currentHeightClass);
+        }
+
+        void OnBadgeOptionsChanged(object? _, EventArgs __) => RefreshBadgeLabels();
+
+        cardBorder.RegisterPropertyChangedCallback(FrameworkElement.DataContextProperty, (_, _) =>
+        {
+            if (badgeViewModel is not null)
+                badgeViewModel.BadgeOptionsChanged -= OnBadgeOptionsChanged;
+            badgeViewModel = cardBorder.DataContext as PracticeViewModelBase;
+            if (badgeViewModel is not null)
+                badgeViewModel.BadgeOptionsChanged += OnBadgeOptionsChanged;
+            RefreshBadgeLabels();
+        });
+
         // Set up dynamic widths based on card size
         cardBorder.SizeChanged += (_, e) =>
         {
@@ -188,16 +211,7 @@ public static class PracticePageBuilder
                 carousel.UpdateAvailableWidth(textWidth, currentFonts.Translation, translationText.FontFamily);
             }
 
-            // Check if badges need abbreviation based on available width
-            var cardPadSides = LayoutConstants.Gaps.CardHorizontalPadding(currentHeightClass);
-            var availableBadgeWidth = e.NewSize.Width - (2 * cardPadSides);
-
-            if (cardBorder.DataContext is PracticeViewModelBase vm)
-            {
-                var hasVoice = vm is ConjugationPracticeViewModel { IsReflexive: true };
-                vm.UseAbbreviatedLabels = BadgeWidthMeasurer.ShouldAbbreviate(
-                    availableBadgeWidth, vm.PracticeTypePublic, hasVoice, currentHeightClass);
-            }
+            RefreshBadgeLabels();
         };
 
         // Compute content width from window (clamped to max)
@@ -479,7 +493,7 @@ public static class PracticePageBuilder
         HeightClass heightClass,
         Expression<Func<TVM, string?>> iconPath,
         Expression<Func<TVM, string>> labelPath,
-        Expression<Func<TVM, Color>> colorPath)
+        string fillBrushKey)
     {
         var fonts = LayoutConstants.PracticeFontSizes.Get(heightClass);
 
@@ -487,10 +501,10 @@ public static class PracticePageBuilder
         var icon = new BufferedBitmapIcon
         {
             IconHeight = fonts.Badge,
-            IconForeground = Application.Current.Resources["OnSurfaceBrush"] as Brush,
             Width = fonts.Badge,  // Fixed width (all icons are square)
             VerticalAlignment = VerticalAlignment.Center
         };
+        icon.IconForeground(ThemeResource.Get<Brush>("OnSurfaceBrush"));
         icon.SetBinding(BufferedBitmapIcon.SourceProperty, Bind.Path(iconPath));
 
         var text = RegularText()
@@ -509,7 +523,7 @@ public static class PracticePageBuilder
 
         var badge = new SquircleBorder()
             .RadiusMode(SquircleRadiusMode.Pill)
-            .FillColor<TVM>(colorPath)
+            .Fill(ThemeResource.Get<Brush>(fillBrushKey))
             .Child(badgeContentPanel);
 
         return (icon, text, badge, badgeContentPanel);

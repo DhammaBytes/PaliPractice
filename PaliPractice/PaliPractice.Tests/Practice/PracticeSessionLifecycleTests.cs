@@ -173,7 +173,7 @@ public class PracticeSessionLifecycleTests
     sealed class SessionViewModel(IPracticeProvider provider, FakeDatabaseService db)
         : PracticeViewModelBase(provider, db.UserData, new FlashCardViewModel(), null!, new NoStoreReview(), NullLogger.Instance)
     {
-        public override PracticeType PracticeTypePublic => PracticeType.Declension;
+        public override IReadOnlyList<PaliPractice.Presentation.Practice.Common.BadgeLabelOption> GetBadgeLabelOptions() => [];
         protected override PracticeType CurrentPracticeType => PracticeType.Declension;
         public override System.Windows.Input.ICommand GoToSettingsCommand => null!;
         protected override void PrepareCardAnswer(ILemma lemma, object parameters) { }

@@ -84,18 +84,6 @@ public static class BindExtensions
         return element;
     }
 
-    /// <summary>
-    /// Binds SquircleBorder.Fill to a Color property path, converting to SolidColorBrush
-    /// </summary>
-    public static SquircleBorder FillColor<TDC>(this SquircleBorder border, Expression<Func<TDC, Color>> path)
-    {
-        var binding = Bind.Path(path);
-        binding.Converter = ColorToBrushConverter.Instance;
-        border.SetBinding(SquircleBorder.FillProperty, binding);
-        return border;
-    }
-
-
     extension(FontIcon icon)
     {
         /// <summary>

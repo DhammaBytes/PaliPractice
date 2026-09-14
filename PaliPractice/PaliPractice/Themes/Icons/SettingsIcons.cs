@@ -12,6 +12,7 @@ public static class SettingsIcons
     public static string About => $"{BasePath}about.png";
     public static string Appearance => $"{BasePath}appearance.png";
     public static string Contact => $"{BasePath}contact.png";
+    public static string Language => $"{BasePath}language.png";
     public static string Noun => $"{BasePath}noun.png";
     public static string Rate => $"{BasePath}rate.png";
     public static string Verb => $"{BasePath}verb.png";

@@ -6,7 +6,6 @@ using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Presentation.Settings.ViewModels;
 using PaliPractice.Services.Feedback;
 using PaliPractice.Services.Grammar;
-using PaliPractice.Themes;
 using PaliPractice.Themes.Icons;
 
 namespace PaliPractice.Presentation.Practice.ViewModels;
@@ -24,21 +23,28 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
     Number _currentNumber;
 
     protected override PracticeType CurrentPracticeType => PracticeType.Declension;
-    public override PracticeType PracticeTypePublic => PracticeType.Declension;
+
+    public override IReadOnlyList<BadgeLabelOption> GetBadgeLabelOptions()
+    {
+        if (_currentDeclension is not { } d) return [];
+        return
+        [
+            new(GrammarText.GetCase(d.Case), GrammarText.GetCaseShort(d.Case)),
+            new(BadgeLabelMaps.GetFull(d.Gender), BadgeLabelMaps.GetAbbreviated(d.Gender)),
+            new(BadgeLabelMaps.GetFull(d.Number), BadgeLabelMaps.GetAbbreviated(d.Number))
+        ];
+    }
 
     // Badge display properties for Gender
     [ObservableProperty] string _genderLabel = string.Empty;
-    [ObservableProperty] Color _genderColor = Colors.Transparent;
     [ObservableProperty] string? _genderIconPath;
 
     // Badge display properties for Number
     [ObservableProperty] string _numberLabel = string.Empty;
-    [ObservableProperty] Color _numberColor = Colors.Transparent;
     [ObservableProperty] string? _numberIconPath;
 
     // Badge display properties for Case
     [ObservableProperty] string _caseLabel = string.Empty;
-    [ObservableProperty] Color _caseColor = Colors.Transparent;
     [ObservableProperty] string? _caseIconPath;
     [ObservableProperty] string _caseHint = string.Empty;
 
@@ -97,30 +103,27 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
     void UpdateBadges(Declension d)
     {
         // Gender badge (abbreviatable)
-        GenderLabel = UseAbbreviatedLabels
+        GenderLabel = IsBadgeAbbreviated(1)
             ? BadgeLabelMaps.GetAbbreviated(d.Gender)
             : BadgeLabelMaps.GetFull(d.Gender);
-        GenderColor = BadgePresentation.GetChipColor(d.Gender);
         GenderIconPath = BadgeIcons.GetIconPath(d.Gender);
 
         // Number badge (abbreviatable)
-        NumberLabel = UseAbbreviatedLabels
+        NumberLabel = IsBadgeAbbreviated(2)
             ? BadgeLabelMaps.GetAbbreviated(d.Number)
             : BadgeLabelMaps.GetFull(d.Number);
-        NumberColor = BadgePresentation.GetChipColor(d.Number);
         NumberIconPath = BadgeIcons.GetIconPath(d.Number);
 
         // Case badge
-        CaseLabel = UseAbbreviatedLabels
+        CaseLabel = IsBadgeAbbreviated(0)
             ? GrammarText.GetCaseShort(d.Case)
             : GrammarText.GetCase(d.Case);
-        CaseColor = BadgePresentation.GetChipColor(d.Case);
         CaseIconPath = BadgeIcons.GetIconPath(d.Case);
         CaseHint = GrammarText.GetCasePracticeHint(d.Case);
     }
 
     /// <summary>
-    /// Called when UseAbbreviatedLabels changes. Refreshes badge labels.
+    /// Refreshes badge labels when their selected forms change.
     /// </summary>
     protected override void OnAbbreviationModeChanged()
     {
@@ -143,15 +146,12 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
     void SetBadgesFallback(Noun noun)
     {
         GenderLabel = GrammarText.GetGender(noun.Gender);
-        GenderColor = BadgePresentation.GetChipColor(noun.Gender);
         GenderIconPath = BadgeIcons.GetIconPath(noun.Gender);
 
         NumberLabel = GrammarText.GetNumber(Number.Singular);
-        NumberColor = BadgePresentation.GetChipColor(Number.Singular);
         NumberIconPath = BadgeIcons.GetIconPath(Number.Singular);
 
         CaseLabel = GrammarText.GetCase(Case.Nominative);
-        CaseColor = BadgePresentation.GetChipColor(Case.Nominative);
         CaseIconPath = BadgeIcons.GetIconPath(Case.Nominative);
         CaseHint = GrammarText.GetCasePracticeHint(Case.Nominative);
     }
@@ -214,6 +214,7 @@ public partial class DeclensionPracticeViewModel : PracticeViewModelBase
             // Generate the declension
             _currentDeclension = _inflectionService.GenerateNounForms(noun, _currentCase, _currentNumber);
             UpdateBadges(_currentDeclension!);
+            NotifyBadgeOptionsChanged();
 
             // Set the answer
             FlashCard.SetAnswer(GetInflectedForm(), GetInflectedEnding());

@@ -225,6 +225,7 @@
       <UnoImage Include="Assets\Svg\Settings\about.svg" BaseSize="21,21" />
       <UnoImage Include="Assets\Svg\Settings\appearance.svg" BaseSize="21,21" />
       <UnoImage Include="Assets\Svg\Settings\contact.svg" BaseSize="21,21" />
+      <UnoImage Include="Assets\Svg\Settings\language.svg" BaseSize="21,21" />
       <UnoImage Include="Assets\Svg\Settings\noun.svg" BaseSize="21,21" />
       <UnoImage Include="Assets\Svg\Settings\rate.svg" BaseSize="21,21" />
       <UnoImage Include="Assets\Svg\Settings\verb.svg" BaseSize="21,21" />

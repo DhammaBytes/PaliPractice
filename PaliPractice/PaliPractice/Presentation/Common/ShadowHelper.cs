@@ -1,3 +1,6 @@
+// ShadowContainer lives in the Skia toolkit assembly, which has no bundled markup extensions.
+[assembly: Uno.Extensions.Markup.Generator.GenerateMarkupForAssembly(typeof(ShadowContainer))]
+
 namespace PaliPractice.Presentation.Common;
 
 /// <summary>
@@ -7,70 +10,10 @@ namespace PaliPractice.Presentation.Common;
 /// </summary>
 public static class ShadowHelper
 {
-    /// <summary>
-    /// Gets a ShadowCollection from the current theme's resources.
-    /// Uses the proper theme lookup to get the correct shadow for light/dark mode.
-    /// </summary>
-    static ShadowCollection? GetShadowResource(string resourceKey, FrameworkElement element)
-    {
-        // Use the element's resolved theme to get the correct resource
-        // This properly handles ThemeDictionaries with Light/Dark variants
-        if (element.Resources.TryGetValue(resourceKey, out var localResource) && localResource is ShadowCollection localCollection)
-            return localCollection;
-
-        // Fall back to application resources with theme awareness
-        if (Application.Current.Resources.ThemeDictionaries.TryGetValue(
-                element.ActualTheme == ElementTheme.Dark ? "Dark" : "Light",
-                out var themeDict) &&
-            themeDict is ResourceDictionary dict &&
-            dict.TryGetValue(resourceKey, out var resource) &&
-            resource is ShadowCollection collection)
-        {
-            return collection;
-        }
-
-        // Final fallback: direct lookup (for non-themed resources)
-        if (Application.Current.Resources.TryGetValue(resourceKey, out var fallback) && fallback is ShadowCollection fallbackCollection)
-            return fallbackCollection;
-
-        return null;
-    }
-
-    /// <summary>
-    /// Creates a theme-aware ShadowContainer that updates shadows when the theme changes.
-    /// </summary>
     static ShadowContainer CreateThemeAwareShadowContainer(UIElement content, string shadowResourceKey)
-    {
-        var container = new ShadowContainer { Content = content };
-
-        // Apply initial shadow once loaded (so we can access ActualTheme)
-        container.Loaded += OnLoaded;
-
-        // Update shadow when theme changes
-        container.ActualThemeChanged += OnThemeChanged;
-
-        return container;
-
-        void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            if (sender is ShadowContainer sc)
-            {
-                var shadow = GetShadowResource(shadowResourceKey, sc);
-                if (shadow != null)
-                    sc.Shadows = shadow;
-            }
-        }
-
-        void OnThemeChanged(FrameworkElement sender, object args)
-        {
-            if (sender is ShadowContainer sc)
-            {
-                var shadow = GetShadowResource(shadowResourceKey, sc);
-                if (shadow != null)
-                    sc.Shadows = shadow;
-            }
-        }
-    }
+        => new ShadowContainer()
+            .Shadows(ThemeResource.Get<ShadowCollection>(shadowResourceKey))
+            .Content(content);
 
     /// <summary>
     /// Wraps content in a ShadowContainer with a pill button shadow (app bar buttons: Back, History, All Forms).

@@ -3,6 +3,7 @@ using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Practice.Common;
 using PaliPractice.Presentation.Practice.ViewModels;
 using PaliPractice.Localization;
+using PaliPractice.Themes;
 using static PaliPractice.Presentation.Common.Text.TextHelpers;
 
 namespace PaliPractice.Presentation.Practice;
@@ -131,11 +132,11 @@ public sealed partial class DeclensionPracticePage : Page
 
         var badges = PracticePageBuilder.CreateBadgeSet(heightClass,
             PracticePageBuilder.BuildBadge<DeclensionPracticeViewModel>(heightClass,
-                vm => vm.CaseIconPath, vm => vm.CaseLabel, vm => vm.CaseColor),
+                vm => vm.CaseIconPath, vm => vm.CaseLabel, BadgePresentation.CaseBrush),
             PracticePageBuilder.BuildBadge<DeclensionPracticeViewModel>(heightClass,
-                vm => vm.GenderIconPath, vm => vm.GenderLabel, vm => vm.GenderColor),
+                vm => vm.GenderIconPath, vm => vm.GenderLabel, BadgePresentation.GenderBrush),
             PracticePageBuilder.BuildBadge<DeclensionPracticeViewModel>(heightClass,
-                vm => vm.NumberIconPath, vm => vm.NumberLabel, vm => vm.NumberColor)
+                vm => vm.NumberIconPath, vm => vm.NumberLabel, BadgePresentation.NumberBrush)
         );
 
         var fonts = LayoutConstants.PracticeFontSizes.Get(heightClass);

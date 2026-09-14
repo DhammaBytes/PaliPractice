@@ -1,5 +1,6 @@
 using PaliPractice.Models.Words;
 using PaliPractice.Localization;
+using PaliPractice.Presentation.Practice.Common;
 using PaliPractice.Presentation.Grammar.ViewModels;
 using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Services.Database.Repositories;
@@ -26,20 +27,26 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
     [ObservableProperty] bool _canRateCard;
     [ObservableProperty] string _alternativeForms = string.Empty;
-    [ObservableProperty] bool _useAbbreviatedLabels;
+    [ObservableProperty] int _abbreviatedBadgeMask;
 
     /// <summary>
-    /// Returns the practice type for this ViewModel. Used for badge width calculations.
+    /// Full and compact labels for the current card, in display order.
     /// </summary>
-    public abstract PracticeType PracticeTypePublic { get; }
+    public abstract IReadOnlyList<BadgeLabelOption> GetBadgeLabelOptions();
 
     /// <summary>
-    /// Called when UseAbbreviatedLabels changes. Override in derived classes to refresh badge labels.
+    /// Raised after a new card's grammatical badges are prepared.
     /// </summary>
-    partial void OnUseAbbreviatedLabelsChanged(bool value) => OnAbbreviationModeChanged();
+    public event EventHandler? BadgeOptionsChanged;
+
+    protected void NotifyBadgeOptionsChanged() => BadgeOptionsChanged?.Invoke(this, EventArgs.Empty);
+
+    protected bool IsBadgeAbbreviated(int index) => (AbbreviatedBadgeMask & (1 << index)) != 0;
+
+    partial void OnAbbreviatedBadgeMaskChanged(int value) => OnAbbreviationModeChanged();
 
     /// <summary>
-    /// Override in derived classes to refresh badge labels when abbreviation mode changes.
+    /// Override in derived classes to refresh badge labels when their selected forms change.
     /// </summary>
     protected virtual void OnAbbreviationModeChanged() { }
 
@@ -262,6 +269,7 @@ public abstract partial class PracticeViewModelBase : ObservableObject
 
         var parameters = _provider.GetCurrentParameters();
         PrepareCardAnswer(lemma, parameters);
+        NotifyBadgeOptionsChanged();
         FlashCard.SetAnswer(GetInflectedForm(), GetInflectedEnding());
         AlternativeForms = GetAlternativeForms();
 

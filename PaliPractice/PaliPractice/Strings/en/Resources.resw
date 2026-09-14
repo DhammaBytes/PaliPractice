@@ -347,10 +347,10 @@ Verbs: {2}</value></data>
   <data name="Grammar.Gender.Neuter.Table" xml:space="preserve"><value>neut</value></data>
 
   <data name="Grammar.Number.Singular.Full" xml:space="preserve"><value>Singular</value></data>
-  <data name="Grammar.Number.Singular.Short" xml:space="preserve"><value>Sg</value></data>
+  <data name="Grammar.Number.Singular.Short" xml:space="preserve"><value>Sing</value></data>
   <data name="Grammar.Number.Singular.Table" xml:space="preserve"><value>sg</value></data>
   <data name="Grammar.Number.Plural.Full" xml:space="preserve"><value>Plural</value></data>
-  <data name="Grammar.Number.Plural.Short" xml:space="preserve"><value>Pl</value></data>
+  <data name="Grammar.Number.Plural.Short" xml:space="preserve"><value>Plur</value></data>
   <data name="Grammar.Number.Plural.Table" xml:space="preserve"><value>pl</value></data>
 
   <data name="Grammar.Person.First.Full" xml:space="preserve"><value>1st</value></data>

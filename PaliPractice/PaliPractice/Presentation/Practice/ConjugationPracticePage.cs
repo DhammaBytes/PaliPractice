@@ -3,6 +3,7 @@ using PaliPractice.Presentation.Common;
 using PaliPractice.Presentation.Practice.Common;
 using PaliPractice.Presentation.Practice.ViewModels;
 using PaliPractice.Localization;
+using PaliPractice.Themes;
 
 namespace PaliPractice.Presentation.Practice;
 
@@ -130,17 +131,17 @@ public sealed partial class ConjugationPracticePage : Page
 
         // Build the 4th (optional) voice badge - only visible for reflexive
         var voiceBadge = PracticePageBuilder.BuildBadge<ConjugationPracticeViewModel>(heightClass,
-            vm => vm.VoiceIconPath, vm => vm.VoiceLabel, vm => vm.VoiceColor);
+            vm => vm.VoiceIconPath, vm => vm.VoiceLabel, BadgePresentation.VoiceBrush);
         voiceBadge.badge.BoolToVisibility<SquircleBorder, ConjugationPracticeViewModel>(
             vm => vm.IsReflexive);
 
         var badges = PracticePageBuilder.CreateBadgeSet(heightClass,
             PracticePageBuilder.BuildBadge<ConjugationPracticeViewModel>(heightClass,
-                vm => vm.TenseIconPath, vm => vm.TenseLabel, vm => vm.TenseColor),
+                vm => vm.TenseIconPath, vm => vm.TenseLabel, BadgePresentation.TenseBrush),
             PracticePageBuilder.BuildBadge<ConjugationPracticeViewModel>(heightClass,
-                vm => vm.PersonIconPath, vm => vm.PersonLabel, vm => vm.PersonColor),
+                vm => vm.PersonIconPath, vm => vm.PersonLabel, BadgePresentation.PersonBrush),
             PracticePageBuilder.BuildBadge<ConjugationPracticeViewModel>(heightClass,
-                vm => vm.NumberIconPath, vm => vm.NumberLabel, vm => vm.NumberColor),
+                vm => vm.NumberIconPath, vm => vm.NumberLabel, BadgePresentation.NumberBrush),
             voiceBadge
         );
 

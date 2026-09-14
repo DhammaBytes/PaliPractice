@@ -52,3 +52,4 @@ config.ini
 .claude/plans/*
 __pycache__/
 PaliPractice/.junie
+quality/evidence

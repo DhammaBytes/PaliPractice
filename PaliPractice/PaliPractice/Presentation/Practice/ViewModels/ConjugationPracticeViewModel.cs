@@ -6,7 +6,6 @@ using PaliPractice.Presentation.Practice.Providers;
 using PaliPractice.Presentation.Settings.ViewModels;
 using PaliPractice.Services.Feedback;
 using PaliPractice.Services.Grammar;
-using PaliPractice.Themes;
 using PaliPractice.Themes.Icons;
 
 namespace PaliPractice.Presentation.Practice.ViewModels;
@@ -25,26 +24,35 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
     Voice _currentVoice;
 
     protected override PracticeType CurrentPracticeType => PracticeType.Conjugation;
-    public override PracticeType PracticeTypePublic => PracticeType.Conjugation;
+
+    public override IReadOnlyList<BadgeLabelOption> GetBadgeLabelOptions()
+    {
+        if (_currentConjugation is not { } c) return [];
+        var labels = new List<BadgeLabelOption>
+        {
+            new(GrammarText.GetTense(c.Tense), GrammarText.GetTenseShort(c.Tense)),
+            new(GrammarText.GetPerson(c.Person), GrammarText.GetPersonShort(c.Person)),
+            new(BadgeLabelMaps.GetFull(c.Number), BadgeLabelMaps.GetAbbreviated(c.Number))
+        };
+        if (c.Voice == Voice.Reflexive)
+            labels.Add(new(BadgeLabelMaps.GetFull(c.Voice), BadgeLabelMaps.GetAbbreviated(c.Voice)));
+        return labels;
+    }
 
     // Badge display properties for Person
     [ObservableProperty] string _personLabel = string.Empty;
-    [ObservableProperty] Color _personColor = Colors.Transparent;
     [ObservableProperty] string? _personIconPath;
 
     // Badge display properties for Number
     [ObservableProperty] string _numberLabel = string.Empty;
-    [ObservableProperty] Color _numberColor = Colors.Transparent;
     [ObservableProperty] string? _numberIconPath;
 
     // Badge display properties for Tense
     [ObservableProperty] string _tenseLabel = string.Empty;
-    [ObservableProperty] Color _tenseColor = Colors.Transparent;
     [ObservableProperty] string? _tenseIconPath;
 
     // Badge display properties for Voice (only shown for reflexive)
     [ObservableProperty] string _voiceLabel = string.Empty;
-    [ObservableProperty] Color _voiceColor = Colors.Transparent;
     [ObservableProperty] string? _voiceIconPath;
     [ObservableProperty] bool _isReflexive;
 
@@ -105,37 +113,33 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
     void UpdateBadges(Conjugation c)
     {
         // Use the locale's compact labels when the row cannot fit full labels.
-        PersonLabel = UseAbbreviatedLabels
+        PersonLabel = IsBadgeAbbreviated(1)
             ? GrammarText.GetPersonShort(c.Person)
             : GrammarText.GetPerson(c.Person);
-        PersonColor = BadgePresentation.GetChipColor(c.Person);
         PersonIconPath = BadgeIcons.GetIconPath(c.Person);
 
         // Number badge (abbreviatable)
-        NumberLabel = UseAbbreviatedLabels
+        NumberLabel = IsBadgeAbbreviated(2)
             ? BadgeLabelMaps.GetAbbreviated(c.Number)
             : BadgeLabelMaps.GetFull(c.Number);
-        NumberColor = BadgePresentation.GetChipColor(c.Number);
         NumberIconPath = BadgeIcons.GetIconPath(c.Number);
 
         // Tense badge
-        TenseLabel = UseAbbreviatedLabels
+        TenseLabel = IsBadgeAbbreviated(0)
             ? GrammarText.GetTenseShort(c.Tense)
             : GrammarText.GetTense(c.Tense);
-        TenseColor = BadgePresentation.GetChipColor(c.Tense);
         TenseIconPath = BadgeIcons.GetIconPath(c.Tense);
 
         // Voice badge (abbreviatable, only visible for reflexive)
         IsReflexive = c.Voice == Voice.Reflexive;
-        VoiceLabel = UseAbbreviatedLabels
+        VoiceLabel = IsBadgeAbbreviated(3)
             ? BadgeLabelMaps.GetAbbreviated(Voice.Reflexive)
             : BadgeLabelMaps.GetFull(Voice.Reflexive);
-        VoiceColor = BadgePresentation.GetChipColor(Voice.Reflexive);
         VoiceIconPath = BadgeIcons.GetIconPath(Voice.Reflexive);
     }
 
     /// <summary>
-    /// Called when UseAbbreviatedLabels changes. Refreshes badge labels.
+    /// Refreshes badge labels when their selected forms change.
     /// </summary>
     protected override void OnAbbreviationModeChanged()
     {
@@ -158,15 +162,12 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
     void SetBadgesFallback()
     {
         PersonLabel = GrammarText.GetPerson(Person.Third);
-        PersonColor = BadgePresentation.GetChipColor(Person.Third);
         PersonIconPath = BadgeIcons.GetIconPath(Person.Third);
 
         NumberLabel = GrammarText.GetNumber(Number.Singular);
-        NumberColor = BadgePresentation.GetChipColor(Number.Singular);
         NumberIconPath = BadgeIcons.GetIconPath(Number.Singular);
 
         TenseLabel = GrammarText.GetTense(Tense.Present);
-        TenseColor = BadgePresentation.GetChipColor(Tense.Present);
         TenseIconPath = BadgeIcons.GetIconPath(Tense.Present);
 
         IsReflexive = false;
@@ -231,6 +232,7 @@ public partial class ConjugationPracticeViewModel : PracticeViewModelBase
             // Generate the conjugation
             _currentConjugation = _inflectionService.GenerateVerbForms(verb, _currentPerson, _currentNumber, _currentTense, reflexive: false);
             UpdateBadges(_currentConjugation!);
+            NotifyBadgeOptionsChanged();
 
             // Set the answer
             FlashCard.SetAnswer(GetInflectedForm(), GetInflectedEnding());

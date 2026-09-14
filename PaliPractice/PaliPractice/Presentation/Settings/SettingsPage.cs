@@ -44,7 +44,7 @@ public sealed partial class SettingsPage : Page
                                                     Bind.TwoWayPath<SettingsViewModel, int>(v => v.ThemeIndex))),
                                             SettingsRow.BuildDropdownWithBitmapIcon(
                                                 AppText.Get("Settings.Row.Language"),
-                                                SettingsIcons.Appearance,
+                                                SettingsIcons.Language,
                                                 SettingsViewModel.TranslationLanguageOptions,
                                                 cb => cb.SetBinding(
                                                     ComboBox.SelectedIndexProperty,

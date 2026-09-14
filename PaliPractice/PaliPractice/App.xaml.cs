@@ -10,7 +10,6 @@ using PaliPractice.Services.Feedback.Providers;
 using PaliPractice.Services.Grammar;
 using PaliPractice.Services.Practice;
 using PaliPractice.Services.UserData;
-using PaliPractice.Themes;
 using AboutPage = PaliPractice.Presentation.Main.AboutPage;
 using ConjugationPracticePage = PaliPractice.Presentation.Practice.ConjugationPracticePage;
 using ConjugationPracticeViewModel = PaliPractice.Presentation.Practice.ViewModels.ConjugationPracticeViewModel;
@@ -62,17 +61,6 @@ public partial class App : Application
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
-        // Load WinUI Resources
-        Resources.Build(r => r.Merged(
-            new XamlControlsResources()));
-
-        // Load Uno.UI.Toolkit Resources
-        Resources.Build(r => r.Merged(
-            new ToolkitResources()));
-
-        // Override control accent colors (must be after XamlControlsResources)
-        ControlStyling.ApplyAccentColorOverrides(Resources);
-
         var builder = this.CreateBuilder(args)
             // Add navigation support for toolkit controls such as TabBar and NavigationView
             .UseToolkitNavigation()
@@ -203,10 +191,6 @@ public partial class App : Application
     void ApplySavedTheme()
     {
         if (Host is null || MainWindow?.Content is not FrameworkElement root) return;
-
-        // Re-apply control styling when theme changes (brushes from ThemeDictionaries update,
-        // but control-specific resources need to be re-read)
-        root.ActualThemeChanged += (_, _) => ControlStyling.ApplyAccentColorOverrides(Resources);
 
         var db = Host.Services.GetRequiredService<IDatabaseService>();
         var savedTheme = db.UserData.GetSetting(SettingsKeys.AppearanceTheme, SettingsKeys.DefaultAppearanceTheme);

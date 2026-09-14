@@ -96,6 +96,36 @@
                 <utu:Shadow BlurRadius="6" OffsetY="3" Opacity="0.6" Color="#F0DED1"/>
             </utu:ShadowCollection>
 
+            <!-- Control overrides belong to each theme, not the application-wide dictionary. -->
+            <SolidColorBrush x:Key="ToggleSwitchFillOn" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPointerOver" Color="{StaticResource SystemAccentColorLight1}"/>
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPressed" Color="{StaticResource SystemAccentColorDark1}"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillChecked" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver" Color="{StaticResource SystemAccentColorLight1}"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPressed" Color="{StaticResource SystemAccentColorDark1}"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeChecked" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPointerOver" Color="{StaticResource SystemAccentColorLight1}"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPressed" Color="{StaticResource SystemAccentColorDark1}"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillChecked" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillCheckedPointerOver" Color="{StaticResource SystemAccentColorLight1}"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillCheckedPressed" Color="{StaticResource SystemAccentColorDark1}"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeChecked" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeCheckedPointerOver" Color="{StaticResource SystemAccentColorLight1}"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeCheckedPressed" Color="{StaticResource SystemAccentColorDark1}"/>
+            <SolidColorBrush x:Key="ComboBoxBackgroundFocused" Color="{StaticResource SystemAccentColor}" Opacity="0.08"/>
+            <SolidColorBrush x:Key="ComboBoxBorderBrushFocused" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="ComboBoxDropDownBackgroundPointerOver" Color="{StaticResource SystemAccentColor}" Opacity="0.12"/>
+            <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="SliderTrackValueFill" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="SliderTrackValueFillPointerOver" Color="{StaticResource SystemAccentColorLight1}"/>
+            <SolidColorBrush x:Key="SliderTrackValueFillPressed" Color="{StaticResource SystemAccentColorDark1}"/>
+            <SolidColorBrush x:Key="SliderThumbBackground" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="SliderThumbBackgroundPointerOver" Color="{StaticResource SystemAccentColorLight1}"/>
+            <SolidColorBrush x:Key="SliderThumbBackgroundPressed" Color="{StaticResource SystemAccentColorDark1}"/>
+            <SolidColorBrush x:Key="HyperlinkForeground" Color="{StaticResource SystemAccentColorDark1}"/>
+            <SolidColorBrush x:Key="HyperlinkForegroundPointerOver" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="HyperlinkForegroundPressed" Color="{StaticResource SystemAccentColorDark2}"/>
+
         </ResourceDictionary>
 
         <!-- Dark Theme -->
@@ -189,6 +219,36 @@
             <utu:ShadowCollection x:Key="ButtonShadow">
                 <utu:Shadow BlurRadius="6" OffsetY="3" Opacity="0.7" Color="#1A0E08"/>
             </utu:ShadowCollection>
+
+            <!-- Control overrides belong to each theme, not the application-wide dictionary. -->
+            <SolidColorBrush x:Key="ToggleSwitchFillOn" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPointerOver" Color="{StaticResource SystemAccentColorLight1}"/>
+            <SolidColorBrush x:Key="ToggleSwitchFillOnPressed" Color="{StaticResource SystemAccentColorDark1}"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillChecked" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver" Color="{StaticResource SystemAccentColorLight1}"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPressed" Color="{StaticResource SystemAccentColorDark1}"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeChecked" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPointerOver" Color="{StaticResource SystemAccentColorLight1}"/>
+            <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPressed" Color="{StaticResource SystemAccentColorDark1}"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillChecked" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillCheckedPointerOver" Color="{StaticResource SystemAccentColorLight1}"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseFillCheckedPressed" Color="{StaticResource SystemAccentColorDark1}"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeChecked" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeCheckedPointerOver" Color="{StaticResource SystemAccentColorLight1}"/>
+            <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeCheckedPressed" Color="{StaticResource SystemAccentColorDark1}"/>
+            <SolidColorBrush x:Key="ComboBoxBackgroundFocused" Color="{StaticResource SystemAccentColor}" Opacity="0.08"/>
+            <SolidColorBrush x:Key="ComboBoxBorderBrushFocused" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="ComboBoxDropDownBackgroundPointerOver" Color="{StaticResource SystemAccentColor}" Opacity="0.12"/>
+            <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="SliderTrackValueFill" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="SliderTrackValueFillPointerOver" Color="{StaticResource SystemAccentColorLight1}"/>
+            <SolidColorBrush x:Key="SliderTrackValueFillPressed" Color="{StaticResource SystemAccentColorDark1}"/>
+            <SolidColorBrush x:Key="SliderThumbBackground" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="SliderThumbBackgroundPointerOver" Color="{StaticResource SystemAccentColorLight1}"/>
+            <SolidColorBrush x:Key="SliderThumbBackgroundPressed" Color="{StaticResource SystemAccentColorDark1}"/>
+            <SolidColorBrush x:Key="HyperlinkForeground" Color="{StaticResource SystemAccentColor}"/>
+            <SolidColorBrush x:Key="HyperlinkForegroundPointerOver" Color="{StaticResource SystemAccentColorLight1}"/>
+            <SolidColorBrush x:Key="HyperlinkForegroundPressed" Color="{StaticResource SystemAccentColorDark1}"/>
 
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>

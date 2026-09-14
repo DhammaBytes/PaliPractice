@@ -43,7 +43,7 @@ public sealed partial class InflectionTablePage : Page
                 new Grid()
                     .SafeArea(SafeArea.InsetMask.VisibleBounds)
                     .RowDefinitions("Auto,*")
-                    .Children(
+                    .AddChildren(
                         // Row 0: Title bar with back button
                         AppTitleBar.BuildWithCenterElement<InflectionTableViewModel>(
                                 _titleTextBlock!, vm => vm.GoBackCommand)
@@ -57,7 +57,7 @@ public sealed partial class InflectionTablePage : Page
                                     .MaxWidth(800)
                                     .Padding(16)
                                     .Spacing(16)
-                                    .Children(
+                                    .AddChildren(
                                         // Header info (pattern + hint) - on background
                                         BuildHeaderInfo(),
 
@@ -157,7 +157,7 @@ public sealed partial class InflectionTablePage : Page
     {
         return new StackPanel()
             .Spacing(4)
-            .Children(
+            .AddChildren(
                 _headerTextBlock!,
                 _hintTextBlock!
             );

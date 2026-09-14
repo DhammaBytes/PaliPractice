@@ -37,7 +37,7 @@ public sealed partial class HistoryPage : Page
                 new Grid()
                     .SafeArea(SafeArea.InsetMask.Top) // Only top safe area - content extends to physical bottom
                     .RowDefinitions("Auto,*")
-                    .Children(
+                    .AddChildren(
                         // Row 0: Title bar
                         AppTitleBar.BuildWithCenterElement<HistoryViewModel>(_titleTextBlock, v => v.GoBackCommand),
 
@@ -130,7 +130,7 @@ public sealed partial class HistoryPage : Page
             .ColumnDefinitions("*,Auto,60")
             .Padding(16, 12)
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Children(
+            .AddChildren(
                 // Column 0: Form text (Pāli word)
                 PaliText()
                     .Text(record.FormText)

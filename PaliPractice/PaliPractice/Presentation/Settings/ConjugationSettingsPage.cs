@@ -32,7 +32,7 @@ public sealed partial class ConjugationSettingsPage : Page
             .Content(PageFadeIn.Wrap(page, new Grid()
                 .SafeArea(SafeArea.InsetMask.VisibleBounds)
                 .RowDefinitions("Auto,*")
-                .Children(
+                .AddChildren(
                     // Row 0: Title bar
                     AppTitleBar.Build<ConjugationSettingsViewModel>(AppText.Get("Settings.Conjugation.Title"), v => v.GoBackCommand),
 
@@ -44,7 +44,7 @@ public sealed partial class ConjugationSettingsPage : Page
                         .Content(
                             new StackPanel()
                                 .MaxWidth(LayoutConstants.ContentMaxWidth)
-                                .Children(
+                                .AddChildren(
                                     // General section
                                     SettingsSection.Build(AppText.Get("Settings.Section.General"),
                                         SettingsRow.BuildNavigation<ConjugationSettingsViewModel>(
@@ -104,7 +104,7 @@ public sealed partial class ConjugationSettingsPage : Page
         return new StackPanel()
             .Spacing(1)
             .Margin(0, 0, 0, 16)
-            .Children(
+            .AddChildren(
                 // Section header
                 TextHelpers.RegularText()
                     .Text(AppText.Get("Settings.Section.PracticeFilters"))
@@ -121,7 +121,7 @@ public sealed partial class ConjugationSettingsPage : Page
                         new StackPanel()
                             .Spacing(1)
                             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
-                            .Children(
+                            .AddChildren(
                                 BuildEndingsCheckboxRow(),
                                 BuildPersonCheckboxRow(),
                                 SettingsRow.BuildDropdown(
@@ -220,7 +220,7 @@ public sealed partial class ConjugationSettingsPage : Page
             .ColumnDefinitions("Auto,*")
             .Padding(16, 12)
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Children(
+            .AddChildren(
                 TextHelpers.RegularText()
                     .Text(AppText.Get("Settings.Row.Endings"))
                     .FontSize(16)
@@ -290,7 +290,7 @@ public sealed partial class ConjugationSettingsPage : Page
             .ColumnDefinitions("Auto,*")
             .Padding(16, 12)
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Children(
+            .AddChildren(
                 TextHelpers.RegularText()
                     .Text(AppText.Get("Settings.Row.Person"))
                     .FontSize(16)

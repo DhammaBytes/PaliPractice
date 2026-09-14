@@ -91,23 +91,23 @@ public static class AppTitleBar
         var centerLayer = new Grid()
             .HorizontalAlignment(HorizontalAlignment.Center)
             .VerticalAlignment(VerticalAlignment.Center)
-            .Children(centerElement);
+            .AddChildren(centerElement);
 
         // Buttons layer: left and right edges
         var buttonsLayer = new Grid()
             .ColumnDefinitions("Auto,*,Auto")
-            .Children(
+            .AddChildren(
                 NavigationButtonShadow(leftButton).Grid(column: 0)
             );
 
         if (rightButton is not null)
-            buttonsLayer.Children(NavigationButtonShadow(rightButton).Grid(column: 2));
+            buttonsLayer.AddChildren(NavigationButtonShadow(rightButton).Grid(column: 2));
 
         // Stack layers: center behind, buttons on top
         // Transparent background - bar blends with page background
         return new Grid()
             .Padding(16, 8)
-            .Children(centerLayer, buttonsLayer);
+            .AddChildren(centerLayer, buttonsLayer);
     }
 
     /// <summary>
@@ -133,7 +133,7 @@ public static class AppTitleBar
         var titleMargin = NavButtonMinWidth + 8;
         var titleLayer = new Grid()
             .Margin(titleMargin, 0, titleMargin, 0)
-            .Children(
+            .AddChildren(
                 new Viewbox()
                     .StretchDirection(StretchDirection.DownOnly) // Only shrink, never grow
                     .HorizontalAlignment(HorizontalAlignment.Center)
@@ -144,18 +144,18 @@ public static class AppTitleBar
         // Buttons layer: left and right edges
         var buttonsLayer = new Grid()
             .ColumnDefinitions("Auto,*,Auto")
-            .Children(
+            .AddChildren(
                 NavigationButtonShadow(leftButton).Grid(column: 0)
             );
 
         if (rightButton is not null)
-            buttonsLayer.Children(NavigationButtonShadow(rightButton).Grid(column: 2));
+            buttonsLayer.AddChildren(NavigationButtonShadow(rightButton).Grid(column: 2));
 
         // Stack layers: title behind, buttons on top
         // Transparent background - bar blends with page background
         return new Grid()
             .Padding(16, 8)
-            .Children(titleLayer, buttonsLayer);
+            .AddChildren(titleLayer, buttonsLayer);
     }
 
     // Shared width for Back/History buttons so they match
@@ -175,7 +175,7 @@ public static class AppTitleBar
             .Orientation(Orientation.Horizontal)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .Spacing(6)
-            .Children(
+            .AddChildren(
                 new BitmapIcon()
                     .UriSource(new Uri(NavigationIcons.ArrowBack))
                     .ShowAsMonochrome(true)
@@ -206,7 +206,7 @@ public static class AppTitleBar
             .Orientation(Orientation.Horizontal)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .Spacing(6)
-            .Children(
+            .AddChildren(
                 new BitmapIcon()
                     .UriSource(new Uri(NavigationIcons.History))
                     .ShowAsMonochrome(true)

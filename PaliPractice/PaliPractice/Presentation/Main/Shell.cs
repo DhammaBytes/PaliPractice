@@ -15,7 +15,7 @@ public sealed partial class Shell : UserControl, IContentControlProvider
                         .VerticalContentAlignment(VerticalAlignment.Stretch)
                         .LoadingContentTemplate<object>(_ => new Grid()
                             .RowDefinitions("2*,*")
-                            .Children(
+                            .AddChildren(
                                 new ProgressRing()
                                     .Grid(row: 1)
                                     .VerticalAlignment(VerticalAlignment.Center)

@@ -85,7 +85,7 @@ public static class FrozenHeaderTable
 
         // Body area: overlay cloned row headers on top of scrollable content
         var bodyArea = new Grid()
-            .Children(
+            .AddChildren(
                 // Layer 1 (back): Body with ghost row headers + content
                 bodyScrollViewer,
                 // Layer 2 (front): Cloned row headers (frozen horizontally)
@@ -98,7 +98,7 @@ public static class FrozenHeaderTable
         var table = new Grid()
             .RowDefinitions("Auto,*")
             .ColumnDefinitions($"{rowHeaderWidth},*")
-            .Children(
+            .AddChildren(
                 // [0,0] Corner cell
                 cornerCell.Grid(row: 0, column: 0),
 

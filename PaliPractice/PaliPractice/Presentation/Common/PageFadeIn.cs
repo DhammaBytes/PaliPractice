@@ -27,7 +27,7 @@ public static class PageFadeIn
     {
         var container = new Grid()
             .Opacity(0)
-            .Children(content);
+            .AddChildren(content);
 
         // Controller handles all event subscriptions and cleanup
         var controller = new FadeController(page, container);

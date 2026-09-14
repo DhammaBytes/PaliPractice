@@ -28,7 +28,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
             .Content(PageFadeIn.Wrap(page, new Grid()
                 .SafeArea(SafeArea.InsetMask.VisibleBounds)
                 .RowDefinitions("Auto,*")
-                .Children(
+                .AddChildren(
                     // Row 0: Title bar with dynamic title
                     BuildTitleBar(vm),
 
@@ -41,7 +41,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
                             new StackPanel()
                                 .MaxWidth(LayoutConstants.ContentMaxWidth)
                                 .Spacing(16)
-                                .Children(
+                                .AddChildren(
                                     // Practice range section with RadioButtons
                                     BuildRangeSection(vm),
 
@@ -76,7 +76,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
 
         return new StackPanel()
             .Spacing(4)
-            .Children(
+            .AddChildren(
                 RegularText()
                     .Text(AppText.Get("Settings.Range.SectionTitle"))
                     .FontSize(14)
@@ -103,7 +103,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
 
         return new StackPanel()
             .Spacing(2)
-            .Children(
+            .AddChildren(
                 RegularText()
                     .Text(AppText.Get("Settings.Range.AllWords.Title"))
                     .FontSize(16),
@@ -115,7 +115,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
     {
         return new StackPanel()
             .Spacing(2)
-            .Children(
+            .AddChildren(
                 RegularText()
                     .Text(title)
                     .FontSize(16),
@@ -161,7 +161,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
         section.Visibility(x => x.Binding(() => vm.IsCustomRange)
             .Convert(isCustom => isCustom ? Visibility.Visible : Visibility.Collapsed));
 
-        section.Children(
+        section.AddChildren(
             RegularText()
                 .Text(AppText.Get("Settings.Range.Custom.SectionTitle"))
                 .FontSize(14)
@@ -175,10 +175,10 @@ public sealed partial class LemmaRangeSettingsPage : Page
                 .Child(
                     new StackPanel()
                         .Spacing(16)
-                        .Children(
+                        .AddChildren(
                             new Grid()
                                 .ColumnDefinitions("*,Auto")
-                                .Children(
+                                .AddChildren(
                                     RegularText()
                                         .Text(AppText.Get("Settings.Range.Custom.From"))
                                         .FontSize(16)
@@ -188,7 +188,7 @@ public sealed partial class LemmaRangeSettingsPage : Page
                                 ),
                             new Grid()
                                 .ColumnDefinitions("*,Auto")
-                                .Children(
+                                .AddChildren(
                                     RegularText()
                                         .Text(AppText.Get("Settings.Range.Custom.To"))
                                         .FontSize(16)

@@ -156,7 +156,7 @@ public static class PracticePageBuilder
         var cardStackPanel = new StackPanel()
             .Padding(new Thickness(cardPadSides, cardPadTop, cardPadSides, cardPadBottom))
             .Spacing(LayoutConstants.Gaps.CardContentSpacing(heightClass))
-            .Children(cardChildren.ToArray());
+            .AddChildren(cardChildren.ToArray());
         var cardBorder = new SquircleBorder()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .Fill(ThemeResource.Get<Brush>("SurfaceBrush"))
@@ -237,7 +237,7 @@ public static class PracticePageBuilder
         // Container that fills available space with ScrollViewer and fade overlay
         var exampleArea = new Grid()
             .VerticalAlignment(VerticalAlignment.Stretch)
-            .Children(exampleScrollViewer, fadeOverlay);
+            .AddChildren(exampleScrollViewer, fadeOverlay);
         elements.ExampleArea = exampleArea;
 
         // Build content area with explicit width and uniform padding
@@ -247,7 +247,7 @@ public static class PracticePageBuilder
             .HorizontalAlignment(HorizontalAlignment.Center)
             .VerticalAlignment(VerticalAlignment.Stretch)
             .Padding(contentPadding, contentPadding, contentPadding, contentPadding)
-            .Children(
+            .AddChildren(
                 CardShadow(cardBorder).Grid(row: 0),
                 translationContainer.Margin(0, contentPadding, 0, 0).Grid(row: 1),
                 exampleArea.Margin(0, contentPadding, 0, 0).Grid(row: 2)
@@ -267,7 +267,7 @@ public static class PracticePageBuilder
         return new Grid()
             .SafeArea(SafeArea.InsetMask.VisibleBounds)
             .RowDefinitions("Auto,*,Auto,Auto")
-            .Children(
+            .AddChildren(
                 titleBar.Grid(row: 0),
                 contentArea.Grid(row: 1),
                 navContainer.Grid(row: 2),
@@ -296,14 +296,14 @@ public static class PracticePageBuilder
     {
         return new Grid()
             .ColumnDefinitions("Auto,*,Auto")
-            .Children(
+            .AddChildren(
                 // Left: √Root in gray text (1px up to align with Level due to font difference)
                 new StackPanel()
                     .Orientation(Orientation.Horizontal)
                     .VerticalAlignment(VerticalAlignment.Center)
                     .Margin(0, -1, 0, 0)
                     .Scope(cardPath)
-                    .Children(
+                    .AddChildren(
                         PaliText()
                             .TextWithin<FlashCardViewModel>(c => c.Root)
                             .FontSize(fonts.PaliRoot)
@@ -321,7 +321,7 @@ public static class PracticePageBuilder
                     .HorizontalAlignment(HorizontalAlignment.Right)
                     .VerticalAlignment(VerticalAlignment.Center)
                     .Scope(cardPath)
-                    .Children(
+                    .AddChildren(
                         RegularText()
                             .Text(AppText.Get("Practice.Card.LevelLabel"))
                             .FontSize(fonts.Level)
@@ -414,7 +414,7 @@ public static class PracticePageBuilder
             .Spacing(LayoutConstants.Gaps.AnswerLineSpacing(heightClass))
             .Opacity(0)
             .HorizontalAlignment(HorizontalAlignment.Center)
-            .Children(
+            .AddChildren(
                 PaliText()
                     .FontSize(fonts.Answer)
                     .Text("X"),
@@ -435,7 +435,7 @@ public static class PracticePageBuilder
             .HorizontalAlignment(HorizontalAlignment.Center)
             .VerticalAlignment(VerticalAlignment.Center)
             .BoolToVisibility<StackPanel, TVM>(isRevealedPath)
-            .Children(answerViewbox, alternativesViewbox, singleLineSpacer);
+            .AddChildren(answerViewbox, alternativesViewbox, singleLineSpacer);
 
         // Placeholder uses relative width via binding or we track width changes
         var answerPlaceholder = new Border()
@@ -449,7 +449,7 @@ public static class PracticePageBuilder
 
         var answerContainer = new Grid()
             .Margin(0, LayoutConstants.Gaps.AnswerMarginTop(heightClass), 0, 0)
-            .Children(answerSpacer, answerContent, answerPlaceholder);
+            .AddChildren(answerSpacer, answerContent, answerPlaceholder);
 
         return (answerViewbox, alternativesViewbox, answerPlaceholder, answerContainer, answerTextBlock, alternativeFormsTextBlock, answerSpacer, answerContent);
     }
@@ -519,7 +519,7 @@ public static class PracticePageBuilder
             .Spacing(LayoutConstants.Gaps.BadgeIconTextSpacing(heightClass))
             .Padding(LayoutConstants.Gaps.BadgePadding(heightClass))
             .VerticalAlignment(VerticalAlignment.Center)
-            .Children(icon, text);
+            .AddChildren(icon, text);
 
         var badge = new SquircleBorder()
             .RadiusMode(SquircleRadiusMode.Pill)
@@ -583,7 +583,7 @@ public static class PracticePageBuilder
             .Spacing(LayoutConstants.Gaps.TranslationContentSpacing(heightClass))
             .Opacity(0)
             .IsHitTestVisible(false)
-            .Children(
+            .AddChildren(
                 RegularText()
                     .Text("X") // Single character to get one-line height
                     .FontSize(fonts.Translation)
@@ -600,7 +600,7 @@ public static class PracticePageBuilder
             .HorizontalAlignment(HorizontalAlignment.Stretch)
             .VerticalAlignment(VerticalAlignment.Center)
             .OpacityWithin<StackPanel, ExampleCarouselViewModel>(c => c.IsRevealed)
-            .Children(
+            .AddChildren(
                 translationTextBlock,
                 RegularText()
                     .TextWithin<ExampleCarouselViewModel>(c => c.PaginationText)
@@ -617,7 +617,7 @@ public static class PracticePageBuilder
             .Child(
                 new Grid()
                     .Scope(carouselPath)
-                    .Children(
+                    .AddChildren(
                         // Shadow reference - same structure, single line, invisible
                         // Used to measure height for arrow positioning
                         singleLineReference,
@@ -631,7 +631,7 @@ public static class PracticePageBuilder
                             .Spacing(6)
                             .Opacity(0.75)
                             .VisibilityWithin<StackPanel, ExampleCarouselViewModel>(c => c.IsRevealed, invert: true)
-                            .Children(
+                            .AddChildren(
                                 new Ellipse().Width(6).Height(6).Fill(ThemeResource.Get<Brush>("OnSurfaceVariantBrush")),
                                 new Ellipse().Width(6).Height(6).Fill(ThemeResource.Get<Brush>("OnSurfaceVariantBrush")),
                                 new Ellipse().Width(6).Height(6).Fill(ThemeResource.Get<Brush>("OnSurfaceVariantBrush"))
@@ -729,7 +729,7 @@ public static class PracticePageBuilder
         var container = new Grid()
             .ColumnDefinitions("50,*,50")
             .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .Children(
+            .AddChildren(
                 prevButton.Grid(column: 0),
                 CardShadow(translationBorder).Grid(column: 1).HorizontalAlignment(HorizontalAlignment.Stretch),
                 nextButton.Grid(column: 2)
@@ -775,7 +775,7 @@ public static class PracticePageBuilder
             .Spacing(LayoutConstants.Gaps.ExampleLineSpacing)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .Scope(carouselPath)
-            .Children(exampleTextBlock, referenceViewbox);
+            .AddChildren(exampleTextBlock, referenceViewbox);
 
         return (exampleTextBlock, referenceTextBlock, container);
     }
@@ -802,7 +802,7 @@ public static class PracticePageBuilder
         var container = new Grid()
             .MaxWidth(LayoutConstants.ContentMaxWidth)
             .Padding(contentPadding, 0, contentPadding, 0) // No top/bottom padding (gaps handled by adjacent elements)
-            .Children(
+            .AddChildren(
                 // Reveal button - visible when NOT revealed
                 StartPrimaryButtonShadow(BuildRevealButton(revealCommand, fonts, heightClass))
                     .BoolToVisibility<ShadowContainer, TVM>(isRevealedPath, invert: true),
@@ -812,7 +812,7 @@ public static class PracticePageBuilder
                     .ColumnDefinitions("*,*")
                     .ColumnSpacing(contentPadding)
                     .BoolToVisibility<Grid, TVM>(isRevealedPath)
-                    .Children(
+                    .AddChildren(
                         ButtonShadow(hardButton).Grid(column: 0),
                         ButtonShadow(easyButton).Grid(column: 1)
                     )
@@ -846,7 +846,7 @@ public static class PracticePageBuilder
                 .Orientation(Orientation.Horizontal)
                 .HorizontalAlignment(HorizontalAlignment.Center)
                 .Spacing(LayoutConstants.Gaps.ButtonIconTextSpacing(heightClass) + 1)
-                .Children(
+                .AddChildren(
                     new BitmapIcon()
                         .UriSource(new Uri(PracticeIcons.Reveal))
                         .ShowAsMonochrome(true)
@@ -902,7 +902,7 @@ public static class PracticePageBuilder
             .Orientation(Orientation.Horizontal)
             .HorizontalAlignment(HorizontalAlignment.Center)
             .Spacing(LayoutConstants.Gaps.ButtonIconTextSpacing(heightClass) + 2)
-            .Children(iconElement, textElement));
+            .AddChildren(iconElement, textElement));
 
         return (iconElement, textElement, button);
     }
@@ -974,8 +974,8 @@ public static class PracticePageBuilder
             .Margin(0, navToDailyGoalMargin, 0, 0) // Top margin for gap from nav buttons
             .Padding(contentPadding, topPadding, contentPadding, bottomPadding)
             .Child(
-                new StackPanel().Spacing(LayoutConstants.Gaps.DailyGoalSpacing).Children(
-                    new Grid().ColumnDefinitions("*,Auto").Children(
+                new StackPanel().Spacing(LayoutConstants.Gaps.DailyGoalSpacing).AddChildren(
+                    new Grid().ColumnDefinitions("*,Auto").AddChildren(
                         RegularText()
                             .Text(AppText.Get("Practice.DailyGoal"))
                             .FontSize(fonts.DailyGoal)

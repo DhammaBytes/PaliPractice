@@ -20,7 +20,7 @@ public sealed partial class SettingsPage : Page
                 new Grid()
                     .SafeArea(SafeArea.InsetMask.VisibleBounds)
                     .RowDefinitions("Auto,*")
-                    .Children(
+                    .AddChildren(
                         // Row 0: Title bar
                         AppTitleBar.Build<SettingsViewModel>(AppText.Get("Settings.Title"), v => v.GoBackCommand),
 
@@ -32,7 +32,7 @@ public sealed partial class SettingsPage : Page
                             .Content(
                                 new StackPanel()
                                     .MaxWidth(LayoutConstants.ContentMaxWidth)
-                                    .Children(
+                                    .AddChildren(
                                         // General section
                                         SettingsSection.Build(AppText.Get("Settings.Section.General"),
                                             SettingsRow.BuildDropdownWithBitmapIcon(

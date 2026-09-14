@@ -24,7 +24,7 @@ public sealed partial class HelpPage : Page
             .Content(new Grid()
                 .SafeArea(SafeArea.InsetMask.VisibleBounds)
                 .RowDefinitions("Auto,*")
-                .Children(
+                .AddChildren(
                     // Row 0: Title bar
                     AppTitleBar.Build<HelpViewModel>(AppText.Get("Help.Title"), vm => vm.GoBackCommand),
 
@@ -37,7 +37,7 @@ public sealed partial class HelpPage : Page
                                 .Padding(ContentPadding)
                                 .Spacing(24)
                                 .HorizontalAlignment(HorizontalAlignment.Center)
-                                .Children(
+                                .AddChildren(
                                     // How to Practice
                                     BuildSection(HelpViewModel.HowToPracticeTitle, HelpViewModel.HowToPractice, isMainTitle: true),
 
@@ -67,7 +67,7 @@ public sealed partial class HelpPage : Page
     {
         return new StackPanel()
             .Spacing(TitleToContentSpacing)
-            .Children(
+            .AddChildren(
                 RegularText()
                     .Text(title)
                     .FontSize(isMainTitle ? MainTitleFontSize : TitleFontSize)
@@ -105,6 +105,6 @@ public sealed partial class HelpPage : Page
         }
 
         return new StackPanel()
-            .Children(children.ToArray());
+            .AddChildren(children.ToArray());
     }
 }

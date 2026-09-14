@@ -101,7 +101,7 @@ public static class SettingsRow
             .Content(
                 new Grid()
                     .ColumnDefinitions("Auto,*,Auto")
-                    .Children(
+                    .AddChildren(
                         CreateBitmapIcon(iconPath)
                             .Grid(column: 0),
                         RegularText()
@@ -120,7 +120,7 @@ public static class SettingsRow
 
         return new Grid()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .Children(button);
+            .AddChildren(button);
     }
 
     public static Grid BuildNavigation<TDC>(
@@ -134,7 +134,7 @@ public static class SettingsRow
             .Content(
                 new Grid()
                     .ColumnDefinitions("Auto,*,Auto")
-                    .Children(
+                    .AddChildren(
                         new FontIcon()
                             .Glyph(iconGlyph)
                             .FontSize(16)
@@ -158,7 +158,7 @@ public static class SettingsRow
 
         return new Grid()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .Children(button);
+            .AddChildren(button);
     }
 
     public static Grid BuildNavigation<TDC>(
@@ -179,7 +179,7 @@ public static class SettingsRow
             .Content(
                 new Grid()
                     .ColumnDefinitions("*,Auto,Auto")
-                    .Children(
+                    .AddChildren(
                         RegularText()
                             .Text(label)
                             .FontSize(16)
@@ -197,7 +197,7 @@ public static class SettingsRow
 
         return new Grid()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .Children(button);
+            .AddChildren(button);
     }
 
     /// <summary>
@@ -222,7 +222,7 @@ public static class SettingsRow
             .ColumnDefinitions("*,Auto")
             .Padding(16, 12)
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Children(
+            .AddChildren(
                 RegularText()
                     .Text(label)
                     .FontSize(16)
@@ -255,7 +255,7 @@ public static class SettingsRow
             .ColumnDefinitions("Auto,*,Auto")
             .Padding(16, 12)
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Children(
+            .AddChildren(
                 new FontIcon()
                     .Glyph(iconGlyph)
                     .FontSize(16)
@@ -295,7 +295,7 @@ public static class SettingsRow
             .ColumnDefinitions("Auto,*,Auto")
             .Padding(16, 12)
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Children(
+            .AddChildren(
                 CreateBitmapIcon(iconPath)
                     .Grid(column: 0),
                 RegularText()
@@ -336,7 +336,7 @@ public static class SettingsRow
             .ColumnDefinitions("*,Auto")
             .Padding(16, 12)
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Children(
+            .AddChildren(
                 RegularText()
                     .Text(label)
                     .FontSize(16)
@@ -391,7 +391,7 @@ public static class SettingsRow
 
         var labelRow = new StackPanel()
             .Orientation(Orientation.Horizontal)
-            .Children(labelRowChildren.ToArray());
+            .AddChildren(labelRowChildren.ToArray());
 
         var labelStack = new StackPanel()
             .Spacing(2)
@@ -399,7 +399,7 @@ public static class SettingsRow
             .HorizontalAlignment(HorizontalAlignment.Left)
             .Grid(column: 0)
             .Margin(0, 0, 12, 0)
-            .Children(
+            .AddChildren(
                 labelRow,
                 RegularText()
                     .Text(hint)
@@ -413,7 +413,7 @@ public static class SettingsRow
             .ColumnDefinitions("*,Auto")
             .Padding(16, 12)
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Children(labelStack, toggle);
+            .AddChildren(labelStack, toggle);
     }
 
     /// <summary>
@@ -439,14 +439,14 @@ public static class SettingsRow
             .ColumnDefinitions("*,Auto")
             .Padding(16, 12)
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Children(
+            .AddChildren(
                 new StackPanel()
                     .Spacing(2)
                     .VerticalAlignment(VerticalAlignment.Center)
                     .HorizontalAlignment(HorizontalAlignment.Left)
                     .Grid(column: 0)
                     .Margin(0, 0, 12, 0)
-                    .Children(
+                    .AddChildren(
                         RegularText()
                             .Text(label)
                             .FontSize(16),
@@ -474,7 +474,7 @@ public static class SettingsRow
             .Content(
                 new Grid()
                     .ColumnDefinitions("Auto,*")
-                    .Children(
+                    .AddChildren(
                         new FontIcon()
                             .Glyph(iconGlyph)
                             .FontSize(16)
@@ -492,7 +492,7 @@ public static class SettingsRow
 
         return new Grid()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .Children(button);
+            .AddChildren(button);
     }
 
     /// <summary>
@@ -509,7 +509,7 @@ public static class SettingsRow
             .Content(
                 new Grid()
                     .ColumnDefinitions("Auto,*")
-                    .Children(
+                    .AddChildren(
                         CreateBitmapIcon(iconPath)
                             .Grid(column: 0),
                         RegularText()
@@ -522,6 +522,6 @@ public static class SettingsRow
 
         return new Grid()
             .HorizontalAlignment(HorizontalAlignment.Stretch)
-            .Children(button);
+            .AddChildren(button);
     }
 }

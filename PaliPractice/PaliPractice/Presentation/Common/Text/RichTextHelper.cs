@@ -135,7 +135,7 @@ public static class RichTextHelper
 
         var grid = new Grid()
             .ColumnDefinitions($"{BulletWidth},*")
-            .Children(
+            .AddChildren(
                 bulletTextBlock,
                 contentPanel.Grid(column: 1)
             );

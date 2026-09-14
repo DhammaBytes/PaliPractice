@@ -28,7 +28,7 @@ public sealed partial class DeclensionSettingsPage : Page
             .Content(PageFadeIn.Wrap(page, new Grid()
                 .SafeArea(SafeArea.InsetMask.VisibleBounds)
                 .RowDefinitions("Auto,*")
-                .Children(
+                .AddChildren(
                     // Row 0: Title bar
                     AppTitleBar.Build<DeclensionSettingsViewModel>(AppText.Get("Settings.Declension.Title"), v => v.GoBackCommand),
 
@@ -40,7 +40,7 @@ public sealed partial class DeclensionSettingsPage : Page
                         .Content(
                             new StackPanel()
                                 .MaxWidth(LayoutConstants.ContentMaxWidth)
-                                .Children(
+                                .AddChildren(
                                     // General section
                                     SettingsSection.Build(AppText.Get("Settings.Section.General"),
                                         SettingsRow.BuildNavigation<DeclensionSettingsViewModel>(
@@ -108,7 +108,7 @@ public sealed partial class DeclensionSettingsPage : Page
         return new StackPanel()
             .Spacing(1)
             .Margin(0, 0, 0, 16)
-            .Children(
+            .AddChildren(
                 // Section header
                 TextHelpers.RegularText()
                     .Text(AppText.Get("Settings.Section.PracticeFilters"))
@@ -125,7 +125,7 @@ public sealed partial class DeclensionSettingsPage : Page
                         new StackPanel()
                             .Spacing(1)
                             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
-                            .Children(
+                            .AddChildren(
                                 GenderPatternSection.Build(
                                     GrammarText.GetGender(Gender.Masculine),
                                     [

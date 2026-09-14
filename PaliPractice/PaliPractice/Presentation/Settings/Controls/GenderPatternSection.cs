@@ -63,7 +63,7 @@ public static class GenderPatternSection
             .ColumnDefinitions("Auto,*")
             .Padding(16, 12)
             .Background(ThemeResource.Get<Brush>("SurfaceBrush"))
-            .Children(
+            .AddChildren(
                 // Gender label, top-aligned to first row
                 RegularText()
                     .Text(genderLabel)

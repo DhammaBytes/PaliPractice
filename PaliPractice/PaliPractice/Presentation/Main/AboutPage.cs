@@ -26,7 +26,7 @@ public sealed partial class AboutPage : Page
             .Content(new Grid()
                 .SafeArea(SafeArea.InsetMask.VisibleBounds)
                 .RowDefinitions("Auto,*")
-                .Children(
+                .AddChildren(
                     // Row 0: Title bar
                     AppTitleBar.Build<AboutViewModel>(AppText.Get("About.Title"), vm => vm.GoBackCommand),
 
@@ -40,7 +40,7 @@ public sealed partial class AboutPage : Page
                                 .Spacing(24)
                                 .HorizontalAlignment(HorizontalAlignment.Center)
                                 .VerticalAlignment(VerticalAlignment.Center)
-                                .Children(
+                                .AddChildren(
                                     // App icon
                                     new Image()
                                         .Source("ms-appx:///Assets/Svg/quail.svg")
@@ -72,7 +72,7 @@ public sealed partial class AboutPage : Page
                                             .Child(new StackPanel()
                                                 .Orientation(Orientation.Horizontal)
                                                 .Spacing(8)
-                                                .Children(
+                                                .AddChildren(
                                                     new BitmapIcon()
                                                         .ShowAsMonochrome(true)
                                                         .Foreground(ThemeResource.Get<Brush>("OnBackgroundBrush"))
@@ -103,7 +103,7 @@ public sealed partial class AboutPage : Page
                                     // Blessing
                                     new StackPanel()
                                         .HorizontalAlignment(HorizontalAlignment.Center)
-                                        .Children(
+                                        .AddChildren(
                                             PaliText()
                                                 .Text(AboutViewModel.BlessingPali)
                                                 .FontSize(TitleFontSize)
@@ -151,7 +151,7 @@ public sealed partial class AboutPage : Page
                 new StackPanel()
                     .Padding(SectionPadding)
                     .Spacing(12)
-                    .Children(children.ToArray())
+                    .AddChildren(children.ToArray())
             );
     }
 }

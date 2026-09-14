@@ -37,7 +37,7 @@ public sealed partial class StartPage : Page
             .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
             .Content(PageFadeIn.Wrap(page,
                 new Grid()
-                    .Children(
+                    .AddChildren(
                         // Bottom lotus decoration (outside SafeArea, screen-edge aligned, lowest Z-order)
                         _lotusBottom,
 
@@ -45,23 +45,23 @@ public sealed partial class StartPage : Page
                         new Grid()
                             .SafeArea(SafeArea.InsetMask.VisibleBounds)
                             .RowDefinitions("Auto,*")
-                            .Children(
+                            .AddChildren(
                                 // Main content area
                                 new Grid()
                                     .Grid(row: 1)
                                     .Margin(20)
-                                    .Children(
+                                    .AddChildren(
                                         (_contentStack = new StackPanel()
                                             .VerticalAlignment(VerticalAlignment.Center)
                                             .HorizontalAlignment(HorizontalAlignment.Center)
                                             .Spacing(32)
                                             .MaxWidth(400))
-                                            .Children(
+                                            .AddChildren(
                                                 // Title group: lotus + title
                                                 new StackPanel()
                                                     .HorizontalAlignment(HorizontalAlignment.Center)
                                                     .Spacing(24)
-                                                    .Children(
+                                                    .AddChildren(
                                                         _lotusTop,
                                                         PaliText()
                                                             .Text("Pāli Practice")
@@ -75,7 +75,7 @@ public sealed partial class StartPage : Page
                                                 // Practice buttons
                                                 new StackPanel()
                                                     .Spacing(16)
-                                                    .Children(
+                                                    .AddChildren(
                                                         // Declension Practice Button
                                                         // Command must be set at call site for source generator to see the binding
                                                         StartPrimaryButtonShadow(
@@ -101,7 +101,7 @@ public sealed partial class StartPage : Page
                                                         // Stats and Help row (side by side)
                                                         new Grid()
                                                             .ColumnDefinitions("*,16,Auto")
-                                                            .Children(
+                                                            .AddChildren(
                                                                 // Stats Button
                                                                 StartSecondaryButtonShadow(
                                                                     BuildSecondaryButton(
@@ -182,7 +182,7 @@ public sealed partial class StartPage : Page
             .Padding(20, 20) // 4pt extra vertical padding
             .Child(new Grid()
                 .ColumnDefinitions("Auto,20,*")
-                .Children(
+                .AddChildren(
                     new BitmapIcon()
                         .UriSource(new Uri(iconPath))
                         .ShowAsMonochrome(true)
@@ -191,7 +191,7 @@ public sealed partial class StartPage : Page
                     new StackPanel()
                         .Grid(column: 2)
                         .Spacing(0)
-                        .Children(
+                        .AddChildren(
                             RegularText()
                                 .Text(title)
                                 .TextWrapping(TextWrapping.Wrap)
@@ -228,7 +228,7 @@ public sealed partial class StartPage : Page
             .Child(new StackPanel()
                 .Orientation(Orientation.Horizontal)
                 .Spacing(centerContent ? 8 : 20) // 8pt for short buttons, 20pt for long
-                .Children(
+                .AddChildren(
                     new BitmapIcon()
                         .UriSource(new Uri(iconPath))
                         .ShowAsMonochrome(true)

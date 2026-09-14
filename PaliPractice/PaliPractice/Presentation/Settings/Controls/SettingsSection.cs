@@ -33,7 +33,7 @@ public static class SettingsSection
                     .HorizontalAlignment(HorizontalAlignment.Stretch)
                     .Spacing(1)
                     .Background(ThemeResource.Get<Brush>("BackgroundBrush"))
-                    .Children(items)
+                    .AddChildren(items)
             );
 
         section.Children.Add(itemsContainer);

@@ -138,7 +138,7 @@ public sealed partial class MainPage : Page
             .Content(
                 new StackPanel()
                     .VerticalAlignment(VerticalAlignment.Center)
-                    .Children(
+                    .AddChildren(
                         new Image()
                             .Margin(12)
                             .HorizontalAlignment(HorizontalAlignment.Center)
@@ -202,7 +202,7 @@ public static class WordCard
         
         var card = new Border()
             .Child(
-                new StackPanel().Children(
+                new StackPanel().AddChildren(
                     wordTextBlock.FontSize(48),
                     exampleTextBlock.FontSize(16)
                 )
@@ -231,6 +231,8 @@ public sealed partial class PracticePage : Page
 ```
 
 ### Rules for Composition
+
+Use `AddChildren(...)` from `PanelExtensions` (or `panel.Children.Add`) for panel composition. Uno 6.7 C# Markup `Children(...)` attaches `ResourceParent` back references that cause repeated theme traversal during Android navigation. Keep binding lambdas at their original call sites.
 
 1. **Never pass `Func<T>` for bindings** - The generator won't see the lambda
 2. **Use `Action<TControl>` parameters** - Apply bindings at the call site
